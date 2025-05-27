@@ -39,20 +39,20 @@ bool BH1705sensor::begin() {
     return true;
 }
 
-std::map<std::string, float> BH1705sensor::readData() {
+std::map<String, String> BH1705sensor::readData() {
     uint8_t data[2];
     if (!readBytes(data, 2))
     {
-        return {{"L", NAN}};
+        return {{"L", "NaN"}};
     }
 
     _lux = (data[0] << 8) | data[1];
     _lux /= 1.2; // Convert to lux
 
-    std::map<std::string, float> dataMap;
+    std::map<String, String> dataMap;
     for (const auto& channel : channels) {
         if (channel.second == "L") {
-            dataMap[channel.first.c_str()] = _lux;
+            dataMap[channel.first] = String(_lux);
         }
     }
 
