@@ -10,7 +10,9 @@
 
 class PCF8574gpio : public Device {
 public:
-    PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);    bool begin() override;
+    PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
+    
+    bool begin() override;
     bool isConnected() override;
     void update() override;
     std::map<String, String> readData() override; // Return a map of GPIO states
