@@ -199,7 +199,7 @@ void ClimateController::setHumidityPID(double kp, double ki, double kd) {
 }
 
 void ClimateController::setFanInterior(bool enable) {
-    gpio->setFanInterior(enable);
+    gpio->writePin(pinFanInterior, enable);
 }
 
 void ClimateController::setFanExterior(bool enable) {
