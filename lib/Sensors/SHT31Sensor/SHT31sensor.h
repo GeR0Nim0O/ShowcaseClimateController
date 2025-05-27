@@ -36,9 +36,7 @@ private:
     uint8_t _address;
     float _temperature;
     float _humidity;
-    uint8_t numChannels; // Add numChannels property
-    String type; // Add type property
-    std::map<String, String> channels; // Add channels property
+};
 };
 
 #endif // SHT31SENSOR_H
