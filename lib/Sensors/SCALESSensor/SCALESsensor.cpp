@@ -26,14 +26,14 @@ bool SCALESsensor::begin() {
 }
 
 std::map<String, String> SCALESsensor::readData() {
-    uint8_t data[2];
-    if (!readBytes(data, 2))
+    uint8_t dataArr[2];
+    if (!readBytes(dataArr, 2))
     {
         return {{"W", "NaN"}};
     }
 
-    _weight = (data[0] << 8) | data[1];
-        _weight /= 1.2; // Convert to weight
+    _weight = (dataArr[0] << 8) | dataArr[1];
+    _weight /= 1.2; // Convert to weight
     
     std::map<String, String> data;
     for (const auto& channel : channels) {
