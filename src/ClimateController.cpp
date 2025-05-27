@@ -186,8 +186,8 @@ void ClimateController::applyTemperatureControl() {
 }
 
 void ClimateController::applyHumidityControl() {
-    gpio->setHumidify(humidifyingActive);
-    gpio->setDehumidify(dehumidifyingActive);
+    gpio->writePin(pinHumidify, humidifyingActive);
+    gpio->writePin(pinDehumidify, dehumidifyingActive);
 }
 
 void ClimateController::setTemperaturePID(double kp, double ki, double kd) {
