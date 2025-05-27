@@ -40,9 +40,10 @@ bool PCF8574gpio::begin() {
             Serial.println(" failed, retrying...");
             delay(10);
         }    }
+      // Serial.print("DEBUG: PCF8574 initialization success = ");
+    // Serial.println(success);
     
-    // Serial.print("DEBUG: PCF8574 initialization success = ");
-    // Serial.println(success);      if (success) {
+    if (success) {
         Serial.println("DEBUG: Setting initialized = true");
         Serial.print("DEBUG: Address of 'this': ");
         Serial.println((uint32_t)this, HEX);
