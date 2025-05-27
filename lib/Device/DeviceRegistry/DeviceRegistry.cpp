@@ -63,14 +63,14 @@ void DeviceRegistry::updateAllDevices() {
     }
 }
 
-PCF8574_GPIO* DeviceRegistry::getGPIOExpander(int index) {
+PCF8574gpio* DeviceRegistry::getGPIOExpander(int index) {
     if (index < 0 || index >= gpioExpanders.size()) {
         return nullptr;
     }
     return gpioExpanders[index];
 }
 
-SHT31_Sensor* DeviceRegistry::getTemperatureHumiditySensor(int index) {
+SHT31sensor* DeviceRegistry::getTemperatureHumiditySensor(int index) {
     if (index < 0 || index >= temperatureHumiditySensors.size()) {
         return nullptr;
     }
