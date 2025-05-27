@@ -19,6 +19,7 @@ PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
 }
 
 bool PCF8574gpio::begin() {
+    Serial.println("DEBUG: PCF8574gpio::begin() START");
     Serial.println("DEBUG: PCF8574gpio::begin() called");
     I2CHandler::selectTCA(tcaChannel); // Use tcaChannel from Device base class
     
