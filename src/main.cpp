@@ -166,9 +166,25 @@ void setup()
   // Debug: Print device count after cleanup
   Serial.print("Devices vector size after cleanup: ");
   Serial.println(devices.size());
-
   // Print created sensors for debugging (moved after initialization)
   printCreatedSensors();
+
+  // Additional debug: Check each device individually
+  Serial.println("Device validation:");
+  for (size_t i = 0; i < devices.size(); i++) {
+    Device* device = devices[i];
+    Serial.print("Device ");
+    Serial.print(i);
+    Serial.print(": ");
+    if (device == nullptr) {
+      Serial.println("NULL POINTER");
+    } else {
+      Serial.print("Type: ");
+      Serial.print(device->getType());
+      Serial.print(", Initialized: ");
+      Serial.println(device->isInitialized() ? "Yes" : "No");
+    }
+  }
 
   Serial.println("I2C scan done");
 
