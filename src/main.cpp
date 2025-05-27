@@ -156,6 +156,9 @@ void setup()
   // Initialize each device
   Configuration::initializeEachDevice(devices);
 
+  // Remove nullptr entries from devices vector
+  devices.erase(std::remove(devices.begin(), devices.end(), nullptr), devices.end());
+
   // Print created sensors for debugging (moved after initialization)
   printCreatedSensors();
 
