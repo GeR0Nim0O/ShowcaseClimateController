@@ -121,7 +121,7 @@ std::map<String, String> SHT31sensor::readData()
 
 uint32_t SHT31sensor::getSerialNumber()
 {
-    I2CHandler::selectTCA(tcaPort); 
+    I2CHandler::selectTCA(getTCAChannel()); 
     if (!writeCommand(0x3780)) // Command to read serial number
     {
         Serial.println("SHT31 getSerialNumber: writeCommand error");
