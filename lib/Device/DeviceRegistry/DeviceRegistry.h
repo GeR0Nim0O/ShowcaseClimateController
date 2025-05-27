@@ -10,10 +10,21 @@
 class DeviceRegistry {
 public:
     static DeviceRegistry& getInstance();
-    
-    bool registerDevice(Device* device);
+      bool registerDevice(Device* device);
     bool initializeAllDevices();
     void updateAllDevices();
+    
+    // Device creation
+    static Device* createDeviceWithThresholds(
+        const String& type, 
+        const String& typeNumber, 
+        TwoWire* wire, 
+        uint8_t address, 
+        uint8_t tcaPort, 
+        const std::map<String, float>& channelThresholds, 
+        const std::map<String, String>& channelNames, 
+        int deviceIndex
+    );
       // Device getters
     PCF8574gpio* getGPIOExpander(int index = 0);
     SHT31sensor* getTemperatureHumiditySensor(int index = 0);
