@@ -5,6 +5,7 @@
 #include <PID_v1.h>
 #include "PCF8574gpio.h"
 #include "SHT31sensor.h"
+#include "Configuration.h"
 
 enum class ClimateMode {
     OFF,
