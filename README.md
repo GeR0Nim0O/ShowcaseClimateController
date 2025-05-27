@@ -27,7 +27,7 @@ lib/
 ├── Display/                   # Display devices
 │   └── Display.h/.cpp        # OLED display management
 ├── DAC/                      # Digital-to-analog converters
-│   └── DAC_Module/           # MCP4725 DAC for power control
+│   └── GP8403dac/           # GP8403 DAC for power control
 ├── Input/                    # User input devices
 │   └── RotaryEncoder/        # Rotary encoder with button
 ├── ClimateController/        # Main control logic
