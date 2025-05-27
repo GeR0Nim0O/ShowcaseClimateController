@@ -1,84 +1,217 @@
 #include "RotaryEncoder.h"
 
-RotaryEncoder* RotaryEncoder::instance = nullptr;
+#define I2C_ENCODER_DEFAULT_ADDRESS 0x61
 
-RotaryEncoder::RotaryEncoder(uint8_t pinA, uint8_t pinB, uint8_t pinButton, const String& deviceName, int deviceIndex)
-    : Device(0x00, 0xFF, deviceName, deviceIndex), // No I2C for direct GPIO
-      pinA(pinA), pinB(pinB), pinButton(pinButton),
-      position(0), lastPosition(0), minValue(LONG_MIN), maxValue(LONG_MAX),
-      stepSize(1), accelerationEnabled(false),
-      buttonState(HIGH), lastButtonState(HIGH), buttonPressed(false),
-      buttonPressTime(0), lastButtonTime(0),
-      lastStateA(HIGH), lastStateB(HIGH) {
-    type = "Rotary_Encoder";
-    instance = this; // Set static instance for ISR
+RotaryEncoder::RotaryEncoder(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
+    : Device(i2cAddress, tcaChannel, deviceName, deviceIndex),
+      position(0), lastPosition(0), minValue(-2147483648), maxValue(2147483647),
+      stepValue(1), wrapEnabled(false), floatData(false), rgbEncoder(false),
+      buttonPressed(false), lastButtonPressed(false), buttonHeld(false),
+      buttonPressTime(0) {
+    type = "I2C_Encoder";
 }
 
 bool RotaryEncoder::begin() {
-    // Configure pins
-    pinMode(pinA, INPUT_PULLUP);
-    pinMode(pinB, INPUT_PULLUP);
-    pinMode(pinButton, INPUT_PULLUP);
+    selectTCAChannel(tcaChannel);
     
-    // Read initial states
-    lastStateA = digitalRead(pinA);
-    lastStateB = digitalRead(pinB);
-    lastButtonState = digitalRead(pinButton);
+    if (!testI2CConnection()) {
+        Serial.println("I2C Encoder not found!");
+        return false;
+    }
     
-    // Attach interrupts for encoder pins
-    attachInterrupt(digitalPinToInterrupt(pinA), encoderISR, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(pinB), encoderISR, CHANGE);
+    // Reset the encoder
+    writeRegister(I2C_ENCODER_GCONF, GCONF_RESET);
+    delay(10);
+    
+    // Configure encoder
+    if (!writeConfig()) {
+        Serial.println("Failed to configure I2C Encoder");
+        return false;
+    }
+    
+    // Set initial values
+    setPosition(0);
+    setMinMax(-1000, 1000);
+    setStepSize(1);
     
     initialized = true;
-    Serial.println("Rotary Encoder initialized successfully");
+    Serial.println("I2C Encoder initialized successfully");
     return true;
 }
 
 bool RotaryEncoder::isConnected() {
-    // For direct GPIO, always return true if initialized
-    return initialized;
+    return testI2CConnection();
 }
 
 void RotaryEncoder::update() {
-    readButton();
+    // Read current position
+    position = readRegister32(I2C_ENCODER_CVAL);
+    
+    // Read button status
+    uint8_t status = readRegister(I2C_ENCODER_ESTATUS);
+    lastButtonPressed = buttonPressed;
+    buttonPressed = (status & 0x01) != 0; // Button status bit
+    
+    // Track button press timing
+    if (buttonPressed && !lastButtonPressed) {
+        buttonPressTime = millis();
+    }
+    
+    if (!buttonPressed) {
+        buttonPressTime = 0;
+    }
 }
 
-long RotaryEncoder::getPositionChange() {
-    long change = position - lastPosition;
-    lastPosition = position;
+int32_t RotaryEncoder::getPosition() {
+    return readRegister32(I2C_ENCODER_CVAL);
+}
+
+void RotaryEncoder::setPosition(int32_t pos) {
+    writeRegister32(I2C_ENCODER_CVAL, pos);
+    position = pos;
+    lastPosition = pos;
+}
+
+int32_t RotaryEncoder::getPositionChange() {
+    int32_t currentPos = getPosition();
+    int32_t change = currentPos - lastPosition;
+    lastPosition = currentPos;
     return change;
 }
 
 bool RotaryEncoder::isButtonPressed() {
-    return !buttonState; // Active low
+    uint8_t status = readRegister(I2C_ENCODER_ESTATUS);
+    return (status & 0x01) != 0;
 }
 
 bool RotaryEncoder::wasButtonPressed() {
-    if (buttonPressed) {
-        buttonPressed = false;
+    if (buttonPressed && !lastButtonPressed) {
         return true;
     }
     return false;
 }
 
 bool RotaryEncoder::isButtonHeld(unsigned long holdTime) {
-    if (isButtonPressed() && buttonPressTime > 0) {
+    if (buttonPressed && buttonPressTime > 0) {
         return (millis() - buttonPressTime) >= holdTime;
     }
     return false;
 }
 
-void RotaryEncoder::setMinMax(long minVal, long maxVal) {
+void RotaryEncoder::setMinMax(int32_t minVal, int32_t maxVal) {
     minValue = minVal;
     maxValue = maxVal;
     
+    writeRegister32(I2C_ENCODER_CMIN, minVal);
+    writeRegister32(I2C_ENCODER_CMAX, maxVal);
+    
     // Constrain current position
-    if (position < minValue) position = minValue;
-    if (position > maxValue) position = maxValue;
+    int32_t currentPos = getPosition();
+    if (currentPos < minValue) setPosition(minValue);
+    if (currentPos > maxValue) setPosition(maxValue);
 }
 
-void RotaryEncoder::readEncoder() {
-    uint8_t stateA = digitalRead(pinA);
+void RotaryEncoder::setStepSize(int32_t step) {
+    stepValue = step;
+    writeRegister32(I2C_ENCODER_ISTEP, step);
+}
+
+void RotaryEncoder::enableWrap(bool enable) {
+    wrapEnabled = enable;
+    writeConfig();
+}
+
+void RotaryEncoder::setDirection(bool clockwiseIncrement) {
+    // Update configuration and rewrite
+    writeConfig();
+}
+
+void RotaryEncoder::setLED(uint8_t red, uint8_t green, uint8_t blue) {
+    if (rgbEncoder) {
+        writeRegister(I2C_ENCODER_RLED, red);
+        writeRegister(I2C_ENCODER_GLED, green);
+        writeRegister(I2C_ENCODER_BLED, blue);
+    }
+}
+
+void RotaryEncoder::setLEDFade(uint8_t fade) {
+    if (rgbEncoder) {
+        writeRegister(I2C_ENCODER_FADERGB, fade);
+    }
+}
+
+bool RotaryEncoder::writeRegister(uint8_t reg, uint8_t value) {
+    selectTCAChannel(tcaChannel);
+    
+    Wire.beginTransmission(i2cAddress);
+    Wire.write(reg);
+    Wire.write(value);
+    return (Wire.endTransmission() == 0);
+}
+
+bool RotaryEncoder::writeRegister32(uint8_t reg, int32_t value) {
+    selectTCAChannel(tcaChannel);
+    
+    Wire.beginTransmission(i2cAddress);
+    Wire.write(reg);
+    Wire.write((value >> 24) & 0xFF);
+    Wire.write((value >> 16) & 0xFF);
+    Wire.write((value >> 8) & 0xFF);
+    Wire.write(value & 0xFF);
+    return (Wire.endTransmission() == 0);
+}
+
+uint8_t RotaryEncoder::readRegister(uint8_t reg) {
+    selectTCAChannel(tcaChannel);
+    
+    Wire.beginTransmission(i2cAddress);
+    Wire.write(reg);
+    if (Wire.endTransmission() != 0) {
+        return 0;
+    }
+    
+    Wire.requestFrom(i2cAddress, (uint8_t)1);
+    if (Wire.available()) {
+        return Wire.read();
+    }
+    
+    return 0;
+}
+
+int32_t RotaryEncoder::readRegister32(uint8_t reg) {
+    selectTCAChannel(tcaChannel);
+    
+    Wire.beginTransmission(i2cAddress);
+    Wire.write(reg);
+    if (Wire.endTransmission() != 0) {
+        return 0;
+    }
+    
+    Wire.requestFrom(i2cAddress, (uint8_t)4);
+    if (Wire.available() >= 4) {
+        int32_t value = (int32_t)Wire.read() << 24;
+        value |= (int32_t)Wire.read() << 16;
+        value |= (int32_t)Wire.read() << 8;
+        value |= Wire.read();
+        return value;
+    }
+    
+    return 0;
+}
+
+bool RotaryEncoder::writeConfig() {
+    uint8_t config = GCONF_INT_DATA; // Use integer data
+    
+    if (wrapEnabled) {
+        config |= GCONF_WRAP_ENABLE;
+    }
+    
+    // Add other configuration options as needed
+    config |= GCONF_IPUP_ENABLE;  // Enable internal pull-ups
+    config |= GCONF_RMOD_X1;      // X1 resolution
+    
+    return writeRegister(I2C_ENCODER_GCONF, config);
+}
     uint8_t stateB = digitalRead(pinB);
     
     // Check for state change
