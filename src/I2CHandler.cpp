@@ -4,7 +4,7 @@
 
 void I2CHandler::initializeI2C() {
     Serial.println("Initializing I2C bus...");
-    WIRE.begin(17); // SDA, SCL
+    WIRE.begin(17, 16); // SDA, SCL
     WIRE.setClock(100000);
     delay(100);
     Serial.println("I2C bus initialized.");
