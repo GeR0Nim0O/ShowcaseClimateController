@@ -394,7 +394,7 @@ std::vector<Device*> Configuration::initializeDevices(const std::map<uint8_t, st
 
 void Configuration::initializeEachDevice(const std::vector<Device*>& devices) {
     for (Device* device : devices) {
-        I2CHandler::selectTCA(device->getTcaPort());
+        I2CHandler::selectTCA(device->getTCAChannel());
         if (!device->begin()) {
             Serial.print("Failed to initialize device: ");
             Serial.print(device->getType());
