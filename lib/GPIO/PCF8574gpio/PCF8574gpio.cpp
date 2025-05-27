@@ -19,6 +19,7 @@ PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
 }
 
 bool PCF8574gpio::begin() {
+    Serial.println("DEBUG: PCF8574gpio::begin() called");
     I2CHandler::selectTCA(tcaChannel); // Use tcaChannel from Device base class
     
     // First test I2C connection
@@ -27,11 +28,15 @@ bool PCF8574gpio::begin() {
         return false;
     }
     
+    Serial.println("DEBUG: PCF8574 connection test passed, starting GPIO initialization");
+    
     // Initialize GPIO state - try multiple times if needed
     int retries = 3;
     bool success = false;
     
     for (int i = 0; i < retries && !success; i++) {
+        Serial.print("DEBUG: PCF8574 write attempt ");
+        Serial.println(i + 1);
         success = writeByte(_gpioState); // Initialize GPIO state
         if (!success) {
             Serial.print("PCF8574 write attempt ");
@@ -41,13 +46,21 @@ bool PCF8574gpio::begin() {
         }
     }
     
+    Serial.print("DEBUG: PCF8574 initialization success = ");
+    Serial.println(success);
+    
     if (success) {
+        Serial.println("DEBUG: Setting initialized = true");
         initialized = true; // Set initialized flag to true
+        Serial.print("DEBUG: initialized flag is now: ");
+        Serial.println(initialized);
         Serial.println("PCF8574 GPIO expander initialized successfully");
     } else {
         Serial.println("PCF8574 GPIO expander initialization failed after retries");
     }
     
+    Serial.print("DEBUG: PCF8574gpio::begin() returning ");
+    Serial.println(success);
     return success;
 }
 
