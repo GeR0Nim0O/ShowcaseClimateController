@@ -13,6 +13,11 @@ public:
     SHT31sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
     bool begin() override;
     std::map<std::string, float> readData() override; // Return a map of sensor data
+    
+    // Override pure virtual methods from Device
+    std::map<String, String> getChannels() const override { return channels; }
+    float getThreshold(const String& channelKey) const override { return threshold; }
+    
     float getTemperature() const;
     float getHumidity() const;
     uint32_t getSerialNumber(); // Add method to read serial number
@@ -21,8 +26,7 @@ public:
     bool setMeasurementMode(uint16_t mode); // Add method to set measurement mode
     bool setHeater(bool enable); // Add method to enable/disable heater
     uint8_t getAddress() const { return _address; } // Add getAddress function
-    float getThreshold() const { return threshold; } // Add getThreshold function
-
+    
 private:
     bool readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity);
     bool writeCommand(uint16_t command);
