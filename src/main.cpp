@@ -153,11 +153,11 @@ void setup()
   // Initialize devices based on configuration
   devices = Configuration::initializeDevices(tcaScanResults, rtc);
 
-  // Print created sensors for debugging
-  printCreatedSensors();
-
   // Initialize each device
   Configuration::initializeEachDevice(devices);
+
+  // Print created sensors for debugging (moved after initialization)
+  printCreatedSensors();
 
   Serial.println("I2C scan done");
 
