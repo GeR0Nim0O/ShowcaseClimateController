@@ -150,9 +150,6 @@ void setup()
   // Print TCA scan results
   I2CHandler::printTCAScanResults(tcaScanResults);
 
-  // --- FIX: Properly instantiate rtc before passing to initializeDevices ---
-  rtc = new DS3231rtc(); // Allocate rtc before use
-
   // Initialize devices based on configuration
   devices = Configuration::initializeDevices(tcaScanResults, rtc);
 
