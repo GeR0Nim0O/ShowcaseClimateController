@@ -144,7 +144,7 @@ void TimeHandler::updateRTCFromNTP(DS3231rtc& rtc) {
 }
 
 void TimeHandler::setRTCFromAPI(DS3231rtc& rtc, String datetime) {
-    I2CHandler::selectTCA(rtc.getTcaPort());
+    I2CHandler::selectTCA(rtc.getTCAChannel());
     // Parse datetime string and set RTC
     int year = datetime.substring(0, 4).toInt();
     int month = datetime.substring(5, 7).toInt();
