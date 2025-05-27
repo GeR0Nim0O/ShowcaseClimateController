@@ -22,8 +22,8 @@ GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float t
 bool GP8403dac::begin() {
     I2CHandler::selectTCA(getTCAChannel());
     
-    wire->beginTransmission(getI2CAddress());
-    bool connected = (wire->endTransmission() == 0);
+    this->wire->beginTransmission(getI2CAddress());
+    bool connected = (this->wire->endTransmission() == 0);
     
     if (!connected) {
         Serial.println("GP8403 DAC Module not found!");
@@ -45,8 +45,8 @@ bool GP8403dac::begin() {
 
 bool GP8403dac::isConnected() {
     I2CHandler::selectTCA(getTCAChannel());
-    wire->beginTransmission(getI2CAddress());
-    return (wire->endTransmission() == 0);
+    this->wire->beginTransmission(getI2CAddress());
+    return (this->wire->endTransmission() == 0);
 }
 
 void GP8403dac::update() {
@@ -164,26 +164,26 @@ bool GP8403dac::isReady() {
 bool GP8403dac::writeRegister(uint8_t reg, uint16_t value) {
     I2CHandler::selectTCA(getTCAChannel());
     
-    wire->beginTransmission(getI2CAddress());
-    wire->write(reg);
-    wire->write((value >> 8) & 0xFF); // MSB
-    wire->write(value & 0xFF);        // LSB
-    return (wire->endTransmission() == 0);
+    this->wire->beginTransmission(getI2CAddress());
+    this->wire->write(reg);
+    this->wire->write((value >> 8) & 0xFF); // MSB
+    this->wire->write(value & 0xFF);        // LSB
+    return (this->wire->endTransmission() == 0);
 }
 
 uint16_t GP8403dac::readRegister(uint8_t reg) {
     I2CHandler::selectTCA(getTCAChannel());
     
-    wire->beginTransmission(getI2CAddress());
-    wire->write(reg);
-    if (wire->endTransmission() != 0) {
+    this->wire->beginTransmission(getI2CAddress());
+    this->wire->write(reg);
+    if (this->wire->endTransmission() != 0) {
         return 0;
     }
     
-    wire->requestFrom(getI2CAddress(), (uint8_t)2);
-    if (wire->available() >= 2) {
-        uint16_t value = wire->read() << 8; // MSB
-        value |= wire->read();              // LSB
+    this->wire->requestFrom(getI2CAddress(), (uint8_t)2);
+    if (this->wire->available() >= 2) {
+        uint16_t value = this->wire->read() << 8; // MSB
+        value |= this->wire->read();              // LSB
         return value;
     }
     
