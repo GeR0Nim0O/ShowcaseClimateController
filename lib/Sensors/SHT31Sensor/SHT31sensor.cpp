@@ -23,7 +23,7 @@ SHT31sensor::SHT31sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
 
 bool SHT31sensor::begin()
 {
-    I2CHandler::selectTCA(tcaPort); // Use tcaPort from class definition
+    I2CHandler::selectTCA(tcaChannel); // Use tcaChannel from base Device class
     if (!writeCommand(0x30A2)) // Soft reset command
     {
         Serial.println("SHT31 begin error (soft reset)");
