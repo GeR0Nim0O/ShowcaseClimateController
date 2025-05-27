@@ -94,13 +94,20 @@ bool SHT31sensor::begin()
     
     // Skip the initial readData() call that may be causing issues
     Serial.println("DEBUG: Skipping initial sensor reading to avoid potential crash");
-    
-    // Set initialized flag to true regardless of initial reading success
+      // Set initialized flag to true regardless of initial reading success
     Serial.println("DEBUG: Setting initialized flag...");
+    Serial.print("DEBUG: Address of 'this': ");
+    Serial.println((uint32_t)this, HEX);
+    Serial.print("DEBUG: Address of 'initialized' variable: ");
+    Serial.println((uint32_t)&initialized, HEX);
+    Serial.print("DEBUG: initialized value before setting: ");
+    Serial.println(initialized);
     initialized = true; 
     Serial.println("DEBUG: SHT31 initialized flag set to true");
     Serial.print("DEBUG: SHT31 initialized flag is now: ");
     Serial.println(initialized);
+    Serial.print("DEBUG: isInitialized() method returns: ");
+    Serial.println(isInitialized());
     Serial.println("SHT31 sensor initialized successfully");
     Serial.println("DEBUG: SHT31sensor::begin() returning true");
     return true;
