@@ -403,9 +403,13 @@ void Configuration::initializeEachDevice(const std::vector<Device*>& devices) {
             Serial.println(device->getI2CAddress(), HEX);        } else {
             Serial.println("Device initialized successfully: " + device->getType());
             Serial.print("Address: 0x");
-            Serial.println(device->getI2CAddress(), HEX);
-            Serial.print("Threshold: ");
-            Serial.println(device->getThreshold());
+            Serial.println(device->getI2CAddress(), HEX);            Serial.print("Threshold: ");
+            auto channels = device->getChannels();
+            if (!channels.empty()) {
+                Serial.println(device->getThreshold(channels.begin()->first));
+            } else {
+                Serial.println("N/A");
+            }
             Serial.print("Number of Channels: ");
             Serial.println(device->getNumChannels());
         }
