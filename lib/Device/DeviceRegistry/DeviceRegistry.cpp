@@ -16,17 +16,7 @@ bool DeviceRegistry::registerDevice(Device* device) {
     }
     
     devices.push_back(device);
-    // Add to specific type vectors for easy access
-    PCF8574gpio* gpioDevice = dynamic_cast<PCF8574gpio*>(device);
-    if (gpioDevice) {
-        gpioExpanders.push_back(gpioDevice);
-    }
-    
-    SHT31sensor* tempHumDevice = dynamic_cast<SHT31sensor*>(device);
-    if (tempHumDevice) {
-        temperatureHumiditySensors.push_back(tempHumDevice);
-    }
-    
+    // Removed dynamic_cast and type-specific vectors due to -fno-rtti
     Serial.print("Registered device: ");
     Serial.println(device->getDeviceName());
     
@@ -175,7 +165,8 @@ Device* DeviceRegistry::createDeviceWithThresholds(
         if (typeNumber.equalsIgnoreCase("MCP4725")) {
             device = new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
         }
-    }      if (device) {
+    }
+    if (device) {
         Serial.println("Device created successfully");
         // Register the device in the registry
         DeviceRegistry& registry = DeviceRegistry::getInstance();
