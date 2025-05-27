@@ -422,3 +422,6 @@ std::map<String, String> Configuration::jsonToMap(JsonObject jsonObject) {
     return map;
 }
 
+// Restore warning state
+#pragma GCC diagnostic pop
+
