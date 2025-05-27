@@ -50,6 +50,61 @@ void gitAutoCommitAndPush() {
     system("git push");
 }
 
+void initializeDevices() {
+    Serial.println("=== Initializing Climate Controller Devices ===");
+    
+    // Create device instances
+    gpioExpander = new PCF8574_GPIO(GPIO_EXPANDER_ADDR, GPIO_EXPANDER_CHANNEL, "GPIO_Expander", 0);
+    tempHumSensor = new SHT31_Sensor(SHT31_ADDR, SHT31_CHANNEL, "Temperature_Humidity_Sensor", 0);
+    display = new Display(DISPLAY_ADDR, DISPLAY_CHANNEL, "OLED_Display", 0);
+    dacModule = new DAC_Module(DAC_ADDR, DAC_CHANNEL, "DAC_Module", 0);
+    encoder = new RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_BUTTON_PIN, "Rotary_Encoder", 0);
+    
+    // Register devices with the device registry
+    deviceRegistry.registerDevice(gpioExpander);
+    deviceRegistry.registerDevice(tempHumSensor);
+    deviceRegistry.registerDevice(display);
+    deviceRegistry.registerDevice(dacModule);
+    deviceRegistry.registerDevice(encoder);
+    
+    // Initialize all devices
+    bool allInitialized = deviceRegistry.initializeAllDevices();
+    
+    if (allInitialized) {
+        Serial.println("All devices initialized successfully!");
+        
+        // Create climate controller
+        climateController = new ClimateController(gpioExpander, tempHumSensor);
+        if (climateController->begin()) {
+            Serial.println("Climate Controller initialized successfully!");
+            
+            // Configure climate controller with saved settings
+            climateController->setTemperatureSetpoint(config.getTemperatureSetpoint());
+            climateController->setHumiditySetpoint(config.getHumiditySetpoint());
+            climateController->setTemperaturePID(config.getTemperatureKp(), config.getTemperatureKi(), config.getTemperatureKd());
+            climateController->setHumidityPID(config.getHumidityKp(), config.getHumidityKi(), config.getHumidityKd());
+            climateController->setFanInterior(config.getFanInteriorEnabled());
+            climateController->setFanExterior(config.getFanExteriorEnabled());
+            
+            // Configure encoder for menu navigation
+            encoder->setMinMax(0, 100);
+            encoder->setStepSize(1);
+            
+            // Show status on display
+            if (display->isConnected()) {
+                display->displaySystemStatus("System Ready");
+                delay(2000);
+            }
+        } else {
+            Serial.println("Failed to initialize Climate Controller!");
+        }
+    } else {
+        Serial.println("Some devices failed to initialize!");
+    }
+    
+    deviceRegistry.printDeviceStatus();
+}
+
 void setup()
 {
     Serial.begin(115200);
