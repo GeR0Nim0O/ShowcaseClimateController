@@ -2,7 +2,7 @@
 #include <Arduino.h> // Include Arduino header for byte type and Serial object
 
 DS3231rtc::DS3231rtc(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(DS3231_ADDRESS), channels(channels), deviceIndex(deviceIndex) {
+    : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(DS3231_ADDRESS) {
     numChannels = channels.size(); // Set number of channels based on the map size
     type = "RTC"; // Fixed type
     typeNumber = "DS3231"; // Fixed type number
