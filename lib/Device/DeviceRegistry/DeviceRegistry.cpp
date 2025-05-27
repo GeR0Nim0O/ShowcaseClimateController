@@ -12,14 +12,13 @@ bool DeviceRegistry::registerDevice(Device* device) {
     }
     
     devices.push_back(device);
-    
-    // Add to specific type vectors for easy access
-    PCF8574_GPIO* gpioDevice = dynamic_cast<PCF8574_GPIO*>(device);
+      // Add to specific type vectors for easy access
+    PCF8574gpio* gpioDevice = dynamic_cast<PCF8574gpio*>(device);
     if (gpioDevice) {
         gpioExpanders.push_back(gpioDevice);
     }
     
-    SHT31_Sensor* tempHumDevice = dynamic_cast<SHT31_Sensor*>(device);
+    SHT31sensor* tempHumDevice = dynamic_cast<SHT31sensor*>(device);
     if (tempHumDevice) {
         temperatureHumiditySensors.push_back(tempHumDevice);
     }
