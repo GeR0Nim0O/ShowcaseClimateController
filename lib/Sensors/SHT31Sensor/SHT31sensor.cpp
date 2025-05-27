@@ -84,7 +84,9 @@ bool SHT31sensor::begin()
         Serial.println("Failed to disable heater");
         return false;
     }
-    Serial.println("DEBUG: Heater disabled successfully");// Print SHT31 serial number
+    Serial.println("DEBUG: Heater disabled successfully");
+    
+    // Print SHT31 serial number
     Serial.print("SHT31 Serial Number: ");
     Serial.println(getSerialNumber());
     
