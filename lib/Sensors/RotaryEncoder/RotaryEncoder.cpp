@@ -220,12 +220,4 @@ std::map<String, String> RotaryEncoder::readData() {
     return data;
 }
 
-int RotaryEncoder::getChannels() const {
-    return 1; // One channel for position data
-}
-
-float RotaryEncoder::getThreshold(const String&) const {
-    return 0.0; // No threshold applicable for rotary encoder
-}
-
 // End of implementation
