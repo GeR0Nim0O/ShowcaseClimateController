@@ -27,6 +27,7 @@ bool DS3231rtc::begin() {
     {
         return false;
     }
+    initialized = true; // Set initialized flag to true
     return true;
 }
 
