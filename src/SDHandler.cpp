@@ -1,13 +1,20 @@
 #include "SDHandler.h"
-#include <sys/stat.h>
+#include <Arduino.h>
+#include <SPI.h>
+#include <SD.h>
 
-// ...existing code...
+#define SD_MISO_PIN 5
+#define SD_MOSI_PIN 6
+#define SD_SCLK_PIN 7
+#define SD_CS_PIN   4
 
 File logFile;
 bool overwriteConfirmed = false;
 
 bool SDHandler::initSDCard() {
-    if (!SD_MMC.begin("/sdcard", true)) {  // Adjust the path based on your setup
+    pinMode(SD_MISO_PIN, INPUT_PULLUP);
+    SPI.begin(SD_SCLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
+    if (!SD.begin(SD_CS_PIN)) {
         Serial.println("SD card initialization failed!");
         return false;
     }
@@ -16,8 +23,8 @@ bool SDHandler::initSDCard() {
 }
 
 bool SDHandler::checkAndCreateLogFile() {
-    if (!SD_MMC.exists("/log.txt")) {
-        logFile = SD_MMC.open("/log.txt", FILE_WRITE);
+    if (!SD.exists("/log.txt")) {
+        logFile = SD.open("/log.txt", FILE_WRITE);
         if (!logFile) {
             Serial.println("Failed to create log file");
             return false;
@@ -42,7 +49,7 @@ bool SDHandler::initializeSDCardAndConfig() {
         Serial.println(getLogFileInfo());
     }
 
-    if (!SD_MMC.exists("/config.json")) {
+    if (!SD.exists("/config.json")) {
         Serial.println("Config file does not exist. Copying default config to SD card.");
         if (copyDefaultConfig()) {
             Serial.println("Default config copied to SD card.");
@@ -55,45 +62,33 @@ bool SDHandler::initializeSDCardAndConfig() {
 }
 
 void SDHandler::logJson(const char* json) {
-    // Check if the SD card is mounted
-    if (!SD_MMC.cardType()) {
+    if (!SD.cardSize()) {
         Serial.println("SD card not present.");
         return;
     }
-
-    // Open the file for appending
-    logFile = SD_MMC.open("/log.txt", FILE_APPEND);
+    logFile = SD.open("/log.txt", FILE_APPEND);
     if (!logFile) {
         Serial.println("Error opening log file");
         return;
     }
-
-    // Check file size and overwrite if necessary
     if (logFile.size() > MAX_FILE_SIZE) {
         logFile.close();
-        // Read the entire file into memory
-        File tempFile = SD_MMC.open("/log.txt", FILE_READ);
+        File tempFile = SD.open("/log.txt", FILE_READ);
         String fileContent = "";
         while (tempFile.available()) {
             fileContent += char(tempFile.read());
         }
         tempFile.close();
-
-        // Find the first newline character after the first log entry
         int firstNewline = fileContent.indexOf('\n');
         if (firstNewline != -1) {
-            fileContent = fileContent.substring(firstNewline + 1); // Remove the oldest log entry
+            fileContent = fileContent.substring(firstNewline + 1);
         }
-
-        // Write the remaining content back to the file
-        SD_MMC.remove("/log.txt");
-        logFile = SD_MMC.open("/log.txt", FILE_WRITE);
+        SD.remove("/log.txt");
+        logFile = SD.open("/log.txt", FILE_WRITE);
         logFile.print(fileContent);
     }
-
-    // Write the JSON string to the log file
     logFile.println(json);
-    logFile.flush(); // Ensures data is written to the SD card
+    logFile.flush();
     Serial.println("Logged to SD: " + String(json));
 }
 
@@ -101,7 +96,7 @@ void SDHandler::logJson(const char* json) {
 void SDHandler::listDir(const char* dirname, uint8_t levels) {
     Serial.printf("Listing directory: %s\n", dirname);
 
-    File root = SD_MMC.open(dirname);
+    File root = SD.open(dirname);
     if (!root) {
         Serial.println("Failed to open directory");
         return;
@@ -132,7 +127,7 @@ void SDHandler::listDir(const char* dirname, uint8_t levels) {
 // Create directory
 void SDHandler::createDir(const char* path) {
     Serial.printf("Creating Dir: %s\n", path);
-    if (SD_MMC.mkdir(path)) {
+    if (SD.mkdir(path)) {
         Serial.println("Dir created");
     } else {
         Serial.println("mkdir failed");
@@ -142,7 +137,7 @@ void SDHandler::createDir(const char* path) {
 // Remove directory
 void SDHandler::removeDir(const char* path) {
     Serial.printf("Removing Dir: %s\n", path);
-    if (SD_MMC.rmdir(path)) {
+    if (SD.rmdir(path)) {
         Serial.println("Dir removed");
     } else {
         Serial.println("rmdir failed");
@@ -153,7 +148,7 @@ void SDHandler::removeDir(const char* path) {
 void SDHandler::readFile(const char* path) {
     Serial.printf("Reading file: %s\n", path);
 
-    File file = SD_MMC.open(path);
+    File file = SD.open(path);
     if (!file) {
         Serial.println("Failed to open file for reading");
         return;
@@ -169,7 +164,7 @@ void SDHandler::readFile(const char* path) {
 void SDHandler::writeFile(const char* path, const char* message) {
     Serial.printf("Writing file: %s\n", path);
 
-    File file = SD_MMC.open(path, FILE_WRITE);
+    File file = SD.open(path, FILE_WRITE);
     if (!file) {
         Serial.println("Failed to open file for writing");
         return;
@@ -185,7 +180,7 @@ void SDHandler::writeFile(const char* path, const char* message) {
 void SDHandler::appendFile(const char* path, const char* message) {
     Serial.printf("Appending to file: %s\n", path);
 
-    File file = SD_MMC.open(path, FILE_APPEND);
+    File file = SD.open(path, FILE_APPEND);
     if (!file) {
         Serial.println("Failed to open file for appending");
         return;
@@ -200,7 +195,7 @@ void SDHandler::appendFile(const char* path, const char* message) {
 // Rename a file
 void SDHandler::renameFile(const char* path1, const char* path2) {
     Serial.printf("Renaming file %s to %s\n", path1, path2);
-    if (SD_MMC.rename(path1, path2)) {
+    if (SD.rename(path1, path2)) {
         Serial.println("File renamed");
     } else {
         Serial.println("Rename failed");
@@ -210,7 +205,7 @@ void SDHandler::renameFile(const char* path1, const char* path2) {
 // Delete a file
 void SDHandler::deleteFile(const char* path) {
     Serial.printf("Deleting file: %s\n", path);
-    if (SD_MMC.remove(path)) {
+    if (SD.remove(path)) {
         Serial.println("File deleted");
     } else {
         Serial.println("Delete failed");
@@ -219,7 +214,7 @@ void SDHandler::deleteFile(const char* path) {
 
 // Test file I/O
 void SDHandler::testFileIO(const char* path) {
-    File file = SD_MMC.open(path);
+    File file = SD.open(path);
     static uint8_t buf[512];
     size_t len = 0;
     uint32_t start = millis();
@@ -244,7 +239,7 @@ void SDHandler::testFileIO(const char* path) {
         Serial.println("Failed to open file for reading");
     }
 
-    file = SD_MMC.open(path, FILE_WRITE);
+    file = SD.open(path, FILE_WRITE);
     if (!file) {
         Serial.println("Failed to open file for writing");
         return;
@@ -261,7 +256,7 @@ void SDHandler::testFileIO(const char* path) {
 }
 
 String SDHandler::getLogFileInfo() {
-    File logFile = SD_MMC.open("/log.txt");
+    File logFile = SD.open("/log.txt");
     if (!logFile) {
         return "Failed to open log file for size and date information.";
     }
@@ -282,13 +277,13 @@ String SDHandler::getLogFileInfo() {
 }
 
 bool SDHandler::copyFile(const char* srcPath, const char* destPath) {
-    File srcFile = SD_MMC.open(srcPath);
+    File srcFile = SD.open(srcPath);
     if (!srcFile) {
         Serial.println("Failed to open source file for copying");
         return false;
     }
 
-    File destFile = SD_MMC.open(destPath, FILE_WRITE);
+    File destFile = SD.open(destPath, FILE_WRITE);
     if (!destFile) {
         Serial.println("Failed to open destination file for copying");
         srcFile.close();
@@ -305,14 +300,14 @@ bool SDHandler::copyFile(const char* srcPath, const char* destPath) {
 }
 
 bool SDHandler::updateConfig() {
-    if (SD_MMC.exists("/config.json")) {
+    if (SD.exists("/config.json")) {
         if (!overwriteConfirmed) {
             Serial.println("config.json already exists. Press the button again to overwrite.");
             overwriteConfirmed = true;
             return false;
         } else {
             Serial.println("Overwriting config.json...");
-            SD_MMC.remove("/config.json");
+            SD.remove("/config.json");
             if (SDHandler::copyFile("/projectfolder/config.json", "/config.json")) {
                 Serial.println("config.json copied to SD card.");
                 overwriteConfirmed = false;
@@ -442,7 +437,7 @@ bool SDHandler::copyDefaultConfig() {
     }
     )";
 
-    File configFile = SD_MMC.open("/config.json", FILE_WRITE);
+    File configFile = SD.open("/config.json", FILE_WRITE);
     if (!configFile) {
         Serial.println("Failed to open config file for writing");
         return false;
