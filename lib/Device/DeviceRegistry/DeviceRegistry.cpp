@@ -16,7 +16,7 @@ bool DeviceRegistry::registerDevice(Device* device) {
     }
     
     devices.push_back(device);
-      // Add to specific type vectors for easy access
+    // Add to specific type vectors for easy access
     PCF8574gpio* gpioDevice = dynamic_cast<PCF8574gpio*>(device);
     if (gpioDevice) {
         gpioExpanders.push_back(gpioDevice);
