@@ -150,15 +150,22 @@ void setup()
 
   // Print TCA scan results
   I2CHandler::printTCAScanResults(tcaScanResults);
-
   // Initialize devices based on configuration
   devices = Configuration::initializeDevices(tcaScanResults, rtc);
 
   // Initialize each device
   Configuration::initializeEachDevice(devices);
 
+  // Debug: Print device count before cleanup
+  Serial.print("Devices vector size before cleanup: ");
+  Serial.println(devices.size());
+
   // Remove nullptr entries from devices vector
   devices.erase(std::remove(devices.begin(), devices.end(), nullptr), devices.end());
+
+  // Debug: Print device count after cleanup
+  Serial.print("Devices vector size after cleanup: ");
+  Serial.println(devices.size());
 
   // Print created sensors for debugging (moved after initialization)
   printCreatedSensors();
