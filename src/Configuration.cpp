@@ -394,23 +394,22 @@ std::vector<Device*> Configuration::initializeDevices(const std::map<uint8_t, st
 
 void Configuration::initializeEachDevice(const std::vector<Device*>& devices) {
     for (Device* device : devices) {
-        I2CHandler::selectTCA(device->getTCAChannel());
+        I2CHandler::selectTCA(device->getTcaPort());
         if (!device->begin()) {
             Serial.print("Failed to initialize device: ");
             Serial.print(device->getType());
-            Serial.print(" ");            Serial.print(device->getType());
+            Serial.print(" ");
+            Serial.print(device->getTypeNumber());
             Serial.print(" at address 0x");
-            Serial.println(device->getI2CAddress(), HEX);        } else {
-            Serial.println("Device initialized successfully: " + device->getType());
+            Serial.println(device->getAddress(), HEX);
+        } else {
+            Serial.println("Device initialized successfully: " + device->getType() + " " + device->getTypeNumber());
             Serial.print("Address: 0x");
-            Serial.println(device->getI2CAddress(), HEX);            Serial.print("Threshold: ");
-            auto channels = device->getChannels();
-            if (!channels.empty()) {
-                Serial.println(device->getThreshold(channels.begin()->first));
-            } else {
-                Serial.println("N/A");
-            }            Serial.print("Number of Channels: ");
-            Serial.println(device->getChannels().size());
+            Serial.println(device->getAddress(), HEX);
+            Serial.print("Threshold: ");
+            Serial.println(device->getThreshold());
+            Serial.print("Number of Channels: ");
+            Serial.println(device->getNumChannels());
         }
     }
 }

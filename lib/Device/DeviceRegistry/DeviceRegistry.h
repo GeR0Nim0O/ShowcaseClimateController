@@ -3,14 +3,9 @@
 
 #include <Arduino.h>
 #include <vector>
-#include <map>
 #include "Device.h"
 #include "PCF8574gpio.h"
 #include "SHT31sensor.h"
-#include "BH1705sensor.h"
-#include "SCALESsensor.h"
-#include "DS3231rtc.h"
-#include "DAC_Module.h"
 
 class DeviceRegistry {
 public:
