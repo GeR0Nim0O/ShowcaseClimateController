@@ -140,30 +140,41 @@ Device* DeviceRegistry::createDeviceWithThresholds(
     // Convert channelNames to std::map<String, String>
     std::map<String, String> channels = channelNames;
     
+    // Create a meaningful device name based on type, typeNumber, and location
+    String deviceName = typeNumber + "_TCA" + String(tcaPort) + "_" + String(deviceIndex);
+    
     Serial.print("Creating device: ");
     Serial.print(type);
     Serial.print(" ");
     Serial.println(typeNumber);
+    Serial.print("Device Name: ");
+    Serial.println(deviceName);
     
     if (type.equalsIgnoreCase("Sensor")) {
         if (typeNumber.equalsIgnoreCase("SHT31")) {
             device = new SHT31sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+            if (device) device->deviceName = deviceName; // Set device name
         } else if (typeNumber.equalsIgnoreCase("BH1705")) {
             device = new BH1705sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+            if (device) device->deviceName = deviceName; // Set device name
         } else if (typeNumber.equalsIgnoreCase("SCALES")) {
             device = new SCALESsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+            if (device) device->deviceName = deviceName; // Set device name
         }
     } else if (type.equalsIgnoreCase("GPIO")) {
         if (typeNumber.equalsIgnoreCase("PCF8574")) {
             device = new PCF8574gpio(wire, address, tcaPort, threshold, channels, deviceIndex);
+            if (device) device->deviceName = deviceName; // Set device name
         }
     } else if (type.equalsIgnoreCase("RTC")) {
         if (typeNumber.equalsIgnoreCase("DS3231")) {
             device = new DS3231rtc(wire, address, tcaPort, threshold, channels, deviceIndex);
+            if (device) device->deviceName = deviceName; // Set device name
         }
     } else if (type.equalsIgnoreCase("DAC")) {
         if (typeNumber.equalsIgnoreCase("MCP4725")) {
             device = new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
+            if (device) device->deviceName = deviceName; // Set device name
         }
     }
     if (device) {
