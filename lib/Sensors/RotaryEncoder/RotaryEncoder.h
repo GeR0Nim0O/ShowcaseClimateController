@@ -47,10 +47,12 @@
 class RotaryEncoder : public Device {
 public:
     RotaryEncoder(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
-    
-    bool begin() override;
+      bool begin() override;
     bool isConnected() override;
     void update() override;
+    std::map<String, String> readData() override;
+    int getChannels() override;
+    float getThreshold() override;
     
     // Encoder reading methods
     int32_t getPosition();
