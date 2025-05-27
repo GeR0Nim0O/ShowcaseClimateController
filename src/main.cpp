@@ -13,6 +13,7 @@
 #include <vector> 
 #include <map> // Include map header
 #include <set> // Include set header
+#include <algorithm> // Include algorithm header for std::remove
 
 #include "CACert.h"
 #include "TimeHandler.h"
