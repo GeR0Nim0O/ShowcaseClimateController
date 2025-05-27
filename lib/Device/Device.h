@@ -15,10 +15,11 @@ public:
     virtual bool begin() = 0;
     virtual bool isConnected() = 0;
     virtual void update() = 0;
-      // Pure virtual methods for polymorphic access
     virtual std::map<String, String> readData() = 0;
-    virtual std::map<String, String> getChannels() const = 0;
-    virtual float getThreshold(const String& channelKey) const = 0;
+    virtual std::map<String, String> getChannels() const { return channels; }
+    virtual float getThreshold(const String& channelKey = "") const { return threshold; }
+    virtual int getChannelsCount() const { return channels.size(); }
+    virtual String getTypeNumber() const { return typeNumber; }
     
     // Getters
     uint8_t getI2CAddress() const { return i2cAddress; }
@@ -27,6 +28,7 @@ public:
     int getDeviceIndex() const { return deviceIndex; }
     String getType() const { return type; }
     bool isInitialized() const { return initialized; }
+    void setTypeNumber(const String& tn) { typeNumber = tn; }
 
 protected:
     uint8_t i2cAddress;
@@ -34,6 +36,7 @@ protected:
     String deviceName;
     int deviceIndex;
     String type;
+    String typeNumber;
     bool initialized;
     float threshold;
     std::map<String, String> channels;
