@@ -175,11 +175,11 @@ Device* DeviceRegistry::createDeviceWithThresholds(
         if (typeNumber.equalsIgnoreCase("MCP4725")) {
             device = new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
         }
-    }
-      if (device) {
+    }      if (device) {
         Serial.println("Device created successfully");
         // Register the device in the registry
-        if (registerDevice(device)) {
+        DeviceRegistry& registry = DeviceRegistry::getInstance();
+        if (registry.registerDevice(device)) {
             Serial.println("Device registered successfully in registry");
         } else {
             Serial.println("Failed to register device in registry");
