@@ -451,10 +451,10 @@ void Configuration::initializeEachDevice(const std::vector<Device*>& devices) {
         Serial.println("Attempting device initialization...");
         bool initResult = device->begin();
         
-        // Serial.print("DEBUG: device->begin() returned: ");
-        // Serial.println(initResult);
-        // Serial.print("DEBUG: device->isInitialized() after begin(): ");
-        // Serial.println(device->isInitialized());
+        Serial.print("DEBUG: device->begin() returned: ");
+        Serial.println(initResult);
+        Serial.print("DEBUG: device->isInitialized() after begin(): ");
+        Serial.println(device->isInitialized());
         
         if (initResult) {
             Serial.println("Device initialization: SUCCESS");
