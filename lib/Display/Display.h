@@ -95,11 +95,14 @@ public:
 private:
     int currentCol, currentRow;
     bool displayInitialized;
-    bool backlightState;
-    
+    bool backlightState;    
     void initializeDisplay();
-    void sendCommand(uint8_t command);
-    void sendData(uint8_t data);
+    void send(uint8_t value, uint8_t mode);
+    void write4bits(uint8_t value);
+    void expanderWrite(uint8_t data);
+    void pulseEnable(uint8_t data);
+    void command(uint8_t value);
+    void writeChar(uint8_t value);
 };
 
 #endif // DISPLAY_H
