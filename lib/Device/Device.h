@@ -9,7 +9,7 @@
 class Device {
 public:
     Device(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
-    Device(uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
+    Device(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
     virtual ~Device() = default;
     
     virtual bool begin() = 0;
