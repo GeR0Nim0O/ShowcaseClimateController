@@ -68,21 +68,23 @@ bool SHT31sensor::begin()
     }
 
     Serial.print("SHT31 status: ");
-    Serial.println(status, HEX);
-
-    // Set measurement mode to high repeatability
+    Serial.println(status, HEX);    // Set measurement mode to high repeatability
+    Serial.println("DEBUG: Setting measurement mode...");
     if (!setMeasurementMode(0x2400))
     {
         Serial.println("Failed to set measurement mode");
         return false;
     }
+    Serial.println("DEBUG: Measurement mode set successfully");
 
     // Disable heater
+    Serial.println("DEBUG: Disabling heater...");
     if (!setHeater(false))
     {
         Serial.println("Failed to disable heater");
         return false;
-    }    // Print SHT31 serial number
+    }
+    Serial.println("DEBUG: Heater disabled successfully");// Print SHT31 serial number
     Serial.print("SHT31 Serial Number: ");
     Serial.println(getSerialNumber());
     
