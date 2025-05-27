@@ -168,8 +168,8 @@ uint16_t SHT31sensor::readStatus()
 
 bool SHT31sensor::clearStatus()
 {
-    I2CHandler::selectTCA(tcaPort); 
-    if (!writeCommand(0x3041)) // Command to clear status register
+    I2CHandler::selectTCA(getTCAChannel()); 
+    if (!writeCommand(0x3041)) // Command to clear statusregister
     {
         Serial.println("SHT31 clearStatus: writeCommand error");
         return false;
