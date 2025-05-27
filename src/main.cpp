@@ -370,6 +370,10 @@ void readAndSendDataFromDevices() {
             String projectNr = Configuration::getProjectNumber();
             String showcaseId = Configuration::getShowcaseId();
 
+            // Get the last value and threshold for this sensor channel
+            float lastValue = lastSensorValues[key];
+            float threshold = device->getThreshold(channelKey);
+            
             // Always print data every 60 seconds, aligned with MQTT sending, even if no change
             if (shouldPrintData) {
                 Serial.print(deviceName);
@@ -532,43 +536,43 @@ void printCreatedSensors() {
     Serial.println();
   }
 }
-// New function to control MQTT throttling settings
+
+// Function to control MQTT throttling settings
 void setMqttThrottling(bool enable, unsigned long interval) {
-  throttleMqtt = enable;QTT settings");
-  mqttThrottleInterval = interval;  Configuration::setMqttsServer(customMqttServer);
-  tomMqttPort);
-  Serial.print("MQTT Throttling ");on::setFlespiToken(customFlespiToken);
-  if (enable) {
-      Serial.print("enabled - sending once every ");th new settings
-      Serial.print(interval / 1000);ProjectNumber() + "_" + Configuration::getShowcaseId();
-      Serial.println(" seconds");= Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
-  } else {
-      Serial.println("disabled - sending all data"); Serial.println("Custom MQTT settings applied:");
-  }   Serial.print("MQTT Server: ");
-}    Serial.println(customMqttServer);
-
-    Serial.print("MQTT Port: ");
-    Serial.println(customMqttPort);
-    Serial.print("Flespi Token: ");
-    Serial.println(customFlespiToken.substring(0, 4) + "..." + customFlespiToken.substring(customFlespiToken.length() - 4));
-
-    // Also set throttling information
-    Serial.print("MQTT Throttling: ");
-    Serial.println(throttleMqtt ? "Enabled (sending once every minute)" : "Disabled");
-  }
+    throttleMqtt = enable;
+    mqttThrottleInterval = interval;
+    
+    Serial.print("MQTT Throttling ");
+    if (enable) {
+        Serial.print("enabled - sending once every ");
+        Serial.print(interval / 1000);
+        Serial.println(" seconds");
+    } else {
+        Serial.println("disabled - sending all data");
+    }
 }
 
-// New function to control MQTT throttling settings
-void setMqttThrottling(bool enable, unsigned long interval) {
-  throttleMqtt = enable;
-  mqttThrottleInterval = interval;
-  
-  Serial.print("MQTT Throttling ");
-  if (enable) {
-      Serial.print("enabled - sending once every ");
-      Serial.print(interval / 1000);
-      Serial.println(" seconds");
-  } else {
-      Serial.println("disabled - sending all data");
-  }
+void setCustomMqttSettings() {
+    if (useCustomMqtt) {
+        Serial.println("Using custom MQTT settings");
+        Configuration::setMqttsServer(customMqttServer);
+        Configuration::setMqttsPort(customMqttPort);
+        Configuration::setFlespiToken(customFlespiToken);
+        
+        // Update client ID and topic with new settings
+        clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
+        topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
+        
+        Serial.println("Custom MQTT settings applied:");
+        Serial.print("MQTT Server: ");
+        Serial.println(customMqttServer);
+        Serial.print("MQTT Port: ");
+        Serial.println(customMqttPort);
+        Serial.print("Flespi Token: ");
+        Serial.println(customFlespiToken.substring(0, 4) + "..." + customFlespiToken.substring(customFlespiToken.length() - 4));
+
+        // Also set throttling information
+        Serial.print("MQTT Throttling: ");
+        Serial.println(throttleMqtt ? "Enabled (sending once every minute)" : "Disabled");
+    }
 }
