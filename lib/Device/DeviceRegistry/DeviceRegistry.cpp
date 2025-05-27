@@ -176,9 +176,14 @@ Device* DeviceRegistry::createDeviceWithThresholds(
             device = new DAC_Module(wire, address, tcaPort, threshold, channels, deviceIndex);
         }
     }
-    
-    if (device) {
+      if (device) {
         Serial.println("Device created successfully");
+        // Register the device in the registry
+        if (registerDevice(device)) {
+            Serial.println("Device registered successfully in registry");
+        } else {
+            Serial.println("Failed to register device in registry");
+        }
     } else {
         Serial.println("Failed to create device - unknown type/typeNumber combination");
     }
