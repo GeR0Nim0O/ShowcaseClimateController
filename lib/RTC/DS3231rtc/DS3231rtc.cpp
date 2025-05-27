@@ -30,7 +30,7 @@ bool DS3231rtc::begin() {
     return true;
 }
 
-std::map<std::string, float> DS3231rtc::readData() {
+std::map<String, String> DS3231rtc::readData() {
     // This function is not applicable for RTC, so return an empty map
     return {};
 }
