@@ -69,3 +69,15 @@ bool SCALESsensor::readBytes(uint8_t *data, uint8_t length) {
 float SCALESsensor::getWeight() const {
     return _weight;
 }
+
+// Implementation of pure virtual methods from Device base class
+bool SCALESsensor::isConnected() {
+    I2CHandler::selectTCA(tcaPort);
+    wire->beginTransmission(_address);
+    return (wire->endTransmission() == 0);
+}
+
+void SCALESsensor::update() {
+    // Update sensor readings
+    readData();
+}
