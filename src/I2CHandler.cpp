@@ -4,9 +4,31 @@
 
 void I2CHandler::initializeI2C() {
     Serial.println("Initializing I2C bus...");
-    WIRE.begin(17, 16); // SDA, SCL
-    WIRE.setClock(100000);
+    
+    // Initialize I2C with specific pins for ESP32-S3
+    WIRE.begin(17, 16); // SDA=GPIO17, SCL=GPIO16
+    WIRE.setClock(100000); // 100kHz for better reliability
     delay(100);
+    
+    // Test TCA multiplexer connection
+    Serial.println("Testing TCA multiplexer connection...");
+    WIRE.beginTransmission(TCAADDR);
+    uint8_t tcaError = WIRE.endTransmission();
+    
+    if (tcaError == 0) {
+        Serial.println("TCA multiplexer found and responding");
+        
+        // Reset TCA to known state (disable all channels)
+        WIRE.beginTransmission(TCAADDR);
+        WIRE.write(0x00);
+        WIRE.endTransmission();
+        Serial.println("TCA reset to default state");
+    } else {
+        Serial.print("TCA multiplexer NOT found! Error: ");
+        Serial.println(tcaError);
+        Serial.println("This will cause all device initializations to fail!");
+    }
+    
     Serial.println("I2C bus initialized.");
 }
 
