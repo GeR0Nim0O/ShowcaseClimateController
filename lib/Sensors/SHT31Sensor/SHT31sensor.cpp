@@ -54,9 +54,7 @@ bool SHT31sensor::begin()
     {
         Serial.println("Failed to disable heater");
         return false;
-    }
-
-    // Print SHT31 serial number
+    }    // Print SHT31 serial number
     Serial.print("SHT31 Serial Number: ");
     Serial.println(getSerialNumber());    // Read initial values using readData
     auto sht31Data = readData();
@@ -69,6 +67,7 @@ bool SHT31sensor::begin()
         Serial.println(humidity);
     }
 
+    initialized = true; // Set initialized flag to true
     return true;
 }
 
