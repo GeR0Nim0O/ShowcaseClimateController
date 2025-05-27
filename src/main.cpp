@@ -261,14 +261,14 @@ void readAndSendDataFromDevices() {
             Serial.println("Error: Null device pointer");
             continue;
         }
-        I2CHandler::selectTCA(device->getTcaPort());
+        I2CHandler::selectTCA(device->getTCAChannel());
         auto data = device->readData();
         for (const auto& channel : device->getChannels()) {
             String channelKey = channel.first;
             std::string key = std::string(channelKey.c_str()); // Convert channelKey to std::string
             float value = data[key];
             String currentTime = TimeHandler::getCurrentTime(*rtc);
-            String deviceName = device->getTypeNumber() + "_" + String(device->getDeviceIndex());
+            String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
             String projectNr = Configuration::getProjectNumber();
             String showcaseId = Configuration::getShowcaseId();
 
