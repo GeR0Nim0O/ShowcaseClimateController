@@ -33,8 +33,6 @@ private:
     TwoWire* wire;
     uint8_t _address;
     uint8_t _gpioState;
-    std::map<String, String> channels; // Add channels property
-    int deviceIndex; // Add deviceIndex property
     std::map<std::string, float> lastSensorValues; // Ensure lastSensorValues is declared
 };
 
