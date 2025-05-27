@@ -2,8 +2,8 @@
 #include "SHT31sensor.h"
 #include "I2CHandler.h"
 
-SHT31sensor::SHT31sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(SHT31_ADDRESS), _temperature(NAN), _humidity(NAN) {
+SHT31sensor::SHT31sensor(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex)
+    : Device(wire, i2cAddress, tcaChannel, threshold, channels, deviceIndex), wire(wire), _address(SHT31_ADDRESS), _temperature(NAN), _humidity(NAN) {
     
     // Set type - inherited from Device base class
     type = "SHT31Sensor";
