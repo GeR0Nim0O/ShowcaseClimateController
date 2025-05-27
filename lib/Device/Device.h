@@ -31,10 +31,12 @@ public:
     bool isInitialized() const { return initialized; }
     void setTypeNumber(const String& tn) { typeNumber = tn; }
 
+    // Make deviceName public so it can be set from outside
+    String deviceName;
+
 protected:
     uint8_t i2cAddress;
     uint8_t tcaChannel;
-    String deviceName;
     int deviceIndex;
     String type;
     String typeNumber;
