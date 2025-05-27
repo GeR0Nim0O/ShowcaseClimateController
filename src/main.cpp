@@ -98,6 +98,7 @@ int mqttRetryCount = 0;
 int apiRetryCount = 0;
 int ntpRetryCount = 0;
 
+void readAndPrintInitialSensorData(); // Add this function prototype
 void readAndSendDataFromDevices();
 void handleButtonPress();
 void printDebugInfo();
@@ -531,21 +532,21 @@ void printCreatedSensors() {
     Serial.println();
   }
 }
+// New function to control MQTT throttling settings
+void setMqttThrottling(bool enable, unsigned long interval) {
+  throttleMqtt = enable;QTT settings");
+  mqttThrottleInterval = interval;  Configuration::setMqttsServer(customMqttServer);
+  tomMqttPort);
+  Serial.print("MQTT Throttling ");on::setFlespiToken(customFlespiToken);
+  if (enable) {
+      Serial.print("enabled - sending once every ");th new settings
+      Serial.print(interval / 1000);ProjectNumber() + "_" + Configuration::getShowcaseId();
+      Serial.println(" seconds");= Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
+  } else {
+      Serial.println("disabled - sending all data"); Serial.println("Custom MQTT settings applied:");
+  }   Serial.print("MQTT Server: ");
+}    Serial.println(customMqttServer);
 
-void setCustomMqttSettings() {
-  if (useCustomMqtt) {
-    Serial.println("Using custom MQTT settings");
-    Configuration::setMqttsServer(customMqttServer);
-    Configuration::setMqttsPort(customMqttPort);
-    Configuration::setFlespiToken(customFlespiToken);
-    
-    // Update client ID and topic with new settings
-    clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
-    topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
-    
-    Serial.println("Custom MQTT settings applied:");
-    Serial.print("MQTT Server: ");
-    Serial.println(customMqttServer);
     Serial.print("MQTT Port: ");
     Serial.println(customMqttPort);
     Serial.print("Flespi Token: ");
