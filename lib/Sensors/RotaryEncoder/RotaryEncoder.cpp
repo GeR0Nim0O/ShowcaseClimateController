@@ -220,74 +220,12 @@ std::map<String, String> RotaryEncoder::readData() {
     return data;
 }
 
-int RotaryEncoder::getChannels() {
+int RotaryEncoder::getChannels() const {
     return 1; // One channel for position data
 }
 
-float RotaryEncoder::getThreshold() {
+float RotaryEncoder::getThreshold(const String&) const {
     return 0.0; // No threshold applicable for rotary encoder
 }
 
-std::map<String, String> RotaryEncoder::readData() {
-    std::map<String, String> data;
-    data["position"] = String(getPosition());
-    data["button"] = isButtonPressed() ? "1" : "0";
-    return data;
-}
-
-int RotaryEncoder::getChannels() {
-    return 1; // One channel for position data
-}
-
-float RotaryEncoder::getThreshold() {
-    return 0.0; // No threshold applicable for rotary encoder
-}
-    uint8_t stateB = digitalRead(pinB);
-    
-    // Check for state change
-    if (stateA != lastStateA || stateB != lastStateB) {
-        // Determine direction
-        if (lastStateA == LOW && stateA == HIGH) {
-            if (stateB == LOW) {
-                position += stepSize; // Clockwise
-            } else {
-                position -= stepSize; // Counter-clockwise
-            }
-        }
-        
-        // Constrain to min/max values
-        if (position < minValue) position = minValue;
-        if (position > maxValue) position = maxValue;
-        
-        lastStateA = stateA;
-        lastStateB = stateB;
-    }
-}
-
-void RotaryEncoder::readButton() {
-    bool currentButtonState = digitalRead(pinButton);
-    unsigned long currentTime = millis();
-    
-    // Debounce button (50ms)
-    if (currentTime - lastButtonTime > 50) {
-        if (currentButtonState != lastButtonState) {
-            buttonState = currentButtonState;
-            
-            if (!buttonState && lastButtonState) { // Button pressed (HIGH to LOW)
-                buttonPressed = true;
-                buttonPressTime = currentTime;
-            } else if (buttonState && !lastButtonState) { // Button released (LOW to HIGH)
-                buttonPressTime = 0;
-            }
-            
-            lastButtonState = buttonState;
-            lastButtonTime = currentTime;
-        }
-    }
-}
-
-void RotaryEncoder::encoderISR() {
-    if (instance) {
-        instance->readEncoder();
-    }
-}
+// End of implementation

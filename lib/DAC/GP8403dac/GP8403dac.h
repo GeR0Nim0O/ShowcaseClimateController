@@ -33,7 +33,7 @@ public:
       // DAC control methods
     bool setChannelA(uint16_t value);
     bool setChannelB(uint16_t value);
-    bool setChannelVoltage(uint8_t channel, float voltage);
+    bool setChannelVoltage(uint8_t channel, float voltage) const;
     bool setBothChannels(uint16_t valueA, uint16_t valueB);
     
     // Climate control specific methods
