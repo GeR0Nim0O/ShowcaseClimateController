@@ -136,9 +136,75 @@ void setup() {
     Serial.println("=== Setup Complete ===");
 }
 
-void loop()
-{
-
+void loop() {
+    static unsigned long lastUpdate = 0;
+    static unsigned long lastDisplayUpdate = 0;
+    static unsigned long lastEncoderCheck = 0;
+    
+    unsigned long currentTime = millis();
+    
+    // Update climate controller (every 1 second)
+    if (currentTime - lastUpdate >= 1000) {
+        if (climateController) {
+            climateController->update();
+        }
+        
+        // Update all devices
+        deviceRegistry.updateAllDevices();
+        
+        lastUpdate = currentTime;
+    }
+    
+    // Update display (every 2 seconds)
+    if (currentTime - lastDisplayUpdate >= 2000) {
+        if (display && display->isConnected() && tempHumSensor) {
+            display->displayClimateStatus(
+                tempHumSensor->getTemperature(),
+                tempHumSensor->getHumidity(),
+                config.getTemperatureSetpoint(),
+                config.getHumiditySetpoint()
+            );
+        }
+        lastDisplayUpdate = currentTime;
+    }
+    
+    // Check encoder input (every 50ms for responsiveness)
+    if (currentTime - lastEncoderCheck >= 50) {
+        if (encoder) {
+            encoder->update();
+            
+            // Handle encoder rotation for setpoint adjustment
+            long positionChange = encoder->getPositionChange();
+            if (positionChange != 0) {
+                // Adjust temperature setpoint (example)
+                float newSetpoint = config.getTemperatureSetpoint() + (positionChange * 0.5);
+                newSetpoint = constrain(newSetpoint, 10.0, 35.0);
+                config.setTemperatureSetpoint(newSetpoint);
+                
+                if (climateController) {
+                    climateController->setTemperatureSetpoint(newSetpoint);
+                }
+                
+                Serial.print("New temperature setpoint: ");
+                Serial.println(newSetpoint);
+            }
+            
+            // Handle button press for saving settings
+            if (encoder->wasButtonPressed()) {
+                config.saveSettings();
+                Serial.println("Settings saved!");
+                
+                if (display && display->isConnected()) {
+                    display->displaySystemStatus("Settings Saved!");
+                    delay(1000);
+                }
+            }
+        }
+        lastEncoderCheck = currentTime;
+    }
+    
+    // Small delay to prevent overwhelming the system
+    delay(10);
 }
 
 // Function to select a channel on the PCA9548A
