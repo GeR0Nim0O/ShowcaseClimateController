@@ -407,21 +407,62 @@ std::vector<Device*> Configuration::initializeDevices(const std::map<uint8_t, st
 }
 
 void Configuration::initializeEachDevice(const std::vector<Device*>& devices) {
-    for (Device* device : devices) {
+    Serial.println("=== Starting Device Initialization ===");
+    
+    for (size_t i = 0; i < devices.size(); i++) {
+        Device* device = devices[i];
+        
+        Serial.print("\n--- Initializing Device ");
+        Serial.print(i);
+        Serial.println(" ---");
+        Serial.print("Type: ");
+        Serial.println(device->getType());
+        Serial.print("Address: 0x");
+        Serial.println(device->getI2CAddress(), HEX);
+        Serial.print("TCA Channel: ");
+        Serial.println(device->getTCAChannel());
+        
+        // Select TCA channel and verify
+        Serial.print("Selecting TCA channel ");
+        Serial.print(device->getTCAChannel());
+        Serial.println("...");
         I2CHandler::selectTCA(device->getTCAChannel());
-        if (!device->begin()) {
-            Serial.print("Failed to initialize device: ");
-            Serial.print(device->getType());
-            Serial.print(" at address 0x");
-            Serial.println(device->getI2CAddress(), HEX);
+        
+        // Test basic I2C connectivity first
+        Serial.println("Testing I2C connectivity...");
+        WIRE.beginTransmission(device->getI2CAddress());
+        uint8_t error = WIRE.endTransmission();
+        
+        if (error != 0) {
+            Serial.print("I2C connection test FAILED with error: ");
+            Serial.println(error);
+            switch(error) {
+                case 1: Serial.println("  -> Data too long to fit in transmit buffer"); break;
+                case 2: Serial.println("  -> Received NACK on transmit of address"); break;
+                case 3: Serial.println("  -> Received NACK on transmit of data"); break;
+                case 4: Serial.println("  -> Other error"); break;
+                default: Serial.println("  -> Unknown error"); break;
+            }
+            continue;
         } else {
-            Serial.println("Device initialized successfully: " + device->getType());
-            Serial.print("Address: 0x");
-            Serial.println(device->getI2CAddress(), HEX);
-            Serial.print("Number of Channels: ");
-            Serial.println(device->getChannels().size());
+            Serial.println("I2C connection test PASSED");
         }
+        
+        // Now attempt device initialization
+        Serial.println("Attempting device initialization...");
+        bool initResult = device->begin();
+        
+        if (initResult) {
+            Serial.println("Device initialization: SUCCESS");
+        } else {
+            Serial.println("Device initialization: FAILED");
+        }
+        
+        Serial.print("Final device state - Initialized: ");
+        Serial.println(device->isInitialized() ? "YES" : "NO");
     }
+    
+    Serial.println("\n=== Device Initialization Complete ===");
 }
 
 std::map<String, String> Configuration::jsonToMap(JsonObject jsonObject) {
