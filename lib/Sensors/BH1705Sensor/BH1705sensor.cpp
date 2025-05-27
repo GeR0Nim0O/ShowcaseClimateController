@@ -1,0 +1,86 @@
+#include "Device.h"
+#include "BH1705sensor.h"
+#include "I2CHandler.h"
+
+BH1705sensor::BH1705sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
+    : Device(i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(BH1705_ADDRESS), _lux(NAN), channels(channels), deviceIndex(deviceIndex) {
+    numChannels = channels.size(); // Set number of channels based on the map size
+    type = "Sensor"; // Fixed type
+    typeNumber = "BH1705"; // Fixed type number
+    Serial.println("BH1705sensor created:");
+    Serial.print("Address: ");
+    Serial.println(_address, HEX);
+    Serial.print("Threshold: ");
+    Serial.println(threshold);
+    Serial.print("Number of Channels: ");
+    Serial.println(numChannels);
+    Serial.print("Type: ");
+    Serial.println(type);
+    Serial.print("TypeNumber: ");
+    Serial.println(typeNumber);
+    Serial.print("Device Index: ");
+    Serial.println(deviceIndex);
+}
+
+bool BH1705sensor::begin() {
+    I2CHandler::selectTCA(tcaPort); // Use tcaPort from class definition
+    if (!writeCommand(0x01)) // Power on command
+    {
+        Serial.println("BH1705 begin error (power on)");
+        return false;
+    }
+    delay(10); // Wait for power on to complete
+
+    // Set measurement mode
+    if (!writeCommand(0x10)) // Continuously H-Resolution Mode
+    {
+        Serial.println("Failed to set measurement mode");
+        return false;
+    }
+
+    return true;
+}
+
+std::map<std::string, float> BH1705sensor::readData() {
+    uint8_t data[2];
+    if (!readBytes(data, 2))
+    {
+        return {{"L", NAN}};
+    }
+
+    _lux = (data[0] << 8) | data[1];
+    _lux /= 1.2; // Convert to lux
+
+    std::map<std::string, float> dataMap;
+    for (const auto& channel : channels) {
+        if (channel.second == "L") {
+            dataMap[channel.first.c_str()] = _lux;
+        }
+    }
+
+    return dataMap;
+}
+
+bool BH1705sensor::writeCommand(uint8_t command) {
+    wire->beginTransmission(_address);
+    wire->write(command);
+    return wire->endTransmission() == 0;
+}
+
+bool BH1705sensor::readBytes(uint8_t *data, uint8_t length) {
+    if (wire->requestFrom(_address, length) != length)
+    {
+        return false;
+    }
+
+    for (uint8_t i = 0; i < length; i++)
+    {
+        data[i] = wire->read();
+    }
+
+    return true;
+}
+
+float BH1705sensor::getLux() const {
+    return _lux;
+}

@@ -1,0 +1,245 @@
+#include "Device.h"
+#include "SHT31sensor.h"
+#include "I2CHandler.h"
+
+SHT31sensor::SHT31sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
+    : Device(i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(SHT31_ADDRESS), _temperature(NAN), _humidity(NAN), channels(channels) {
+    
+    numChannels = channels.size(); // Set number of channels based on the map size
+    type = "Sensor"; // Fixed type
+    typeNumber = "SHT31"; // Fixed type number
+
+    Serial.println("SHT31sensor created:");
+    Serial.print("Address: ");
+    Serial.println(_address, HEX);
+    Serial.print("Threshold: ");
+    Serial.println(threshold);
+    Serial.print("Number of Channels: ");
+    Serial.println(numChannels);
+    Serial.print("Type: ");
+    Serial.println(type);
+    Serial.print("TypeNumber: ");
+    Serial.println(typeNumber);
+    Serial.print("Device Index: ");
+    Serial.println(deviceIndex);
+}
+
+bool SHT31sensor::begin()
+{
+    I2CHandler::selectTCA(tcaPort); // Use tcaPort from class definition
+    if (!writeCommand(0x30A2)) // Soft reset command
+    {
+        Serial.println("SHT31 begin error (soft reset)");
+        return false;
+    }
+    delay(10); // Wait for reset to complete
+
+    // Read the status register to ensure the sensor is ready
+    uint16_t status = readStatus();
+    if (status == 0xFFFF)
+    {
+        Serial.println("SHT31 begin error (read status)");
+        return false;
+    }
+
+    Serial.print("SHT31 status: ");
+    Serial.println(status, HEX);
+
+    // Set measurement mode to high repeatability
+    if (!setMeasurementMode(0x2400))
+    {
+        Serial.println("Failed to set measurement mode");
+        return false;
+    }
+
+    // Disable heater
+    if (!setHeater(false))
+    {
+        Serial.println("Failed to disable heater");
+        return false;
+    }
+
+    // Print SHT31 serial number
+    Serial.print("SHT31 Serial Number: ");
+    Serial.println(getSerialNumber());
+
+    // Read initial values using readData
+    auto sht31Data = readData();
+    if (sht31Data.find("T") != sht31Data.end() && sht31Data.find("H") != sht31Data.end()) {
+        float temperature = sht31Data["T"];
+        float humidity = sht31Data["H"];
+        Serial.print("Initial Temperature: ");
+        Serial.println(temperature);
+        Serial.print("Initial Humidity: ");
+        Serial.println(humidity);
+    }
+
+    return true;
+}
+
+bool SHT31sensor::readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity)
+{
+    I2CHandler::selectTCA(tcaPort); 
+    if (!writeCommand(0x2C06)) // Command to read data
+    {
+        Serial.println("SHT31 readRawData: writeCommand error");
+        return false;
+    }
+
+    delay(500); // Wait for data to be available
+
+    uint8_t data[6];
+    if (!readBytes(data, 6))
+    {
+        Serial.println("SHT31 readRawData: readBytes error");
+        return false;
+    }
+
+    rawTemperature = (data[0] << 8) | data[1];
+    rawHumidity = (data[3] << 8) | data[4];
+
+    return true;
+}
+
+std::map<std::string, float> SHT31sensor::readData()
+{
+    uint16_t rawTemperature, rawHumidity;
+    if (!readRawData(rawTemperature, rawHumidity))
+    {
+        return {{"T", NAN}, {"H", NAN}};
+    }
+
+    _temperature = -45 + 175 * (rawTemperature / 65535.0);
+    _humidity = 100 * (rawHumidity / 65535.0);
+
+    std::map<std::string, float> data;
+    for (const auto& channel : channels) {
+        if (channel.second == "T") {
+            data[channel.first.c_str()] = _temperature;
+        } else if (channel.second == "H") {
+            data[channel.first.c_str()] = _humidity;
+        }
+    }
+
+    return data;
+}
+
+uint32_t SHT31sensor::getSerialNumber()
+{
+    I2CHandler::selectTCA(tcaPort); 
+    if (!writeCommand(0x3780)) // Command to read serial number
+    {
+        Serial.println("SHT31 getSerialNumber: writeCommand error");
+        return 0;
+    }
+
+    delay(500); // Wait for data to be available
+
+    uint8_t data[4];
+    if (!readBytes(data, 4))
+    {
+        Serial.println("SHT31 getSerialNumber: readBytes error");
+        return 0;
+    }
+
+    uint32_t serialNumber = 0;
+    for (int i = 0; i < 4; i++) {
+        serialNumber = (serialNumber << 8) | data[i];
+    }
+
+    return serialNumber;
+}
+
+uint16_t SHT31sensor::readStatus()
+{
+    I2CHandler::selectTCA(tcaPort); 
+    if (!writeCommand(0xF32D)) // Command to read status register
+    {
+        Serial.println("SHT31 readStatus: writeCommand error");
+        return 0xFFFF;
+    }
+
+    delay(20); // Wait for data to be available
+
+    uint8_t data[3];
+    if (!readBytes(data, 3))
+    {
+        Serial.println("SHT31 readStatus: readBytes error");
+        return 0xFFFF;
+    }
+
+    return (data[0] << 8) | data[1];
+}
+
+bool SHT31sensor::clearStatus()
+{
+    I2CHandler::selectTCA(tcaPort); 
+    if (!writeCommand(0x3041)) // Command to clear status register
+    {
+        Serial.println("SHT31 clearStatus: writeCommand error");
+        return false;
+    }
+
+    delay(20); // Wait for command to complete
+
+    return true;
+}
+
+bool SHT31sensor::setMeasurementMode(uint16_t mode)
+{
+    I2CHandler::selectTCA(tcaPort); 
+    if (!writeCommand(mode))
+    {
+        Serial.println("SHT31 setMeasurementMode: writeCommand error");
+        return false;
+    }
+
+    delay(20); // Wait for command to complete
+
+    return true;
+}
+
+bool SHT31sensor::setHeater(bool enable)
+{
+    I2CHandler::selectTCA(tcaPort); 
+    if (!writeCommand(enable ? 0x306D : 0x3066)) // Command to enable/disable heater
+    {
+        Serial.println("SHT31 setHeater: writeCommand error");
+        return false;
+    }
+
+    delay(20); // Wait for command to complete
+
+    return true;
+}
+
+bool SHT31sensor::writeCommand(uint16_t command)
+{
+    wire->beginTransmission(_address);
+    wire->write(command >> 8); // Send MSB
+    wire->write(command & 0xFF); // Send LSB
+    return wire->endTransmission() == 0;
+}
+
+bool SHT31sensor::readBytes(uint8_t *data, uint8_t length)
+{
+    if (wire->requestFrom(_address, length) != length)
+    {
+        return false;
+    }
+
+    for (uint8_t i = 0; i < length; i++)
+    {
+        data[i] = wire->read();
+    }
+
+    return true;
+}
+
+float SHT31sensor::getTemperature() const {
+    return _temperature;
+}
+
+float SHT31sensor::getHumidity() const {
+    return _humidity;
+}
