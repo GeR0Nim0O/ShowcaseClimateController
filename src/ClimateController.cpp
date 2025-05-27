@@ -24,6 +24,9 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHT31sensor* tem
       humidifyingActive(false), dehumidifyingActive(false),
       tempControlEnabled(false), lastUpdate(0), updateInterval(1000) {
     
+    // Initialize pin mappings from configuration
+    initializePinMappings();
+    
     // Initialize PID controllers
     temperaturePID = new PID(&tempInput, &tempOutput, &tempSetpoint, 
                             DEFAULT_TEMP_KP, DEFAULT_TEMP_KI, DEFAULT_TEMP_KD, DIRECT);
