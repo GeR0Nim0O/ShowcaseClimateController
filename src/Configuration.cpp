@@ -1,7 +1,7 @@
 #include "Configuration.h"
 #include "SDHandler.h"
 #include "DeviceRegistry/DeviceRegistry.h"
-#include <SD_MMC.h>
+#include <SD.h>
 #include <vector>
 
 // Suppress ArduinoJson deprecation warnings temporarily
@@ -15,7 +15,7 @@ bool Configuration::loadConfig(const char* path) {
     Serial.print("Loading config from: ");
     Serial.println(path);
 
-    File configFile = SD_MMC.open(path);
+    File configFile = SD.open(path);
     if (!configFile) {
         Serial.println("Failed to open config file for reading");
         return false;
@@ -42,7 +42,7 @@ bool Configuration::loadConfig(const char* path) {
 }
 
 bool Configuration::loadConfigFromSD(const char* path) {
-    File file = SD_MMC.open(path);
+    File file = SD.open(path);
     if (!file) {
         Serial.println("Failed to open config file");
         return false;
