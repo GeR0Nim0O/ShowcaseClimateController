@@ -23,8 +23,8 @@ bool PCF8574gpio::begin() {
     return writeByte(_gpioState); // Initialize GPIO state
 }
 
-std::map<std::string, float> PCF8574gpio::readData() {
-    std::map<std::string, float> dataMap;
+std::map<String, String> PCF8574gpio::readData() {
+    std::map<String, String> dataMap;
     uint8_t data;
     if (!readByte(data)) {
         return dataMap;
@@ -33,15 +33,8 @@ std::map<std::string, float> PCF8574gpio::readData() {
     for (const auto& channel : channels) {
         uint8_t pin = channel.first.toInt();
         bool state = (data & (1 << pin)) ? false : true; // Correctly invert the state
-        float value = state ? 0.0 : 1.0; // Invert the state
-        if (lastSensorValues[channel.second.c_str()] != value) {
-            Serial.print("Input changed on pin: ");
-            Serial.print(pin);
-            Serial.print(", new state: ");
-            Serial.println(value);
-            lastSensorValues[channel.second.c_str()] = value; // Update last known value
-        }
-        dataMap[channel.second.c_str()] = value;
+        String value = state ? "0.0" : "1.0"; // Convert to String for return type
+        dataMap[channel.first] = value;
     }
     return dataMap;
 }
