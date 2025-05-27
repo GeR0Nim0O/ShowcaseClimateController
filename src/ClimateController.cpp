@@ -226,3 +226,60 @@ void ClimateController::emergencyShutdown() {
     
     Serial.println("EMERGENCY SHUTDOWN: Safety limits exceeded!");
 }
+
+// Pin mapping helper methods
+void ClimateController::initializePinMappings() {
+    // Initialize with default values
+    pinTemperatureEnable = 0;
+    pinTemperatureHeat = 1;
+    pinTemperatureCool = 2;
+    pinHumidify = 3;
+    pinDehumidify = 4;
+    pinFanInterior = 5;
+    pinFanExterior = 6;
+    
+    // Try to load from configuration
+    pinTemperatureEnable = getPinFromChannelName("TemperatureEnable");
+    pinTemperatureHeat = getPinFromChannelName("TemperatureHeat");
+    pinTemperatureCool = getPinFromChannelName("TemperatureCool");
+    pinHumidify = getPinFromChannelName("Humidify");
+    pinDehumidify = getPinFromChannelName("Dehumidify");
+    pinFanInterior = getPinFromChannelName("FanInterior");
+    pinFanExterior = getPinFromChannelName("FanExterior");
+}
+
+uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
+    JsonObject devicesConfig = Configuration::getDevicesConfig();
+    
+    if (devicesConfig.containsKey("PCF8574")) {
+        JsonObject pcfConfig = devicesConfig["PCF8574"];
+        if (pcfConfig.containsKey("Channels")) {
+            JsonObject channels = pcfConfig["Channels"];
+            
+            // Search through all IO channels to find the one with matching name
+            for (JsonPair channel : channels) {
+                JsonObject channelObj = channel.value();
+                if (channelObj.containsKey("Name") && 
+                    String(channelObj["Name"].as<const char*>()) == channelName) {
+                    // Extract pin number from channel key (e.g., "IO0" -> 0)
+                    String channelKey = channel.key().c_str();
+                    if (channelKey.startsWith("IO")) {
+                        return channelKey.substring(2).toInt();
+                    }
+                }
+            }
+        }
+    }
+    
+    // Return default pin if not found in configuration
+    Serial.printf("Warning: Pin mapping not found for %s, using default\n", channelName.c_str());
+    if (channelName == "TemperatureEnable") return 0;
+    if (channelName == "TemperatureHeat") return 1;
+    if (channelName == "TemperatureCool") return 2;
+    if (channelName == "Humidify") return 3;
+    if (channelName == "Dehumidify") return 4;
+    if (channelName == "FanInterior") return 5;
+    if (channelName == "FanExterior") return 6;
+    
+    return 0; // Default fallback
+}
