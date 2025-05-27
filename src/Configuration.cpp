@@ -266,12 +266,16 @@ JsonObject Configuration::getSensorChannels(const JsonObject& sensorConfig) {
 
 bool Configuration::isNewConfigFormat(const JsonObject& sensorConfig) {
     // Check if any channel has a "Threshold" property
-    if (sensorConfig["Channels"].is<JsonObject>()) {
-        JsonObject channels = sensorConfig["Channels"].as<JsonObject>();
+    JsonVariant channelsVar = sensorConfig["Channels"];
+    if (channelsVar.is<JsonObject>()) {
+        JsonObject channels = channelsVar.as<JsonObject>();
         for (JsonPair channel : channels) {
             // If the channel is an object with a Threshold field, we're using the new format
-            if (channel.value().is<JsonObject>() && channel.value().as<JsonObject>()["Threshold"].is<float>()) {
-                return true;
+            if (channel.value().is<JsonObject>()) {
+                JsonVariant thresholdVar = channel.value().as<JsonObject>()["Threshold"];
+                if (thresholdVar.is<float>()) {
+                    return true;
+                }
             }
         }
     }
