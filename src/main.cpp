@@ -302,6 +302,7 @@ void readAndSendDataFromDevices() {
             Serial.print(device->getType());
             Serial.print(", Address: 0x");
             Serial.println(device->getI2CAddress(), HEX);
+            delay(100);
             continue;
         }
         I2CHandler::selectTCA(device->getTCAChannel());
