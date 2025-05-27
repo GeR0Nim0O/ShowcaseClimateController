@@ -3,7 +3,6 @@
 
 DS3231rtc::DS3231rtc(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
     : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(DS3231_ADDRESS) {
-    numChannels = channels.size(); // Set number of channels based on the map size
     type = "RTC"; // Fixed type
     typeNumber = "DS3231"; // Fixed type number
     Serial.println("DS3231rtc created:");
@@ -12,7 +11,7 @@ DS3231rtc::DS3231rtc(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float t
     Serial.print("Threshold: ");
     Serial.println(threshold);
     Serial.print("Number of Channels: ");
-    Serial.println(numChannels);
+    Serial.println(channels.size());
     Serial.print("Type: ");
     Serial.println(type);
     Serial.print("TypeNumber: ");
