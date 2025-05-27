@@ -88,10 +88,18 @@ private:
     bool humidifyingActive;
     bool dehumidifyingActive;
     bool tempControlEnabled;
-    
-    // Timing
+      // Timing
     unsigned long lastUpdate;
     unsigned long updateInterval;
+    
+    // Pin mappings from configuration
+    uint8_t pinTemperatureEnable;
+    uint8_t pinTemperatureHeat;
+    uint8_t pinTemperatureCool;
+    uint8_t pinHumidify;
+    uint8_t pinDehumidify;
+    uint8_t pinFanInterior;
+    uint8_t pinFanExterior;
     
     // Control methods
     void updateTemperatureControl();
@@ -99,6 +107,10 @@ private:
     void updateSensorReadings();
     void applyTemperatureControl();
     void applyHumidityControl();
+    
+    // Pin mapping helper methods
+    void initializePinMappings();
+    uint8_t getPinFromChannelName(const String& channelName);
     
     // Safety checks
     bool checkSafetyLimits();
