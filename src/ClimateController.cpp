@@ -15,7 +15,7 @@
 #define DEFAULT_HUM_KI 0.2
 #define DEFAULT_HUM_KD 0.05
 
-ClimateController::ClimateController(PCF8574_GPIO* gpioExpander, SHT31_Sensor* tempHumSensor)
+ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHT31sensor* tempHumSensor)
     : gpio(gpioExpander), sensor(tempHumSensor),
       temperatureSetpoint(22.0), humiditySetpoint(50.0),
       currentTemperature(0.0), currentHumidity(0.0),
