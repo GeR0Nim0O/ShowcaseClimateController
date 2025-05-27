@@ -7,7 +7,7 @@
 
 GP8403dac::GP8403dac(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : Device(i2cAddress, tcaChannel, deviceName, deviceIndex),
-      channelAValue(0), channelBValue(0), vrefValue(32767),
+      wire(&Wire), channelAValue(0), channelBValue(0), vrefValue(32767),
       gain2xA(false), gain2xB(false) {
     type = "GP8403dac";
 }
