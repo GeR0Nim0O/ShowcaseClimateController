@@ -43,19 +43,18 @@ bool PCF8574gpio::begin() {
     
     // Serial.print("DEBUG: PCF8574 initialization success = ");
     // Serial.println(success);
-    
-    if (success) {
-        // Serial.println("DEBUG: Setting initialized = true");
+      if (success) {
+        Serial.println("DEBUG: Setting initialized = true");
         initialized = true; // Set initialized flag to true
-        // Serial.print("DEBUG: initialized flag is now: ");
-        // Serial.println(initialized);
+        Serial.print("DEBUG: initialized flag is now: ");
+        Serial.println(initialized);
         Serial.println("PCF8574 GPIO expander initialized successfully");
     } else {
         Serial.println("PCF8574 GPIO expander initialization failed after retries");
     }
     
-    // Serial.print("DEBUG: PCF8574gpio::begin() returning ");
-    // Serial.println(success);
+    Serial.print("DEBUG: PCF8574gpio::begin() returning ");
+    Serial.println(success);
     return success;
 }
 
