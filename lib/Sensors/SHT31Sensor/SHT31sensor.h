@@ -15,7 +15,7 @@ public:
     bool begin() override;
     bool isConnected() override;
     void update() override;
-    std::map<String, String> readData() override;// Return a map of sensor data
+    std::map<String, String> readData() override; // Return a map of sensor data
     
     // Override pure virtual methods from Device
     std::map<String, String> getChannels() const override { return channels; }
