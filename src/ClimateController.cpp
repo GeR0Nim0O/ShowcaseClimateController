@@ -203,7 +203,7 @@ void ClimateController::setFanInterior(bool enable) {
 }
 
 void ClimateController::setFanExterior(bool enable) {
-    gpio->setFanExterior(enable);
+    gpio->writePin(pinFanExterior, enable);
 }
 
 bool ClimateController::checkSafetyLimits() {
