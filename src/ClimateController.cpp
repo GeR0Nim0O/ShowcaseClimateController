@@ -212,11 +212,11 @@ bool ClimateController::checkSafetyLimits() {
 }
 
 void ClimateController::emergencyShutdown() {
-    gpio->setTemperatureEnable(false);
-    gpio->setTemperatureHeat(false);
-    gpio->setTemperatureCool(false);
-    gpio->setHumidify(false);
-    gpio->setDehumidify(false);
+    gpio->writePin(pinTemperatureEnable, false);
+    gpio->writePin(pinTemperatureHeat, false);
+    gpio->writePin(pinTemperatureCool, false);
+    gpio->writePin(pinHumidify, false);
+    gpio->writePin(pinDehumidify, false);
     
     heatingActive = false;
     coolingActive = false;
