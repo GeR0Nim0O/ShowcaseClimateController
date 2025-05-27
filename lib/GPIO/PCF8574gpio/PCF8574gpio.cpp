@@ -20,10 +20,34 @@ PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
 
 bool PCF8574gpio::begin() {
     I2CHandler::selectTCA(tcaChannel); // Use tcaChannel from Device base class
-    bool success = writeByte(_gpioState); // Initialize GPIO state
+    
+    // First test I2C connection
+    if (!isConnected()) {
+        Serial.println("PCF8574 GPIO expander not found!");
+        return false;
+    }
+    
+    // Initialize GPIO state - try multiple times if needed
+    int retries = 3;
+    bool success = false;
+    
+    for (int i = 0; i < retries && !success; i++) {
+        success = writeByte(_gpioState); // Initialize GPIO state
+        if (!success) {
+            Serial.print("PCF8574 write attempt ");
+            Serial.print(i + 1);
+            Serial.println(" failed, retrying...");
+            delay(10);
+        }
+    }
+    
     if (success) {
         initialized = true; // Set initialized flag to true
+        Serial.println("PCF8574 GPIO expander initialized successfully");
+    } else {
+        Serial.println("PCF8574 GPIO expander initialization failed after retries");
     }
+    
     return success;
 }
 
