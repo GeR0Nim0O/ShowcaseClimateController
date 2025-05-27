@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Git Auto Commit and Push",
+            "type": "shell",
+            "command": "git add . && git commit -m \"Auto-commit from VSCode task\" && git push",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": []
+        }
+    ]
+}
