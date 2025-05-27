@@ -196,7 +196,7 @@ bool SHT31sensor::setMeasurementMode(uint16_t mode)
 
 bool SHT31sensor::setHeater(bool enable)
 {
-    I2CHandler::selectTCA(tcaPort); 
+    I2CHandler::selectTCA(getTCAChannel()); 
     if (!writeCommand(enable ? 0x306D : 0x3066)) // Command to enable/disable heater
     {
         Serial.println("SHT31 setHeater: writeCommand error");
