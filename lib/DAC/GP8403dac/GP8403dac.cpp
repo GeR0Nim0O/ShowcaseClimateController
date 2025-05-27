@@ -35,11 +35,11 @@ bool GP8403dac::begin() {
         Serial.println("Failed to configure DAC");
         return false;
     }
-    
-    // Set both channels to 0V
+      // Set both channels to 0V
     setBothChannels(0, 0);
     
     Serial.println("GP8403 DAC Module initialized successfully");
+    initialized = true; // Set initialized flag to true
     return true;
 }
 
