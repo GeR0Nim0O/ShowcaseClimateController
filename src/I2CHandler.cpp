@@ -66,11 +66,10 @@ void I2CHandler::selectTCA(uint8_t i) {
         WIRE.beginTransmission(TCAADDR);
         WIRE.write(1 << i);
         uint8_t error = WIRE.endTransmission();
-        
-        if (error == 0) {
+          if (error == 0) {
             success = true;
             // Verify TCA selection by reading back
-            WIRE.requestFrom(TCAADDR, (uint8_t)1);
+            WIRE.requestFrom(TCAADDR, 1);
             if (WIRE.available()) {
                 uint8_t readback = WIRE.read();
                 if (readback != (1 << i)) {
