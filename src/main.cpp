@@ -288,6 +288,9 @@ void loop() {
 }
 
 void readAndSendDataFromDevices() {
+    // Flag to determine if we should print data this cycle (only true every 60 seconds)
+    bool shouldPrintData = throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval);
+    
     for (size_t i = 0; i < devices.size(); i++) {
         Device* device = devices[i];
         if (device == nullptr) {
@@ -322,15 +325,17 @@ void readAndSendDataFromDevices() {
             String projectNr = Configuration::getProjectNumber();
             String showcaseId = Configuration::getShowcaseId();
 
-            // Always print the current reading for every sensor
-            Serial.print(deviceName);
-            Serial.print(" - ");
-            Serial.print(channelKey);
-            Serial.print(": ");
-            Serial.print(value);
-            Serial.print(" (");
-            Serial.print(channel.second);
-            Serial.println(")");
+            // Only print data every 60 seconds, aligned with MQTT sending
+            if (shouldPrintData) {
+                Serial.print(deviceName);
+                Serial.print(" - ");
+                Serial.print(channelKey);
+                Serial.print(": ");
+                Serial.print(value);
+                Serial.print(" (");
+                Serial.print(channel.second);
+                Serial.println(")");
+            }
 
             // Convert Arduino String to std::string for map access
             float lastValue = lastSensorValues[key];
@@ -338,7 +343,7 @@ void readAndSendDataFromDevices() {
             // Get channel-specific threshold instead of device-level threshold
             float threshold = device->getThreshold(channelKey);
             
-            // Original SHT31 debugging remains
+            // Add this for debugging
             if (deviceName == "SHT31_0" && channelKey == "H") {
                 Serial.print("SHT31_0 H - Current value: ");
                 Serial.print(value);
@@ -377,7 +382,8 @@ void readAndSendDataFromDevices() {
     }
     
     // Check if it's time to send all changed data via MQTT
-    if (throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval)) {
+    if (shouldPrintData) {
+        Serial.println("\nSensor data collected - sending to MQTT...");
         sendAllChangedSensorData();
     }
 }
