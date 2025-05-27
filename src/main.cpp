@@ -274,7 +274,8 @@ void readAndSendDataFromDevices() {
 
             // Convert Arduino String to std::string for map access
             float lastValue = lastSensorValues[key];
-              // Get channel-specific threshold instead of device-level threshold
+            
+            // Get channel-specific threshold instead of device-level threshold
             float threshold = device->getThreshold(channelKey);
             
             // Add this for debugging
