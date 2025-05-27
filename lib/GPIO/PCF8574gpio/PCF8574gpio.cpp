@@ -20,7 +20,11 @@ PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
 
 bool PCF8574gpio::begin() {
     I2CHandler::selectTCA(tcaChannel); // Use tcaChannel from Device base class
-    return writeByte(_gpioState); // Initialize GPIO state
+    bool success = writeByte(_gpioState); // Initialize GPIO state
+    if (success) {
+        initialized = true; // Set initialized flag to true
+    }
+    return success;
 }
 
 std::map<String, String> PCF8574gpio::readData() {
