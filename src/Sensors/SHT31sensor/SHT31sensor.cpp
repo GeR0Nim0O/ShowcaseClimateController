@@ -35,20 +35,14 @@ bool SHT31sensor::begin() {
         return false;
     }
     
-    // Initialize the SHT31 sensor
-    if (!sht.begin()) {
-        Serial.println("Failed to initialize SHT31 sensor!");
-        return false;
-    }
-    
     // Read sensor status to verify communication
-    uint16_t stat = sht.readStatus();
+    uint16_t stat = readStatus();
     Serial.print("SHT31 status: ");
     Serial.println(stat, HEX);
     
     // Set measurement mode (high repeatability)
     Serial.println("DEBUG: Setting measurement mode...");
-    bool success = true; // Adjust based on your library's API
+    bool success = setMeasurementMode(0x2C06); // High repeatability, clock stretching disabled
     if (success) {
         Serial.println("DEBUG: Measurement mode set successfully");
     } else {
@@ -58,12 +52,12 @@ bool SHT31sensor::begin() {
     
     // Disable heater
     Serial.println("DEBUG: Disabling heater...");
-    sht.heater(false);
+    setHeater(false);
     Serial.println("DEBUG: Heater disabled successfully");
     
     // Get serial number for debugging
     Serial.print("SHT31 Serial Number: ");
-    Serial.println(sht.readSerialNumber());
+    Serial.println(getSerialNumber());
     
     // Do an initial reading (but skip detailed error handling)
     Serial.println("DEBUG: Attempting initial sensor reading...");
@@ -275,14 +269,15 @@ void SHT31sensor::update() {
     
     // Try multiple times if needed
     for (int attempt = 0; attempt < 3 && !readingSuccess; attempt++) {
-        if (sht.readTempHum()) {  // This reads both temperature and humidity
-            temperature = sht.getTemperature();
-            humidity = sht.getHumidity();
+        uint16_t rawTemperature, rawHumidity;
+        if (readRawData(rawTemperature, rawHumidity)) {
+            _temperature = -45 + 175 * (rawTemperature / 65535.0);
+            _humidity = 100 * (rawHumidity / 65535.0);
             readingSuccess = true;
             Serial.print("SHT31 reading successful - Temp: ");
-            Serial.print(temperature);
+            Serial.print(_temperature);
             Serial.print("°C, Humidity: ");
-            Serial.println(humidity);
+            Serial.println(_humidity);
         } else {
             Serial.print("SHT31 reading failed, attempt ");
             Serial.print(attempt + 1);
