@@ -6,13 +6,12 @@ BH1705sensor::BH1705sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, f
     : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(BH1705_ADDRESS), _lux(NAN) {
     type = "Sensor"; // Fixed type
     typeNumber = "BH1705"; // Fixed type number
-    Serial.println("BH1705sensor created:");
-    Serial.print("Address: ");
+    Serial.println("BH1705sensor created:");    Serial.print("Address: ");
     Serial.println(_address, HEX);
     Serial.print("Threshold: ");
     Serial.println(threshold);
     Serial.print("Number of Channels: ");
-    Serial.println(numChannels);
+    Serial.println(channels.size());
     Serial.print("Type: ");
     Serial.println(type);
     Serial.print("TypeNumber: ");
