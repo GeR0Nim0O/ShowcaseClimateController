@@ -2,14 +2,14 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Git Auto Commit and Push",
+            "label": "PlatformIO Build",
             "type": "shell",
-            "command": "git add . && git commit -m \"Auto-commit from VSCode task\" && git push",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": []
+            "command": "pio run",
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "isBackground": false
         }
     ]
 }
