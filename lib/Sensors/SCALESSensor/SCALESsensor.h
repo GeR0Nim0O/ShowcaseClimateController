@@ -27,8 +27,6 @@ private:
     TwoWire* wire;
     uint8_t _address;
     float _weight;
-    std::map<String, String> channels; // Add channels property
-    int deviceIndex; // Add deviceIndex property
 };
 
 #endif // SCALESSENSOR_H
