@@ -10,7 +10,7 @@
 
 class SHT31sensor : public Device {
 public:
-    SHT31sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
+    SHT31sensor(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex);
     
     bool begin() override;
     bool isConnected() override;
