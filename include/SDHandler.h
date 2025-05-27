@@ -1,8 +1,7 @@
 #ifndef SDHANDLER_H
 #define SDHANDLER_H
 
-#include <SD_MMC.h>
-#include <FS.h>
+#include <SD.h>
 
 const int MAX_FILE_SIZE = 1024 * 10; // Value *1KB limit for the log file
 
