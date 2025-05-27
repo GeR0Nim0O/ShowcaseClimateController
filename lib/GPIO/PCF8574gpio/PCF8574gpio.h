@@ -12,17 +12,23 @@ class PCF8574gpio : public Device {
 public:
     PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
     bool begin() override;
+    bool isConnected() override;
+    void update() override;
     std::map<std::string, float> readData() override; // Return a map of GPIO states
-    uint8_t getAddress() const { return _address; } // Add getAddress function
-    float getThreshold() const { return threshold; } // Add getThreshold function
-    int getDeviceIndex() const { return deviceIndex; } // Add deviceIndex function
-    std::string getType() const { return "gpio"; } // Inherit getType method
-    std::string getTypeNumber() const { return "PCF8574"; } // Inherit getTypeNumber method
-    bool readBit(uint8_t pin, bool &state); // Add readBit function declaration
-
-private:
+    
+    // Override pure virtual methods from Device
+    std::map<String, String> getChannels() const override { return channels; }
+    float getThreshold(const String& channelKey) const override { return threshold; }
+    
     bool writeByte(uint8_t data);
     bool readByte(uint8_t &data);
+    bool readBit(uint8_t pin, bool &state);
+    bool writeBit(uint8_t pin, bool state);
+    bool readPin(uint8_t pin);
+    void writePin(uint8_t pin, bool state);
+    uint8_t getGPIOState() const { return _gpioState; }
+
+private:
     TwoWire* wire;
     uint8_t _address;
     uint8_t _gpioState;
