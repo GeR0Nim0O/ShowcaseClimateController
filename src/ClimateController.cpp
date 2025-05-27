@@ -180,9 +180,9 @@ void ClimateController::updateHumidityControl() {
 }
 
 void ClimateController::applyTemperatureControl() {
-    gpio->setTemperatureEnable(tempControlEnabled);
-    gpio->setTemperatureHeat(heatingActive);
-    gpio->setTemperatureCool(coolingActive);
+    gpio->writePin(pinTemperatureEnable, tempControlEnabled);
+    gpio->writePin(pinTemperatureHeat, heatingActive);
+    gpio->writePin(pinTemperatureCool, coolingActive);
 }
 
 void ClimateController::applyHumidityControl() {
