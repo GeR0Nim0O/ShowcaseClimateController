@@ -81,16 +81,15 @@ void ClimateController::update() {
 }
 
 void ClimateController::updateSensorReadings() {
-    if (sensor->readSensor()) {
-        currentTemperature = sensor->getTemperature();
-        currentHumidity = sensor->getHumidity();
-        
-        // Update PID inputs
-        tempInput = currentTemperature;
-        tempSetpoint = temperatureSetpoint;
-        humInput = currentHumidity;
-        humSetpoint = humiditySetpoint;
-    }
+    sensor->update();
+    currentTemperature = sensor->getTemperature();
+    currentHumidity = sensor->getHumidity();
+    
+    // Update PID inputs
+    tempInput = currentTemperature;
+    tempSetpoint = temperatureSetpoint;
+    humInput = currentHumidity;
+    humSetpoint = humiditySetpoint;
 }
 
 void ClimateController::updateTemperatureControl() {
