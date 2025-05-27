@@ -117,9 +117,6 @@ void setup()
   // Perform I2C scan before connecting to any devices
   I2CHandler::scanI2C(); 
 
-  // Initialize RTC pointer before use
-  rtc = new DS3231rtc();
-
   // Initialize SD card and configuration
   if (!SDHandler::initializeSDCardAndConfig()) {
     Serial.println("Failed to initialize SD card.");
@@ -186,7 +183,7 @@ void setup()
 
   // Connect to TimeAPI and NTP
   // Only fetch time from RTC if RTC is connected and initialized
-  if (rtc && rtc->isInitialized && rtc->isInitialized()) {
+  if (rtc && rtc->isInitialized()) {
     TimeHandler::fetchTime(*rtc);
   } else {
     Serial.println("RTC not connected or not initialized. Skipping RTC time fetch.");
@@ -277,7 +274,7 @@ void readAndSendDataFromDevices() {
             float value = data[channelKey].toFloat(); // Use String key and convert to float
             String currentTime;
             // Only fetch time from RTC if RTC is connected and initialized
-            if (rtc && rtc->isInitialized && rtc->isInitialized()) {
+            if (rtc && rtc->isInitialized()) {
                 currentTime = TimeHandler::getCurrentTime(*rtc);
             } else {
                 currentTime = "";
