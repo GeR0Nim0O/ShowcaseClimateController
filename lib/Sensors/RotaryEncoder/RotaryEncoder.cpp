@@ -212,6 +212,21 @@ bool RotaryEncoder::writeConfig() {
     
     return writeRegister(I2C_ENCODER_GCONF, config);
 }
+
+std::map<String, String> RotaryEncoder::readData() {
+    std::map<String, String> data;
+    data["position"] = String(getPosition());
+    data["button"] = isButtonPressed() ? "1" : "0";
+    return data;
+}
+
+int RotaryEncoder::getChannels() {
+    return 1; // One channel for position data
+}
+
+float RotaryEncoder::getThreshold() {
+    return 0.0; // No threshold applicable for rotary encoder
+}
     uint8_t stateB = digitalRead(pinB);
     
     // Check for state change
