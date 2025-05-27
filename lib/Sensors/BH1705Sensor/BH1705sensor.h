@@ -14,17 +14,12 @@ public:
     bool begin() override;
     bool isConnected() override;
     void update() override;
-    std::map<String, String> readData() override; // Return a map of sensor data
-    
+    std::map<String, String> readData() override; // Return a map of sensor data    
     // Override pure virtual methods from Device
     std::map<String, String> getChannels() const override { return channels; }
-    float getThreshold(const String& channelKey) const override { return threshold; }
+    float getThreshold(const String& channelKey = "") const override { return threshold; }
     
     float getLux() const;
-    uint8_t getAddress() const { return _address; } // Add getAddress function
-    int getDeviceIndex() const { return deviceIndex; } // Add deviceIndex function
-    std::string getType() const { return "sensor"; } // Inherit getType method
-    std::string getTypeNumber() const { return "BH1705"; } // Inherit getTypeNumber method
 
 private:
     bool writeCommand(uint8_t command);
