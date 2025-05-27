@@ -6,7 +6,11 @@ PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
 
 bool PCF8574gpio::begin() {
     wire->begin();
-    return isConnected();
+    bool connected = isConnected();
+    if (connected) {
+        initialized = true;  // Set initialized flag to true when connection is successful
+    }
+    return connected;
 }
 
 bool PCF8574gpio::isConnected() {
