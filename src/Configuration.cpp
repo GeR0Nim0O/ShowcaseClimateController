@@ -418,9 +418,10 @@ void Configuration::initializeEachDevice(const std::vector<Device*>& devices) {
         Serial.print("Type: ");
         Serial.println(device->getType());
         Serial.print("Address: 0x");
-        Serial.println(device->getI2CAddress(), HEX);
-        Serial.print("TCA Channel: ");
+        Serial.println(device->getI2CAddress(), HEX);        Serial.print("TCA Channel: ");
         Serial.println(device->getTCAChannel());
+        Serial.print("Device Address: 0x");
+        Serial.println((uintptr_t)device, HEX);
         
         // Select TCA channel and verify
         Serial.print("Selecting TCA channel ");
