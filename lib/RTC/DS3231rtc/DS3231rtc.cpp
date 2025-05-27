@@ -4,7 +4,6 @@
 DS3231rtc::DS3231rtc(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
     : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(DS3231_ADDRESS) {
     type = "RTC"; // Fixed type
-    typeNumber = "DS3231"; // Fixed type number
     Serial.println("DS3231rtc created:");
     Serial.print("Address: ");
     Serial.println(_address, HEX);
