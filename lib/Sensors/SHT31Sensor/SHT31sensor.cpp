@@ -74,7 +74,7 @@ bool SHT31sensor::begin()
 
 bool SHT31sensor::readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity)
 {
-    I2CHandler::selectTCA(tcaPort); 
+    I2CHandler::selectTCA(getTCAChannel());
     if (!writeCommand(0x2C06)) // Command to read data
     {
         Serial.println("SHT31 readRawData: writeCommand error");
