@@ -58,8 +58,8 @@ public:
     bool isDehumidifying() const { return dehumidifyingActive; }
 
 private:
-    PCF8574_GPIO* gpio;
-    SHT31_Sensor* sensor;
+    PCF8574gpio* gpio;
+    SHT31sensor* sensor;
     
     // Setpoints
     float temperatureSetpoint;
