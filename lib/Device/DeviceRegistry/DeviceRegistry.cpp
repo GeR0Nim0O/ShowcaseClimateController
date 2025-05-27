@@ -124,3 +124,53 @@ void DeviceRegistry::printDeviceStatus() {
     }
     Serial.println("==================\n");
 }
+
+Device* DeviceRegistry::createDeviceWithThresholds(
+    const String& type, 
+    const String& typeNumber, 
+    TwoWire* wire, 
+    uint8_t address, 
+    uint8_t tcaPort, 
+    const std::map<String, float>& channelThresholds, 
+    const std::map<String, String>& channelNames, 
+    int deviceIndex
+) {
+    // Convert channel thresholds and names to the format expected by Device constructors
+    std::map<String, String> channels;
+    float threshold = 0.0f; // Default threshold
+    
+    // Combine channel names and use the first threshold as the general threshold
+    for (const auto& pair : channelNames) {
+        channels[pair.first] = pair.second;
+    }
+    
+    if (!channelThresholds.empty()) {
+        threshold = channelThresholds.begin()->second;
+    }
+    
+    // Create device based on type and typeNumber
+    if (type.equalsIgnoreCase("Sensor")) {
+        if (typeNumber.equalsIgnoreCase("SHT31")) {
+            return new SHT31sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+        } else if (typeNumber.equalsIgnoreCase("BH1705")) {
+            return new BH1705sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+        } else if (typeNumber.equalsIgnoreCase("SCALES")) {
+            return new SCALESsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+        }
+    } else if (type.equalsIgnoreCase("GPIO")) {
+        if (typeNumber.equalsIgnoreCase("PCF8574")) {
+            return new PCF8574gpio(wire, address, tcaPort, threshold, channels, deviceIndex);
+        }
+    } else if (type.equalsIgnoreCase("RTC")) {
+        if (typeNumber.equalsIgnoreCase("DS3231")) {
+            return new DS3231rtc(wire, address, tcaPort, threshold, channels, deviceIndex);
+        }
+    } else if (type.equalsIgnoreCase("DAC")) {
+        if (typeNumber.equalsIgnoreCase("DAC_Module")) {
+            return new DAC_Module(wire, address, tcaPort, threshold, channels, deviceIndex);
+        }
+    }
+    
+    // Unknown device type
+    return nullptr;
+}
