@@ -21,15 +21,12 @@ class GP8403dac : public Device {
 public:
     GP8403dac(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
     GP8403dac(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
-    
-    bool begin() override;
+      bool begin() override;
     bool isConnected() override;
     void update() override;
     std::map<String, String> readData() override;
-    
-    // Override pure virtual methods from Device
-    std::map<String, String> getChannels() const override { return channels; }
-    float getThreshold(const String& channelKey) const override { return threshold; }
+    int getChannels() override;
+    float getThreshold() override;
       // DAC control methods
     bool setChannelA(uint16_t value);
     bool setChannelB(uint16_t value);
