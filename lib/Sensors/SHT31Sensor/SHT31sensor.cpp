@@ -24,11 +24,38 @@ SHT31sensor::SHT31sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
 bool SHT31sensor::begin()
 {
     I2CHandler::selectTCA(tcaChannel); // Use tcaChannel from base Device class
-    if (!writeCommand(0x30A2)) // Soft reset command
-    {
-        Serial.println("SHT31 begin error (soft reset)");
+    
+    // First test I2C connection
+    wire->beginTransmission(_address);
+    uint8_t error = wire->endTransmission();
+    if (error != 0) {
+        Serial.print("SHT31 not found at address 0x");
+        Serial.print(_address, HEX);
+        Serial.print(" on TCA port ");
+        Serial.print(tcaChannel);
+        Serial.print(", I2C error: ");
+        Serial.println(error);
         return false;
     }
+    
+    // Soft reset with retry
+    bool resetSuccess = false;
+    for (int i = 0; i < 3 && !resetSuccess; i++) {
+        if (writeCommand(0x30A2)) { // Soft reset command
+            resetSuccess = true;
+        } else {
+            Serial.print("SHT31 soft reset attempt ");
+            Serial.print(i + 1);
+            Serial.println(" failed, retrying...");
+            delay(10);
+        }
+    }
+    
+    if (!resetSuccess) {
+        Serial.println("SHT31 begin error (soft reset failed after retries)");
+        return false;
+    }
+    
     delay(10); // Wait for reset to complete
 
     // Read the status register to ensure the sensor is ready
@@ -68,6 +95,7 @@ bool SHT31sensor::begin()
     }
 
     initialized = true; // Set initialized flag to true
+    Serial.println("SHT31 sensor initialized successfully");
     return true;
 }
 
