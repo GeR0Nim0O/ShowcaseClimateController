@@ -1,7 +1,7 @@
 #include "PCF8574gpio.h"
 
 PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(PCF8574_ADDRESS), _gpioState(0xFF) {
+    : Device(threshold, channels, i2cChannel, tcaPort, deviceIndex), wire(wire), _address(PCF8574_ADDRESS), _gpioState(0xFF) {
 }
 
 bool PCF8574gpio::begin() {
