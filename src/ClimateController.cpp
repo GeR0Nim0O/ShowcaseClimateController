@@ -251,15 +251,15 @@ void ClimateController::initializePinMappings() {
 uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
     JsonObject devicesConfig = Configuration::getDevicesConfig();
     
-    if (devicesConfig.containsKey("PCF8574")) {
+    if (devicesConfig["PCF8574"].is<JsonObject>()) {
         JsonObject pcfConfig = devicesConfig["PCF8574"];
-        if (pcfConfig.containsKey("Channels")) {
+        if (pcfConfig["Channels"].is<JsonObject>()) {
             JsonObject channels = pcfConfig["Channels"];
             
             // Search through all IO channels to find the one with matching name
             for (JsonPair channel : channels) {
                 JsonObject channelObj = channel.value();
-                if (channelObj.containsKey("Name") && 
+                if (channelObj["Name"].is<const char*>() && 
                     String(channelObj["Name"].as<const char*>()) == channelName) {
                     // Extract pin number from channel key (e.g., "IO0" -> 0)
                     String channelKey = channel.key().c_str();
