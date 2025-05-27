@@ -399,7 +399,7 @@ void Configuration::initializeEachDevice(const std::vector<Device*>& devices) {
             Serial.print("Failed to initialize device: ");
             Serial.print(device->getType());
             Serial.print(" ");
-            Serial.print(device->getTypeNumber());
+            Serial.print(device->getType());
             Serial.print(" at address 0x");
             Serial.println(device->getAddress(), HEX);
         } else {
