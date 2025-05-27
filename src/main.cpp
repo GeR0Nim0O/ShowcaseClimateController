@@ -272,9 +272,20 @@ void loop() {
 }
 
 void readAndSendDataFromDevices() {
-    for (Device* device : devices) {
-        if (device == nullptr || !device->isInitialized()) {
-            Serial.println("Error: Null or uninitialized device pointer");
+    for (size_t i = 0; i < devices.size(); i++) {
+        Device* device = devices[i];
+        if (device == nullptr) {
+            Serial.print("Error: Null device pointer at index ");
+            Serial.println(i);
+            continue;
+        }
+        if (!device->isInitialized()) {
+            Serial.print("Error: Uninitialized device at index ");
+            Serial.print(i);
+            Serial.print(", Type: ");
+            Serial.print(device->getType());
+            Serial.print(", Address: 0x");
+            Serial.println(device->getI2CAddress(), HEX);
             continue;
         }
         I2CHandler::selectTCA(device->getTCAChannel());
