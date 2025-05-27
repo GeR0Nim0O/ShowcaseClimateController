@@ -25,11 +25,8 @@
 #define DISPLAY_CHANNEL      2
 #define DAC_ADDR             0x62
 #define DAC_CHANNEL          3
-
-// Encoder pins (direct GPIO)
-#define ENCODER_PIN_A        4
-#define ENCODER_PIN_B        5
-#define ENCODER_BUTTON_PIN   6
+#define ENCODER_ADDR         0x61
+#define ENCODER_CHANNEL      4
 
 // Global objects
 DeviceRegistry& deviceRegistry = DeviceRegistry::getInstance();
