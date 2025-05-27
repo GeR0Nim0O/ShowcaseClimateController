@@ -1,32 +1,16 @@
 #include "Display.h"
 
-// SSD1306 Commands
-#define SSD1306_DISPLAYOFF         0xAE
-#define SSD1306_DISPLAYON          0xAF
-#define SSD1306_SETDISPLAYCLOCKDIV 0xD5
-#define SSD1306_SETMULTIPLEX       0xA8
-#define SSD1306_SETDISPLAYOFFSET   0xD3
-#define SSD1306_SETSTARTLINE       0x40
-#define SSD1306_CHARGEPUMP         0x8D
-#define SSD1306_MEMORYMODE         0x20
-#define SSD1306_SEGREMAP           0xA1
-#define SSD1306_COMSCANDEC         0xC8
-#define SSD1306_SETCOMPINS         0xDA
-#define SSD1306_SETCONTRAST        0x81
-#define SSD1306_SETPRECHARGE       0xD9
-#define SSD1306_SETVCOMDETECT      0xDB
-
 Display::Display(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : Device(i2cAddress, tcaChannel, deviceName, deviceIndex),
-      currentX(0), currentY(0), textSize(1), displayInitialized(false) {
-    type = "Display";
+      currentCol(0), currentRow(0), displayInitialized(false), backlightState(true) {
+    type = "LCD_Display";
 }
 
 bool Display::begin() {
     selectTCAChannel(tcaChannel);
     
     if (!testI2CConnection()) {
-        Serial.println("Display not found!");
+        Serial.println("LCD Display not found!");
         return false;
     }
     
@@ -34,15 +18,15 @@ bool Display::begin() {
     
     initialized = true;
     displayInitialized = true;
-    Serial.println("Display initialized successfully");
+    Serial.println("LCD Display initialized successfully");
     
     // Show startup message
     clear();
     setCursor(0, 0);
-    print("Climate Controller");
-    setCursor(0, 16);
-    print("Initializing...");
-    display();
+    print("Climate Control");
+    setCursor(0, 1);
+    print("Starting...");
+    delay(2000);
     
     return true;
 }
@@ -52,84 +36,177 @@ bool Display::isConnected() {
 }
 
 void Display::update() {
-    // Periodic display updates can be implemented here
-    // For now, this is handled by explicit calls to display methods
+    // LCD doesn't need periodic updates
+    // Keep connection alive by reading status if needed
 }
 
 void Display::initializeDisplay() {
     selectTCAChannel(tcaChannel);
     
-    // Initialize sequence for 128x64 OLED
-    sendCommand(SSD1306_DISPLAYOFF);
-    sendCommand(SSD1306_SETDISPLAYCLOCKDIV);
-    sendCommand(0x80);
-    sendCommand(SSD1306_SETMULTIPLEX);
-    sendCommand(0x3F);
-    sendCommand(SSD1306_SETDISPLAYOFFSET);
-    sendCommand(0x0);
-    sendCommand(SSD1306_SETSTARTLINE | 0x0);
-    sendCommand(SSD1306_CHARGEPUMP);
-    sendCommand(0x14);
-    sendCommand(SSD1306_MEMORYMODE);
-    sendCommand(0x00);
-    sendCommand(SSD1306_SEGREMAP | 0x1);
-    sendCommand(SSD1306_COMSCANDEC);
-    sendCommand(SSD1306_SETCOMPINS);
-    sendCommand(0x12);
-    sendCommand(SSD1306_SETCONTRAST);
-    sendCommand(0xCF);
-    sendCommand(SSD1306_SETPRECHARGE);
-    sendCommand(0xF1);
-    sendCommand(SSD1306_SETVCOMDETECT);
-    sendCommand(0x40);
-    sendCommand(SSD1306_DISPLAYON);
+    // Initialize LCD in 4-bit mode
+    delay(50); // Wait for LCD to power up
+    
+    // Set backlight on
+    expanderWrite(LCD_BACKLIGHT);
+    delay(1000);
+    
+    // Start in 8-bit mode, then switch to 4-bit
+    write4bits(0x03 << 4);
+    delayMicroseconds(4500);
+    
+    write4bits(0x03 << 4);
+    delayMicroseconds(4500);
+    
+    write4bits(0x03 << 4);
+    delayMicroseconds(150);
+    
+    // Set to 4-bit mode
+    write4bits(0x02 << 4);
+    
+    // Function set: 4-bit mode, 2 lines, 5x8 dots
+    command(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_2LINE | LCD_5x8DOTS);
+    
+    // Display control: display on, cursor off, blink off
+    command(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
+    
+    // Clear display
+    clear();
+    
+    // Entry mode: left to right
+    command(LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT);
+    
+    home();
 }
 
 void Display::clear() {
     if (!displayInitialized) return;
     
-    selectTCAChannel(tcaChannel);
-    
-    // Clear display buffer - simplified implementation
-    // In a real implementation, you would clear the frame buffer
-    currentX = 0;
-    currentY = 0;
+    command(LCD_CLEARDISPLAY);
+    delayMicroseconds(2000);
+    currentCol = 0;
+    currentRow = 0;
 }
 
-void Display::setCursor(int x, int y) {
-    currentX = x;
-    currentY = y;
+void Display::home() {
+    if (!displayInitialized) return;
+    
+    command(LCD_RETURNHOME);
+    delayMicroseconds(2000);
+    currentCol = 0;
+    currentRow = 0;
+}
+
+void Display::setCursor(int col, int row) {
+    if (!displayInitialized) return;
+    if (col >= LCD_COLS || row >= LCD_ROWS) return;
+    
+    currentCol = col;
+    currentRow = row;
+    
+    uint8_t address = (row == 0) ? 0x00 : 0x40;
+    address += col;
+    command(LCD_SETDDRAMADDR | address);
 }
 
 void Display::print(const String& text) {
     if (!displayInitialized) return;
     
-    selectTCAChannel(tcaChannel);
-    
-    // Simplified text printing - in real implementation,
-    // you would render text to frame buffer
-    Serial.print("Display: ");
-    Serial.print(text);
+    for (int i = 0; i < text.length(); i++) {
+        if (currentCol >= LCD_COLS) {
+            // Auto-wrap to next line
+            currentRow++;
+            currentCol = 0;
+            if (currentRow >= LCD_ROWS) {
+                currentRow = 0; // Wrap to first line
+            }
+            setCursor(currentCol, currentRow);
+        }
+        
+        writeChar(text[i]);
+        currentCol++;
+    }
 }
 
-void Display::println(const String& text) {
-    print(text);
-    currentY += 8 * textSize; // Move to next line
-    currentX = 0;
-    Serial.println();
-}
-
-void Display::setTextSize(int size) {
-    textSize = size;
-}
-
-void Display::display() {
+void Display::print(char c) {
     if (!displayInitialized) return;
     
-    selectTCAChannel(tcaChannel);
+    if (currentCol >= LCD_COLS) {
+        currentRow++;
+        currentCol = 0;
+        if (currentRow >= LCD_ROWS) {
+            currentRow = 0;
+        }
+        setCursor(currentCol, currentRow);
+    }
     
-    // In real implementation, this would send the frame buffer to the display
-    Serial.println(" [DISPLAYED]");
+    writeChar(c);
+    currentCol++;
+}
+
+void Display::print(int value) {
+    print(String(value));
+}
+
+void Display::print(float value, int decimals) {
+    print(String(value, decimals));
+}
+
+void Display::displayOn() {
+    command(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
+}
+
+void Display::displayOff() {
+    command(LCD_DISPLAYCONTROL | LCD_DISPLAYOFF | LCD_CURSOROFF | LCD_BLINKOFF);
+}
+
+void Display::cursorOn() {
+    command(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSORON | LCD_BLINKOFF);
+}
+
+void Display::cursorOff() {
+    command(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
+}
+
+void Display::blinkOn() {
+    command(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKON);
+}
+
+void Display::blinkOff() {
+    command(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
+}
+
+void Display::backlightOn() {
+    backlightState = true;
+    expanderWrite(LCD_BACKLIGHT);
+}
+
+void Display::backlightOff() {
+    backlightState = false;
+    expanderWrite(0);
+}
+
+void Display::scrollLeft() {
+    command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT);
+}
+
+void Display::scrollRight() {
+    command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT);
+}
+
+void Display::leftToRight() {
+    command(LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT);
+}
+
+void Display::rightToLeft() {
+    command(LCD_ENTRYMODESET | LCD_ENTRYRIGHT | LCD_ENTRYSHIFTDECREMENT);
+}
+
+void Display::autoscroll() {
+    command(LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTINCREMENT);
+}
+
+void Display::noAutoscroll() {
+    command(LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT);
 }
 
 void Display::displayClimateStatus(float temp, float hum, float tempSetpoint, float humSetpoint) {
@@ -137,27 +214,19 @@ void Display::displayClimateStatus(float temp, float hum, float tempSetpoint, fl
     
     clear();
     
-    // Line 1: Current temperature
+    // Line 1: Temperature info
     setCursor(0, 0);
-    print("Temp: ");
-    print(String(temp, 1));
-    print("C (");
-    print(String(tempSetpoint, 1));
-    print("C)");
+    print("T:");
+    print(temp, 1);
+    print("C S:");
+    print(tempSetpoint, 1);
     
-    // Line 2: Current humidity
-    setCursor(0, 16);
-    print("Humidity: ");
-    print(String(hum, 1));
-    print("% (");
-    print(String(humSetpoint, 1));
-    print("%)");
-    
-    // Line 3: Status indicators
-    setCursor(0, 32);
-    print("Status: ACTIVE");
-    
-    display();
+    // Line 2: Humidity info
+    setCursor(0, 1);
+    print("H:");
+    print(hum, 1);
+    print("% S:");
+    print(humSetpoint, 1);
 }
 
 void Display::displaySystemStatus(const String& status) {
@@ -165,10 +234,15 @@ void Display::displaySystemStatus(const String& status) {
     
     clear();
     setCursor(0, 0);
-    print("System Status:");
-    setCursor(0, 16);
-    print(status);
-    display();
+    print("System:");
+    setCursor(0, 1);
+    
+    // Truncate status if too long
+    String truncatedStatus = status;
+    if (truncatedStatus.length() > LCD_COLS) {
+        truncatedStatus = truncatedStatus.substring(0, LCD_COLS);
+    }
+    print(truncatedStatus);
 }
 
 void Display::displayError(const String& error) {
@@ -177,38 +251,51 @@ void Display::displayError(const String& error) {
     clear();
     setCursor(0, 0);
     print("ERROR:");
-    setCursor(0, 16);
-    print(error);
-    display();
+    setCursor(0, 1);
+    
+    // Truncate error if too long
+    String truncatedError = error;
+    if (truncatedError.length() > LCD_COLS) {
+        truncatedError = truncatedError.substring(0, LCD_COLS);
+    }
+    print(truncatedError);
 }
 
-void Display::sendCommand(uint8_t command) {
-    Wire.beginTransmission(i2cAddress);
-    Wire.write(0x00); // Command mode
-    Wire.write(command);
-    Wire.endTransmission();
+void Display::send(uint8_t value, uint8_t mode) {
+    uint8_t highnib = value & 0xF0;
+    uint8_t lownib = (value << 4) & 0xF0;
+    write4bits(highnib | mode);
+    write4bits(lownib | mode);
 }
 
-void Display::sendData(uint8_t data) {
+void Display::write4bits(uint8_t value) {
+    expanderWrite(value);
+    pulseEnable(value);
+}
+
+void Display::expanderWrite(uint8_t data) {
+    selectTCAChannel(tcaChannel);
+    
+    if (backlightState) {
+        data |= LCD_BACKLIGHT;
+    }
+    
     Wire.beginTransmission(i2cAddress);
-    Wire.write(0x40); // Data mode
     Wire.write(data);
     Wire.endTransmission();
 }
 
-// Simplified implementations for drawing methods
-void Display::drawPixel(int x, int y) {
-    // In real implementation, set pixel in frame buffer
+void Display::pulseEnable(uint8_t data) {
+    expanderWrite(data | LCD_EN);
+    delayMicroseconds(1);
+    expanderWrite(data & ~LCD_EN);
+    delayMicroseconds(50);
 }
 
-void Display::drawLine(int x0, int y0, int x1, int y1) {
-    // In real implementation, draw line in frame buffer
+void Display::command(uint8_t value) {
+    send(value, 0);
 }
 
-void Display::drawRect(int x, int y, int width, int height) {
-    // In real implementation, draw rectangle in frame buffer
-}
-
-void Display::fillRect(int x, int y, int width, int height) {
-    // In real implementation, fill rectangle in frame buffer
+void Display::writeChar(uint8_t value) {
+    send(value, LCD_RS);
 }
