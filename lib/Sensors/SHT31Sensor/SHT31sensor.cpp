@@ -243,3 +243,15 @@ float SHT31sensor::getTemperature() const {
 float SHT31sensor::getHumidity() const {
     return _humidity;
 }
+
+// Implementation of pure virtual methods from Device base class
+bool SHT31sensor::isConnected() {
+    I2CHandler::selectTCA(tcaPort);
+    wire->beginTransmission(_address);
+    return (wire->endTransmission() == 0);
+}
+
+void SHT31sensor::update() {
+    // Update sensor readings
+    readData();
+}
