@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <PID_v1.h>
 #include "PCF8574gpio.h"
-#include "SHT31_Sensor.h"
+#include "SHT31sensor.h"
 
 enum class ClimateMode {
     OFF,
