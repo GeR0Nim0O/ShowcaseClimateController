@@ -13,15 +13,14 @@ bool SCALESsensor::begin() {
         Serial.println("SCALES begin error (power on)");
         return false;
     }
-    delay(10); // Wait for power on to complete
-
-    // Set measurement mode
+    delay(10); // Wait for power on to complete    // Set measurement mode
     if (!writeCommand(0x10)) // Continuously H-Resolution Mode
     {
         Serial.println("Failed to set measurement mode");
         return false;
     }
 
+    initialized = true; // Set initialized flag to true
     return true;
 }
 
