@@ -84,7 +84,10 @@ bool SHT31sensor::begin()
         return false;
     }    // Print SHT31 serial number
     Serial.print("SHT31 Serial Number: ");
-    Serial.println(getSerialNumber());    // Read initial values using readData
+    Serial.println(getSerialNumber());
+    
+    // Try to read initial values using readData - but don't fail initialization if this fails
+    Serial.println("DEBUG: Attempting initial sensor reading...");
     auto sht31Data = readData();
     if (sht31Data.find("T") != sht31Data.end() && sht31Data.find("H") != sht31Data.end()) {
         float temperature = sht31Data["T"].toFloat();
@@ -93,7 +96,12 @@ bool SHT31sensor::begin()
         Serial.println(temperature);
         Serial.print("Initial Humidity: ");
         Serial.println(humidity);
-    }    initialized = true; // Set initialized flag to true
+    } else {
+        Serial.println("Warning: Initial sensor reading failed, but continuing with initialization");
+    }
+    
+    // Set initialized flag to true regardless of initial reading success
+    initialized = true; 
     Serial.println("DEBUG: SHT31 initialized flag set to true");
     Serial.print("DEBUG: SHT31 initialized flag is now: ");
     Serial.println(initialized);
