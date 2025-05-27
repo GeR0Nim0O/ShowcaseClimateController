@@ -10,6 +10,16 @@
                 "$gcc"
             ],
             "isBackground": false
+        },
+        {
+            "label": "PlatformIO Upload",
+            "type": "shell",
+            "command": "pio run --target upload --upload-port COM11",
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "isBackground": false
         }
     ]
 }
