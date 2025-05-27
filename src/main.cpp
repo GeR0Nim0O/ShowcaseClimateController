@@ -572,4 +572,3 @@ void setMqttThrottling(bool enable, unsigned long interval) {
       Serial.println("disabled - sending all data");
   }
 }
-}
