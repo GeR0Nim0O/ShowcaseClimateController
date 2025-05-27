@@ -229,23 +229,23 @@ void ClimateController::emergencyShutdown() {
 
 // Pin mapping helper methods
 void ClimateController::initializePinMappings() {
-    // Initialize with default values
-    pinTemperatureEnable = 0;
-    pinTemperatureHeat = 1;
-    pinTemperatureCool = 2;
-    pinHumidify = 3;
-    pinDehumidify = 4;
-    pinFanInterior = 5;
-    pinFanExterior = 6;
+    // Initialize with default values matching config.json
+    pinFanExterior = 0;
+    pinFanInterior = 1;
+    pinHumidify = 2;
+    pinDehumidify = 3;
+    pinTemperatureEnable = 4;
+    pinTemperatureCool = 5;
+    pinTemperatureHeat = 6;
     
     // Try to load from configuration
-    pinTemperatureEnable = getPinFromChannelName("TemperatureEnable");
-    pinTemperatureHeat = getPinFromChannelName("TemperatureHeat");
-    pinTemperatureCool = getPinFromChannelName("TemperatureCool");
+    pinFanExterior = getPinFromChannelName("FanExterior");
+    pinFanInterior = getPinFromChannelName("FanInterior");
     pinHumidify = getPinFromChannelName("Humidify");
     pinDehumidify = getPinFromChannelName("Dehumidify");
-    pinFanInterior = getPinFromChannelName("FanInterior");
-    pinFanExterior = getPinFromChannelName("FanExterior");
+    pinTemperatureEnable = getPinFromChannelName("TemperatureEnable");
+    pinTemperatureCool = getPinFromChannelName("TemperatureCool");
+    pinTemperatureHeat = getPinFromChannelName("TemperatureHeat");
 }
 
 uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
