@@ -92,10 +92,12 @@ bool SHT31sensor::begin()
         Serial.println(temperature);
         Serial.print("Initial Humidity: ");
         Serial.println(humidity);
-    }
-
-    initialized = true; // Set initialized flag to true
+    }    initialized = true; // Set initialized flag to true
+    Serial.println("DEBUG: SHT31 initialized flag set to true");
+    Serial.print("DEBUG: SHT31 initialized flag is now: ");
+    Serial.println(initialized);
     Serial.println("SHT31 sensor initialized successfully");
+    Serial.println("DEBUG: SHT31sensor::begin() returning true");
     return true;
 }
 
