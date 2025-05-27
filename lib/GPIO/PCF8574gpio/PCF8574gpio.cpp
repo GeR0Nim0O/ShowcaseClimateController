@@ -19,8 +19,7 @@ PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
 }
 
 bool PCF8574gpio::begin() {
-    Serial.println("DEBUG: PCF8574gpio::begin() START");
-    Serial.println("DEBUG: PCF8574gpio::begin() called");
+    // Serial.println("DEBUG: PCF8574gpio::begin() START");
     I2CHandler::selectTCA(tcaChannel); // Use tcaChannel from Device base class
     
     // First test I2C connection
@@ -29,15 +28,11 @@ bool PCF8574gpio::begin() {
         return false;
     }
     
-    Serial.println("DEBUG: PCF8574 connection test passed, starting GPIO initialization");
-    
     // Initialize GPIO state - try multiple times if needed
     int retries = 3;
     bool success = false;
     
     for (int i = 0; i < retries && !success; i++) {
-        Serial.print("DEBUG: PCF8574 write attempt ");
-        Serial.println(i + 1);
         success = writeByte(_gpioState); // Initialize GPIO state
         if (!success) {
             Serial.print("PCF8574 write attempt ");
