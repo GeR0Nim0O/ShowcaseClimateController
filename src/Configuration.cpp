@@ -273,7 +273,7 @@ bool Configuration::isNewConfigFormat(const JsonObject& sensorConfig) {
 std::map<String, String> Configuration::getChannelNames(const JsonObject& sensorConfig) {
     std::map<String, String> channelMap;
     
-    if (sensorConfig.containsKey("Channels")) {
+    if (sensorConfig["Channels"].is<JsonObject>()) {
         JsonObject channels = sensorConfig["Channels"].as<JsonObject>();
         
         if (isNewConfigFormat(sensorConfig)) {
