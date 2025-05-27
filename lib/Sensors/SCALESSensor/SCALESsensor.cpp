@@ -4,7 +4,6 @@
 
 SCALESsensor::SCALESsensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
     : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(SCALES_ADDRESS), _weight(NAN) {
-    numChannels = channels.size(); // Set number of channels based on the map size
 }
 
 bool SCALESsensor::begin() {
