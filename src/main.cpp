@@ -1,243 +1,483 @@
-#include <Arduino.h>
+#include <WiFi.h>
 #include <Wire.h>
-#include <EEPROM.h>
-#include <stdlib.h> // Added for system()
+#include <PubSubClient.h>
+#include <Arduino.h>
+#include "Device.h"
+#include "BH1705Sensor/BH1705sensor.h"
+#include "SHT31Sensor/SHT31sensor.h"
+#include "SCALESSensor/SCALESsensor.h"
+#include "DS3231Rtc/DS3231rtc.h" // Include the DS3231rtc header
 
-// Include our custom classes
-#include "Device/DeviceRegistry/DeviceRegistry.h"
-#include "GPIO/PCF8574_GPIO/PCF8574_GPIO.h"
-#include "Sensors/SHT31_Sensor/SHT31_Sensor.h"
-#include "Display/Display.h"
-#include "DAC/DAC_Module/DAC_Module.h"
-#include "Input/RotaryEncoder/RotaryEncoder.h"
-#include "ClimateController/ClimateController.h"
-#include "Config/ClimateConfig/ClimateConfig.h"
+#include <WiFiClientSecure.h> 
+#include <string>
+#include <vector> 
+#include <map> // Include map header
+#include <set> // Include set header
 
-// Define the I2C address of the PCA9548A multiplexer
-#define PCA9548A_ADDRESS 0x70
+#include "CACert.h"
+#include "TimeHandler.h"
+#include "WifiMqttHandler.h"
+#include "JsonHandler.h"
+#include "SDHandler.h"
+#include "Configuration.h"
+#include "I2CHandler.h"
 
-// Device I2C addresses and TCA channels
-#define GPIO_EXPANDER_ADDR    0x20
-#define GPIO_EXPANDER_CHANNEL 0
-#define SHT31_ADDR           0x44
-#define SHT31_CHANNEL        1
-#define DISPLAY_ADDR         0x3C
-#define DISPLAY_CHANNEL      2
-#define DAC_ADDR             0x62
-#define DAC_CHANNEL          3
-#define ENCODER_ADDR         0x61
-#define ENCODER_CHANNEL      4
+#define BUTTON_PIN 34
+#define DEBOUNCE_DELAY 50 // Debounce delay in milliseconds
+bool buttonPressed = false;
+unsigned long lastDebounceTime = 0; // Last time the button state was toggled
+bool stopSendingMQTT = false;
+unsigned long buttonPressTime = 0;
 
-// Global objects
-DeviceRegistry& deviceRegistry = DeviceRegistry::getInstance();
-ClimateConfig& config = ClimateConfig::getInstance();
+WiFiClientSecure espClient; // Use WiFiClientSecure instead of WiFiClient
+PubSubClient client(espClient);
 
-// Device instances
-PCF8574_GPIO* gpioExpander = nullptr;
-SHT31_Sensor* tempHumSensor = nullptr;
-Display* display = nullptr;
-DAC_Module* dacModule = nullptr;
-RotaryEncoder* encoder = nullptr;
-ClimateController* climateController = nullptr;
+// Custom WiFi settings
+String customSSID = "Ron&Rowie_Gast";
+String customPassword = "Gast@Ron&Rowie";
+bool useCustomWiFi = true; // Set to true to use custom WiFi settings
 
-void gitAutoCommitAndPush() {
-    // Commit and push all changes with a timestamped message
-    system("git add .");
-    system("git commit -m \"Auto-commit from device\"");
-    system("git push");
-}
+// Custom MQTT settings
+String customMqttServer = "mqtt.flespi.io";
+int customMqttPort = 8883;
+String customFlespiToken = "ONz40m0iGTFbiFMcp14lLnt1Eb31qnPulPkg5DkJUuGGY6OhJhN1iPqImaRT0qbp";
+bool useCustomMqtt = true; // Set to true to use custom MQTT settings
 
-void initializeDevices() {
-    Serial.println("=== Initializing Climate Controller Devices ===");
-      // Create device instances
-    gpioExpander = new PCF8574_GPIO(GPIO_EXPANDER_ADDR, GPIO_EXPANDER_CHANNEL, "GPIO_Expander", 0);
-    tempHumSensor = new SHT31_Sensor(SHT31_ADDR, SHT31_CHANNEL, "Temperature_Humidity_Sensor", 0);
-    display = new Display(DISPLAY_ADDR, DISPLAY_CHANNEL, "OLED_Display", 0);
-    dacModule = new DAC_Module(DAC_ADDR, DAC_CHANNEL, "DAC_Module", 0);
-    encoder = new RotaryEncoder(ENCODER_ADDR, ENCODER_CHANNEL, "I2C_Encoder", 0);
-    
-    // Register devices with the device registry
-    deviceRegistry.registerDevice(gpioExpander);
-    deviceRegistry.registerDevice(tempHumSensor);
-    deviceRegistry.registerDevice(display);
-    deviceRegistry.registerDevice(dacModule);
-    deviceRegistry.registerDevice(encoder);
-    
-    // Initialize all devices
-    bool allInitialized = deviceRegistry.initializeAllDevices();
-    
-    if (allInitialized) {
-        Serial.println("All devices initialized successfully!");
-        
-        // Create climate controller
-        climateController = new ClimateController(gpioExpander, tempHumSensor);
-        if (climateController->begin()) {
-            Serial.println("Climate Controller initialized successfully!");
-            
-            // Configure climate controller with saved settings
-            climateController->setTemperatureSetpoint(config.getTemperatureSetpoint());
-            climateController->setHumiditySetpoint(config.getHumiditySetpoint());
-            climateController->setTemperaturePID(config.getTemperatureKp(), config.getTemperatureKi(), config.getTemperatureKd());
-            climateController->setHumidityPID(config.getHumidityKp(), config.getHumidityKi(), config.getHumidityKd());
-            climateController->setFanInterior(config.getFanInteriorEnabled());
-            climateController->setFanExterior(config.getFanExteriorEnabled());
-            
-            // Configure encoder for menu navigation
-            encoder->setMinMax(0, 100);
-            encoder->setStepSize(1);
-            
-            // Show status on display
-            if (display->isConnected()) {
-                display->displaySystemStatus("System Ready");
-                delay(2000);
-            }
-        } else {
-            Serial.println("Failed to initialize Climate Controller!");
-        }
-    } else {
-        Serial.println("Some devices failed to initialize!");
+// MQTT throttling settings
+bool throttleMqtt = true; // Enable MQTT throttling to send data only once every minute
+unsigned long mqttThrottleInterval = 60000; // 1 minute in milliseconds
+unsigned long lastMqttSendTime = 0; // Last time data was sent via MQTT
+
+// Structure to track changed sensor data
+struct SensorData {
+    String deviceName;
+    String projectNr;
+    String showcaseId;
+    String sensorType;
+    float sensorValue;
+    String currentTime;
+    int deviceIndex;
+    bool changed;
+};
+
+// Map to store changed sensor data
+std::map<std::string, SensorData> changedSensorData;
+
+unsigned long lastTimeFetch = 0;
+const unsigned long timeFetchInterval = 3600000; // Fetch time every 1 hour
+
+bool setupComplete = false; // Flag to indicate setup completion
+
+std::vector<Device*> devices; // Vector to hold device pointers
+std::map<uint8_t, std::vector<uint8_t>> tcaScanResults; // Map to store TCA scan results
+DS3231rtc* rtc; // Pointer to hold RTC device
+
+struct StringComparator {
+    bool operator()(const String& a, const String& b) const {
+        return a.compareTo(b) < 0;
     }
-    
-    deviceRegistry.printDeviceStatus();
-}
+};
 
-void setup() {
-    Serial.begin(115200);
-    delay(3000);
-    
-    Serial.println("=== Climate Controller Starting ===");
-    
-    // Initialize I2C
-    Wire.begin(17, 16); // SDA, SCL pins for ESP32-S3-DevKitC-1
-    
-    // Initialize configuration
-    if (!config.begin()) {
-        Serial.println("Failed to initialize configuration!");
-    }
-    
-    // Scan I2C devices for debugging
-    Serial.println("Scanning I2C bus directly...");
-    scanI2CDevices();
-    
-    delay(1000);
-    Serial.println("Scanning I2C bus with PCA9548A multiplexer...");
-    scanAllChannels();
-    
-    // Initialize all devices
-    initializeDevices();
-    
-    // Automatically commit and push changes to git
-    gitAutoCommitAndPush();
-    
-    Serial.println("=== Setup Complete ===");
+std::map<std::string, float> lastSensorValues; // Changed from String to std::string
+
+String ssid;
+String password;
+String mqtt_server;
+int mqtt_port;
+String projectNr;
+String showcaseId;
+String deviceName;
+String utc;
+
+String clientId;
+String topic;
+
+int wifiRetryCount = 0;
+int mqttRetryCount = 0;
+int apiRetryCount = 0;
+int ntpRetryCount = 0;
+
+void readAndSendDataFromDevices();
+void handleButtonPress();
+void printDebugInfo();
+void printCreatedSensors(); // Declare the function here
+void logDataToSD(const String& deviceName, const String& currentTime, float value, const String& sensorType); // Update function declaration
+void sendDataOverMQTT(const String& deviceName, const String& projectNr, const String& showcaseId, const char* sensorType, float sensorValue, const String& currentTime, int deviceIndex);
+void setCustomMqttSettings();
+void setMqttThrottling(bool enable, unsigned long interval = 60000); // Declare the function here
+void sendAllChangedSensorData(); // Add this function declaration
+void setup()
+{
+  Serial.begin(115200);
+  delay(5000); 
+
+  // Initialize I2C bus
+  I2CHandler::initializeI2C(); 
+
+  // Perform I2C scan before connecting to any devices
+  I2CHandler::scanI2C(); 
+
+  // Initialize SD card and configuration
+  if (!SDHandler::initializeSDCardAndConfig()) {
+    Serial.println("Failed to initialize SD card.");
+    return;
+  }
+
+  // Load device configurations from config.json
+  if (!Configuration::loadConfigFromSD("/config.json"))
+  {
+    Serial.println("Failed to load config from SD card. Using default or last known values.");
+    // Set default or last known values here
+    Configuration::setWiFiSSID("Ron");
+    Configuration::setWiFiPassword("ikweethet");
+    Configuration::setMqttsServer("mqtt.flespi.io");
+    Configuration::setMqttsPort(8883);
+    Configuration::setFlespiToken("ONz40m0iGTFbiFMcp14lLnt1Eb31qnPulPkg5DkJUuGGY6OhJhN1iPqImaRT0qbp"); // Replace with your actual token
+    Configuration::setProjectNumber("12345");
+    Configuration::setShowcaseId("67");
+    Configuration::setDeviceName("TEST");
+    Configuration::setTimezone("UTC");
+  } else {
+    Serial.println("Config loaded successfully from SD card.");
+  }
+
+  // Print devices configuration
+  Configuration::printConfigValues();
+
+  // Get connected I2C devices with their addresses and TCA ports
+  tcaScanResults = I2CHandler::TCAScanner();
+
+  // Print TCA scan results
+  I2CHandler::printTCAScanResults(tcaScanResults);
+
+  // Initialize devices based on configuration
+  devices = Configuration::initializeDevices(tcaScanResults, rtc);
+
+  // Print created sensors for debugging
+  printCreatedSensors();
+
+  // Initialize each device
+  Configuration::initializeEachDevice(devices);
+
+  Serial.println("I2C scan done");
+
+  // Set custom WiFi settings
+  if (useCustomWiFi) {
+    Configuration::setWiFiSSID(customSSID);
+    Configuration::setWiFiPassword(customPassword);
+  }
+
+  // Set custom MQTT settings
+  setCustomMqttSettings();
+
+  clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
+  topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
+
+  // Print debugging information
+  printDebugInfo();
+
+  // Connect to WiFi
+  if (!WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword())) {
+    return;
+  }
+
+  // Connect to TimeAPI and NTP
+  TimeHandler::fetchTime(*rtc);
+
+  // Connect to MQTT broker
+  if (!WifiMqttHandler::connectToMqttBrokerWithCheck(client, espClient, 
+      Configuration::getMqttsServer(), rootCACertificate, 
+      Configuration::getMqttsPort(), clientId, topic,
+      Configuration::getFlespiToken())) {
+    Serial.println("Failed to connect to MQTT broker");
+  }
+
+  pinMode(BUTTON_PIN, INPUT_PULLUP); // Initialize button pin
+
+  delay(500);
+
+  setupComplete = true; // Indicate that setup is complete
+  Serial.println("Setup complete: " + String(setupComplete));
+
+  // Configure MQTT throttling - set to true to only send once per minute
+  setMqttThrottling(true, 60000); // Enable throttling, every 60 seconds
 }
 
 void loop() {
-    static unsigned long lastUpdate = 0;
-    static unsigned long lastDisplayUpdate = 0;
-    static unsigned long lastEncoderCheck = 0;
-    
-    unsigned long currentTime = millis();
-    
-    // Update climate controller (every 1 second)
-    if (currentTime - lastUpdate >= 1000) {
-        if (climateController) {
-            climateController->update();
+  if (!setupComplete) {
+    return; // Exit loop if setup is not complete
+  }
+
+  static unsigned long lastSendTime = 0;
+  static unsigned long lastReconnectAttempt = 0;
+  static bool mqttRetryDone = false;
+
+  // Ensure WiFi and MQTT connections are maintained
+  if (WiFi.status() != WL_CONNECTED) {
+    if (millis() - lastReconnectAttempt > 15000) {
+      Serial.println("Reconnecting to WiFi...");
+      WiFi.disconnect();
+      WiFi.begin(Configuration::getWiFiSSID().c_str(), Configuration::getWiFiPassword().c_str());
+      lastReconnectAttempt = millis();
+      mqttRetryDone = false; // Reset MQTT retry flag when WiFi reconnects
+    }
+    return; // Wait for WLAN UP before proceeding
+  }
+
+  if (!client.connected()) {
+    if (millis() - lastReconnectAttempt > 10000) { // Try every 10 seconds
+      Serial.println("Reconnecting to MQTT broker...");
+      WifiMqttHandler::connectToMqttBroker(client, espClient, 
+                                         Configuration::getMqttsServer().c_str(), 
+                                         rootCACertificate, 
+                                         Configuration::getMqttsPort(), 
+                                         clientId.c_str(), topic.c_str(),
+                                         Configuration::getFlespiToken().c_str());
+      lastReconnectAttempt = millis();
+    }
+    return; // Wait for MQTT UP before proceeding
+  }
+
+  client.loop(); // Ensure the MQTT client loop is called to maintain the connection
+
+  TimeHandler::fetchCurrentTimePeriodically(rtc, lastTimeFetch, timeFetchInterval);
+
+  // Read and send data from each device
+  readAndSendDataFromDevices();
+
+  handleButtonPress();
+
+  // Add a direct check here to periodically send data
+  if (throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval)) {
+      if (WiFi.status() == WL_CONNECTED && client.connected()) {
+          sendAllChangedSensorData();
+      }
+  }
+}
+
+void readAndSendDataFromDevices() {
+    for (Device* device : devices) {
+        if (device == nullptr) {
+            Serial.println("Error: Null device pointer");
+            continue;
         }
-        
-        // Update all devices
-        deviceRegistry.updateAllDevices();
-        
-        lastUpdate = currentTime;
+        I2CHandler::selectTCA(device->getTcaPort());
+        auto data = device->readData();
+        for (const auto& channel : device->getChannels()) {
+            String channelKey = channel.first;
+            std::string key = std::string(channelKey.c_str()); // Convert channelKey to std::string
+            float value = data[key];
+            String currentTime = TimeHandler::getCurrentTime(*rtc);
+            String deviceName = device->getTypeNumber() + "_" + String(device->getDeviceIndex());
+            String projectNr = Configuration::getProjectNumber();
+            String showcaseId = Configuration::getShowcaseId();
+
+            // Convert Arduino String to std::string for map access
+            float lastValue = lastSensorValues[key];
+            
+            // Get channel-specific threshold instead of device-level threshold
+            float threshold = device->getThreshold(channelKey);
+            
+            // Add this for debugging
+            if (deviceName == "SHT31_0" && channelKey == "H") {
+                Serial.print("SHT31_0 H - Current value: ");
+                Serial.print(value);
+                Serial.print(" Last value: ");
+                Serial.print(lastValue);
+                Serial.print(" Difference: ");
+                Serial.print(abs(value - lastValue));
+                Serial.print(" Threshold: ");
+                Serial.println(threshold);
+            }
+            
+            // This conditional already ensures logging only happens when threshold is exceeded
+            if (abs(value - lastValue) >= threshold) {
+                lastSensorValues[key] = value;
+
+                if (channel.second != "Time") {
+                    // Log to SD only when the value has changed beyond threshold
+                    // Pass the sensor type (channel.second) to the logging function
+                    logDataToSD(deviceName, currentTime, value, channel.second);
+                    
+                    // Store the data for MQTT sending later
+                    SensorData sensorData;
+                    sensorData.deviceName = deviceName;
+                    sensorData.projectNr = projectNr;
+                    sensorData.showcaseId = showcaseId;
+                    sensorData.sensorType = channel.second;
+                    sensorData.sensorValue = value;
+                    sensorData.currentTime = currentTime;
+                    sensorData.deviceIndex = device->getDeviceIndex();
+                    sensorData.changed = true;
+                    
+                    changedSensorData[key] = sensorData;
+                }
+            }
+        }
     }
     
-    // Update display (every 2 seconds)
-    if (currentTime - lastDisplayUpdate >= 2000) {
-        if (display && display->isConnected() && tempHumSensor) {
-            display->displayClimateStatus(
-                tempHumSensor->getTemperature(),
-                tempHumSensor->getHumidity(),
-                config.getTemperatureSetpoint(),
-                config.getHumiditySetpoint()
+    // Check if it's time to send all changed data via MQTT
+    if (throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval)) {
+        sendAllChangedSensorData();
+    }
+}
+
+// Update function to include sensor type parameter
+void logDataToSD(const String& deviceName, const String& currentTime, float value, const String& sensorType) {
+    String json = "{\"device\":\"" + deviceName + "\",\"type\":\"" + sensorType + "\",\"timestamp\":\"" + currentTime + "\",\"value\":" + String(value) + "}";
+    SDHandler::logJson(json.c_str());
+}
+
+void sendAllChangedSensorData() {
+    if (WiFi.status() != WL_CONNECTED || !client.connected() || stopSendingMQTT) {
+        return;
+    }
+    
+    bool dataWasSent = false;
+    
+    for (auto& item : changedSensorData) {
+        SensorData& data = item.second;
+        
+        if (data.changed) {
+            JsonHandler::sendJsonOverMqtt(
+                client, 
+                data.deviceName.c_str(), 
+                data.projectNr.c_str(), 
+                data.showcaseId.c_str(), 
+                data.sensorType.c_str(), 
+                data.sensorValue, 
+                data.currentTime.c_str(), 
+                data.deviceIndex
             );
+            
+            data.changed = false; // Reset changed flag
+            dataWasSent = true;
         }
-        lastDisplayUpdate = currentTime;
     }
     
-    // Check encoder input (every 50ms for responsiveness)
-    if (currentTime - lastEncoderCheck >= 50) {
-        if (encoder) {
-            encoder->update();
-            
-            // Handle encoder rotation for setpoint adjustment
-            long positionChange = encoder->getPositionChange();
-            if (positionChange != 0) {
-                // Adjust temperature setpoint (example)
-                float newSetpoint = config.getTemperatureSetpoint() + (positionChange * 0.5);
-                newSetpoint = constrain(newSetpoint, 10.0, 35.0);
-                config.setTemperatureSetpoint(newSetpoint);
-                
-                if (climateController) {
-                    climateController->setTemperatureSetpoint(newSetpoint);
-                }
-                
-                Serial.print("New temperature setpoint: ");
-                Serial.println(newSetpoint);
-            }
-            
-            // Handle button press for saving settings
-            if (encoder->wasButtonPressed()) {
-                config.saveSettings();
-                Serial.println("Settings saved!");
-                
-                if (display && display->isConnected()) {
-                    display->displaySystemStatus("Settings Saved!");
-                    delay(1000);
-                }
-            }
-        }
-        lastEncoderCheck = currentTime;
+    if (dataWasSent) {
+        Serial.println("Sent all changed sensor data via MQTT");
+    } else {
+        Serial.println("No changed sensor data to send");
     }
     
-    // Small delay to prevent overwhelming the system
-    delay(10);
+    lastMqttSendTime = millis(); // Update last send time
 }
 
-// Function to select a channel on the PCA9548A
-void selectI2CChannel(uint8_t channel)
-{
-    if (channel > 7)
-        return; // PCA9548A has 8 channels (0-7)
-    Wire.beginTransmission(PCA9548A_ADDRESS);
-    Wire.write(1 << channel); // Select the channel
-    Wire.endTransmission();
-}
+void handleButtonPress() {
+  int reading = digitalRead(BUTTON_PIN);
 
-// Function to scan I2C devices on the current channel
-void scanI2CDevices()
-{
-    Serial.println("Scanning I2C bus...");
-    for (uint8_t address = 1; address < 127; ++address)
-    {
-        Wire.beginTransmission(address);
-        if (Wire.endTransmission() == 0)
-        {
-            Serial.print("Found I2C device at address 0x");
-            if (address < 16)
-                Serial.print("0");
-            Serial.println(address, HEX);
+  if (reading != buttonPressed) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > DEBOUNCE_DELAY) {
+    if (reading == LOW && !buttonPressed) {
+      buttonPressed = true;
+      stopSendingMQTT = true;
+      buttonPressTime = millis();
+      Serial.println("Button pressed. Do you want to copy the config file? Press again to confirm.");
+    } else if (reading == LOW && buttonPressed) {
+      if (millis() - buttonPressTime < 5000) {
+        if (SDHandler::updateConfig()) {
+          Serial.println("Config file copied successfully. Resuming MQTT messaging in 5 seconds...");
+        } else {
+          Serial.println("Failed to copy config file. Resuming MQTT messaging.");
         }
+        stopSendingMQTT = false;
+        buttonPressed = false; // Reset button state
+      } else {
+        Serial.println("Timeout. No response received. Resuming normal operation.");
+        stopSendingMQTT = false;
+        buttonPressed = false; // Reset button state
+      }
+    } else if (reading == HIGH && buttonPressed) {
+      buttonPressed = false;
+      if (stopSendingMQTT && (millis() - buttonPressTime) > 5000) {
+        Serial.println("Resuming MQTT messaging.");
+        stopSendingMQTT = false;
+      }
     }
+  }
 }
 
-// Function to scan all channels of the PCA9548A
-void scanAllChannels()
-{
-    for (uint8_t channel = 0; channel < 8; ++channel)
-    {
-        Serial.print("Scanning channel ");
-        Serial.println(channel);
-        selectI2CChannel(channel);
-        scanI2CDevices();
-    }
+void printDebugInfo() {
+  Serial.print("SSID: ");
+  Serial.println(Configuration::getWiFiSSID());
+  Serial.print("Password: ");
+  Serial.println(Configuration::getWiFiPassword());
+  Serial.print("MQTT Server: ");
+  Serial.println(Configuration::getMqttsServer());
+  Serial.print("MQTT Port: ");
+  Serial.println(Configuration::getMqttsPort());
+  Serial.print("Client ID: ");
+  Serial.println(clientId);
+  Serial.print("Topic: ");
+  Serial.println(topic);
+}
+
+void createSensors() {
+  // Declare and initialize devicesConfig
+  JsonObject devicesConfig = Configuration::getDevicesConfig();
+}
+
+void printCreatedSensors() {
+  Serial.println("Created sensors:");
+  for (Device* device : devices) {
+    Serial.print("Type: ");
+    Serial.println(device->getType());
+    Serial.print("TypeNumber: ");
+    Serial.println(device->getTypeNumber());
+    Serial.print("Address: 0x");
+    Serial.println(device->getAddress(), HEX);
+    Serial.print("Threshold: ");
+    Serial.println(device->getThreshold());
+    Serial.print("Number of Channels: ");
+    Serial.println(device->getNumChannels());
+    Serial.print("TCA Port: ");
+    Serial.println(device->getTcaPort());
+    Serial.print("Device Index: ");
+    Serial.println(device->getDeviceIndex());
+    Serial.println();
+  }
+}
+
+void setCustomMqttSettings() {
+  if (useCustomMqtt) {
+    Serial.println("Using custom MQTT settings");
+    Configuration::setMqttsServer(customMqttServer);
+    Configuration::setMqttsPort(customMqttPort);
+    Configuration::setFlespiToken(customFlespiToken);
+    
+    // Update client ID and topic with new settings
+    clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
+    topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
+    
+    Serial.println("Custom MQTT settings applied:");
+    Serial.print("MQTT Server: ");
+    Serial.println(customMqttServer);
+    Serial.print("MQTT Port: ");
+    Serial.println(customMqttPort);
+    Serial.print("Flespi Token: ");
+    Serial.println(customFlespiToken.substring(0, 4) + "..." + customFlespiToken.substring(customFlespiToken.length() - 4));
+
+    // Also set throttling information
+    Serial.print("MQTT Throttling: ");
+    Serial.println(throttleMqtt ? "Enabled (sending once every minute)" : "Disabled");
+  }
+}
+
+// New function to control MQTT throttling settings
+void setMqttThrottling(bool enable, unsigned long interval) {
+  throttleMqtt = enable;
+  mqttThrottleInterval = interval;
+  
+  Serial.print("MQTT Throttling ");
+  if (enable) {
+      Serial.print("enabled - sending once every ");
+      Serial.print(interval / 1000);
+      Serial.println(" seconds");
+  } else {
+      Serial.println("disabled - sending all data");
+  }
 }
