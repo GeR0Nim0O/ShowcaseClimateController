@@ -15,6 +15,14 @@ Device::Device(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float thresho
     // This constructor is used by sensor classes that handle their own addressing
 }
 
+// Constructor for devices that specify threshold and channels first
+Device::Device(float threshold, std::map<String, String> channels, uint8_t i2cAddress, uint8_t tcaChannel, int deviceIndex)
+    : i2cAddress(i2cAddress), tcaChannel(tcaChannel), deviceName(""), 
+      deviceIndex(deviceIndex), type("Generic"), typeNumber(""), initialized(false), 
+      threshold(threshold), channels(channels) {
+    // This constructor is used by devices that specify threshold and channels first
+}
+
 void Device::selectTCAChannel(uint8_t channel) {
     if (channel > 7) return; // PCA9548A has 8 channels (0-7)
     
