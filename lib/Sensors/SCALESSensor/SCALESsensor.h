@@ -12,10 +12,16 @@ class SCALESsensor : public Device {
 public:
     SCALESsensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
     bool begin() override;
+    bool isConnected() override;
+    void update() override;
     std::map<std::string, float> readData() override; // Return a map of sensor data
+    
+    // Override pure virtual methods from Device
+    std::map<String, String> getChannels() const override { return channels; }
+    float getThreshold(const String& channelKey) const override { return threshold; }
+    
     float getWeight() const;
     uint8_t getAddress() const { return _address; } // Add getAddress function
-    float getThreshold() const { return threshold; } // Add getThreshold function
     int getDeviceIndex() const { return deviceIndex; } // Add getDeviceIndex function
 
 private:
