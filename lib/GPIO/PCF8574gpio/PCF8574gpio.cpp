@@ -72,3 +72,41 @@ bool PCF8574gpio::readBit(uint8_t pin, bool &state) {
     state = (data & (1 << pin)) ? false : true; // Correctly invert the state
     return true;
 }
+
+bool PCF8574gpio::writeBit(uint8_t pin, bool state) {
+    uint8_t data;
+    if (!readByte(data)) {
+        return false;
+    }
+    
+    if (state) {
+        data &= ~(1 << pin); // Set bit low (inverted logic)
+    } else {
+        data |= (1 << pin);  // Set bit high (inverted logic)
+    }
+    
+    return writeByte(data);
+}
+
+bool PCF8574gpio::readPin(uint8_t pin) {
+    bool state;
+    if (readBit(pin, state)) {
+        return state;
+    }
+    return false;
+}
+
+void PCF8574gpio::writePin(uint8_t pin, bool state) {
+    writeBit(pin, state);
+}
+
+// Implementation of pure virtual methods from Device base class
+bool PCF8574gpio::isConnected() {
+    wire->beginTransmission(_address);
+    return (wire->endTransmission() == 0);
+}
+
+void PCF8574gpio::update() {
+    // Update GPIO readings
+    readData();
+}
