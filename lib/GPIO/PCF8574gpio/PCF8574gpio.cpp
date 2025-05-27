@@ -3,21 +3,19 @@
 #include "I2CHandler.h"
 
 PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(PCF8574_ADDRESS), _gpioState(0xFF) {
-    type = "GPIO"; // Fixed type
+    : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(PCF8574_ADDRESS), _gpioState(0xFF) {    type = "GPIO"; // Fixed type
     Serial.println("PCF8574gpio created:");
     Serial.print("Address: ");
     Serial.println(_address, HEX);
     Serial.print("Threshold: ");
     Serial.println(threshold);
     Serial.print("Number of Channels: ");
-    Serial.println(numChannels);
+    Serial.println(channels.size());
     Serial.print("Type: ");
     Serial.println(type);
-    Serial.print("TypeNumber: ");
-    Serial.println(typeNumber);
     Serial.print("Device Index: ");
     Serial.println(deviceIndex);
+}
 }
 
 bool PCF8574gpio::begin() {
