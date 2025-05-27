@@ -5,9 +5,8 @@
 SHT31sensor::SHT31sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
     : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(SHT31_ADDRESS), _temperature(NAN), _humidity(NAN) {
     
-    numChannels = channels.size(); // Set number of channels based on the map size
-    type = "Sensor"; // Fixed type
-    typeNumber = "SHT31"; // Fixed type number
+    // Set type - inherited from Device base class
+    type = "SHT31Sensor";
 
     Serial.println("SHT31sensor created:");
     Serial.print("Address: ");
@@ -15,11 +14,9 @@ SHT31sensor::SHT31sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
     Serial.print("Threshold: ");
     Serial.println(threshold);
     Serial.print("Number of Channels: ");
-    Serial.println(numChannels);
+    Serial.println(channels.size());
     Serial.print("Type: ");
     Serial.println(type);
-    Serial.print("TypeNumber: ");
-    Serial.println(typeNumber);
     Serial.print("Device Index: ");
     Serial.println(deviceIndex);
 }
