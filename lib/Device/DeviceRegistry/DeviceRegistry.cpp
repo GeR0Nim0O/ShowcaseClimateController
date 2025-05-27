@@ -173,7 +173,7 @@ Device* DeviceRegistry::createDeviceWithThresholds(
         }
     } else if (type.equalsIgnoreCase("DAC")) {
         if (typeNumber.equalsIgnoreCase("MCP4725")) {
-            device = new DAC_Module(wire, address, tcaPort, threshold, channels, deviceIndex);
+            device = new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
         }
     }
       if (device) {
