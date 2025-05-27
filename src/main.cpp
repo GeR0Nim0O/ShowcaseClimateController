@@ -117,6 +117,9 @@ void setup()
   // Perform I2C scan before connecting to any devices
   I2CHandler::scanI2C(); 
 
+  // Initialize RTC pointer before use
+  rtc = new DS3231rtc();
+
   // Initialize SD card and configuration
   if (!SDHandler::initializeSDCardAndConfig()) {
     Serial.println("Failed to initialize SD card.");
