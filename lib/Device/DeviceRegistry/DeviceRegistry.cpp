@@ -128,3 +128,60 @@ void DeviceRegistry::printDeviceStatus() {
     }
     Serial.println("==================\n");
 }
+
+Device* DeviceRegistry::createDeviceWithThresholds(
+    const String& type, 
+    const String& typeNumber, 
+    TwoWire* wire, 
+    uint8_t address, 
+    uint8_t tcaPort, 
+    const std::map<String, float>& channelThresholds, 
+    const std::map<String, String>& channelNames, 
+    int deviceIndex
+) {
+    Device* device = nullptr;
+    
+    // Convert channelThresholds to a single threshold (use first threshold found)
+    float threshold = 1.0f; // default
+    if (!channelThresholds.empty()) {
+        threshold = channelThresholds.begin()->second;
+    }
+    
+    // Convert channelNames to std::map<String, String>
+    std::map<String, String> channels = channelNames;
+    
+    Serial.print("Creating device: ");
+    Serial.print(type);
+    Serial.print(" ");
+    Serial.println(typeNumber);
+    
+    if (type.equalsIgnoreCase("Sensor")) {
+        if (typeNumber.equalsIgnoreCase("SHT31")) {
+            device = new SHT31sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+        } else if (typeNumber.equalsIgnoreCase("BH1705")) {
+            device = new BH1705sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+        } else if (typeNumber.equalsIgnoreCase("SCALES")) {
+            device = new SCALESsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+        }
+    } else if (type.equalsIgnoreCase("GPIO")) {
+        if (typeNumber.equalsIgnoreCase("PCF8574")) {
+            device = new PCF8574gpio(wire, address, tcaPort, threshold, channels, deviceIndex);
+        }
+    } else if (type.equalsIgnoreCase("RTC")) {
+        if (typeNumber.equalsIgnoreCase("DS3231")) {
+            device = new DS3231rtc(wire, address, tcaPort, threshold, channels, deviceIndex);
+        }
+    } else if (type.equalsIgnoreCase("DAC")) {
+        if (typeNumber.equalsIgnoreCase("MCP4725")) {
+            device = new DAC_Module(wire, address, tcaPort, threshold, channels, deviceIndex);
+        }
+    }
+    
+    if (device) {
+        Serial.println("Device created successfully");
+    } else {
+        Serial.println("Failed to create device - unknown type/typeNumber combination");
+    }
+    
+    return device;
+}
