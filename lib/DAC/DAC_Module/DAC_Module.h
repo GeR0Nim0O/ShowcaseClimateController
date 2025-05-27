@@ -3,7 +3,19 @@
 
 #include "Device.h"
 
-#define MCP4725_DEFAULT_ADDRESS 0x62
+#define DAC_DEFAULT_ADDRESS 0x62
+
+// Register addresses for DFR1073 DAC
+#define DAC_REG_CONFIG     0x00
+#define DAC_REG_CHANNEL_A  0x01
+#define DAC_REG_CHANNEL_B  0x02
+#define DAC_REG_VREF       0x03
+
+// DAC Configuration bits
+#define DAC_CONFIG_READY   0x80
+#define DAC_CONFIG_BUSY    0x00
+#define DAC_CONFIG_GAIN_1X 0x00
+#define DAC_CONFIG_GAIN_2X 0x01
 
 class DAC_Module : public Device {
 public:
@@ -14,27 +26,35 @@ public:
     void update() override;
     
     // DAC control methods
-    bool setVoltage(float voltage);
-    bool setVoltagePercent(float percent);
-    bool setRawValue(uint16_t value);
+    bool setChannelA(uint16_t value);
+    bool setChannelB(uint16_t value);
+    bool setChannelVoltage(uint8_t channel, float voltage);
+    bool setBothChannels(uint16_t valueA, uint16_t valueB);
     
-    // Temperature/Power control specific methods
-    bool setTemperaturePower(float powerPercent);
-    float getCurrentVoltage() const { return currentVoltage; }
-    uint16_t getCurrentRawValue() const { return currentRawValue; }
+    // Climate control specific methods
+    bool setTemperaturePower(float percentage); // 0-100%
+    bool setHumidityPower(float percentage);    // 0-100%
     
     // Configuration
-    void setReferenceVoltage(float vref) { referenceVoltage = vref; }
-    float getReferenceVoltage() const { return referenceVoltage; }
+    bool setGain(uint8_t channel, bool gain2x);
+    bool setVRef(uint16_t vref);
+    
+    // Status
+    uint16_t getChannelA() const { return channelAValue; }
+    uint16_t getChannelB() const { return channelBValue; }
+    bool isReady();
 
 private:
-    float referenceVoltage;
-    float currentVoltage;
-    uint16_t currentRawValue;
+    uint16_t channelAValue;
+    uint16_t channelBValue;
+    uint16_t vrefValue;
+    bool gain2xA;
+    bool gain2xB;
     
-    bool writeDAC(uint16_t value);
-    bool writeEEPROM(uint16_t value);
-    uint16_t readDAC();
-};
+    bool writeRegister(uint8_t reg, uint16_t value);
+    uint16_t readRegister(uint8_t reg);
+    bool writeConfig();
+    uint16_t voltageToDAC(float voltage);
+    float dacToVoltage(uint16_t dacValue);
 
 #endif // DAC_MODULE_H
