@@ -182,7 +182,7 @@ bool SHT31sensor::clearStatus()
 
 bool SHT31sensor::setMeasurementMode(uint16_t mode)
 {
-    I2CHandler::selectTCA(tcaPort); 
+    I2CHandler::selectTCA(getTCAChannel()); 
     if (!writeCommand(mode))
     {
         Serial.println("SHT31 setMeasurementMode: writeCommand error");
