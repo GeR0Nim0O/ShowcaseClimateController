@@ -449,10 +449,14 @@ void Configuration::initializeEachDevice(const std::vector<Device*>& devices) {
             Serial.println("I2C connection test PASSED");
         }        // Now attempt device initialization
         Serial.println("Attempting device initialization...");
+        Serial.print("DEBUG: Device address being initialized: ");
+        Serial.println((uint32_t)device, HEX);
         bool initResult = device->begin();
         
         Serial.print("DEBUG: device->begin() returned: ");
         Serial.println(initResult);
+        Serial.print("DEBUG: Device address after begin(): ");
+        Serial.println((uint32_t)device, HEX);
         Serial.print("DEBUG: device->isInitialized() after begin(): ");
         Serial.println(device->isInitialized());
         
