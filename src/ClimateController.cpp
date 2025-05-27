@@ -50,13 +50,12 @@ bool ClimateController::begin() {
         Serial.println("ClimateController: Devices not connected");
         return false;
     }
-    
-    // Initialize all outputs to safe state
-    gpio->setTemperatureEnable(false);
-    gpio->setTemperatureHeat(false);
-    gpio->setTemperatureCool(false);
-    gpio->setHumidify(false);
-    gpio->setDehumidify(false);
+      // Initialize all outputs to safe state
+    gpio->writePin(pinTemperatureEnable, false);
+    gpio->writePin(pinTemperatureHeat, false);
+    gpio->writePin(pinTemperatureCool, false);
+    gpio->writePin(pinHumidify, false);
+    gpio->writePin(pinDehumidify, false);
     
     Serial.println("ClimateController initialized successfully");
     return true;
