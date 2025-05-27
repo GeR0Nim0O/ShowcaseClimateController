@@ -147,8 +147,8 @@ uint32_t SHT31sensor::getSerialNumber()
 
 uint16_t SHT31sensor::readStatus()
 {
-    I2CHandler::selectTCA(tcaPort); 
-    if (!writeCommand(0xF32D)) // Command to read status register
+    I2CHandler::selectTCA(getTCAChannel()); 
+    if (!writeCommand(0xF32D)) // Command to read statusregister
     {
         Serial.println("SHT31 readStatus: writeCommand error");
         return 0xFFFF;
