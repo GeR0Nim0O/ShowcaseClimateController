@@ -154,7 +154,8 @@ Device* DeviceRegistry::createDeviceWithThresholds(
     Serial.print(type);
     Serial.print(" ");
     Serial.println(typeNumber);
-      if (type.equalsIgnoreCase("Sensor")) {
+    
+    if (type.equalsIgnoreCase("Sensor")) {
         if (typeNumber.equalsIgnoreCase("SHT31")) {
             device = new SHT31sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
         } else if (typeNumber.equalsIgnoreCase("BH1705")) {
@@ -177,9 +178,7 @@ Device* DeviceRegistry::createDeviceWithThresholds(
     }
     
     if (device) {
-        // Register the device in the registry
-        DeviceRegistry::getInstance().registerDevice(device);
-        Serial.println("Device created and registered successfully");
+        Serial.println("Device created successfully");
     } else {
         Serial.println("Failed to create device - unknown type/typeNumber combination");
     }
