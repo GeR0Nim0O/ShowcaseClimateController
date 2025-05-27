@@ -16,9 +16,7 @@ public:
     bool isConnected() override;
     void update() override;
     std::map<String, String> readData() override; // Return a map of GPIO states
-    
-    // Override pure virtual methods from Device
-    std::map<String, String> getChannels() const override { return channels; }
+      // Override pure virtual methods from Device
     float getThreshold(const String& channelKey) const override { return threshold; }
     
     bool writeByte(uint8_t data);
