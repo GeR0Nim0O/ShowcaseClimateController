@@ -127,31 +127,31 @@
       "Address": "0x20",
       "Channels": {
         "IO0": {
-          "Name": "TemperatureEnable",
+          "Name": "FanExterior",
           "Threshold": 1.0
         },
         "IO1": {
-          "Name": "TemperatureHeat",
-          "Threshold": 1.0
-        },
-        "IO2": {
-          "Name": "TemperatureCool",
-          "Threshold": 1.0
-        },
-        "IO3": {
-          "Name": "Humidify",
-          "Threshold": 1.0
-        },
-        "IO4": {
-          "Name": "Dehumidify",
-          "Threshold": 1.0
-        },
-        "IO5": {
           "Name": "FanInterior",
           "Threshold": 1.0
         },
+        "IO2": {
+          "Name": "Humidify",
+          "Threshold": 1.0
+        },
+        "IO3": {
+          "Name": "Dehumidify",
+          "Threshold": 1.0
+        },
+        "IO4": {
+          "Name": "TemperatureEnable",
+          "Threshold": 1.0
+        },
+        "IO5": {
+          "Name": "TemperatureCool",
+          "Threshold": 1.0
+        },
         "IO6": {
-          "Name": "FanExterior",
+          "Name": "TemperatureHeat",
           "Threshold": 1.0
         },
         "IO7": {
