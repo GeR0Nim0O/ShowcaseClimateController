@@ -19,7 +19,7 @@ PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
 }
 
 bool PCF8574gpio::begin() {
-    I2CHandler::selectTCA(tcaPort); // Use tcaPort from class definition
+    I2CHandler::selectTCA(tcaChannel); // Use tcaChannel from Device base class
     return writeByte(_gpioState); // Initialize GPIO state
 }
 
