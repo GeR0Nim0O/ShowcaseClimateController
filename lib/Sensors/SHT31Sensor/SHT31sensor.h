@@ -14,9 +14,8 @@ public:
     
     bool begin() override;
     bool isConnected() override;
-    void update() override;
-    std::map<String, String> readData() override; // Return a map of sensor data
-reg      // Override pure virtual methods from Device
+    void update() override;    std::map<String, String> readData() override; // Return a map of sensor data
+    // Override pure virtual methods from Device
     float getThreshold(const String& channelKey) const override { return threshold; }
     
     float getTemperature() const;
