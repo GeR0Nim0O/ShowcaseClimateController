@@ -2,7 +2,7 @@
 #include "BH1705sensor.h"
 #include "SCALESsensor.h"
 #include "DS3231rtc.h"
-#include "DAC_Module.h"
+#include "GP8403dac.h"
 
 DeviceRegistry& DeviceRegistry::getInstance() {
     static DeviceRegistry instance;
