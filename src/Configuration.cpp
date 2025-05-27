@@ -313,8 +313,9 @@ std::map<String, float> Configuration::getChannelThresholds(const JsonObject& se
     std::map<String, float> thresholdMap;
     float defaultThreshold = getSensorThreshold(sensorConfig);
     
-    if (sensorConfig["Channels"].is<JsonObject>()) {
-        JsonObject channels = sensorConfig["Channels"].as<JsonObject>();
+    JsonVariant channelsVar = sensorConfig["Channels"];
+    if (channelsVar.is<JsonObject>()) {
+        JsonObject channels = channelsVar.as<JsonObject>();
         
         if (isNewConfigFormat(sensorConfig)) {
             // New format with per-channel thresholds
