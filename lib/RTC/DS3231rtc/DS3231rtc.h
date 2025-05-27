@@ -14,16 +14,14 @@ public:
     bool begin() override;
     bool isConnected() override;
     void update() override;
-    std::map<String, String> readData() override; // Return a map of sensor data
-    
+    std::map<String, String> readData() override; // Return a map of sensor data    
     // Override pure virtual methods from Device
     std::map<String, String> getChannels() const override { return channels; }
-    float getThreshold(const String& channelKey) const override { return threshold; }
-      void setTime(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year);
+    float getThreshold(const String& channelKey = "") const override { return threshold; }
+    
+    void setTime(byte second, byte minute, byte hour, byte dayOfWeek, byte dayOfMonth, byte month, byte year);
     bool readTime(byte* second, byte* minute, byte* hour, byte* dayOfWeek, byte* dayOfMonth, byte* month, byte* year);
     void displayTime();
-    uint8_t getTcaPort() const { return tcaChannel; } // Add getter method
-    int getDeviceIndex() const { return deviceIndex; } // Add getDeviceIndex function
 
 private:
     TwoWire* wire;
