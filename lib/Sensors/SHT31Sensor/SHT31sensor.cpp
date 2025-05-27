@@ -3,7 +3,7 @@
 #include "I2CHandler.h"
 
 SHT31sensor::SHT31sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(SHT31_ADDRESS), _temperature(NAN), _humidity(NAN), channels(channels) {
+    : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(SHT31_ADDRESS), _temperature(NAN), _humidity(NAN) {
     
     numChannels = channels.size(); // Set number of channels based on the map size
     type = "Sensor"; // Fixed type
