@@ -35,6 +35,8 @@ protected:
     int deviceIndex;
     String type;
     bool initialized;
+    float threshold;
+    std::map<String, String> channels;
     
     void selectTCAChannel(uint8_t channel);
     bool testI2CConnection();
