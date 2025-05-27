@@ -10,7 +10,7 @@ Device (Base Class)
 ├── PCF8574_GPIO (GPIO Expander)
 ├── SHT31_Sensor (Temperature/Humidity Sensor)
 ├── Display (OLED Display)
-├── DAC_Module (Digital-to-Analog Converter)
+├── GP8403dac (Digital-to-Analog Converter)
 └── RotaryEncoder (User Input)
 ```
 
