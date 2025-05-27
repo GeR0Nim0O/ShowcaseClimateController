@@ -44,6 +44,23 @@ void DAC_Module::update() {
     }
 }
 
+std::map<String, String> DAC_Module::readData() {
+    std::map<String, String> data;
+    
+    // Read current channel values
+    data["channelA_raw"] = String(channelAValue);
+    data["channelB_raw"] = String(channelBValue);
+    data["channelA_voltage"] = String(dacToVoltage(channelAValue), 2);
+    data["channelB_voltage"] = String(dacToVoltage(channelBValue), 2);
+    data["vref_value"] = String(vrefValue);
+    data["gain2x_A"] = gain2xA ? "true" : "false";
+    data["gain2x_B"] = gain2xB ? "true" : "false";
+    data["ready"] = isReady() ? "true" : "false";
+    data["connected"] = isConnected() ? "true" : "false";
+    
+    return data;
+}
+
 bool DAC_Module::setChannelA(uint16_t value) {
     if (value > DAC_MAX_VALUE) {
         value = DAC_MAX_VALUE;
