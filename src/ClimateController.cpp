@@ -270,16 +270,15 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
             }
         }
     }
-    
-    // Return default pin if not found in configuration
+      // Return default pin if not found in configuration
     Serial.printf("Warning: Pin mapping not found for %s, using default\n", channelName.c_str());
-    if (channelName == "TemperatureEnable") return 0;
-    if (channelName == "TemperatureHeat") return 1;
-    if (channelName == "TemperatureCool") return 2;
-    if (channelName == "Humidify") return 3;
-    if (channelName == "Dehumidify") return 4;
-    if (channelName == "FanInterior") return 5;
-    if (channelName == "FanExterior") return 6;
+    if (channelName == "FanExterior") return 0;
+    if (channelName == "FanInterior") return 1;
+    if (channelName == "Humidify") return 2;
+    if (channelName == "Dehumidify") return 3;
+    if (channelName == "TemperatureEnable") return 4;
+    if (channelName == "TemperatureCool") return 5;
+    if (channelName == "TemperatureHeat") return 6;
     
     return 0; // Default fallback
 }
