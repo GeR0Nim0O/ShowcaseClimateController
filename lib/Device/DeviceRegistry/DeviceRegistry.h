@@ -14,10 +14,9 @@ public:
     bool registerDevice(Device* device);
     bool initializeAllDevices();
     void updateAllDevices();
-    
-    // Device getters
-    PCF8574_GPIO* getGPIOExpander(int index = 0);
-    SHT31_Sensor* getTemperatureHumiditySensor(int index = 0);
+      // Device getters
+    PCF8574gpio* getGPIOExpander(int index = 0);
+    SHT31sensor* getTemperatureHumiditySensor(int index = 0);
     Device* getDevice(const String& deviceName);
     Device* getDeviceByIndex(int index);
     
@@ -33,8 +32,8 @@ private:
     DeviceRegistry& operator=(const DeviceRegistry&) = delete;
     
     std::vector<Device*> devices;
-    std::vector<PCF8574_GPIO*> gpioExpanders;
-    std::vector<SHT31_Sensor*> temperatureHumiditySensors;
+    std::vector<PCF8574gpio*> gpioExpanders;
+    std::vector<SHT31sensor*> temperatureHumiditySensors;
 };
 
 #endif // DEVICE_REGISTRY_H
