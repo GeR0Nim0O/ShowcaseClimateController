@@ -30,10 +30,10 @@ public:
     // Override pure virtual methods from Device
     std::map<String, String> getChannels() const override { return channels; }
     float getThreshold(const String& channelKey) const override { return threshold; }
-    
-    // DAC control methods
+      // DAC control methods
     bool setChannelA(uint16_t value);
     bool setChannelB(uint16_t value);
+    bool setChannelVoltage(uint8_t channel, float voltage);
     bool setBothChannels(uint16_t valueA, uint16_t valueB);
     
     // Climate control specific methods
