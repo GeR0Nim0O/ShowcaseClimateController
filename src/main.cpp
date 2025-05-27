@@ -426,18 +426,16 @@ void printCreatedSensors() {
   for (Device* device : devices) {
     Serial.print("Type: ");
     Serial.println(device->getType());
-    Serial.print("TypeNumber: ");
-    Serial.println(device->getTypeNumber());
+    Serial.print("Device Name: ");
+    Serial.println(device->getDeviceName());
     Serial.print("Address: 0x");
-    Serial.println(device->getAddress(), HEX);
-    Serial.print("Threshold: ");
-    Serial.println(device->getThreshold());
-    Serial.print("Number of Channels: ");
-    Serial.println(device->getNumChannels());
-    Serial.print("TCA Port: ");
-    Serial.println(device->getTcaPort());
+    Serial.println(device->getI2CAddress(), HEX);
+    Serial.print("TCA Channel: ");
+    Serial.println(device->getTCAChannel());
     Serial.print("Device Index: ");
     Serial.println(device->getDeviceIndex());
+    Serial.print("Initialized: ");
+    Serial.println(device->isInitialized() ? "Yes" : "No");
     Serial.println();
   }
 }
