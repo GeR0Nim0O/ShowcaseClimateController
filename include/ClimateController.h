@@ -22,7 +22,7 @@ enum class HumidityMode {
 
 class ClimateController {
 public:
-    ClimateController(PCF8574_GPIO* gpioExpander, SHT31_Sensor* tempHumSensor);
+    ClimateController(PCF8574gpio* gpioExpander, SHT31sensor* tempHumSensor);
     
     bool begin();
     void update();
