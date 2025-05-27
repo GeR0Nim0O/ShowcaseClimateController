@@ -11,6 +11,13 @@ DAC_Module::DAC_Module(uint8_t i2cAddress, uint8_t tcaChannel, const String& dev
     type = "DAC_Module";
 }
 
+DAC_Module::DAC_Module(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
+    : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex),
+      channelAValue(0), channelBValue(0), vrefValue(32767),
+      gain2xA(false), gain2xB(false) {
+    type = "DAC_Module";
+}
+
 bool DAC_Module::begin() {
     selectTCAChannel(tcaChannel);
     
