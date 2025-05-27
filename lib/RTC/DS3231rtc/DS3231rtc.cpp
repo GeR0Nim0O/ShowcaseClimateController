@@ -99,3 +99,14 @@ byte DS3231rtc::decToBcd(byte val) {
 byte DS3231rtc::bcdToDec(byte val) {
     return ( (val/16*10) + (val%16) );
 }
+
+// Implementation of pure virtual methods from Device base class
+bool DS3231rtc::isConnected() {
+    wire->beginTransmission(_address);
+    return (wire->endTransmission() == 0);
+}
+
+void DS3231rtc::update() {
+    // RTC doesn't need regular updates, but this method is required by the base class
+    // Could potentially sync with NTP here if needed
+}
