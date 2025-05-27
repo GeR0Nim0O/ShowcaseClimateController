@@ -58,13 +58,11 @@ bool SHT31sensor::begin()
 
     // Print SHT31 serial number
     Serial.print("SHT31 Serial Number: ");
-    Serial.println(getSerialNumber());
-
-    // Read initial values using readData
+    Serial.println(getSerialNumber());    // Read initial values using readData
     auto sht31Data = readData();
     if (sht31Data.find("T") != sht31Data.end() && sht31Data.find("H") != sht31Data.end()) {
-        float temperature = sht31Data["T"];
-        float humidity = sht31Data["H"];
+        float temperature = sht31Data["T"].toFloat();
+        float humidity = sht31Data["H"].toFloat();
         Serial.print("Initial Temperature: ");
         Serial.println(temperature);
         Serial.print("Initial Humidity: ");
