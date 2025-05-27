@@ -88,15 +88,20 @@ bool SHT31sensor::begin() {
 
 bool SHT31sensor::readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity)
 {
+    // Make sure to select the TCA channel before communication
     I2CHandler::selectTCA(getTCAChannel());
-    if (!writeCommand(0x2C06)) // Command to read data
+    
+    // Send measurement command - high repeatability, clock stretching disabled
+    if (!writeCommand(0x2C06))
     {
         Serial.println("SHT31 readRawData: writeCommand error");
         return false;
     }
 
-    delay(500); // Wait for data to be available
+    // Wait for measurement to complete (datasheet specifies 15ms for high repeatability)
+    delay(20);
 
+    // Read the 6 bytes of data: Temp MSB, Temp LSB, Temp CRC, Humidity MSB, Humidity LSB, Humidity CRC
     uint8_t data[6];
     if (!readBytes(data, 6))
     {
@@ -104,33 +109,63 @@ bool SHT31sensor::readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity)
         return false;
     }
 
+    // For debugging - print raw data bytes
+    Serial.print("SHT31 raw data: ");
+    for (int i = 0; i < 6; i++) {
+        Serial.print("0x");
+        Serial.print(data[i], HEX);
+        Serial.print(" ");
+    }
+    Serial.println();
+
+    // Extract raw temperature and humidity values from received bytes
     rawTemperature = (data[0] << 8) | data[1];
     rawHumidity = (data[3] << 8) | data[4];
+
+    // Debug output
+    Serial.print("SHT31 raw temperature: ");
+    Serial.print(rawTemperature);
+    Serial.print(", raw humidity: ");
+    Serial.println(rawHumidity);
 
     return true;
 }
 
 std::map<String, String> SHT31sensor::readData()
 {
+    std::map<String, String> result;
     uint16_t rawTemperature, rawHumidity;
-    if (!readRawData(rawTemperature, rawHumidity))
+    
+    if (readRawData(rawTemperature, rawHumidity))
     {
-        return {{"T", "NAN"}, {"H", "NAN"}};
+        // Convert raw values to actual temperature and humidity values
+        // T = -45 + 175 * (rawTemperature / 65535.0)
+        // RH = 100 * (rawHumidity / 65535.0)
+        _temperature = -45.0f + 175.0f * (float(rawTemperature) / 65535.0f);
+        _humidity = 100.0f * (float(rawHumidity) / 65535.0f);
+        
+        Serial.print("SHT31 converted values - Temp: ");
+        Serial.print(_temperature);
+        Serial.print("°C, Humidity: ");
+        Serial.println(_humidity);
+    }
+    else
+    {
+        Serial.println("SHT31 readData: Failed to read raw data, using previous values");
+        // Keep previous values if read fails
     }
 
-    _temperature = -45 + 175 * (rawTemperature / 65535.0);
-    _humidity = 100 * (rawHumidity / 65535.0);
-
-    std::map<String, String> data;
+    // Map our readings to the expected channel keys
     for (const auto& channel : channels) {
-        if (channel.second == "T") {
-            data[channel.first] = String(_temperature);
-        } else if (channel.second == "H") {
-            data[channel.first] = String(_humidity);
+        if (channel.second == "Temperature" || channel.second == "T") {
+            result[channel.first] = String(_temperature, 2); // 2 decimal places
+        } 
+        else if (channel.second == "Humidity" || channel.second == "H") {
+            result[channel.first] = String(_humidity, 2); // 2 decimal places
         }
     }
-
-    return data;
+    
+    return result;
 }
 
 uint32_t SHT31sensor::getSerialNumber()
