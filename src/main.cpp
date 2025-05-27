@@ -185,7 +185,12 @@ void setup()
   }
 
   // Connect to TimeAPI and NTP
-  TimeHandler::fetchTime(*rtc);
+  // Only fetch time from RTC if RTC is connected and initialized
+  if (rtc && rtc->isInitialized && rtc->isInitialized()) {
+    TimeHandler::fetchTime(*rtc);
+  } else {
+    Serial.println("RTC not connected or not initialized. Skipping RTC time fetch.");
+  }
 
   // Connect to MQTT broker
   if (!WifiMqttHandler::connectToMqttBrokerWithCheck(client, espClient, 
@@ -260,16 +265,23 @@ void loop() {
 
 void readAndSendDataFromDevices() {
     for (Device* device : devices) {
-        if (device == nullptr) {
-            Serial.println("Error: Null device pointer");
+        if (device == nullptr || !device->isInitialized()) {
+            Serial.println("Error: Null or uninitialized device pointer");
             continue;
         }
-        I2CHandler::selectTCA(device->getTCAChannel());        auto data = device->readData();
+        I2CHandler::selectTCA(device->getTCAChannel());
+        auto data = device->readData();
         for (const auto& channel : device->getChannels()) {
             String channelKey = channel.first;
             std::string key = std::string(channelKey.c_str()); // Convert channelKey to std::string
             float value = data[channelKey].toFloat(); // Use String key and convert to float
-            String currentTime = TimeHandler::getCurrentTime(*rtc);
+            String currentTime;
+            // Only fetch time from RTC if RTC is connected and initialized
+            if (rtc && rtc->isInitialized && rtc->isInitialized()) {
+                currentTime = TimeHandler::getCurrentTime(*rtc);
+            } else {
+                currentTime = "";
+            }
             String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
             String projectNr = Configuration::getProjectNumber();
             String showcaseId = Configuration::getShowcaseId();
