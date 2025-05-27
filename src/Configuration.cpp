@@ -4,6 +4,10 @@
 #include <SD_MMC.h>
 #include <vector>
 
+// Suppress ArduinoJson deprecation warnings temporarily
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 JsonDocument Configuration::configDoc; 
 std::vector<std::pair<uint8_t, uint8_t>> Configuration::i2cAddressList;
 
