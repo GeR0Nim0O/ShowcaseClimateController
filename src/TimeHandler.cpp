@@ -156,7 +156,7 @@ void TimeHandler::setRTCFromAPI(DS3231rtc& rtc, String datetime) {
 }
 
 String TimeHandler::getTimeFromRTC(DS3231rtc& rtc) {
-    I2CHandler::selectTCA(rtc.getTCAChannel());
+    I2CHandler::selectTCA(rtc.getTcaPort());
     byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
     if (!rtc.readTime(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year)) {
         Serial.println("Failed to read from RTC");

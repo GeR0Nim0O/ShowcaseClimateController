@@ -30,10 +30,10 @@ std::map<String, String> SCALESsensor::readData() {
     if (!readBytes(data, 2))
     {
         return {{"W", "NaN"}};
-    }    _weight = (data[0] << 8) | data[1];
-    _weight /= 1.2; // Convert to weight
+    }
 
-    std::map<String, String> dataMap;
+    _weight = (data[0] << 8) | data[1];
+    _weight /= 1.2; // Convert to weight    std::map<String, String> dataMap;
     for (const auto& channel : channels) {
         if (channel.second == "W") {
             dataMap[channel.first] = String(_weight);
