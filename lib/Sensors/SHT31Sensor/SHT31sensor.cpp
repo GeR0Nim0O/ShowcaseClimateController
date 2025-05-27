@@ -101,18 +101,18 @@ std::map<String, String> SHT31sensor::readData()
     uint16_t rawTemperature, rawHumidity;
     if (!readRawData(rawTemperature, rawHumidity))
     {
-        return {{"T", NAN}, {"H", NAN}};
+        return {{"T", "NAN"}, {"H", "NAN"}};
     }
 
     _temperature = -45 + 175 * (rawTemperature / 65535.0);
     _humidity = 100 * (rawHumidity / 65535.0);
 
-    std::map<std::string, float> data;
+    std::map<String, String> data;
     for (const auto& channel : channels) {
         if (channel.second == "T") {
-            data[channel.first.c_str()] = _temperature;
+            data[channel.first] = String(_temperature);
         } else if (channel.second == "H") {
-            data[channel.first.c_str()] = _humidity;
+            data[channel.first] = String(_humidity);
         }
     }
 
