@@ -4,14 +4,14 @@
 #include <stdlib.h> // Added for system()
 
 // Include our custom classes
-#include "DeviceRegistry.h"
-#include "PCF8574_GPIO.h"
-#include "SHT31_Sensor.h"
-#include "Display.h"
-#include "DAC_Module.h"
-#include "RotaryEncoder.h"
-#include "ClimateController.h"
-#include "ClimateConfig.h"
+#include "Device/DeviceRegistry/DeviceRegistry.h"
+#include "GPIO/PCF8574_GPIO/PCF8574_GPIO.h"
+#include "Sensors/SHT31_Sensor/SHT31_Sensor.h"
+#include "Display/Display.h"
+#include "DAC/DAC_Module/DAC_Module.h"
+#include "Input/RotaryEncoder/RotaryEncoder.h"
+#include "ClimateController/ClimateController.h"
+#include "Config/ClimateConfig/ClimateConfig.h"
 
 // Define the I2C address of the PCA9548A multiplexer
 #define PCA9548A_ADDRESS 0x70
