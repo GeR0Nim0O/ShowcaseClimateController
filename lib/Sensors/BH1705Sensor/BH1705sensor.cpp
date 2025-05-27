@@ -84,3 +84,15 @@ bool BH1705sensor::readBytes(uint8_t *data, uint8_t length) {
 float BH1705sensor::getLux() const {
     return _lux;
 }
+
+// Implementation of pure virtual methods from Device base class
+bool BH1705sensor::isConnected() {
+    I2CHandler::selectTCA(tcaPort);
+    wire->beginTransmission(_address);
+    return (wire->endTransmission() == 0);
+}
+
+void BH1705sensor::update() {
+    // Update sensor readings
+    readData();
+}
