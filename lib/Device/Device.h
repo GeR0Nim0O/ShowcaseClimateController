@@ -15,6 +15,11 @@ public:
     virtual bool isConnected() = 0;
     virtual void update() = 0;
     
+    // Pure virtual methods for polymorphic access
+    virtual std::map<std::string, float> readData() = 0;
+    virtual std::map<String, String> getChannels() const = 0;
+    virtual float getThreshold(const String& channelKey) const = 0;
+    
     // Getters
     uint8_t getI2CAddress() const { return i2cAddress; }
     uint8_t getTCAChannel() const { return tcaChannel; }
