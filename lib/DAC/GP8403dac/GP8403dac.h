@@ -50,6 +50,7 @@ public:
     bool isReady();
 
 private:
+    TwoWire* wire;
     uint16_t channelAValue;
     uint16_t channelBValue;
     uint16_t vrefValue;
