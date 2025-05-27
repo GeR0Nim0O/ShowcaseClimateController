@@ -166,8 +166,13 @@ void setup()
   // Debug: Print device count after cleanup
   Serial.print("Devices vector size after cleanup: ");
   Serial.println(devices.size());
+  
   // Print created sensors for debugging (moved after initialization)
   printCreatedSensors();
+  
+  // NEW: Read and print initial sensor values after initialization
+  Serial.println("\n=== Initial Sensor Readings ===");
+  readAndPrintInitialSensorData();
 
   // Additional debug: Check each device individually
   Serial.println("Device validation:");
@@ -287,9 +292,48 @@ void loop() {
   }
 }
 
+// New function to read and print initial sensor values
+void readAndPrintInitialSensorData() {
+  for (size_t i = 0; i < devices.size(); i++) {
+    Device* device = devices[i];
+    if (device == nullptr || !device->isInitialized()) {
+      continue;
+    }
+    
+    String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
+    Serial.print("\n--- Initial readings for ");
+    Serial.print(deviceName);
+    Serial.println(" ---");
+    
+    I2CHandler::selectTCA(device->getTCAChannel());
+    auto data = device->readData();
+    
+    for (const auto& channel : device->getChannels()) {
+      String channelKey = channel.first;
+      std::string key = std::string(channelKey.c_str());
+      float value = data[channelKey].toFloat();
+      
+      // Store initial value in lastSensorValues to establish baseline
+      lastSensorValues[key] = value;
+      
+      Serial.print(channelKey);
+      Serial.print(": ");
+      Serial.print(value);
+      Serial.print(" (");
+      Serial.print(channel.second);
+      Serial.println(")");
+    }
+  }
+  Serial.println("===========================\n");
+}
+
 void readAndSendDataFromDevices() {
     // Flag to determine if we should print data this cycle (only true every 60 seconds)
     bool shouldPrintData = throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval);
+    
+    if (shouldPrintData) {
+        Serial.println("\n=== Sensor Readings (60-second update) ===");
+    }
     
     for (size_t i = 0; i < devices.size(); i++) {
         Device* device = devices[i];
@@ -325,7 +369,7 @@ void readAndSendDataFromDevices() {
             String projectNr = Configuration::getProjectNumber();
             String showcaseId = Configuration::getShowcaseId();
 
-            // Only print data every 60 seconds, aligned with MQTT sending
+            // Always print data every 60 seconds, aligned with MQTT sending, even if no change
             if (shouldPrintData) {
                 Serial.print(deviceName);
                 Serial.print(" - ");
@@ -335,49 +379,31 @@ void readAndSendDataFromDevices() {
                 Serial.print(" (");
                 Serial.print(channel.second);
                 Serial.println(")");
-            }
-
-            // Convert Arduino String to std::string for map access
-            float lastValue = lastSensorValues[key];
-            
-            // Get channel-specific threshold instead of device-level threshold
-            float threshold = device->getThreshold(channelKey);
-            
-            // Add this for debugging
-            if (deviceName == "SHT31_0" && channelKey == "H") {
-                Serial.print("SHT31_0 H - Current value: ");
-                Serial.print(value);
-                Serial.print(" Last value: ");
-                Serial.print(lastValue);
-                Serial.print(" Difference: ");
-                Serial.print(abs(value - lastValue));
-                Serial.print(" Threshold: ");
-                Serial.println(threshold);
+                
+                // Always store the data for MQTT sending, regardless of threshold
+                SensorData sensorData;
+                sensorData.deviceName = deviceName;
+                sensorData.projectNr = projectNr;
+                sensorData.showcaseId = showcaseId;
+                sensorData.sensorType = channel.second;
+                sensorData.sensorValue = value;
+                sensorData.currentTime = currentTime;
+                sensorData.deviceIndex = device->getDeviceIndex();
+                sensorData.changed = true;
+                
+                changedSensorData[key] = sensorData;
             }
             
-            // This conditional already ensures logging only happens when threshold is exceeded
+            // This conditional is still used for logging to SD and determining meaningful changes
             if (abs(value - lastValue) >= threshold) {
                 lastSensorValues[key] = value;
 
                 if (channel.second != "Time") {
                     // Log to SD only when the value has changed beyond threshold
-                    // Pass the sensor type (channel.second) to the logging function
                     logDataToSD(deviceName, currentTime, value, channel.second);
-                    
-                    // Store the data for MQTT sending later
-                    SensorData sensorData;
-                    sensorData.deviceName = deviceName;
-                    sensorData.projectNr = projectNr;
-                    sensorData.showcaseId = showcaseId;
-                    sensorData.sensorType = channel.second;
-                    sensorData.sensorValue = value;
-                    sensorData.currentTime = currentTime;
-                    sensorData.deviceIndex = device->getDeviceIndex();
-                    sensorData.changed = true;
-                    
-                    changedSensorData[key] = sensorData;
                 }
             }
+            // No else clause needed since we always update changedSensorData on the 60-second cycle
         }
     }
     
