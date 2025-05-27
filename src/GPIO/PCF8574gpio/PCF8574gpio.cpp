@@ -1,49 +1,84 @@
-// ...existing code from lib/GPIO/PCF8574gpio/PCF8574gpio.cpp...
-#include "Device.h"
 #include "PCF8574gpio.h"
-#include "I2CHandler.h"
 
 PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(PCF8574_ADDRESS), _gpioState(0xFF) {
-    type = "GPIO"; // Fixed type
-    Serial.println("PCF8574gpio created:");
-    Serial.print("Address: ");
-    Serial.println(_address, HEX);
-    Serial.print("Threshold: ");
-    Serial.println(threshold);
-    Serial.print("Number of Channels: ");
-    Serial.println(channels.size());
-    Serial.print("Type: ");
-    Serial.println(type);
-    Serial.print("Device Index: ");
-    Serial.println(deviceIndex);
+    : Device(i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(PCF8574_ADDRESS), _gpioState(0xFF) {
 }
 
 bool PCF8574gpio::begin() {
-    I2CHandler::selectTCA(tcaChannel); // Use tcaChannel from Device base class
-    if (!isConnected()) {
-        Serial.println("PCF8574 GPIO expander not found!");
+    wire->begin();
+    return isConnected();
+}
+
+bool PCF8574gpio::isConnected() {
+    wire->beginTransmission(_address);
+    return (wire->endTransmission() == 0);
+}
+
+void PCF8574gpio::update() {
+    // Update GPIO state by reading the current state
+    readByte(_gpioState);
+}
+
+std::map<String, String> PCF8574gpio::readData() {
+    std::map<String, String> result;
+    update();
+    
+    // Convert GPIO states to a map of channel values
+    for (const auto& channel : channels) {
+        int pin = channel.second.toInt();
+        if (pin >= 0 && pin <= 7) {
+            bool state = (_gpioState & (1 << pin)) != 0;
+            result[channel.first] = state ? "1" : "0";
+        }
+    }
+    
+    return result;
+}
+
+bool PCF8574gpio::writeByte(uint8_t data) {
+    wire->beginTransmission(_address);
+    wire->write(data);
+    _gpioState = data;
+    return (wire->endTransmission() == 0);
+}
+
+bool PCF8574gpio::readByte(uint8_t &data) {
+    if (wire->requestFrom(_address, (uint8_t)1) != 1) {
         return false;
     }
-    // Initialize GPIO state - try multiple times if needed
-    initialized = true;
+    data = wire->read();
+    _gpioState = data;
     return true;
 }
 
-// Stub implementation for isConnected
-bool PCF8574gpio::isConnected() {
-    // TODO: Implement GPIO connection check
+bool PCF8574gpio::readBit(uint8_t pin, bool &state) {
+    if (pin > 7) return false;
+    
+    uint8_t data;
+    if (!readByte(data)) return false;
+    
+    state = (data & (1 << pin)) != 0;
     return true;
 }
 
-// Stub implementation for update
-void PCF8574gpio::update() {
-    // TODO: Implement GPIO update
+bool PCF8574gpio::writeBit(uint8_t pin, bool state) {
+    if (pin > 7) return false;
+    
+    if (state) {
+        _gpioState |= (1 << pin);
+    } else {
+        _gpioState &= ~(1 << pin);
+    }
+    
+    return writeByte(_gpioState);
 }
 
-// Stub implementation for readData
-void PCF8574gpio::readData() {
-    // TODO: Implement GPIO data reading
+bool PCF8574gpio::readPin(uint8_t pin) {
+    bool state = false;
+    readBit(pin, state);
+    return state;
 }
 
-// ...rest of the file unchanged...
+void PCF8574gpio::writePin(uint8_t pin, bool state) {
+    writeBit(pin, state);
+}

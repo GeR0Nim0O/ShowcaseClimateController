@@ -1,61 +1,83 @@
-// ...existing code from lib/RTC/DS3231rtc/DS3231rtc.cpp...
 #include "DS3231rtc.h"
-#include <Arduino.h>
 
-DS3231rtc::DS3231rtc(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(DS3231_ADDRESS) {
-    type = "RTC";
-    this->typeNumber = "DS3231";
-    Serial.println("DS3231rtc created:");
-    Serial.print("Address: ");
-    Serial.println(_address, HEX);
-    Serial.print("Threshold: ");
-    Serial.println(threshold);
-    Serial.print("Number of Channels: ");
-    Serial.println(channels.size());
-    Serial.print("Type: ");
-    Serial.println(type);
-    Serial.print("TypeNumber: ");
-    Serial.println(this->typeNumber);
-    Serial.print("Device Index: ");
-    Serial.println(deviceIndex);
+bool DS3231rtc::isConnected() {
+    wire->beginTransmission(DS3231_ADDRESS);
+    return (wire->endTransmission() == 0);
 }
 
-bool DS3231rtc::begin() {
-    wire->beginTransmission(_address);
-    int error = wire->endTransmission();
-    if (error != 0)
-    {
+void DS3231rtc::update() {
+    // Update internal time values from RTC
+    unsigned char second, minute, hour, dayOfWeek, dayOfMonth, month, year;
+    readTime(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year);
+}
+
+std::map<String, String> DS3231rtc::readData() {
+    std::map<String, String> data;
+    unsigned char second, minute, hour, dayOfWeek, dayOfMonth, month, year;
+    
+    if (readTime(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year)) {
+        char timeBuffer[20];
+        sprintf(timeBuffer, "%02d:%02d:%02d", hour, minute, second);
+        data["time"] = String(timeBuffer);
+        
+        char dateBuffer[20];
+        sprintf(dateBuffer, "%02d/%02d/20%02d", dayOfMonth, month, year);
+        data["date"] = String(dateBuffer);
+        
+        data["day"] = String(dayOfWeek);
+    }
+    
+    return data;
+}
+
+bool DS3231rtc::readTime(unsigned char* second, unsigned char* minute, unsigned char* hour,
+                         unsigned char* dayOfWeek, unsigned char* dayOfMonth, unsigned char* month,
+                         unsigned char* year) {
+    wire->beginTransmission(DS3231_ADDRESS);
+    wire->write(0x00); // Start at register 0x00
+    if (wire->endTransmission() != 0) {
         return false;
     }
-    initialized = true;
+
+    if (wire->requestFrom(DS3231_ADDRESS, 7) != 7) {
+        return false;
+    }
+
+    // Convert from BCD to decimal
+    *second = bcdToDec(wire->read() & 0x7F);
+    *minute = bcdToDec(wire->read());
+    *hour = bcdToDec(wire->read() & 0x3F); // 24 hour mode
+    *dayOfWeek = bcdToDec(wire->read());
+    *dayOfMonth = bcdToDec(wire->read());
+    *month = bcdToDec(wire->read());
+    *year = bcdToDec(wire->read());
+    
     return true;
 }
 
-// Stub implementation for setTime
-void DS3231rtc::setTime(unsigned char a, unsigned char b, unsigned char c, unsigned char d, unsigned char e, unsigned char f, unsigned char g) {
-    // TODO: Implement RTC time setting
+bool DS3231rtc::setTime(unsigned char second, unsigned char minute, unsigned char hour,
+                        unsigned char dayOfWeek, unsigned char dayOfMonth, unsigned char month,
+                        unsigned char year) {
+    wire->beginTransmission(DS3231_ADDRESS);
+    wire->write(0x00); // Start at register 0x00
+    
+    // Convert from decimal to BCD
+    wire->write(decToBcd(second));
+    wire->write(decToBcd(minute));
+    wire->write(decToBcd(hour));
+    wire->write(decToBcd(dayOfWeek));
+    wire->write(decToBcd(dayOfMonth));
+    wire->write(decToBcd(month));
+    wire->write(decToBcd(year));
+    
+    return (wire->endTransmission() == 0);
 }
 
-// Stub implementation for readTime
-void DS3231rtc::readTime(unsigned char* a, unsigned char* b, unsigned char* c, unsigned char* d, unsigned char* e, unsigned char* f, unsigned char* g) {
-    // TODO: Implement RTC time reading
+// Helper functions for BCD conversion
+unsigned char DS3231rtc::decToBcd(unsigned char val) {
+    return ((val / 10) << 4) + (val % 10);
 }
 
-// Stub implementation for isConnected
-bool DS3231rtc::isConnected() {
-    // TODO: Implement RTC connection check
-    return true;
+unsigned char DS3231rtc::bcdToDec(unsigned char val) {
+    return ((val >> 4) * 10) + (val & 0x0F);
 }
-
-// Stub implementation for update
-void DS3231rtc::update() {
-    // TODO: Implement RTC update
-}
-
-// Stub implementation for readData
-void DS3231rtc::readData() {
-    // TODO: Implement RTC data reading
-}
-
-// ...rest of the file unchanged...
