@@ -30,16 +30,54 @@ void I2CHandler::scanI2C() {
 }
 
 void I2CHandler::selectTCA(uint8_t i) {
-    if (i > 7) return;
-
-    WIRE.beginTransmission(TCAADDR);
-    WIRE.write(1 << i);
-    uint8_t error = WIRE.endTransmission();
-    if (error != 0) {
-        Serial.print("Failed to select TCA Port: ");
+    if (i > 7) {
+        Serial.print("Invalid TCA port: ");
         Serial.println(i);
-        Serial.print("Error: ");
-        Serial.println(error);
+        return;
+    }
+
+    // Retry TCA selection up to 3 times
+    int retries = 3;
+    bool success = false;
+    
+    for (int attempt = 0; attempt < retries && !success; attempt++) {
+        WIRE.beginTransmission(TCAADDR);
+        WIRE.write(1 << i);
+        uint8_t error = WIRE.endTransmission();
+        
+        if (error == 0) {
+            success = true;
+            // Verify TCA selection by reading back
+            WIRE.requestFrom(TCAADDR, (uint8_t)1);
+            if (WIRE.available()) {
+                uint8_t readback = WIRE.read();
+                if (readback != (1 << i)) {
+                    Serial.print("TCA readback mismatch on port ");
+                    Serial.print(i);
+                    Serial.print(". Expected: 0x");
+                    Serial.print(1 << i, HEX);
+                    Serial.print(", Got: 0x");
+                    Serial.println(readback, HEX);
+                    success = false;
+                }
+            }
+        } else {
+            Serial.print("Failed to select TCA Port ");
+            Serial.print(i);
+            Serial.print(" (attempt ");
+            Serial.print(attempt + 1);
+            Serial.print("): Error ");
+            Serial.println(error);
+            if (attempt < retries - 1) {
+                delay(5); // Small delay before retry
+            }
+        }
+    }
+    
+    if (!success) {
+        Serial.print("TCA Port ");
+        Serial.print(i);
+        Serial.println(" selection failed after all retries");
     }
 }
 
