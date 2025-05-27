@@ -7,7 +7,7 @@ SCALESsensor::SCALESsensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, f
 }
 
 bool SCALESsensor::begin() {
-    I2CHandler::selectTCA(tcaPort); // Use tcaPort from class definition
+    I2CHandler::selectTCA(getTCAChannel()); // Use getTCAChannel() method from Device base class
     if (!writeCommand(0x01)) // Power on command
     {
         Serial.println("SCALES begin error (power on)");
