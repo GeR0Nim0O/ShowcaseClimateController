@@ -28,8 +28,6 @@ private:
     uint8_t _address;
     byte decToBcd(byte val);
     byte bcdToDec(byte val);
-    std::map<String, String> channels; // Add channels property
-    int deviceIndex; // Add deviceIndex property
 };
 
 #endif // DS3231RTC_H
