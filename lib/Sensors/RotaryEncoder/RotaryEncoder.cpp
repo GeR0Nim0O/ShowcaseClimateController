@@ -212,52 +212,18 @@ bool RotaryEncoder::writeConfig() {
     
     return writeRegister(I2C_ENCODER_GCONF, config);
 }
-    uint8_t stateB = digitalRead(pinB);
-    
-    // Check for state change
-    if (stateA != lastStateA || stateB != lastStateB) {
-        // Determine direction
-        if (lastStateA == LOW && stateA == HIGH) {
-            if (stateB == LOW) {
-                position += stepSize; // Clockwise
-            } else {
-                position -= stepSize; // Counter-clockwise
-            }
-        }
-        
-        // Constrain to min/max values
-        if (position < minValue) position = minValue;
-        if (position > maxValue) position = maxValue;
-        
-        lastStateA = stateA;
-        lastStateB = stateB;
-    }
+
+std::map<String, String> RotaryEncoder::readData() {
+    std::map<String, String> data;
+    data["position"] = String(getPosition());
+    data["button_pressed"] = String(isButtonPressed() ? "1" : "0");
+    return data;
 }
 
-void RotaryEncoder::readButton() {
-    bool currentButtonState = digitalRead(pinButton);
-    unsigned long currentTime = millis();
-    
-    // Debounce button (50ms)
-    if (currentTime - lastButtonTime > 50) {
-        if (currentButtonState != lastButtonState) {
-            buttonState = currentButtonState;
-            
-            if (!buttonState && lastButtonState) { // Button pressed (HIGH to LOW)
-                buttonPressed = true;
-                buttonPressTime = currentTime;
-            } else if (buttonState && !lastButtonState) { // Button released (LOW to HIGH)
-                buttonPressTime = 0;
-            }
-            
-            lastButtonState = buttonState;
-            lastButtonTime = currentTime;
-        }
-    }
+int RotaryEncoder::getChannels() {
+    return 2; // Position and button
 }
 
-void RotaryEncoder::encoderISR() {
-    if (instance) {
-        instance->readEncoder();
-    }
+float RotaryEncoder::getThreshold() {
+    return 0.0; // No threshold for encoder
 }
