@@ -1,0 +1,8 @@
+{
+  "name": "PCF8574gpio",
+  "version": "1.0.0",
+  "description": "PCF8574 GPIO expander library for climate controller",
+  "keywords": ["PCF8574", "GPIO", "I2C"],
+  "platforms": "espressif32",
+  "frameworks": "arduino"
+}

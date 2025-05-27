@@ -1,0 +1,8 @@
+{
+  "name": "GP8403dac",
+  "version": "1.0.0",
+  "description": "GP8403 DAC library for climate controller",
+  "keywords": ["GP8403", "DAC", "I2C"],
+  "platforms": "espressif32",
+  "frameworks": "arduino"
+}
