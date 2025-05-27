@@ -32,7 +32,8 @@ public:
     
 private:
     bool readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity);
-    bool writeCommand(uint16_t command);    bool readBytes(uint8_t *data, uint8_t length);
+    bool writeCommand(uint16_t command);
+    bool readBytes(uint8_t *data, uint8_t length);
     TwoWire* wire;
     uint8_t _address;
     float _temperature;
