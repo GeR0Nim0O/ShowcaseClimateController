@@ -23,6 +23,7 @@ SHT31sensor::SHT31sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
 
 bool SHT31sensor::begin()
 {
+    Serial.println("DEBUG: SHT31sensor::begin() START");
     I2CHandler::selectTCA(tcaChannel); // Use tcaChannel from base Device class
     
     // First test I2C connection
