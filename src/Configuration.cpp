@@ -409,9 +409,8 @@ void Configuration::initializeEachDevice(const std::vector<Device*>& devices) {
                 Serial.println(device->getThreshold(channels.begin()->first));
             } else {
                 Serial.println("N/A");
-            }
-            Serial.print("Number of Channels: ");
-            Serial.println(device->getNumChannels());
+            }            Serial.print("Number of Channels: ");
+            Serial.println(device->getChannels().size());
         }
     }
 }
