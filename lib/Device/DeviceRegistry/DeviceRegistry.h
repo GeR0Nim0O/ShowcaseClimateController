@@ -4,8 +4,8 @@
 #include <Arduino.h>
 #include <vector>
 #include "Device.h"
-#include "PCF8574_GPIO.h"
-#include "SHT31_Sensor.h"
+#include "PCF8574gpio.h"
+#include "SHT31sensor.h"
 
 class DeviceRegistry {
 public:
