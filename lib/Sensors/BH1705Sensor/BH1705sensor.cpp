@@ -5,7 +5,7 @@
 BH1705sensor::BH1705sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
     : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(BH1705_ADDRESS), _lux(NAN) {
     type = "Sensor"; // Fixed type
-    typeNumber = "BH1705"; // Fixed type number
+    this->typeNumber = "BH1705"; // Fixed type number
     Serial.println("BH1705sensor created:");    Serial.print("Address: ");
     Serial.println(_address, HEX);
     Serial.print("Threshold: ");
@@ -15,7 +15,7 @@ BH1705sensor::BH1705sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, f
     Serial.print("Type: ");
     Serial.println(type);
     Serial.print("TypeNumber: ");
-    Serial.println(typeNumber);
+    Serial.println(this->typeNumber);
     Serial.print("Device Index: ");
     Serial.println(deviceIndex);
 }
