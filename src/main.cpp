@@ -105,39 +105,35 @@ void initializeDevices() {
     deviceRegistry.printDeviceStatus();
 }
 
-void setup()
-{
+void setup() {
     Serial.begin(115200);
-
     delay(3000);
-    Serial.println("Starting I2C scanner...");
-
+    
+    Serial.println("=== Climate Controller Starting ===");
+    
+    // Initialize I2C
     Wire.begin(17, 16); // SDA, SCL pins for ESP32-S3-DevKitC-1
-
+    
+    // Initialize configuration
+    if (!config.begin()) {
+        Serial.println("Failed to initialize configuration!");
+    }
+    
+    // Scan I2C devices for debugging
     Serial.println("Scanning I2C bus directly...");
-    scanI2CDevices(); // First scan the bus directly
-
-    delay(3000);
-    Serial.println("Starting I2C scanner with PCA9548A multiplexer...");
-    scanAllChannels(); // Then scan using the multiplexer
-
-    Serial.println("Selecting channel 0 on PCA9548A...");
-    selectI2CChannel(0); // Select channel 0 on the PCA9548A
-
-    Serial.println("Initializing PCF8574...");
-    pcf8574.begin(); // Initialize the PCF8574 library
-
-    // int x = pcf8574.read8();
-    // Serial.print("Read ");
-    // Serial.println(x, HEX);
-    pcf8574.write8(0x00); // Set all outputs to LOW initially
-    pcf8574.write(FAN_INTERIOR, HIGH);  // Set FAN_INTERIOR to LOW
-    pcf8574.write(FAN_EXTERIOR, HIGH);   // Set FAN_EXTERIOR to HIGH6
-    pcf8574.write(TEMP_ENABLE, HIGH);       // Set HUMIDIFY to HIGH
-    pcf8574.write(COOL, HIGH);         // Set TEMP_ENABLE to HIGH
-
+    scanI2CDevices();
+    
+    delay(1000);
+    Serial.println("Scanning I2C bus with PCA9548A multiplexer...");
+    scanAllChannels();
+    
+    // Initialize all devices
+    initializeDevices();
+    
     // Automatically commit and push changes to git
     gitAutoCommitAndPush();
+    
+    Serial.println("=== Setup Complete ===");
 }
 
 void loop()
