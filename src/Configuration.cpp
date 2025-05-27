@@ -241,15 +241,19 @@ uint8_t Configuration::getSensorAddress(const JsonObject& sensorConfig) {
 float Configuration::getSensorThreshold(const JsonObject& sensorConfig, const String& channelKey) {
     // If using new format and a specific channel is requested, return channel-specific threshold
     if (isNewConfigFormat(sensorConfig) && channelKey.length() > 0) {
-        if (sensorConfig["Channels"][channelKey].is<JsonObject>() && 
-            sensorConfig["Channels"][channelKey]["Threshold"].is<float>()) {
-            return sensorConfig["Channels"][channelKey]["Threshold"].as<float>();
+        JsonVariant channelVar = sensorConfig["Channels"][channelKey];
+        if (channelVar.is<JsonObject>()) {
+            JsonVariant thresholdVar = channelVar["Threshold"];
+            if (thresholdVar.is<float>()) {
+                return thresholdVar.as<float>();
+            }
         }
     }
     
     // Fall back to sensor-level threshold for backward compatibility
-    if (sensorConfig["Threshold"].is<float>()) {
-        return sensorConfig["Threshold"].as<float>();
+    JsonVariant thresholdVar = sensorConfig["Threshold"];
+    if (thresholdVar.is<float>()) {
+        return thresholdVar.as<float>();
     }
     
     // Default threshold if none specified
