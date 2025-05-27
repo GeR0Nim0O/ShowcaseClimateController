@@ -51,8 +51,8 @@ public:
     bool isConnected() override;
     void update() override;
     std::map<String, String> readData() override;
-    int getChannels() override;
-    float getThreshold() override;
+    int getChannels() const;
+    float getThreshold(const String& channelKey = "") const;
     
     // Encoder reading methods
     int32_t getPosition();
