@@ -96,7 +96,7 @@ bool SHT31sensor::readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity)
     return true;
 }
 
-std::map<std::string, float> SHT31sensor::readData()
+std::map<String, String> SHT31sensor::readData()
 {
     uint16_t rawTemperature, rawHumidity;
     if (!readRawData(rawTemperature, rawHumidity))
