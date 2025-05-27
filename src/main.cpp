@@ -1,30 +1,47 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include "driver/ledc.h"
-#include <PCF8574.h>
-#include <PID_v1.h>
-#include <PID_AutoTune_v0.h>
 #include <EEPROM.h>
 #include <stdlib.h> // Added for system()
+
+// Include our custom classes
+#include "DeviceRegistry.h"
+#include "PCF8574_GPIO.h"
+#include "SHT31_Sensor.h"
+#include "Display.h"
+#include "DAC_Module.h"
+#include "RotaryEncoder.h"
+#include "ClimateController.h"
+#include "ClimateConfig.h"
 
 // Define the I2C address of the PCA9548A multiplexer
 #define PCA9548A_ADDRESS 0x70
 
-// PCF8574 GPIO expander channel definitions
-#define FAN_INTERIOR  0
-#define FAN_EXTERIOR  1
-#define HUMIDIFY      2
-#define DEHUMIDIFY    3
-#define TEMP_ENABLE   4
-#define COOL          5
-#define HEAT          6
-#define SPARE2        7
+// Device I2C addresses and TCA channels
+#define GPIO_EXPANDER_ADDR    0x20
+#define GPIO_EXPANDER_CHANNEL 0
+#define SHT31_ADDR           0x44
+#define SHT31_CHANNEL        1
+#define DISPLAY_ADDR         0x3C
+#define DISPLAY_CHANNEL      2
+#define DAC_ADDR             0x62
+#define DAC_CHANNEL          3
 
-void selectI2CChannel(uint8_t channel);
-void scanI2CDevices();
-void scanAllChannels();
+// Encoder pins (direct GPIO)
+#define ENCODER_PIN_A        4
+#define ENCODER_PIN_B        5
+#define ENCODER_BUTTON_PIN   6
 
-PCF8574 pcf8574(0x20); // Initialize PCF8574 with I2C address 0x20
+// Global objects
+DeviceRegistry& deviceRegistry = DeviceRegistry::getInstance();
+ClimateConfig& config = ClimateConfig::getInstance();
+
+// Device instances
+PCF8574_GPIO* gpioExpander = nullptr;
+SHT31_Sensor* tempHumSensor = nullptr;
+Display* display = nullptr;
+DAC_Module* dacModule = nullptr;
+RotaryEncoder* encoder = nullptr;
+ClimateController* climateController = nullptr;
 
 void gitAutoCommitAndPush() {
     // Commit and push all changes with a timestamped message
