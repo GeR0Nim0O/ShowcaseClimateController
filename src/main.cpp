@@ -322,13 +322,23 @@ void readAndSendDataFromDevices() {
             String projectNr = Configuration::getProjectNumber();
             String showcaseId = Configuration::getShowcaseId();
 
+            // Always print the current reading for every sensor
+            Serial.print(deviceName);
+            Serial.print(" - ");
+            Serial.print(channelKey);
+            Serial.print(": ");
+            Serial.print(value);
+            Serial.print(" (");
+            Serial.print(channel.second);
+            Serial.println(")");
+
             // Convert Arduino String to std::string for map access
             float lastValue = lastSensorValues[key];
             
             // Get channel-specific threshold instead of device-level threshold
             float threshold = device->getThreshold(channelKey);
             
-            // Add this for debugging
+            // Original SHT31 debugging remains
             if (deviceName == "SHT31_0" && channelKey == "H") {
                 Serial.print("SHT31_0 H - Current value: ");
                 Serial.print(value);
