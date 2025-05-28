@@ -82,7 +82,7 @@ bool ClimateController::begin() {
         return false;
     }
     
-    // Instead of direct Wire access, use I2CHandler for safer I2C operations
+    // Use a safer approach with I2CHandler
     bool gpioConnected = false;
     bool sensorConnected = false;
     bool dacConnected = false;
@@ -90,15 +90,8 @@ bool ClimateController::begin() {
     // Test GPIO connection
     try {
         I2CHandler::selectTCA(gpio->getTCAChannel());
-        // Use the wire instance from the gpio device itself instead of global Wire
-        TwoWire* gpioWire = gpio->getWireInstance();
-        if (gpioWire == nullptr) {
-            Serial.println("ClimateController: GPIO has null wire instance, using global Wire");
-            gpioWire = &Wire;
-        }
-        
-        gpioWire->beginTransmission(gpio->getI2CAddress());
-        gpioConnected = (gpioWire->endTransmission() == 0);
+        Wire.beginTransmission(gpio->getI2CAddress());
+        gpioConnected = (Wire.endTransmission() == 0);
         if (!gpioConnected) {
             Serial.println("ClimateController: GPIO expander connection failed");
         }
@@ -109,15 +102,8 @@ bool ClimateController::begin() {
     // Test sensor connection
     try {
         I2CHandler::selectTCA(sensor->getTCAChannel());
-        // Use the wire instance from the sensor device itself
-        TwoWire* sensorWire = sensor->getWireInstance();
-        if (sensorWire == nullptr) {
-            Serial.println("ClimateController: Sensor has null wire instance, using global Wire");
-            sensorWire = &Wire;
-        }
-        
-        sensorWire->beginTransmission(sensor->getI2CAddress());
-        sensorConnected = (sensorWire->endTransmission() == 0);
+        Wire.beginTransmission(sensor->getI2CAddress());
+        sensorConnected = (Wire.endTransmission() == 0);
         if (!sensorConnected) {
             Serial.println("ClimateController: Temperature sensor connection failed");
         }
