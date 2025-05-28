@@ -150,18 +150,26 @@ Device* DeviceRegistry::createDeviceWithThresholds(
     Serial.println(typeNumber);
     Serial.print("Device Name: ");
     Serial.println(deviceName);
-    
-    if (type.equalsIgnoreCase("Sensor")) {
+      if (type.equalsIgnoreCase("Sensor")) {
         if (typeNumber.equalsIgnoreCase("SHT31")) {
             device = new SHT31sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
-            if (device) device->deviceName = deviceName; // Set device name
+            if (device) {
+                device->deviceName = deviceName; // Set device name
+                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
+            }
         } else if (typeNumber.equalsIgnoreCase("BH1705")) {
             device = new BH1705sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
-            if (device) device->deviceName = deviceName; // Set device name
+            if (device) {
+                device->deviceName = deviceName; // Set device name
+                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
+            }
         } else if (typeNumber.equalsIgnoreCase("SCALES")) {
             device = new SCALESsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
-            if (device) device->deviceName = deviceName; // Set device name
-        }    } else if (type.equalsIgnoreCase("GPIO")) {        if (typeNumber.equalsIgnoreCase("PCF8574")) {
+            if (device) {
+                device->deviceName = deviceName; // Set device name
+                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
+            }
+        }} else if (type.equalsIgnoreCase("GPIO")) {        if (typeNumber.equalsIgnoreCase("PCF8574")) {
             // Parse mode from string
             PCF8574Mode pcfMode = PCF8574Mode::OUTPUT_MODE; // Default
             if (mode.equalsIgnoreCase("INPUT") || mode.equalsIgnoreCase("INPUT_MODE")) {
