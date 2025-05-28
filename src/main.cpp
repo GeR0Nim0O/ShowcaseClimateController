@@ -205,29 +205,37 @@ void setup()
 
   clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
   topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
-
   // Print debugging information
   printDebugInfo();
 
-  // Connect to WiFi
-  if (!WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword())) {
-    return;
-  }
+  // Try to connect to WiFi (don't stop if it fails)
+  Serial.println("Attempting WiFi connection...");
+  bool wifiConnected = WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword());
+  
+  if (wifiConnected) {
+    Serial.println("WiFi connected successfully in setup.");
+    
+    // Connect to TimeAPI and NTP only if WiFi is connected
+    // Only fetch time from RTC if RTC is connected and initialized
+    if (rtc && rtc->isInitialized()) {
+      TimeHandler::fetchTime(*rtc);
+    } else {
+      Serial.println("RTC not connected or not initialized. Skipping RTC time fetch.");
+    }
 
-  // Connect to TimeAPI and NTP
-  // Only fetch time from RTC if RTC is connected and initialized
-  if (rtc && rtc->isInitialized()) {
-    TimeHandler::fetchTime(*rtc);
+    // Try to connect to MQTT broker only if WiFi is connected
+    Serial.println("Attempting MQTT connection...");
+    if (!WifiMqttHandler::connectToMqttBrokerWithCheck(client, espClient, 
+        Configuration::getMqttsServer(), rootCACertificate, 
+        Configuration::getMqttsPort(), clientId, topic,
+        Configuration::getFlespiToken())) {
+      Serial.println("Failed to connect to MQTT broker - will retry in main loop");
+    } else {
+      Serial.println("MQTT connected successfully in setup.");
+    }
   } else {
-    Serial.println("RTC not connected or not initialized. Skipping RTC time fetch.");
-  }
-
-  // Connect to MQTT broker
-  if (!WifiMqttHandler::connectToMqttBrokerWithCheck(client, espClient, 
-      Configuration::getMqttsServer(), rootCACertificate, 
-      Configuration::getMqttsPort(), clientId, topic,
-      Configuration::getFlespiToken())) {
-    Serial.println("Failed to connect to MQTT broker");
+    Serial.println("WiFi connection failed in setup - program will continue offline");
+    Serial.println("WiFi and MQTT connections will be retried in main loop");
   }
 
   pinMode(BUTTON_PIN, INPUT_PULLUP); // Initialize button pin
