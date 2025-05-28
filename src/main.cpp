@@ -839,6 +839,22 @@ void initializeClimateController() {
     Serial.print(", DACs: ");
     Serial.println(dacCount);
     
+    // Double check devices are initialized
+    if (gpioExpander != nullptr && !gpioExpander->isInitialized()) {
+      Serial.println("WARNING: GPIO expander found but not initialized. Trying initialization.");
+      gpioExpander->begin();  // Use existing begin() method instead of forceInitialized
+    }
+    
+    if (climateTemperatureSensor != nullptr && !climateTemperatureSensor->isInitialized()) {
+      Serial.println("WARNING: Temperature sensor found but not initialized. Trying initialization.");
+      climateTemperatureSensor->begin();  // Use existing begin() method instead of forceInitialized
+    }
+    
+    if (climateDac != nullptr && !climateDac->isInitialized()) {
+      Serial.println("WARNING: DAC found but not initialized. Trying initialization.");
+      climateDac->begin();  // Use existing begin() method instead of forceInitialized
+    }
+    
     // Create climate controller if we found the required devices
     if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
       Serial.println("Creating climate controller with devices:");
