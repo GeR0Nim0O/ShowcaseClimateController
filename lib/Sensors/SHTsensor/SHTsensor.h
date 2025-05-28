@@ -35,4 +35,4 @@ private:
     float _humidity;
 };
 
-#endif // SHT31SENSOR_H
+#endif // SHTSENSOR_H
