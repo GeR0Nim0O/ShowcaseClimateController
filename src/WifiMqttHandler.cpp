@@ -223,28 +223,73 @@ bool WifiMqttHandler::connectToMqttBrokerWithCheck(PubSubClient &client, WiFiCli
 void WifiMqttHandler::keepAlive(PubSubClient &client, WiFiClientSecure &espClient, const char* ssid, const char* password, const char* mqtt_server, const char* rootCACertificate, int mqtt_port, const char* clientId, const char* topic) {
     static unsigned long lastWiFiReconnectAttempt = 0;
     static unsigned long lastMqttReconnectAttempt = 0;
+    static int wifiReconnectAttempts = 0;
+    static int mqttReconnectAttempts = 0;
+    static bool wifiSkipped = false;
+    static bool mqttSkipped = false;
+    const int maxReconnectAttempts = 5;
 
     // Case 0: WLAN DOWN, MQTT DOWN
-    if (WiFi.status() != WL_CONNECTED) {
+    if (WiFi.status() != WL_CONNECTED && !wifiSkipped) {
         if (millis() - lastWiFiReconnectAttempt > 15000) {
-            Serial.println("Reconnecting to WiFi...");
-            WiFi.disconnect();
-            WiFi.begin(ssid, password);
-            lastWiFiReconnectAttempt = millis();
+            wifiReconnectAttempts++;
+            Serial.print("Reconnecting to WiFi... Attempt ");
+            Serial.print(wifiReconnectAttempts);
+            Serial.print("/");
+            Serial.println(maxReconnectAttempts);
+            
+            if (wifiReconnectAttempts <= maxReconnectAttempts) {
+                WiFi.disconnect();
+                WiFi.begin(ssid, password);
+                lastWiFiReconnectAttempt = millis();
+                mqttReconnectAttempts = 0; // Reset MQTT attempts when WiFi reconnects
+                mqttSkipped = false; // Reset MQTT skip flag when WiFi reconnects
+            } else {
+                Serial.println("Max WiFi reconnection attempts reached. Skipping WiFi reconnection.");
+                wifiSkipped = true;
+            }
         }
         return; // Wait for WLAN UP before proceeding to case 2
     }
 
+    // Reset WiFi reconnection attempts when WiFi reconnects successfully
+    if (WiFi.status() == WL_CONNECTED && wifiSkipped) {
+        Serial.println("WiFi reconnected successfully. Resetting WiFi attempt counter.");
+        wifiReconnectAttempts = 0;
+        wifiSkipped = false;
+        mqttReconnectAttempts = 0;
+        mqttSkipped = false;
+    }
+
     // Case 2: WLAN UP, MQTT DOWN
-    if (!client.connected()) {
+    if (!client.connected() && !mqttSkipped && !wifiSkipped) {
         if (millis() - lastMqttReconnectAttempt > 5000) {
-            Serial.println("Reconnecting to MQTT broker...");
-            connectToMqttBroker(client, espClient, mqtt_server, rootCACertificate, mqtt_port, clientId, topic);
-            lastMqttReconnectAttempt = millis();
+            mqttReconnectAttempts++;
+            Serial.print("Reconnecting to MQTT broker... Attempt ");
+            Serial.print(mqttReconnectAttempts);
+            Serial.print("/");
+            Serial.println(maxReconnectAttempts);
+            
+            if (mqttReconnectAttempts <= maxReconnectAttempts) {
+                connectToMqttBroker(client, espClient, mqtt_server, rootCACertificate, mqtt_port, clientId, topic);
+                lastMqttReconnectAttempt = millis();
+            } else {
+                Serial.println("Max MQTT reconnection attempts reached. Skipping MQTT reconnection.");
+                mqttSkipped = true;
+            }
         }
         return; // Wait for MQTT UP before proceeding to case 4
     }
 
+    // Reset MQTT reconnection attempts when MQTT reconnects successfully
+    if (client.connected() && mqttSkipped) {
+        Serial.println("MQTT reconnected successfully. Resetting MQTT attempt counter.");
+        mqttReconnectAttempts = 0;
+        mqttSkipped = false;
+    }
+
     // Case 4: WLAN UP, MQTT UP
-    client.loop(); // Ensure the MQTT client loop is called to maintain the connection
+    if (client.connected()) {
+        client.loop(); // Ensure the MQTT client loop is called to maintain the connection
+    }
 }
