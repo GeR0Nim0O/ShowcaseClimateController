@@ -32,9 +32,8 @@ public:
     uint8_t getGPIOState() const { return _gpioState; }
       // New methods for mode management
     PCF8574Mode getMode() const { return _mode; }
-    void setMode(PCF8574Mode mode);
-    bool isOutputMode() const { return _mode == PCF8574Mode::OUTPUT; }
-    bool isInputMode() const { return _mode == PCF8574Mode::INPUT; }
+    void setMode(PCF8574Mode mode);    bool isOutputMode() const { return _mode == PCF8574Mode::OUTPUT_MODE; }
+    bool isInputMode() const { return _mode == PCF8574Mode::INPUT_MODE; }
     void initializeOutputs(); // Initialize all outputs to LOW
 
 private:
