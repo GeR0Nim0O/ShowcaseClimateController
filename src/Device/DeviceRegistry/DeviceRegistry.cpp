@@ -199,10 +199,9 @@ Device* DeviceRegistry::createDeviceWithThresholds(
                 device->deviceName = deviceName; // Set device name
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
                 
-                // Register this device as a DAC device if we need to track it separately
-                if (auto dacDevice = dynamic_cast<GP8403dac*>(device)) {
-                    // You could add to a separate DAC list if needed
-                }
+                // Register this device as a DAC device without using dynamic_cast
+                // RTTI is disabled, so we can't use dynamic_cast
+                // No need to do anything special with the DAC device here
             }
         }    }
     
