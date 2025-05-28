@@ -64,7 +64,7 @@ PCF8574gpio* DeviceRegistry::getGPIOExpander(int index) {
     return gpioExpanders[index];
 }
 
-SHT31sensor* DeviceRegistry::getTemperatureHumiditySensor(int index) {
+SHTsensor* DeviceRegistry::getTemperatureHumiditySensor(int index) {
     if (index < 0 || index >= temperatureHumiditySensors.size()) {
         return nullptr;
     }
