@@ -167,9 +167,10 @@ Device* DeviceRegistry::createDeviceWithThresholds(
             device = new SCALESsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
             if (device) {
                 device->deviceName = deviceName; // Set device name
-                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
-            }
-        }} else if (type.equalsIgnoreCase("GPIO")) {        if (typeNumber.equalsIgnoreCase("PCF8574")) {
+                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds            }
+        }
+    } else if (type.equalsIgnoreCase("GPIO")) {
+        if (typeNumber.equalsIgnoreCase("PCF8574")) {
             // Parse mode from string
             PCF8574Mode pcfMode = PCF8574Mode::OUTPUT_MODE; // Default
             if (mode.equalsIgnoreCase("INPUT") || mode.equalsIgnoreCase("INPUT_MODE")) {
