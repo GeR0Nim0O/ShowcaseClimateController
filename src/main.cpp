@@ -7,6 +7,8 @@
 #include "SHTSensor/SHTsensor.h"
 #include "SCALESSensor/SCALESsensor.h"
 #include "DS3231Rtc/DS3231rtc.h" // Include the DS3231rtc header
+#include "PCF8574gpio.h" // Add PCF8574 GPIO include
+#include "ClimateController.h" // Add climate controller include
 
 #include <WiFiClientSecure.h> 
 #include <string>
@@ -99,6 +101,19 @@ int mqttRetryCount = 0;
 int apiRetryCount = 0;
 int ntpRetryCount = 0;
 
+// Global variables for climate controller
+PCF8574gpio* gpioExpander = nullptr;
+SHTsensor* climateTemperatureSensor = nullptr;
+ClimateController* climateController = nullptr;
+bool climateControllerEnabled = true;
+
+// Climate control parameters
+float temperatureSetpoint = 22.0;
+float humiditySetpoint = 50.0;
+bool autoFanControlEnabled = true;
+ClimateMode climateMode = ClimateMode::AUTO;
+HumidityMode humidityMode = HumidityMode::AUTO;
+
 void readAndPrintInitialSensorData(); // Add this function prototype
 void readAndSendDataFromDevices();
 void handleButtonPress();
@@ -109,6 +124,8 @@ void sendDataOverMQTT(const String& deviceName, const String& projectNr, const S
 void setCustomMqttSettings();
 void setMqttThrottling(bool enable, unsigned long interval = 60000); // Declare the function here
 void sendAllChangedSensorData(); // Add this function declaration
+void initializeClimateController(); // Function to initialize climate controller
+void updateClimateController(); // Function to update climate controller
 void setup()
 {
   Serial.begin(115200);
@@ -171,6 +188,9 @@ void setup()
   
   // Print created sensors for debugging (moved after initialization)
   printCreatedSensors();
+  
+  // Initialize climate controller
+  initializeClimateController();
   
   // NEW: Read and print initial sensor values after initialization
   Serial.println("\n=== Initial Sensor Readings ===");
@@ -365,6 +385,11 @@ void loop() {
 
   // Read and send data from each device
   readAndSendDataFromDevices();
+  
+  // Update climate controller
+  if (climateControllerEnabled && climateController != nullptr) {
+    updateClimateController();
+  }
 
   handleButtonPress();
 
@@ -747,4 +772,101 @@ void setCustomMqttSettings() {
         Serial.print("MQTT Throttling: ");
         Serial.println(throttleMqtt ? "Enabled (sending once every minute)" : "Disabled");
     }
+}
+
+// Function to initialize the climate controller
+void initializeClimateController() {
+  // Find a PCF8574 GPIO expander in the devices list
+  for (Device* device : devices) {
+    if (device->getType() == "PCF8574gpio" && device->isInitialized()) {
+      gpioExpander = static_cast<PCF8574gpio*>(device);
+      Serial.println("Found GPIO expander for climate control");
+      break;
+    }
+  }
+  
+  // Find an SHT temperature/humidity sensor
+  for (Device* device : devices) {
+    if (device->getType() == "SHTSensor" && device->isInitialized()) {
+      climateTemperatureSensor = static_cast<SHTsensor*>(device);
+      Serial.println("Found temperature/humidity sensor for climate control");
+      break;
+    }
+  }
+  
+  // Create climate controller if we found both required devices
+  if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
+    climateController = new ClimateController(gpioExpander, climateTemperatureSensor);
+    
+    if (climateController->begin()) {
+      Serial.println("Climate controller initialized successfully");
+      
+      // Set initial parameters
+      climateController->setTemperatureSetpoint(temperatureSetpoint);
+      climateController->setHumiditySetpoint(humiditySetpoint);
+      climateController->setClimateMode(climateMode);
+      climateController->setHumidityMode(humidityMode);
+      
+      // Turn on interior fan by default
+      if (autoFanControlEnabled) {
+        climateController->setFanInterior(true);
+      }
+      
+      Serial.print("Climate controller setpoints - Temperature: ");
+      Serial.print(temperatureSetpoint);
+      Serial.print("°C, Humidity: ");
+      Serial.print(humiditySetpoint);
+      Serial.println("%");
+    } else {
+      Serial.println("Failed to initialize climate controller");
+      delete climateController;
+      climateController = nullptr;
+    }
+  } else {
+    Serial.println("Could not find required devices for climate controller:");
+    Serial.print("GPIO expander: ");
+    Serial.println(gpioExpander != nullptr ? "Found" : "Not found");
+    Serial.print("Temperature sensor: ");
+    Serial.println(climateTemperatureSensor != nullptr ? "Found" : "Not found");
+  }
+}
+
+// Function to update the climate controller
+void updateClimateController() {
+  if (climateController == nullptr) return;
+  
+  // Update the controller (reads sensors and applies control logic)
+  climateController->update();
+  
+  // Log climate controller status every minute
+  static unsigned long lastClimateLog = 0;
+  if (millis() - lastClimateLog >= 60000) { // Every minute
+    float currentTemp = climateController->getCurrentTemperature();
+    float currentHum = climateController->getCurrentHumidity();
+    
+    Serial.println("=== Climate Controller Status ===");
+    Serial.print("Temperature: ");
+    Serial.print(currentTemp);
+    Serial.print("°C (setpoint: ");
+    Serial.print(climateController->getTemperatureSetpoint());
+    Serial.println("°C)");
+    
+    Serial.print("Humidity: ");
+    Serial.print(currentHum);
+    Serial.print("% (setpoint: ");
+    Serial.print(climateController->getHumiditySetpoint());
+    Serial.println("%)");
+    
+    Serial.print("Heating: ");
+    Serial.println(climateController->isHeating() ? "ON" : "OFF");
+    Serial.print("Cooling: ");
+    Serial.println(climateController->isCooling() ? "ON" : "OFF");
+    Serial.print("Humidifying: ");
+    Serial.println(climateController->isHumidifying() ? "ON" : "OFF");
+    Serial.print("Dehumidifying: ");
+    Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
+    Serial.println("===============================");
+    
+    lastClimateLog = millis();
+  }
 }
