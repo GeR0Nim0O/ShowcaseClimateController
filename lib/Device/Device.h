@@ -17,15 +17,15 @@ public:
     virtual bool isConnected() = 0;
     virtual void update() = 0;
     virtual std::map<String, String> readData() = 0;
-    virtual inline std::map<String, String> getChannels() const { return channels; }
-    virtual inline float getThreshold(const String& channelKey = "") const { 
+    virtual std::map<String, String> getChannels() const { return channels; }
+    virtual float getThreshold(const String& channelKey = "") const { 
         if (channelKey.length() > 0 && channelThresholds.find(channelKey) != channelThresholds.end()) {
             return channelThresholds.at(channelKey);
         }
         return threshold; 
     }
-    virtual inline int getChannelsCount() const { return channels.size(); }
-    virtual inline String getTypeNumber() const { return typeNumber; }
+    virtual int getChannelsCount() const { return channels.size(); }
+    virtual String getTypeNumber() const { return typeNumber; }
     
     // Getters
     uint8_t getI2CAddress() const { return i2cAddress; }
