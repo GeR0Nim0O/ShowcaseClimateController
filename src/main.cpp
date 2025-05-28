@@ -411,6 +411,30 @@ void readAndPrintInitialSensorData() {
   Serial.println("===========================\n");
 }
 
+void sendSensorDataOverMQTT(const SensorData& data) {
+    if (WiFi.status() != WL_CONNECTED || !client.connected() || stopSendingMQTT) {
+        return;
+    }
+    
+    JsonHandler::sendJsonOverMqtt(
+        client, 
+        data.deviceName.c_str(), 
+        data.projectNr.c_str(), 
+        data.showcaseId.c_str(), 
+        data.sensorType.c_str(), 
+        data.sensorValue, 
+        data.currentTime.c_str(), 
+        data.deviceIndex
+    );
+    
+    Serial.print("Sent to MQTT: ");
+    Serial.print(data.deviceName);
+    Serial.print(" ");
+    Serial.print(data.sensorType);
+    Serial.print(": ");
+    Serial.println(data.sensorValue);
+}
+
 void readAndSendDataFromDevices() {
     // Flag to determine if we should print data this cycle (only true every 60 seconds)
     bool shouldPrintData = throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval);
@@ -457,7 +481,9 @@ void readAndSendDataFromDevices() {
             continue;
         }
         I2CHandler::selectTCA(device->getTCAChannel());
-        auto data = device->readData();        for (const auto& channel : device->getChannels()) {
+        auto data = device->readData();        
+        
+        for (const auto& channel : device->getChannels()) {
             String channelKey = channel.first;
             String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
             String deviceSpecificKey = deviceName + "_" + channelKey; // Make key device-specific
@@ -471,10 +497,13 @@ void readAndSendDataFromDevices() {
                 currentTime = "";
             }
             String projectNr = Configuration::getProjectNumber();
-            String showcaseId = Configuration::getShowcaseId();            // Get the last value and threshold for this sensor channel
+            String showcaseId = Configuration::getShowcaseId();
+            
+            // Get the last value and threshold for this sensor channel
             float lastValue = lastSensorValues[key];
             float threshold = device->getThreshold(channelKey);
-              // Debug: Print threshold information (remove this later)
+            
+            // Debug: Print threshold information (remove this later)
             if (shouldPrintData && (channelKey == "T" || channelKey == "H")) {
                 Serial.print("DEBUG: Device ");
                 Serial.print(deviceName);
@@ -491,7 +520,8 @@ void readAndSendDataFromDevices() {
                 Serial.print(", diff: ");
                 Serial.println(abs(value - lastValue));
             }
-              // Always print data every 60 seconds, aligned with MQTT sending, even if no change
+            
+            // Always print data every 60 seconds, aligned with MQTT sending, even if no change
             if (shouldPrintData) {
                 Serial.print(deviceName);
                 Serial.print(" - ");
@@ -507,23 +537,6 @@ void readAndSendDataFromDevices() {
             float valueDiff = abs(value - lastValue);
             bool shouldLog = valueDiff >= threshold;
             bool shouldSendMqtt = shouldPrintData || shouldLog; // Send via MQTT if 60-second cycle OR threshold exceeded
-              // Debug: Always show threshold check for humidity changes (DISABLED)
-            // if (channelKey == "H" && valueDiff > 0.005) { // Show when humidity changes by more than 0.005
-            //     Serial.print("HUMIDITY DEBUG: Device ");
-            //     Serial.print(deviceName);
-            //     Serial.print(" H=");
-            //     Serial.print(value);
-            //     Serial.print(" lastH=");
-            //     Serial.print(lastValue);
-            //     Serial.print(" diff=");
-            //     Serial.print(valueDiff);
-            //     Serial.print(" threshold=");
-            //     Serial.print(threshold);
-            //     Serial.print(" shouldLog=");
-            //     Serial.print(shouldLog ? "YES" : "NO");
-            //     Serial.print(" shouldSendMqtt=");
-            //     Serial.println(shouldSendMqtt ? "YES" : "NO");
-            // }
             
             // Store data for MQTT sending if it's either the 60-second cycle OR threshold exceeded
             if (shouldSendMqtt) {
@@ -551,6 +564,12 @@ void readAndSendDataFromDevices() {
                     Serial.print(" >= ");
                     Serial.print(threshold);
                     Serial.println(")");
+                    
+                    // NEW: Send data to MQTT immediately when threshold exceeded
+                    if (WiFi.status() == WL_CONNECTED && client.connected() && !stopSendingMQTT) {
+                        // Send this specific sensor data immediately via MQTT
+                        sendSensorDataOverMQTT(sensorData);
+                    }
                 }
             }
             
@@ -566,7 +585,8 @@ void readAndSendDataFromDevices() {
             // No else clause needed since we always update changedSensorData on the 60-second cycle
         }
     }
-      // Check if it's time to send all changed data via MQTT
+    
+    // Check if it's time to send all changed data via MQTT
     if (shouldPrintData) {
         if (WiFi.status() == WL_CONNECTED && client.connected()) {
             Serial.println("\nSensor data collected - sending to MQTT...");
@@ -596,16 +616,8 @@ void sendAllChangedSensorData() {
         SensorData& data = item.second;
         
         if (data.changed) {
-            JsonHandler::sendJsonOverMqtt(
-                client, 
-                data.deviceName.c_str(), 
-                data.projectNr.c_str(), 
-                data.showcaseId.c_str(), 
-                data.sensorType.c_str(), 
-                data.sensorValue, 
-                data.currentTime.c_str(), 
-                data.deviceIndex
-            );
+            // Use the new helper function
+            sendSensorDataOverMQTT(data);
             
             data.changed = false; // Reset changed flag
             dataWasSent = true;
