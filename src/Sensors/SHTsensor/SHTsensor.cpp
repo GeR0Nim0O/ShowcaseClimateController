@@ -236,10 +236,10 @@ bool SHTsensor::setHeater(bool enable)
 
 bool SHTsensor::writeCommand(uint16_t command)
 {
-    wire->beginTransmission(_address);
-    wire->write(command >> 8); // Send MSB
-    wire->write(command & 0xFF); // Send LSB
-    return wire->endTransmission() == 0;
+    Wire.beginTransmission(_address);
+    Wire.write(command >> 8); // Send MSB
+    Wire.write(command & 0xFF); // Send LSB
+    return Wire.endTransmission() == 0;
 }
 
 bool SHTsensor::readBytes(uint8_t *data, uint8_t length)
