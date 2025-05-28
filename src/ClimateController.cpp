@@ -473,3 +473,17 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
     
     return 0; // Default fallback
 }
+
+// Add this implementation of the safeWritePin method we previously added to the header
+bool ClimateController::safeWritePin(uint8_t pin, bool value) {
+    if (!gpio) return false;
+    
+    try {
+        gpio->writePin(pin, value);
+        return true;
+    } catch (...) {
+        Serial.print("ClimateController: Exception writing to pin ");
+        Serial.println(pin);
+        return false;
+    }
+}
