@@ -2,8 +2,8 @@
 #include "SCALESsensor.h"
 #include "I2CHandler.h"
 
-SCALESsensor::SCALESsensor(uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(threshold, channels, i2cChannel, tcaPort, deviceIndex), _address(SCALES_ADDRESS), _weight(NAN) {
+SCALESsensor::SCALESsensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
+    : Device(wire, threshold, channels, i2cChannel, tcaPort, deviceIndex), _address(SCALES_ADDRESS), _weight(NAN) {
 }
 
 bool SCALESsensor::begin() {
