@@ -877,7 +877,9 @@ void updateClimateController() {
     if (climateController->isHeating()) {
       Serial.print(" (Power: ");
       Serial.print(climateController->getHeatingPower());
-      Serial.print("%)");
+      Serial.print("%, DAC Output: ");
+      Serial.print((climateController->getHeatingPower() / 100.0) * 10.0, 1);
+      Serial.print("V)");
     }
     Serial.println();
     
@@ -886,30 +888,20 @@ void updateClimateController() {
     if (climateController->isCooling()) {
       Serial.print(" (Power: ");
       Serial.print(climateController->getCoolingPower());
-      Serial.print("%)");
+      Serial.print("%, DAC Output: ");
+      Serial.print((climateController->getCoolingPower() / 100.0) * 10.0, 1);
+      Serial.print("V)");
     }
     Serial.println();
     
     Serial.print("Humidifying: ");
-    Serial.print(climateController->isHumidifying() ? "ON" : "OFF");
-    if (climateController->isHumidifying()) {
-      Serial.print(" (Power: ");
-      Serial.print(climateController->getHumidifierPower());
-      Serial.print("%)");
-    }
-    Serial.println();
+    Serial.println(climateController->isHumidifying() ? "ON" : "OFF");
     
     Serial.print("Dehumidifying: ");
-    Serial.print(climateController->isDehumidifying() ? "ON" : "OFF");
-    if (climateController->isDehumidifying()) {
-      Serial.print(" (Power: ");
-      Serial.print(climateController->getDehumidifierPower());
-      Serial.print("%)");
-    }
-    Serial.println();
+    Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
     
     Serial.print("Analog Control: ");
-    Serial.println(climateController->hasDACControl() ? "Enabled" : "Disabled");
+    Serial.println(climateController->hasDACControl() ? "Enabled (Temperature Only)" : "Disabled");
     Serial.println("===============================");
     
     lastClimateLog = millis();
