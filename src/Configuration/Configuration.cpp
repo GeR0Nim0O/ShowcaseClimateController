@@ -106,8 +106,7 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         }
         Serial.println();
     }
-    
-    // Process each device in the configuration
+      // Process each device in the configuration
     for (JsonPair device : devicesConfig) {
         const String deviceKey = device.key().c_str();
         JsonObject deviceObj = device.value();
@@ -127,6 +126,19 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         Serial.print(deviceTypeNumber);
         Serial.print(", Address: 0x");
         Serial.println(deviceAddress, HEX);
+        
+        // Skip devices with null or empty type or typeNumber
+        if (deviceType.isEmpty() || deviceType.equalsIgnoreCase("null") || 
+            deviceTypeNumber.isEmpty() || deviceTypeNumber.equalsIgnoreCase("null")) {
+            Serial.println("WARNING: Skipping device with null or empty type/typeNumber");
+            continue;
+        }
+        
+        // Skip devices with invalid addresses (0x00)
+        if (deviceAddress == 0) {
+            Serial.println("WARNING: Skipping device with invalid address 0x00");
+            continue;
+        }
 
         // For DAC devices, log extra debug info
         if (deviceType.equalsIgnoreCase("DAC")) {
