@@ -18,7 +18,7 @@ PCF8574gpio::PCF8574gpio(uint8_t i2cChannel, uint8_t tcaPort, float threshold, s
 }
 
 bool PCF8574gpio::begin() {
-    wire->begin();
+    Wire.begin();
     bool connected = isConnected();
     if (connected) {
         initialized = true;  // Set initialized flag to true when connection is successful
