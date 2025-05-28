@@ -1,4 +1,4 @@
-#include "DeviceRegistry.h"
+#include "DeviceRegistry/DeviceRegistry.h"
 #include "BH1705sensor.h"
 #include "SCALESsensor.h"
 #include "DS3231rtc.h"
