@@ -2,8 +2,8 @@
 
 #define I2C_ENCODER_DEFAULT_ADDRESS 0x61
 
-RotaryEncoder::RotaryEncoder(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
-    : Device(i2cAddress, tcaChannel, deviceName, deviceIndex),
+RotaryEncoder::RotaryEncoder(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
+    : Device(wire, i2cAddress, tcaChannel, deviceName, deviceIndex),
       position(0), lastPosition(0), minValue(-2147483648), maxValue(2147483647),
       stepValue(1), wrapEnabled(false), floatData(false), rgbEncoder(false),
       buttonPressed(false), lastButtonPressed(false), buttonHeld(false),
