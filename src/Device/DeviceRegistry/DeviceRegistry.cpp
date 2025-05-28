@@ -165,12 +165,12 @@ Device* DeviceRegistry::createDeviceWithThresholds(
             if (device) {
                 device->deviceName = deviceName; // Set device name
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
-            }} else if (typeNumber.equalsIgnoreCase("BH1705")) {
-            device = new BH1705sensor(address, tcaPort, threshold, channels, deviceIndex);
+            }        } else if (typeNumber.equalsIgnoreCase("BH1705")) {
+            device = new BH1705sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
             if (device) {
                 device->deviceName = deviceName; // Set device name
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
-            }        } else if (typeNumber.equalsIgnoreCase("SCALES")) {
+            }} else if (typeNumber.equalsIgnoreCase("SCALES")) {
             device = new SCALESsensor(address, tcaPort, threshold, channels, deviceIndex);
             if (device) {
                 device->deviceName = deviceName; // Set device name
