@@ -66,11 +66,13 @@ protected:
     
     // Make deviceName public accessible through setter
     String deviceName;
-    
-    // Channels map - channel ID to type
+      // Channels map - channel ID to type
     std::map<String, String> channels;
     // Thresholds map - channel ID to threshold value
     std::map<String, float> thresholds;
+    
+    // Legacy support - single threshold for devices that use it
+    float threshold = 0.0f;
     
 public:
     // Public setter for deviceName to allow DeviceRegistry to set it
