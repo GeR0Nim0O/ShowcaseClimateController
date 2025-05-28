@@ -5,7 +5,7 @@
 #include <vector>
 #include "Device.h"
 #include "PCF8574gpio.h"
-#include "SHT31sensor.h"
+#include "SHTsensor.h"
 
 class DeviceRegistry {
 public:
