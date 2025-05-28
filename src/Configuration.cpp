@@ -242,7 +242,7 @@ String Configuration::getDeviceMode(const JsonObject& deviceConfig) {
     if (deviceConfig.containsKey("Mode")) {
         return deviceConfig["Mode"].as<String>();
     }
-    return "OUTPUT_8X"; // Default mode if not specified
+    return "OUTPUT"; // Default mode if not specified
 }
 
 float Configuration::getSensorThreshold(const JsonObject& sensorConfig, const String& channelKey) {
