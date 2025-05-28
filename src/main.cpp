@@ -992,3 +992,39 @@ void testDACOutput() {
         Serial.println("DAC not available for testing");
     }
 }
+
+// Function to update the climate controller (called every loop)
+void updateClimateController() {
+    if (climateController == nullptr) {
+        return; // Exit if climate controller is not initialized
+    }
+    
+    // Update the climate controller (calls update() to handle temp/humidity control)
+    climateController->update();
+    
+    // Optional: Print climate controller status periodically
+    static unsigned long lastStatusPrint = 0;
+    if (millis() - lastStatusPrint > 60000) { // Print status every 60 seconds
+        Serial.print("Climate status - Temperature: ");
+        Serial.print(climateController->getCurrentTemperature());
+        Serial.print("°C (setpoint: ");
+        Serial.print(climateController->getTemperatureSetpoint());
+        Serial.print("°C), Humidity: ");
+        Serial.print(climateController->getCurrentHumidity());
+        Serial.print("% (setpoint: ");
+        Serial.print(climateController->getHumiditySetpoint());
+        Serial.println("%)");
+        
+        // Print heater/cooler status
+        Serial.print("Climate control - Heating: ");
+        Serial.print(climateController->isHeating() ? "ON" : "OFF");
+        Serial.print(", Cooling: ");
+        Serial.print(climateController->isCooling() ? "ON" : "OFF");
+        Serial.print(", Humidifying: ");
+        Serial.print(climateController->isHumidifying() ? "ON" : "OFF");
+        Serial.print(", Dehumidifying: ");
+        Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
+        
+        lastStatusPrint = millis();
+    }
+}
