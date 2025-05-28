@@ -278,7 +278,19 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
         Serial.print("Device Address: 0x");
         Serial.println((uint32_t)device, HEX);
         
+        // Add safety delay
+        delay(100);
+        
         Serial.println("Selecting TCA channel " + String(device->getTCAChannel()) + "...");
+        
+        // Safe TCA selection with error handling
+        try {
+            I2CHandler::selectTCA(device->getTCAChannel());
+            delay(50); // Give TCA time to switch
+        } catch (...) {
+            Serial.println("ERROR: Exception during TCA selection");
+            continue;
+        }
         
         // Test I2C connectivity
         Serial.println("Testing I2C connectivity...");
@@ -294,15 +306,31 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
         }
         
         Serial.println("Attempting device initialization...");
-        Serial.print("DEBUG: Device address being initialized: ");
+        Serial.print("DEBUG: Device address being initialized: 0x");
         Serial.println((uint32_t)device, HEX);
         
-        bool success = device->begin();
+        // Add extra safety checks before calling begin()
+        if (device->getI2CAddress() == 0x27 && device->getTCAChannel() == 4) {
+            Serial.println("SPECIAL HANDLING: This is the problematic device (0x27 on TCA Port 4)");
+            Serial.println("Adding extra delays and checks...");
+            delay(200);
+        }
+        
+        bool success = false;
+        try {
+            // Extra safety delay before begin()
+            delay(50);
+            success = device->begin();
+            delay(50); // Safety delay after begin()
+        } catch (...) {
+            Serial.println("ERROR: Exception caught during device->begin()");
+            success = false;
+        }
         
         Serial.print("DEBUG: device->begin() returned: ");
         Serial.println(success);
         
-        Serial.print("DEBUG: Device address after begin(): ");
+        Serial.print("DEBUG: Device address after begin(): 0x");
         Serial.println((uint32_t)device, HEX);
         
         Serial.print("DEBUG: device->isInitialized() after begin(): ");
@@ -316,6 +344,9 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
         
         Serial.print("Final device state - Initialized: ");
         Serial.println(device->isInitialized() ? "YES" : "NO");
+        
+        // Safety delay between device initializations
+        delay(100);
     }
     
     Serial.println("\n=== Device Initialization Complete ===");
