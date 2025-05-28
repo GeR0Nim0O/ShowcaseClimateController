@@ -127,7 +127,8 @@ Device* DeviceRegistry::createDeviceWithThresholds(
     uint8_t tcaPort, 
     const std::map<String, float>& channelThresholds, 
     const std::map<String, String>& channelNames, 
-    int deviceIndex
+    int deviceIndex,
+    const String& mode
 ) {
     Device* device = nullptr;
     
