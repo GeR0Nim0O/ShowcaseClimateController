@@ -24,7 +24,6 @@ public:
 private:
     bool writeCommand(uint8_t command);
     bool readBytes(uint8_t *data, uint8_t length);
-    TwoWire* wire;
     uint8_t _address;
     float _lux;
 };
