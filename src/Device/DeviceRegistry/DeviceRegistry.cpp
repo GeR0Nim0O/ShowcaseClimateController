@@ -222,10 +222,9 @@ Device* DeviceRegistry::createDeviceWithThresholds(
             Serial.print(": ");
             Serial.println(channel.second);
         }
-        
-        if (typeNumber.equalsIgnoreCase("GP8403") || typeNumber.equalsIgnoreCase("MCP4725")) {
+          if (typeNumber.equalsIgnoreCase("GP8403") || typeNumber.equalsIgnoreCase("MCP4725")) {
             Serial.println("Creating GP8403dac...");
-            device = new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
+            device = new GP8403dac(address, tcaPort, threshold, channels, deviceIndex);
             if (device) {
                 device->deviceName = deviceName; // Set device name
                 device->setChannelThresholds(channelThresholds); 
