@@ -8,6 +8,7 @@
 #include "SCALESsensor.h"
 #include "SDHandler.h"
 #include <Wire.h>
+#include <algorithm> // For std::remove_if and std::distance
 
 // Initialize static member variables
 std::map<String, String> Configuration::wifiConfig;
