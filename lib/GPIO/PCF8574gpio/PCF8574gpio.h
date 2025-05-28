@@ -8,9 +8,14 @@
 
 #define PCF8574_ADDRESS 0x20
 
+enum class PCF8574Mode {
+    INPUT_8X,
+    OUTPUT_8X
+};
+
 class PCF8574gpio : public Device {
 public:
-    PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
+    PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex, PCF8574Mode mode = PCF8574Mode::OUTPUT_8X);
     
     bool begin() override;
     bool isConnected() override;
