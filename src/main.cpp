@@ -921,7 +921,7 @@ void testDACOutput() {
         Serial.print(testVoltage);
         Serial.println(" volts for testing");
         
-        // Use channel 0 (DAC0)
+        // Use channel 0 (DAC0) - generic channel number
         bool success = climateDac->setChannelVoltage(0, testVoltage);
         
         if (success) {
