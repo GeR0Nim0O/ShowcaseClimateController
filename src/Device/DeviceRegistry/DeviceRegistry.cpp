@@ -185,16 +185,21 @@ Device* DeviceRegistry::createDeviceWithThresholds(
                 device->deviceName = deviceName; // Set device name
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
             }
-        }
-    } else if (type.equalsIgnoreCase("RTC")) {
+        }    } else if (type.equalsIgnoreCase("RTC")) {
         if (typeNumber.equalsIgnoreCase("DS3231")) {
             device = new DS3231rtc(wire, address, tcaPort, threshold, channels, deviceIndex);
-            if (device) device->deviceName = deviceName; // Set device name
+            if (device) {
+                device->deviceName = deviceName; // Set device name
+                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
+            }
         }
     } else if (type.equalsIgnoreCase("DAC")) {
         if (typeNumber.equalsIgnoreCase("MCP4725")) {
             device = new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
-            if (device) device->deviceName = deviceName; // Set device name
+            if (device) {
+                device->deviceName = deviceName; // Set device name
+                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
+            }
         }
     }
     if (device) {
