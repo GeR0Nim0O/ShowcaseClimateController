@@ -51,6 +51,7 @@ public:
     static uint8_t getSensorAddress(const JsonObject& sensorConfig);
     static float getSensorThreshold(const JsonObject& sensorConfig, const String& channelKey = "");
     static JsonObject getSensorChannels(const JsonObject& sensorConfig);
+    static String getDeviceMode(const JsonObject& deviceConfig);
 
     // Modified to work with new channel structure
     static std::map<String, String> getChannelNames(const JsonObject& sensorConfig);
