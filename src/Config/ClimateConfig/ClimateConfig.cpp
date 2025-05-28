@@ -1,4 +1,4 @@
-#include "ClimateConfig.h"
+#include "../../../lib/Config/ClimateConfig/ClimateConfig.h"  // Use relative path to find the header in lib directory
 #include <Arduino.h>
 #include <EEPROM.h>
 
