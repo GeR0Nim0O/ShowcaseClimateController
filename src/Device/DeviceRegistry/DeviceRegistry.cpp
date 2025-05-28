@@ -184,9 +184,9 @@ Device* DeviceRegistry::createDeviceWithThresholds(
               device = new PCF8574gpio(wire, address, tcaPort, threshold, channels, deviceIndex, pcfMode);
             if (device) {
                 device->deviceName = deviceName; // Set device name
-                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
-            }
-        }    } else if (type.equalsIgnoreCase("RTC")) {
+                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds            }
+        }
+    } else if (type.equalsIgnoreCase("RTC")) {
         if (typeNumber.equalsIgnoreCase("DS3231")) {
             device = new DS3231rtc(wire, address, tcaPort, threshold, channels, deviceIndex);
             if (device) {
