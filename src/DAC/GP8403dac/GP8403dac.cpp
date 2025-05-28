@@ -128,14 +128,6 @@ bool GP8403dac::setPowerOutput(float percentage) {
     return setChannelVoltage(0, voltage); // Channel 0 (DAC0) for temperature power
 }
 
-bool GP8403dac::setHumidityPower(float percentage) {
-    if (percentage < 0.0) percentage = 0.0;
-    if (percentage > 100.0) percentage = 100.0;
-    
-    float voltage = (percentage / 100.0) * DAC_MAX_VOLTAGE;
-    return setChannelVoltage(1, voltage); // Channel B for humidity
-}
-
 bool GP8403dac::setGain(uint8_t channel, bool gain2x) {
     if (channel == 0) {
         gain2xA = gain2x;
