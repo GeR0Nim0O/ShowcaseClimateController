@@ -3,77 +3,72 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
-#include <vector>
 #include <map>
+#include <vector>
 #include "Device.h"
-#include "DS3231rtc.h"
-#include "I2CHandler.h"
+
+// Forward declaration of DS3231rtc class
+class DS3231rtc;
 
 class Configuration {
 public:
-    static bool loadConfig(const char* path);
-    static bool loadConfigFromSD(const char* path);
-    static String getWiFiSSID();
+    // Static member variables
+    static std::map<String, String> wifiConfig;
+    static std::map<String, String> mqttConfig;
+    static std::map<String, String> projectConfig;
+    static JsonObject devicesConfig;
+    
+    // Config loading functions
+    static bool loadConfigFromSD(const char* filename);
+    static bool loadConfig(const JsonObject& config);
+    
+    // Setters for WiFi configuration
     static void setWiFiSSID(const String& ssid);
-    static String getWiFiPassword();
     static void setWiFiPassword(const String& password);
-    static String getMqttServer();
-    static void setMqttServer(const String& server);
-    static int getMqttPort();
-    static void setMqttPort(int port);
-    static String getMqttUsername();
-    static void setMqttUsername(const String& username);
-    static String getMqttPassword();
-    static void setMqttPassword(const String& password);
-    static String getMqttsServer();
+    
+    // Getters for WiFi configuration
+    static String getWiFiSSID();
+    static String getWiFiPassword();
+    
+    // Setters for MQTT configuration
     static void setMqttsServer(const String& server);
-    static int getMqttsPort();
     static void setMqttsPort(int port);
-    static String getMqttsUsername();
-    static void setMqttsUsername(const String& username);
-    static String getMqttsPassword();
-    static void setMqttsPassword(const String& password);
-    static String getProjectNumber();
-    static void setProjectNumber(const String& number);
-    static String getShowcaseId();
-    static void setShowcaseId(const String& id);
-    static String getDeviceName();
-    static void setDeviceName(const String& name);
-    static String getTimezone();
-    static void setTimezone(const String& timezone);
-    static size_t getSdLogFileSize();
-    static void printConfigValues();
-    static JsonObject getDevicesConfig();
-
-    // Add method declarations for reading sensor properties
-    static String getSensorType(const JsonObject& sensorConfig);
-    static String getSensorTypeNumber(const JsonObject& sensorConfig);
-    static uint8_t getSensorAddress(const JsonObject& sensorConfig);
-    static float getSensorThreshold(const JsonObject& sensorConfig, const String& channelKey = "");
-    static JsonObject getSensorChannels(const JsonObject& sensorConfig);
-    static String getDeviceMode(const JsonObject& deviceConfig);
-
-    // Modified to work with new channel structure
-    static std::map<String, String> getChannelNames(const JsonObject& sensorConfig);
-    static std::map<String, float> getChannelThresholds(const JsonObject& sensorConfig);
-
-    // New method to check if config uses the new format
-    static bool isNewConfigFormat(const JsonObject& sensorConfig);
-
-    // New functions for device initialization and printing
-    static std::vector<Device*> initializeDevices(const std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults, DS3231rtc*& rtc);
-    static void initializeEachDevice(const std::vector<Device*>& devices);
-
-    // New function to convert JsonObject to map
-    static std::map<String, String> jsonToMap(JsonObject jsonObject);
-
-    // Methods to handle flespi token
-    static String getFlespiToken();
     static void setFlespiToken(const String& token);
+    
+    // Getters for MQTT configuration
+    static String getMqttsServer();
+    static int getMqttsPort();
+    static String getFlespiToken();
+    
+    // Setters for project information
+    static void setProjectNumber(const String& number);
+    static void setShowcaseId(const String& id);
+    static void setDeviceName(const String& name);
+    static void setTimezone(const String& tz);
+    static void setLogFileSize(uint32_t size);
+    
+    // Getters for project information
+    static String getProjectNumber();
+    static String getShowcaseId();
+    static String getDeviceName();
+    static String getTimezone();
+    static uint32_t getLogFileSize();
+    
+    // Device configuration
+    static JsonObject getDevicesConfig();
+    static void initializeEachDevice(std::vector<Device*>& devices);
+    
+    // Initialize devices based on config and scan results
+    static std::vector<Device*> initializeDevices(std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults, DS3231rtc*& rtc);
+    
+    // Print configuration values
+    static void printConfigValues();
 
 private:
-    static JsonDocument configDoc;
-    static std::vector<std::pair<uint8_t, uint8_t>> i2cAddressList;
+    // Private helper methods
+    static void parseWiFiConfig(const JsonObject& config);
+    static void parseMQTTConfig(const JsonObject& config);
+    static void parseProjectConfig(const JsonObject& config);
 };
 
 #endif // CONFIGURATION_H
