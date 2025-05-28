@@ -85,7 +85,9 @@ bool ClimateController::begin() {
     Serial.println("ClimateController: Starting initialization");
     
     // Initialize pin mappings from configuration now that config is loaded
-    initializePinMappings();
+    // TEMPORARILY COMMENTED OUT TO AVOID CRASH
+    // initializePinMappings();
+    Serial.println("ClimateController: Using default pin mappings only");
     
     // Add defensive checks for device pointers and connections
     if (!gpio || !sensor) {
