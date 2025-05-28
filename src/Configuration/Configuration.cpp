@@ -112,12 +112,33 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         const String deviceKey = device.key().c_str();
         JsonObject deviceObj = device.value();
         
-        // Get device type, type number, and I2C address
-        String deviceType = deviceObj["Type"].as<String>();
-        String deviceTypeNumber = deviceObj["TypeNumber"].as<String>();
-        uint8_t deviceAddress = strtol(deviceObj["Address"].as<String>().c_str(), NULL, 16);
+        // Check if device object is valid
+        if (deviceObj.isNull()) {
+            Serial.print("Config Device: ");
+            Serial.print(deviceKey);
+            Serial.println(" - WARNING: Skipping null device object");
+            continue;
+        }
+        
+        // Get device type, type number, and I2C address with null checks
+        JsonVariant typeVariant = deviceObj["Type"];
+        JsonVariant typeNumberVariant = deviceObj["TypeNumber"];
+        JsonVariant addressVariant = deviceObj["Address"];
+        
+        // Check if required fields exist and are not null
+        if (typeVariant.isNull() || typeNumberVariant.isNull() || addressVariant.isNull()) {
+            Serial.print("Config Device: ");
+            Serial.print(deviceKey);
+            Serial.println(" - WARNING: Skipping device with null required fields");
+            continue;
+        }
+        
+        String deviceType = typeVariant.as<String>();
+        String deviceTypeNumber = typeNumberVariant.as<String>();
+        String addressString = addressVariant.as<String>();
         String deviceMode = deviceObj["Mode"] | "";
-          // Skip devices with null or empty type or typeNumber early to avoid crash
+        
+        // Skip devices with null or empty type or typeNumber early to avoid crash
         if (deviceType.isEmpty() || deviceType.equalsIgnoreCase("null") || 
             deviceTypeNumber.isEmpty() || deviceTypeNumber.equalsIgnoreCase("null")) {
             Serial.print("Config Device: ");
@@ -125,6 +146,30 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             Serial.println(" - WARNING: Skipping device with null or empty type/typeNumber");
             continue;
         }
+        
+        // Validate address string before conversion
+        if (addressString.isEmpty() || addressString.equalsIgnoreCase("null")) {
+            Serial.print("Config Device: ");
+            Serial.print(deviceKey);
+            Serial.println(" - WARNING: Skipping device with null or empty address");
+            continue;
+        }
+        
+        // Safe string to hex conversion with error handling
+        uint8_t deviceAddress = 0;
+        char* endPtr;
+        long addressLong = strtol(addressString.c_str(), &endPtr, 16);
+        
+        // Check if conversion was successful and address is valid
+        if (*endPtr != '\0' || addressLong < 0 || addressLong > 0xFF) {
+            Serial.print("Config Device: ");
+            Serial.print(deviceKey);
+            Serial.print(" - WARNING: Invalid address format: ");
+            Serial.println(addressString);
+            continue;
+        }
+        
+        deviceAddress = (uint8_t)addressLong;
         
         // Skip devices with invalid addresses (0x00) early to avoid crash
         if (deviceAddress == 0) {
