@@ -162,7 +162,7 @@
     "GP8403": {
       "Type": "DAC",
       "TypeNumber": "GP8403",
-      "Address": "0x62",
+      "Address": "0x5F",
       "Channels": {
         "DAC0": {
           "Name": "TemperaturePower"
