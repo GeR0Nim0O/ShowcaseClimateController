@@ -475,6 +475,20 @@ void ClimateController::initializePinMappings() {
 uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
     JsonObject devicesConfig = Configuration::getDevicesConfig();
     
+    // Add null/empty check for devicesConfig
+    if (devicesConfig.isNull() || devicesConfig.size() == 0) {
+        Serial.printf("Warning: devicesConfig is null or empty for %s, using default\n", channelName.c_str());
+        // Use default mapping
+        if (channelName == "FanExterior") return 0;
+        if (channelName == "FanInterior") return 1;
+        if (channelName == "Humidify") return 2;
+        if (channelName == "Dehumidify") return 3;
+        if (channelName == "TemperatureEnable") return 4;
+        if (channelName == "TemperatureCool") return 5;
+        if (channelName == "TemperatureHeat") return 6;
+        return 0;
+    }
+    
     if (devicesConfig["PCF8574"].is<JsonObject>()) {
         JsonObject pcfConfig = devicesConfig["PCF8574"];
         if (pcfConfig["Channels"].is<JsonObject>()) {
