@@ -43,37 +43,81 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
 }
 
 bool ClimateController::begin() {
+    // Add defensive checks for device pointers and connections
     if (!gpio || !sensor) {
         Serial.println("ClimateController: Invalid device pointers");
         return false;
     }
     
-    if (!gpio->isConnected() || !sensor->isConnected()) {
-        Serial.println("ClimateController: Devices not connected");
-        return false;
+    // Instead of checking isConnected, use testI2CConnection directly for more robust check
+    bool gpioConnected = false;
+    bool sensorConnected = false;
+    bool dacConnected = false;
+    
+    // Test GPIO connection
+    try {
+        I2CHandler::selectTCA(gpio->getTCAChannel());
+        Wire.beginTransmission(gpio->getI2CAddress());
+        gpioConnected = (Wire.endTransmission() == 0);
+        if (!gpioConnected) {
+            Serial.println("ClimateController: GPIO expander connection failed");
+        }
+    } catch (...) {
+        Serial.println("ClimateController: Exception during GPIO connection check");
+    }
+    
+    // Test sensor connection
+    try {
+        I2CHandler::selectTCA(sensor->getTCAChannel());
+        Wire.beginTransmission(sensor->getI2CAddress());
+        sensorConnected = (Wire.endTransmission() == 0);
+        if (!sensorConnected) {
+            Serial.println("ClimateController: Temperature sensor connection failed");
+        }
+    } catch (...) {
+        Serial.println("ClimateController: Exception during sensor connection check");
     }
     
     // Check if DAC is available but don't fail if it's not
     if (dac) {
-        if (!dac->isConnected()) {
-            Serial.println("ClimateController: Warning - DAC not connected, using digital control only");
-            dac = nullptr; // Disable DAC control if not connected
-        } else {
-            Serial.println("ClimateController: DAC connected, using analog control");
-            // Initialize DAC to zero outputs
-            dac->setChannelVoltage(0, 0.0);
-            dac->setChannelVoltage(1, 0.0);
+        try {
+            I2CHandler::selectTCA(dac->getTCAChannel());
+            Wire.beginTransmission(dac->getI2CAddress());
+            dacConnected = (Wire.endTransmission() == 0);
+            if (!dacConnected) {
+                Serial.println("ClimateController: Warning - DAC not connected, using digital control only");
+                dac = nullptr; // Disable DAC control if not connected
+            } else {
+                Serial.println("ClimateController: DAC connected, using analog control");
+                // Initialize DAC to zero outputs
+                dac->setChannelVoltage(0, 0.0);
+                dac->setChannelVoltage(1, 0.0);
+            }
+        } catch (...) {
+            Serial.println("ClimateController: Exception during DAC connection check");
+            dac = nullptr;
         }
     } else {
         Serial.println("ClimateController: No DAC available, using digital control only");
     }
     
+    // If either GPIO or sensor connection failed, we can't continue
+    if (!gpioConnected || !sensorConnected) {
+        Serial.println("ClimateController: Required devices not connected");
+        return false;
+    }
+    
     // Initialize all outputs to safe state
-    gpio->writePin(pinTemperatureEnable, false);
-    gpio->writePin(pinTemperatureHeat, false);
-    gpio->writePin(pinTemperatureCool, false);
-    gpio->writePin(pinHumidify, false);
-    gpio->writePin(pinDehumidify, false);
+    try {
+        gpio->writePin(pinTemperatureEnable, false);
+        gpio->writePin(pinTemperatureHeat, false);
+        gpio->writePin(pinTemperatureCool, false);
+        gpio->writePin(pinHumidify, false);
+        gpio->writePin(pinDehumidify, false);
+    } catch (...) {
+        Serial.println("ClimateController: Exception during GPIO initialization");
+        return false;
+    }
     
     Serial.println("ClimateController initialized successfully");
     return true;
@@ -284,17 +328,17 @@ void ClimateController::setCoolingPower(float percentage) {
 }
 
 void ClimateController::setFanInterior(bool enable) {
-    if (!gpio) return;
-    gpio->writePin(pinFanInterior, enable);
-    Serial.print("Interior fan set to ");
-    Serial.println(enable ? "ON" : "OFF");
+    if (safeWritePin(pinFanInterior, enable)) {
+        Serial.print("Interior fan set to ");
+        Serial.println(enable ? "ON" : "OFF");
+    }
 }
 
 void ClimateController::setFanExterior(bool enable) {
-    if (!gpio) return;
-    gpio->writePin(pinFanExterior, enable);
-    Serial.print("Exterior fan set to ");
-    Serial.println(enable ? "ON" : "OFF");
+    if (safeWritePin(pinFanExterior, enable)) {
+        Serial.print("Exterior fan set to ");
+        Serial.println(enable ? "ON" : "OFF");
+    }
 }
 
 bool ClimateController::checkSafetyLimits() {
@@ -307,14 +351,12 @@ bool ClimateController::checkSafetyLimits() {
 }
 
 void ClimateController::applyTemperatureControl() {
-    if (!gpio) return;
-    
     // Update main temperature enable pin
-    gpio->writePin(pinTemperatureEnable, tempControlEnabled);
+    safeWritePin(pinTemperatureEnable, tempControlEnabled);
     
     // Update heating and cooling pins based on currently active mode
-    gpio->writePin(pinTemperatureHeat, heatingActive);
-    gpio->writePin(pinTemperatureCool, coolingActive);
+    safeWritePin(pinTemperatureHeat, heatingActive);
+    safeWritePin(pinTemperatureCool, coolingActive);
     
     // Debug output
     if (heatingActive) {
@@ -333,11 +375,9 @@ void ClimateController::applyTemperatureControl() {
 }
 
 void ClimateController::applyHumidityControl() {
-    if (!gpio) return;
-    
     // Update humidify and dehumidify pins based on currently active mode
-    gpio->writePin(pinHumidify, humidifyingActive);
-    gpio->writePin(pinDehumidify, dehumidifyingActive);
+    safeWritePin(pinHumidify, humidifyingActive);
+    safeWritePin(pinDehumidify, dehumidifyingActive);
     
     // Debug output
     if (humidifyingActive) {
@@ -350,15 +390,19 @@ void ClimateController::applyHumidityControl() {
 }
 
 void ClimateController::emergencyShutdown() {
-    gpio->writePin(pinTemperatureEnable, false);
-    gpio->writePin(pinTemperatureHeat, false);
-    gpio->writePin(pinTemperatureCool, false);
-    gpio->writePin(pinHumidify, false);
-    gpio->writePin(pinDehumidify, false);
+    safeWritePin(pinTemperatureEnable, false);
+    safeWritePin(pinTemperatureHeat, false);
+    safeWritePin(pinTemperatureCool, false);
+    safeWritePin(pinHumidify, false);
+    safeWritePin(pinDehumidify, false);
     
     // Also disable DAC output (only channel 0 is used)
     if (dac) {
-        dac->setChannelVoltage(0, 0.0);
+        try {
+            dac->setChannelVoltage(0, 0.0);
+        } catch (...) {
+            Serial.println("Error turning off DAC in emergency shutdown");
+        }
     }
     
     heatingActive = false;
