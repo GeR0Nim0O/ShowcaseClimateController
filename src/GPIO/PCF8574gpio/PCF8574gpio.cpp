@@ -101,3 +101,39 @@ bool PCF8574gpio::readPin(uint8_t pin) {
 void PCF8574gpio::writePin(uint8_t pin, bool state) {
     writeBit(pin, state);
 }
+
+// Mode management methods
+PCF8574Mode PCF8574gpio::getMode() const {
+    return _mode;
+}
+
+void PCF8574gpio::setMode(PCF8574Mode mode) {
+    _mode = mode;
+    Serial.print("PCF8574 mode changed to: ");
+    Serial.println(_mode == PCF8574Mode::INPUT_8X ? "INPUT_8X" : "OUTPUT_8X");
+    
+    // If switching to output mode, initialize all outputs to false
+    if (_mode == PCF8574Mode::OUTPUT_8X) {
+        initializeOutputs();
+    }
+}
+
+bool PCF8574gpio::isOutputMode() const {
+    return _mode == PCF8574Mode::OUTPUT_8X;
+}
+
+bool PCF8574gpio::isInputMode() const {
+    return _mode == PCF8574Mode::INPUT_8X;
+}
+
+void PCF8574gpio::initializeOutputs() {
+    if (_mode == PCF8574Mode::OUTPUT_8X) {
+        // Set all outputs to false (0x00)
+        writeByte(0x00);
+        Serial.println("PCF8574 outputs initialized to false (0x00)");
+    } else {
+        // For input mode, set all pins high to enable pull-ups
+        writeByte(0xFF);
+        Serial.println("PCF8574 inputs initialized with pull-ups enabled (0xFF)");
+    }
+}
