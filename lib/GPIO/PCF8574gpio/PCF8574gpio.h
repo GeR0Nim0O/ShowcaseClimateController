@@ -9,8 +9,8 @@
 #define PCF8574_ADDRESS 0x20
 
 enum class PCF8574Mode {
-    INPUT_8X,
-    OUTPUT_8X
+    INPUT,
+    OUTPUT
 };
 
 class PCF8574gpio : public Device {
