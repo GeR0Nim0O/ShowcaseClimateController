@@ -376,11 +376,16 @@ std::vector<Device*> Configuration::initializeDevices(const std::map<uint8_t, st
                 Serial.print(", address: 0x");
                 Serial.print(address, HEX);
                 Serial.print(", TCA port: ");
-                Serial.println(tcaPort);
-
-                // Get channel names and thresholds
+                Serial.println(tcaPort);                // Get channel names and thresholds
                 std::map<String, String> channelNames = getChannelNames(deviceConfig);
                 std::map<String, float> channelThresholds = getChannelThresholds(deviceConfig);
+                
+                // Get device mode (for PCF8574)
+                String deviceMode = getDeviceMode(deviceConfig);
+                if (type.equalsIgnoreCase("GPIO") && typeNumber.equalsIgnoreCase("PCF8574")) {
+                    Serial.print("PCF8574 Mode from config: ");
+                    Serial.println(deviceMode);
+                }
 
                 // Print threshold debug information
                 Serial.print("Channel thresholds for ");
@@ -395,7 +400,7 @@ std::vector<Device*> Configuration::initializeDevices(const std::map<uint8_t, st
 
                 Device* device = DeviceRegistry::createDeviceWithThresholds(
                     type, typeNumber, &Wire, address, tcaPort, 
-                    channelThresholds, channelNames, deviceIndex);
+                    channelThresholds, channelNames, deviceIndex, deviceMode);
                 
                 if (device && type.equalsIgnoreCase("RTC") && typeNumber.equalsIgnoreCase("DS3231")) {
                     rtc = static_cast<DS3231rtc*>(device);
