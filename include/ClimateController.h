@@ -139,6 +139,9 @@ private:
     // Safety checks
     bool checkSafetyLimits();
     void emergencyShutdown();
+    
+    // Add this helper method for safe GPIO operations
+    bool safeWritePin(uint8_t pin, bool value);
 };
 
 #endif // CLIMATE_CONTROLLER_H
