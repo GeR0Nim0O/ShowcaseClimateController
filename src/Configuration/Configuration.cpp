@@ -229,21 +229,61 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             deviceIndex,
             deviceMode
         );
+          deviceIndex++;
         
-        deviceIndex++;
+        // Check available heap memory after device creation attempt
+        Serial.print("Free heap after device creation attempt: ");
+        Serial.println(ESP.getFreeHeap());
         
         if (createdDevice != nullptr) {
-            devices.push_back(createdDevice);
+            // Additional safety checks on the created device before adding to vector
+            Serial.println("Validating created device...");
             
-            // Special processing for RTC device
-            if (deviceType.equalsIgnoreCase("RTC")) {
-                rtc = static_cast<DS3231rtc*>(createdDevice);
-                Serial.println("RTC device initialized and assigned");
+            // Check if device pointer is in valid memory range
+            if ((uint32_t)createdDevice < 0x3F800000 || (uint32_t)createdDevice > 0x3FFFFFFF) {
+                Serial.println("ERROR: Created device pointer is outside valid ESP32 memory range");
+                delete createdDevice;
+                continue;
             }
             
-            // Special logging for DAC device
-            if (deviceType.equalsIgnoreCase("DAC")) {
-                Serial.println("DAC device added to devices vector");
+            // Test basic device access without virtual method calls
+            Serial.print("Device created at address: 0x");
+            Serial.println((uint32_t)createdDevice, HEX);
+            
+            // Add a small delay to let system stabilize
+            delay(50);
+            
+            // Try to safely access a basic property
+            bool deviceValid = true;
+            try {
+                // Minimal test - just access the object without virtual calls yet
+                volatile uint8_t* testPtr = (volatile uint8_t*)createdDevice;
+                volatile uint8_t testValue = *testPtr; // Try to read first byte
+                (void)testValue; // Prevent unused variable warning
+                delay(10);
+            } catch (...) {
+                Serial.println("ERROR: Device memory test failed");
+                deviceValid = false;
+            }
+            
+            if (deviceValid) {
+                devices.push_back(createdDevice);
+                Serial.print("Device successfully added to vector. Vector size: ");
+                Serial.println(devices.size());
+                
+                // Special processing for RTC device
+                if (deviceType.equalsIgnoreCase("RTC")) {
+                    rtc = static_cast<DS3231rtc*>(createdDevice);
+                    Serial.println("RTC device initialized and assigned");
+                }
+                
+                // Special logging for DAC device
+                if (deviceType.equalsIgnoreCase("DAC")) {
+                    Serial.println("DAC device added to devices vector");
+                }
+            } else {
+                Serial.println("Device failed validation, deleting...");
+                delete createdDevice;
             }
         } else {
             Serial.print("Failed to create device: ");
