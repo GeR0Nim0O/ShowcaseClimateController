@@ -1,16 +1,16 @@
-#ifndef SHT31SENSOR_H
-#define SHT31SENSOR_H
+#ifndef SHTSENSOR_H
+#define SHTSENSOR_H
 
 #include "Device.h"
 #include "I2CHandler.h"
 #include <map>
 #include <string>
 
-#define SHT31_ADDRESS 0x44
+#define SHT_ADDRESS 0x44
 
-class SHT31sensor : public Device {
+class SHTsensor : public Device {
 public:
-    SHT31sensor(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex);
+    SHTsensor(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex);
     
     bool begin() override;    bool isConnected() override;
     void update() override;    std::map<String, String> readData() override; // Return a map of sensor data
