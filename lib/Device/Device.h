@@ -11,8 +11,7 @@ public:
     Device(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
     Device(TwoWire* wire, float threshold, std::map<String, String> channels, uint8_t i2cAddress, uint8_t tcaChannel, int deviceIndex);
     virtual ~Device() = default;
-    
-    virtual bool begin();
+      virtual bool begin();
     virtual bool isConnected();
     virtual void update();
     virtual std::map<String, String> readData();
