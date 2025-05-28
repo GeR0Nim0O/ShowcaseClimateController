@@ -22,9 +22,7 @@ public:
     float getLux() const;
 
 private:
-    bool writeCommand(uint8_t command);
-    bool readBytes(uint8_t *data, uint8_t length);
-    TwoWire* wire;
+    bool writeCommand(uint8_t command);    bool readBytes(uint8_t *data, uint8_t length);
     uint8_t _address;
     float _lux;
 };
