@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
+#include <ArduinoJson.h>
 
 struct ClimateSettings {
     float temperatureSetpoint;
