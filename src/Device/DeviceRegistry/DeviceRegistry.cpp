@@ -132,6 +132,16 @@ Device* DeviceRegistry::createDeviceWithThresholds(
 ) {
     Device* device = nullptr;
     
+    // Add debugging for all device creation attempts
+    Serial.print("Creating device with type: ");
+    Serial.print(type);
+    Serial.print(", type number: ");
+    Serial.print(typeNumber);
+    Serial.print(", address: 0x");
+    Serial.print(address, HEX);
+    Serial.print(", TCA port: ");
+    Serial.println(tcaPort);
+    
     // Convert channelThresholds to a single threshold (use first threshold found)
     float threshold = 1.0f; // default
     if (!channelThresholds.empty()) {
@@ -193,17 +203,42 @@ Device* DeviceRegistry::createDeviceWithThresholds(
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
             }
         }    } else if (type.equalsIgnoreCase("DAC")) {
+        Serial.println("Attempting to create DAC device:");
+        Serial.print("  Type: ");
+        Serial.println(type);
+        Serial.print("  TypeNumber: ");
+        Serial.println(typeNumber);
+        Serial.print("  Address: 0x");
+        Serial.println(address, HEX);
+        Serial.print("  TCA Port: ");
+        Serial.println(tcaPort);
+        Serial.print("  Device Index: ");
+        Serial.println(deviceIndex);
+        
+        // Print channel information
+        Serial.println("  Channels:");
+        for (const auto& channel : channelNames) {
+            Serial.print("    ");
+            Serial.print(channel.first);
+            Serial.print(": ");
+            Serial.println(channel.second);
+        }
+        
         if (typeNumber.equalsIgnoreCase("GP8403") || typeNumber.equalsIgnoreCase("MCP4725")) {
+            Serial.println("Creating GP8403dac...");
             device = new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
             if (device) {
                 device->deviceName = deviceName; // Set device name
-                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
-                
-                // Register this device as a DAC device without using dynamic_cast
-                // RTTI is disabled, so we can't use dynamic_cast
-                // No need to do anything special with the DAC device here
+                device->setChannelThresholds(channelThresholds); 
+                Serial.println("DAC device created successfully!");
+            } else {
+                Serial.println("ERROR: Failed to create DAC device - out of memory?");
             }
-        }    }
+        } else {
+            Serial.print("ERROR: Unknown DAC type: ");
+            Serial.println(typeNumber);
+        }
+    }
     
     if (device) {
         Serial.println("Device created successfully");
@@ -211,6 +246,12 @@ Device* DeviceRegistry::createDeviceWithThresholds(
         DeviceRegistry& registry = DeviceRegistry::getInstance();
         if (registry.registerDevice(device)) {
             Serial.println("Device registered successfully in registry");
+            
+            // Special debug for DAC device
+            if (type.equalsIgnoreCase("DAC")) {
+                Serial.print("DAC created with index ");
+                Serial.println(deviceIndex);
+            }
         } else {
             Serial.println("Failed to register device in registry");
         }
