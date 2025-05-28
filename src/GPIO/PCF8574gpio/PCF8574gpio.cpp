@@ -28,8 +28,8 @@ bool PCF8574gpio::begin() {
 }
 
 bool PCF8574gpio::isConnected() {
-    wire->beginTransmission(_address);
-    return (wire->endTransmission() == 0);
+    Wire.beginTransmission(_address);
+    return (Wire.endTransmission() == 0);
 }
 
 void PCF8574gpio::update() {
