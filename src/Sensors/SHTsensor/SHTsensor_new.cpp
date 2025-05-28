@@ -1,3 +1,5 @@
+#ifndef NO_BUILD_SHTSENSOR_NEW
+
 #include "Device.h"
 #include "SHTsensor.h"
 #include "I2CHandler.h"
@@ -297,3 +299,5 @@ void SHTsensor::update() {
         Serial.println("SHT reading failed after multiple attempts");
     }
 }
+
+#endif // NO_BUILD_SHTSENSOR_NEW
