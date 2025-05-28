@@ -17,7 +17,7 @@ JsonObject Configuration::devicesConfig = JsonObject();
 
 bool Configuration::loadConfigFromSD(const char* filename) {
     // Parse the JSON file from the SD card
-    DynamicJsonDocument doc(8192);
+    DynamicJsonDocument doc();
     
     if (!SDHandler::readJsonFile(filename, doc)) {
         Serial.println("Failed to read config file");
@@ -319,16 +319,15 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
         } catch (...) {
             Serial.println("ERROR: Exception while reading TCA channel");
             continue;
-        }
-        
+        }        
         // Add safety delay
         delay(100);
         
-        Serial.println("Selecting TCA channel " + String(device->getTCAChannel()) + "...");
+        Serial.println("Selecting TCA channel " + String(tcaChannel) + "...");
         
         // Safe TCA selection with error handling
         try {
-            I2CHandler::selectTCA(device->getTCAChannel());
+            I2CHandler::selectTCA(tcaChannel);
             delay(50); // Give TCA time to switch
         } catch (...) {
             Serial.println("ERROR: Exception during TCA selection");
@@ -337,7 +336,7 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
         
         // Test I2C connectivity
         Serial.println("Testing I2C connectivity...");
-        Wire.beginTransmission(device->getI2CAddress());
+        Wire.beginTransmission(deviceAddress);
         int error = Wire.endTransmission();
         
         if (error == 0) {
@@ -353,7 +352,7 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
         Serial.println((uint32_t)device, HEX);
         
         // Add extra safety checks before calling begin()
-        if (device->getI2CAddress() == 0x27 && device->getTCAChannel() == 4) {
+        if (deviceAddress == 0x27 && tcaChannel == 4) {
             Serial.println("SPECIAL HANDLING: This is the problematic device (0x27 on TCA Port 4)");
             Serial.println("Adding extra delays and checks...");
             delay(200);
@@ -363,6 +362,13 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
         try {
             // Extra safety delay before begin()
             delay(50);
+            
+            // Check if device is still valid before calling begin()
+            if ((uint32_t)device < 0x3F800000 || (uint32_t)device > 0x3FFFFFFF) {
+                Serial.println("ERROR: Device pointer became invalid before begin()");
+                continue;
+            }
+            
             success = device->begin();
             delay(50); // Safety delay after begin()
         } catch (...) {
@@ -376,8 +382,17 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
         Serial.print("DEBUG: Device address after begin(): 0x");
         Serial.println((uint32_t)device, HEX);
         
+        // Safely check initialization status
+        bool isDeviceInitialized = false;
+        try {
+            isDeviceInitialized = device->isInitialized();
+        } catch (...) {
+            Serial.println("ERROR: Exception while checking initialization status");
+            isDeviceInitialized = false;
+        }
+        
         Serial.print("DEBUG: device->isInitialized() after begin(): ");
-        Serial.println(device->isInitialized());
+        Serial.println(isDeviceInitialized);
         
         if (success) {
             Serial.println("Device initialization: SUCCESS");
@@ -386,7 +401,7 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
         }
         
         Serial.print("Final device state - Initialized: ");
-        Serial.println(device->isInitialized() ? "YES" : "NO");
+        Serial.println(isDeviceInitialized ? "YES" : "NO");
         
         // Safety delay between device initializations
         delay(100);
