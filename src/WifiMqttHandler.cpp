@@ -104,11 +104,35 @@ void WifiMqttHandler::connectToMqttBroker(PubSubClient &client, WiFiClientSecure
     if (mqtt_server == nullptr || clientId == nullptr || topic == nullptr) {
         Serial.println("Error: MQTT parameters are null");
         return;
+    }void WifiMqttHandler::connectToMqttBroker(PubSubClient &client, WiFiClientSecure &espClient, const char* mqtt_server, const char* rootCACertificate, int mqtt_port, const char* clientId, const char* topic, const char* token) {
+    Serial.println("MQTT parameters:");
+    if (mqtt_server) {
+        Serial.print("mqtt_server: ");
+        Serial.println(mqtt_server);
+    } else {
+        Serial.println("mqtt_server: null");
+    }
+    if (clientId) {
+        Serial.print("clientId: ");
+        Serial.println(clientId);
+    } else {
+        Serial.println("clientId: null");
+    }
+    if (topic) {
+        Serial.print("topic: ");
+        Serial.println(topic);
+    } else {
+        Serial.println("topic: null");
+    }
+
+    if (mqtt_server == nullptr || clientId == nullptr || topic == nullptr) {
+        Serial.println("Error: MQTT parameters are null");
+        return;
     }
 
     Serial.println("Setting up SSL/TLS connection...");
     setupSecureClient(espClient, rootCACertificate);
-    
+
     client.setServer(mqtt_server, mqtt_port);
 
     // Print SSL/TLS settings for debugging
@@ -122,9 +146,16 @@ void WifiMqttHandler::connectToMqttBroker(PubSubClient &client, WiFiClientSecure
     Serial.print("Topic: ");
     Serial.println(topic);
 
-    unsigned long startAttemptTime = millis();
-    while (!client.connected() && millis() - startAttemptTime < 30000) {
-        Serial.print("Attempting MQTT connection...");
+    int attempts = 0;
+    const int maxAttempts = 5;
+    
+    while (!client.connected() && attempts < maxAttempts) {
+        attempts++;
+        Serial.print("MQTT connection attempt ");
+        Serial.print(attempts);
+        Serial.print("/");
+        Serial.print(maxAttempts);
+        Serial.print("...");
         
         // Connect with flespi token if provided
         bool success = false;
@@ -147,19 +178,28 @@ void WifiMqttHandler::connectToMqttBroker(PubSubClient &client, WiFiClientSecure
             // Publish connection message
             String connMsg = String("Device ") + clientId + " connected securely";
             client.publish((String(topic) + "/status").c_str(), connMsg.c_str(), true);
+            break; // Exit loop on successful connection
         } else {
             Serial.print("failed, rc=");
             Serial.print(client.state());
-            Serial.println(" try again in 5 seconds");
-            delay(5000); // Delay for retry
+            if (attempts < maxAttempts) {
+                Serial.println(" - retrying in 5 seconds");
+                delay(5000); // Delay for retry
+            } else {
+                Serial.println(" - max attempts reached");
+            }
         }
     }
+    
     if (client.connected()) {
         Serial.print("MQTT connection status: ");
         Serial.println(client.state());
     } else {
-        Serial.println("Failed to connect to MQTT broker");
+        Serial.print("Failed to connect to MQTT broker after ");
+        Serial.print(maxAttempts);
+        Serial.println(" attempts. Skipping MQTT connection.");
     }
+}
 }
 
 bool WifiMqttHandler::connectToMqttBrokerWithCheck(PubSubClient &client, WiFiClientSecure &espClient, const String& mqtt_server, const char* rootCACertificate, int mqtt_port, const String& clientId, const String& topic, const String& token) {
