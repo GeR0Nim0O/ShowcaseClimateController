@@ -264,9 +264,21 @@ Device* DeviceRegistry::createDeviceWithThresholds(
             }
         } else {
             Serial.print("ERROR: Unknown DAC type: ");
-            Serial.println(typeNumber);
-        }
+            Serial.println(typeNumber);        }
     }
+    
+    // Check heap after device creation attempt
+    size_t freeHeapAfter = ESP.getFreeHeap();
+    Serial.print("Free heap after device creation attempt: ");
+    Serial.print(freeHeapAfter);
+    Serial.println(" bytes");
+    
+    if (device) {
+        Serial.print("Device object created, memory used: ");
+        Serial.print(freeHeap - freeHeapAfter);
+        Serial.println(" bytes");
+    }
+    
       if (device) {
         Serial.println("Device created successfully");
         
