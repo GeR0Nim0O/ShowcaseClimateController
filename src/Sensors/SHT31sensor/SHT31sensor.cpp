@@ -107,26 +107,9 @@ bool SHT31sensor::readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity)
     {
         Serial.println("SHT31 readRawData: readBytes error");
         return false;
-    }
-
-    // For debugging - print raw data bytes
-    Serial.print("SHT31 raw data: ");
-    for (int i = 0; i < 6; i++) {
-        Serial.print("0x");
-        Serial.print(data[i], HEX);
-        Serial.print(" ");
-    }
-    Serial.println();
-
-    // Extract raw temperature and humidity values from received bytes
+    }    // Extract raw temperature and humidity values from received bytes
     rawTemperature = (data[0] << 8) | data[1];
     rawHumidity = (data[3] << 8) | data[4];
-
-    // Debug output
-    Serial.print("SHT31 raw temperature: ");
-    Serial.print(rawTemperature);
-    Serial.print(", raw humidity: ");
-    Serial.println(rawHumidity);
 
     return true;
 }
