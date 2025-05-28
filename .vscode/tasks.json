@@ -4,7 +4,7 @@
         {
             "label": "PlatformIO Build",
             "type": "shell",
-            "command": "pio run",
+            "command": "python -m platformio run",
             "group": "build",
             "problemMatcher": [
                 "$gcc"
@@ -14,12 +14,29 @@
         {
             "label": "PlatformIO Upload",
             "type": "shell",
-            "command": "pio run --target upload --upload-port COM11",
+            "command": "python -m platformio run --target upload --upload-port COM11",
             "group": "build",
             "problemMatcher": [
                 "$gcc"
             ],
             "isBackground": false
+        },
+        {
+            "label": "PlatformIO Monitor",
+            "type": "shell",
+            "command": "python -m platformio device monitor --port COM11 --baud 115200",
+            "group": "test",
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "PlatformIO Build and Upload",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "PlatformIO Build",
+                "PlatformIO Upload"
+            ],
+            "group": "build"
         }
     ]
 }
