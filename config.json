@@ -165,7 +165,7 @@
       "Address": "0x62",
       "Channels": {
         "DAC0": {
-          "Name": "TemperatureControl"
+          "Name": "TemperaturePower"
         }
       }
     }
