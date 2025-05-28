@@ -451,11 +451,23 @@ void readAndSendDataFromDevices() {
             }
             String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
             String projectNr = Configuration::getProjectNumber();
-            String showcaseId = Configuration::getShowcaseId();
-
-            // Get the last value and threshold for this sensor channel
+            String showcaseId = Configuration::getShowcaseId();            // Get the last value and threshold for this sensor channel
             float lastValue = lastSensorValues[key];
             float threshold = device->getThreshold(channelKey);
+            
+            // Debug: Print threshold information (remove this later)
+            if (shouldPrintData && (channelKey == "T" || channelKey == "H")) {
+                Serial.print("DEBUG: Channel ");
+                Serial.print(channelKey);
+                Serial.print(" threshold: ");
+                Serial.print(threshold);
+                Serial.print(", lastValue: ");
+                Serial.print(lastValue);
+                Serial.print(", currentValue: ");
+                Serial.print(value);
+                Serial.print(", diff: ");
+                Serial.println(abs(value - lastValue));
+            }
             
             // Always print data every 60 seconds, aligned with MQTT sending, even if no change
             if (shouldPrintData) {
