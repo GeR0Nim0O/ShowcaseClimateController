@@ -268,8 +268,8 @@ float SHTsensor::getHumidity() const {
 // Implementation of pure virtual methods from Device base class
 bool SHTsensor::isConnected() {
     I2CHandler::selectTCA(getTCAChannel());
-    wire->beginTransmission(_address);
-    return (wire->endTransmission() == 0);
+    Wire.beginTransmission(_address);
+    return (Wire.endTransmission() == 0);
 }
 
 void SHTsensor::update() {
