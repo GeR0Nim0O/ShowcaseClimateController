@@ -108,286 +108,205 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         Serial.println();
     }
 
-    // Debug the devices configuration structure with enhanced safety
-    Serial.println("\nDevices configuration structure:");
-    Serial.print("Is devices config null? ");
-    Serial.println(devicesConfig.isNull() ? "Yes" : "No");
+    // Safest approach - rebuild our known devices from the scanned addresses
+    Serial.println("\nUsing direct I2C scan results for device initialization");
     
-    // Completely rebuild the device handling to avoid using problematic size() method
-    Serial.println("Starting safe device initialization...");
+    // Known device addresses we might encounter
+    const uint8_t I2C_ADDR_RTC = 0x68;       // DS3231 RTC
+    const uint8_t I2C_ADDR_SHT = 0x44;       // SHT temperature/humidity sensor
+    const uint8_t I2C_ADDR_BH1705 = 0x23;    // BH1705 light sensor
+    const uint8_t I2C_ADDR_PCF8574 = 0x20;   // PCF8574 GPIO expander
+    const uint8_t I2C_ADDR_GP8403 = 0x5F;    // GP8403 DAC
+
+    // Create a map to find TCA ports for each I2C address
+    std::map<uint8_t, uint8_t> addressToTcaPort;
     
-    // Skip any further processing if the configuration is null
-    if (devicesConfig.isNull()) {
-        Serial.println("Cannot continue - Devices configuration is null");
-        return devices;
+    // Build a map of address to TCA port from scan results
+    for (const auto& result : tcaScanResults) {
+        uint8_t tcaPort = result.first;
+        for (const auto& address : result.second) {
+            if (address != 0) {  // Skip the invalid zero address
+                addressToTcaPort[address] = tcaPort;
+                Serial.print("Found device at address 0x");
+                Serial.print(address, HEX);
+                Serial.print(" on TCA port ");
+                Serial.println(tcaPort);
+            }
+        }
     }
-
-    // Try loading the known device types safely from the config
-    String deviceNames[] = {"DS3231", "SHT", "BH1705", "SCALE", "GMX02B", "PCF8574", "GP8403"};
-    int deviceCount = sizeof(deviceNames) / sizeof(deviceNames[0]);
     
-    Serial.print("Attempting to load ");
-    Serial.print(deviceCount);
-    Serial.println(" known device types");
+    // Now create devices based on the detected addresses
+    static int deviceIndex = 0;
+    Device* createdDevice = nullptr;
     
-    for (int i = 0; i < deviceCount; i++) {
-        String deviceKey = deviceNames[i];
-        Serial.print("Checking for device: ");
-        Serial.println(deviceKey);
+    // Check for PCF8574 GPIO expander
+    if (addressToTcaPort.find(I2C_ADDR_PCF8574) != addressToTcaPort.end()) {
+        uint8_t tcaPort = addressToTcaPort[I2C_ADDR_PCF8574];
+        Serial.print("Creating PCF8574 device at address 0x");
+        Serial.print(I2C_ADDR_PCF8574, HEX);
+        Serial.print(" on TCA port ");
+        Serial.println(tcaPort);
         
-        // Safely check if this device exists in the config
-        JsonVariant deviceVariant = devicesConfig[deviceKey];
-        if (deviceVariant.isNull()) {
-            Serial.print("  Device '");
-            Serial.print(deviceKey);
-            Serial.println("' not found in config, skipping");
-            continue;
-        }
-        
-        JsonObject deviceObj = deviceVariant.as<JsonObject>();
-        if (deviceObj.isNull()) {
-            Serial.print("  Device '");
-            Serial.print(deviceKey);
-            Serial.println("' has invalid configuration, skipping");
-            continue;
-        }
-        
-        // From here, process this device's configuration safely
-        Serial.print("  Found device '");
-        Serial.print(deviceKey);
-        Serial.println("', processing configuration");
-        
-        // Get device type, type number, and I2C address with null checks
-        JsonVariant typeVariant = deviceObj["Type"];
-        JsonVariant typeNumberVariant = deviceObj["TypeNumber"];
-        JsonVariant addressVariant = deviceObj["Address"];
-        
-        // Check if required fields exist and are not null
-        if (typeVariant.isNull() || typeNumberVariant.isNull() || addressVariant.isNull()) {
-            Serial.print("  Device '");
-            Serial.print(deviceKey);
-            Serial.println("' - WARNING: Skipping device with null required fields");
-            continue;
-        }
-        
-        String deviceType = typeVariant.as<String>();
-        String deviceTypeNumber = typeNumberVariant.as<String>();
-        String addressString = addressVariant.as<String>();
-        String deviceMode = deviceObj["Mode"] | "";
-        
-        // Skip devices with null or empty type or typeNumber
-        if (deviceType.isEmpty() || deviceType.equalsIgnoreCase("null") || 
-            deviceTypeNumber.isEmpty() || deviceTypeNumber.equalsIgnoreCase("null")) {
-            Serial.print("  Device '");
-            Serial.print(deviceKey);
-            Serial.println("' - WARNING: Skipping device with null or empty type/typeNumber");
-            continue;
-        }
-        
-        // Validate address string before conversion
-        if (addressString.isEmpty() || addressString.equalsIgnoreCase("null")) {
-            Serial.print("  Device '");
-            Serial.print(deviceKey);
-            Serial.println("' - WARNING: Skipping device with null or empty address");
-            continue;
-        }
-        
-        // Safe string to hex conversion with error handling
-        uint8_t deviceAddress = 0;
-        char* endPtr;
-        long addressLong = strtol(addressString.c_str(), &endPtr, 16);
-        
-        // Check if conversion was successful and address is valid
-        if (*endPtr != '\0' || addressLong < 0 || addressLong > 0xFF) {
-            Serial.print("  Device '");
-            Serial.print(deviceKey);
-            Serial.print("' - WARNING: Invalid address format: ");
-            Serial.println(addressString);
-            continue;
-        }
-        
-        deviceAddress = (uint8_t)addressLong;
-        
-        // Skip devices with invalid addresses (0x00)
-        if (deviceAddress == 0) {
-            Serial.print("  Device '");
-            Serial.print(deviceKey);
-            Serial.println("' - WARNING: Skipping device with invalid address 0x00");
-            continue;
-        }
-        
-        // Log device details for debugging
-        Serial.print("  Device '");
-        Serial.print(deviceKey);
-        Serial.print("', Type: ");
-        Serial.print(deviceType);
-        Serial.print(", TypeNumber: ");
-        Serial.print(deviceTypeNumber);
-        Serial.print(", Address: 0x");
-        Serial.println(deviceAddress, HEX);        // (Removed duplicate check for invalid addresses)
-
-        // For DAC devices, log extra debug info
-        if (deviceType.equalsIgnoreCase("DAC")) {
-            Serial.println("DAC device found in config:");
-            Serial.print("  Key: ");
-            Serial.println(deviceKey);
-            Serial.print("  TypeNumber: ");
-            Serial.println(deviceTypeNumber);
-            Serial.print("  Address: 0x");
-            Serial.println(deviceAddress, HEX);
-            
-            Serial.println("  Channel config:");
-            for (JsonPair channel : deviceObj["Channels"].as<JsonObject>()) {
-                String channelKey = channel.key().c_str();
-                JsonObject channelObj = channel.value();
-                Serial.print("    ");
-                Serial.print(channelKey);
-                Serial.print(": ");
-                Serial.println(channelObj["Name"].as<const char*>());
-            }
-        }
-
-        // Find TCA port where this device exists
-        int tcaPort = -1;
-        for (const auto& result : tcaScanResults) {
-            for (const auto& address : result.second) {
-                if (address == deviceAddress) {
-                    tcaPort = result.first;
-                    break;
-                }
-            }
-            if (tcaPort != -1) {
-                break;
-            }
-        }
-
-        // Skip device if it's not found on the I2C bus
-        if (tcaPort == -1) {
-            Serial.print("Device with address 0x");
-            Serial.print(deviceAddress, HEX);
-            Serial.println(" not found on any TCA port, skipping...");
-            continue;
-        }
-
-        // Process channels for this device
         std::map<String, String> channelNames;
         std::map<String, float> channelThresholds;
         
-        for (JsonPair channel : deviceObj["Channels"].as<JsonObject>()) {
-            String channelKey = channel.key().c_str();
-            JsonObject channelObj = channel.value();
-            
-            if (channelObj["Name"].is<const char*>()) {
-                channelNames[channelKey] = channelObj["Name"].as<const char*>();
-                
-                // Get threshold if available
-                if (channelObj["Threshold"].is<float>()) {
-                    channelThresholds[channelKey] = channelObj["Threshold"].as<float>();
-                } else {
-                    // Use default threshold
-                    channelThresholds[channelKey] = 1.0f;
-                }
-            }
-        }
-
-        // Special handling for DAC devices - they may not have thresholds
-        if (deviceType.equalsIgnoreCase("DAC")) {
-            Serial.println("Processing DAC device...");
-            
-            if (channelNames.empty()) {
-                Serial.println("WARNING: DAC device has no defined channels in config!");
-            }
-            
-            for (JsonPair channel : deviceObj["Channels"].as<JsonObject>()) {
-                String channelKey = channel.key().c_str();
-                JsonObject channelObj = channel.value();
-                
-                // For DAC channels, the name is sufficient
-                if (channelObj["Name"].is<const char*>()) {
-                    channelNames[channelKey] = channelObj["Name"].as<const char*>();
-                    if (!channelObj["Threshold"].is<float>()) {
-                        // No threshold needed for DAC, but set a default for API consistency
-                        channelThresholds[channelKey] = 0.1f;
-                    }
-                }
-            }
-            
-            Serial.print("DAC channels after processing: ");
-            Serial.println(channelNames.size());
-        }
-          // Create the device using DeviceRegistry
-        static int deviceIndex = 0;        Device* createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
-            &Wire,
-            deviceType,
-            deviceTypeNumber,
-            deviceAddress,
-            tcaPort,
-            channelThresholds,
-            channelNames,
-            deviceIndex,
-            deviceMode
-        );
-          deviceIndex++;
+        // Set up standard GPIO channel names
+        channelNames["IO0"] = "FanExterior";
+        channelNames["IO1"] = "FanInterior";
+        channelNames["IO2"] = "Humidify";
+        channelNames["IO3"] = "Dehumidify";
+        channelNames["IO4"] = "TemperatureEnable";
+        channelNames["IO5"] = "TemperatureCool";
+        channelNames["IO6"] = "TemperatureHeat";
+        channelNames["IO7"] = "IO7";
         
-        // Check available heap memory after device creation attempt
-        Serial.print("Free heap after device creation attempt: ");
-        Serial.println(ESP.getFreeHeap());
+        // Default thresholds
+        for (const auto& pair : channelNames) {
+            channelThresholds[pair.first] = 1.0f;
+        }
+        
+        // Create the device
+        createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
+            &Wire, "GPIO", "PCF8574", I2C_ADDR_PCF8574, tcaPort, 
+            channelThresholds, channelNames, deviceIndex, "OUTPUT"
+        );
+        
+        deviceIndex++;
         
         if (createdDevice != nullptr) {
-            // Additional safety checks on the created device before adding to vector
-            Serial.println("Validating created device...");
-            
-            // Check if device pointer is in valid memory range
-            if ((uint32_t)createdDevice < 0x3F800000 || (uint32_t)createdDevice > 0x3FFFFFFF) {
-                Serial.println("ERROR: Created device pointer is outside valid ESP32 memory range");
-                delete createdDevice;
-                continue;
-            }
-            
-            // Test basic device access without virtual method calls
-            Serial.print("Device created at address: 0x");
-            Serial.println((uint32_t)createdDevice, HEX);
-            
-            // Add a small delay to let system stabilize
-            delay(50);
-            
-            // Try to safely access a basic property
-            bool deviceValid = true;
-            try {
-                // Minimal test - just access the object without virtual calls yet
-                volatile uint8_t* testPtr = (volatile uint8_t*)createdDevice;
-                volatile uint8_t testValue = *testPtr; // Try to read first byte
-                (void)testValue; // Prevent unused variable warning
-                delay(10);
-            } catch (...) {
-                Serial.println("ERROR: Device memory test failed");
-                deviceValid = false;
-            }
-            
-            if (deviceValid) {
-                devices.push_back(createdDevice);
-                Serial.print("Device successfully added to vector. Vector size: ");
-                Serial.println(devices.size());
-                
-                // Special processing for RTC device
-                if (deviceType.equalsIgnoreCase("RTC")) {
-                    rtc = static_cast<DS3231rtc*>(createdDevice);
-                    Serial.println("RTC device initialized and assigned");
-                }
-                
-                // Special logging for DAC device
-                if (deviceType.equalsIgnoreCase("DAC")) {
-                    Serial.println("DAC device added to devices vector");
-                }
-            } else {
-                Serial.println("Device failed validation, deleting...");
-                delete createdDevice;
-            }
+            Serial.println("PCF8574 device created successfully");
+            devices.push_back(createdDevice);
         } else {
-            Serial.print("Failed to create device: ");
-            Serial.println(deviceKey);
+            Serial.println("Failed to create PCF8574 device");
         }
-    }    Serial.println("Device initialization from config complete");
+    }
+    
+    // Check for GP8403 DAC
+    if (addressToTcaPort.find(I2C_ADDR_GP8403) != addressToTcaPort.end()) {
+        uint8_t tcaPort = addressToTcaPort[I2C_ADDR_GP8403];
+        Serial.print("Creating GP8403 device at address 0x");
+        Serial.print(I2C_ADDR_GP8403, HEX);
+        Serial.print(" on TCA port ");
+        Serial.println(tcaPort);
+        
+        std::map<String, String> channelNames;
+        std::map<String, float> channelThresholds;
+        
+        // Set up DAC channel names
+        channelNames["DAC0"] = "TemperaturePower";
+        channelThresholds["DAC0"] = 0.1f;
+        
+        // Create the device
+        createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
+            &Wire, "DAC", "GP8403", I2C_ADDR_GP8403, tcaPort, 
+            channelThresholds, channelNames, deviceIndex, ""
+        );
+        
+        deviceIndex++;
+        
+        if (createdDevice != nullptr) {
+            Serial.println("GP8403 DAC device created successfully");
+            devices.push_back(createdDevice);
+        } else {
+            Serial.println("Failed to create GP8403 DAC device");
+        }
+    }
+    
+    // Check for SHT temperature/humidity sensor
+    if (addressToTcaPort.find(I2C_ADDR_SHT) != addressToTcaPort.end()) {
+        uint8_t tcaPort = addressToTcaPort[I2C_ADDR_SHT];
+        Serial.print("Creating SHT sensor at address 0x");
+        Serial.print(I2C_ADDR_SHT, HEX);
+        Serial.print(" on TCA port ");
+        Serial.println(tcaPort);
+        
+        std::map<String, String> channelNames;
+        std::map<String, float> channelThresholds;
+        
+        channelNames["T"] = "Temperature";
+        channelNames["H"] = "Humidity";
+        channelThresholds["T"] = 0.3f;
+        channelThresholds["H"] = 1.0f;
+        
+        createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
+            &Wire, "Sensor", "SHT", I2C_ADDR_SHT, tcaPort, 
+            channelThresholds, channelNames, deviceIndex, ""
+        );
+        
+        deviceIndex++;
+        
+        if (createdDevice != nullptr) {
+            Serial.println("SHT sensor created successfully");
+            devices.push_back(createdDevice);
+        } else {
+            Serial.println("Failed to create SHT sensor");
+        }
+    }
+    
+    // Check for RTC
+    if (addressToTcaPort.find(I2C_ADDR_RTC) != addressToTcaPort.end()) {
+        uint8_t tcaPort = addressToTcaPort[I2C_ADDR_RTC];
+        Serial.print("Creating RTC at address 0x");
+        Serial.print(I2C_ADDR_RTC, HEX);
+        Serial.print(" on TCA port ");
+        Serial.println(tcaPort);
+        
+        std::map<String, String> channelNames;
+        std::map<String, float> channelThresholds;
+        
+        channelNames["Time"] = "Time";
+        channelThresholds["Time"] = 0.0f;
+        
+        createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
+            &Wire, "RTC", "DS3231", I2C_ADDR_RTC, tcaPort, 
+            channelThresholds, channelNames, deviceIndex, ""
+        );
+        
+        deviceIndex++;
+        
+        if (createdDevice != nullptr) {
+            Serial.println("RTC created successfully");
+            rtc = static_cast<DS3231rtc*>(createdDevice);
+            Serial.println("RTC assigned to global reference");
+            devices.push_back(createdDevice);
+        } else {
+            Serial.println("Failed to create RTC");
+        }
+    }
+    
+    // Check for BH1705 light sensor
+    if (addressToTcaPort.find(I2C_ADDR_BH1705) != addressToTcaPort.end()) {
+        uint8_t tcaPort = addressToTcaPort[I2C_ADDR_BH1705];
+        Serial.print("Creating BH1705 sensor at address 0x");
+        Serial.print(I2C_ADDR_BH1705, HEX);
+        Serial.print(" on TCA port ");
+        Serial.println(tcaPort);
+        
+        std::map<String, String> channelNames;
+        std::map<String, float> channelThresholds;
+        
+        channelNames["L"] = "Lux";
+        channelThresholds["L"] = 1.0f;
+        
+        createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
+            &Wire, "Sensor", "BH1705", I2C_ADDR_BH1705, tcaPort, 
+            channelThresholds, channelNames, deviceIndex, ""
+        );
+        
+        deviceIndex++;
+        
+        if (createdDevice != nullptr) {
+            Serial.println("BH1705 sensor created successfully");
+            devices.push_back(createdDevice);
+        } else {
+            Serial.println("Failed to create BH1705 sensor");
+        }
+    }
+    
+    Serial.print("Created ");
+    Serial.print(devices.size());
+    Serial.println(" devices based on I2C scan");
+    
     return devices;
 }
 
