@@ -7,6 +7,7 @@
 #include "BH1705sensor.h"
 #include "SCALESsensor.h"
 #include "SDHandler.h"
+#include <Wire.h>
 
 // Initialize static member variables
 std::map<String, String> Configuration::wifiConfig;
