@@ -830,6 +830,9 @@ void initializeClimateController() {
       
       Serial.print("Analog control: ");
       Serial.println(climateController->hasDACControl() ? "Available" : "Not available");
+      
+      // Add test call here - comment out when not testing
+      testDACOutput();
     } else {
       Serial.println("Failed to initialize climate controller");
       delete climateController;
@@ -906,4 +909,26 @@ void updateClimateController() {
     
     lastClimateLog = millis();
   }
+}
+
+// Add this new function for testing DAC
+void testDACOutput() {
+    if (climateDac != nullptr && climateDac->isConnected()) {
+        // Set DAC to output 4.00V for testing
+        float testVoltage = 4.0f;
+        Serial.print("Setting DAC output to ");
+        Serial.print(testVoltage);
+        Serial.println(" volts for testing");
+        
+        // Use channel 0 (DAC0)
+        bool success = climateDac->setChannelVoltage(0, testVoltage);
+        
+        if (success) {
+            Serial.println("DAC test voltage set successfully");
+        } else {
+            Serial.println("Failed to set DAC test voltage");
+        }
+    } else {
+        Serial.println("DAC not available for testing");
+    }
 }
