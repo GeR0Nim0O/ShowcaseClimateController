@@ -12,8 +12,8 @@ Device::Device(TwoWire* wire, const String& type, const String& deviceName, uint
 Device::Device(TwoWire* wire, float threshold, std::map<String, String> channels, uint8_t i2cAddress, uint8_t tcaChannel, int deviceIndex)
     : wire(wire), type("Generic"), i2cAddress(i2cAddress), tcaChannel(tcaChannel), 
       deviceIndex(deviceIndex), initialized(false), deviceName(""), 
-      channels(channels) {
-    // Set a default threshold for all channels if needed
+      channels(channels), threshold(threshold) {
+    // Set the threshold for all channels
     for (const auto& channel : channels) {
         thresholds[channel.first] = threshold;
     }
