@@ -1,8 +1,8 @@
 #include "DS3231rtc.h"
 
 bool DS3231rtc::isConnected() {
-    Wire.beginTransmission(DS3231_ADDRESS);
-    return (Wire.endTransmission() == 0);
+    wire->beginTransmission(DS3231_ADDRESS);
+    return (wire->endTransmission() == 0);
 }
 
 void DS3231rtc::update() {
