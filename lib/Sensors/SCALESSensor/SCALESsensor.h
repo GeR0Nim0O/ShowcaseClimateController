@@ -10,7 +10,7 @@
 
 class SCALESsensor : public Device {
 public:
-    SCALESsensor(uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
+    SCALESsensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
     bool begin() override;
     bool isConnected() override;
     void update() override;
