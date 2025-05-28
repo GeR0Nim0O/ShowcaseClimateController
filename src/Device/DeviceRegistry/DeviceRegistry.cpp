@@ -194,8 +194,7 @@ Device* DeviceRegistry::createDeviceWithThresholds(
             }
         }
     } else if (type.equalsIgnoreCase("RTC")) {
-        if (typeNumber.equalsIgnoreCase("DS3231")) {
-            device = new DS3231rtc(address, tcaPort, threshold, channels, deviceIndex);
+        if (typeNumber.equalsIgnoreCase("DS3231")) {            device = new DS3231rtc(wire, address, tcaPort, threshold, channels, deviceIndex);
             if (device) {
                 device->deviceName = deviceName; // Set device name
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
