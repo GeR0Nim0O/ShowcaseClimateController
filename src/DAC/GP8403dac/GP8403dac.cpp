@@ -85,16 +85,15 @@ bool GP8403dac::setChannelA(uint16_t value) {
     if (value > DAC_MAX_VALUE) {
         value = DAC_MAX_VALUE;
     }
-    
-    // Using register approach like in the official library
+      // Using register approach like in the official library
     I2CHandler::selectTCA(getTCAChannel());
     
-    this->wire->beginTransmission(getI2CAddress());
-    this->wire->write(REG_DAC_A);
-    this->wire->write((value >> 8) & 0xFF); // MSB
-    this->wire->write(value & 0xFF);        // LSB
+    Wire.beginTransmission(getI2CAddress());
+    Wire.write(REG_DAC_A);
+    Wire.write((value >> 8) & 0xFF); // MSB
+    Wire.write(value & 0xFF);        // LSB
     
-    bool success = (this->wire->endTransmission() == 0);
+    bool success = (Wire.endTransmission() == 0);
     
     if (success) {
         channelAValue = value;
