@@ -10,8 +10,8 @@
 
 class DS3231rtc : public Device {
 public:
-    DS3231rtc(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-        : Device(threshold, channels, i2cChannel, tcaPort, deviceIndex), wire(wire) {}
+    DS3231rtc(uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
+        : Device(threshold, channels, i2cChannel, tcaPort, deviceIndex) {}
     
     bool begin() override {
         wire->begin();
@@ -32,7 +32,6 @@ public:
                 unsigned char year);
     
 private:
-    TwoWire* wire;
     unsigned char decToBcd(unsigned char val);
     unsigned char bcdToDec(unsigned char val);
 };
