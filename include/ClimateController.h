@@ -5,6 +5,7 @@
 #include <PID_v1.h>
 #include "PCF8574gpio.h"
 #include "SHTsensor.h"
+#include "GP8403dac.h"
 #include "Configuration.h"
 
 enum class ClimateMode {
@@ -23,7 +24,7 @@ enum class HumidityMode {
 
 class ClimateController {
 public:
-    ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor);
+    ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac = nullptr);
     
     bool begin();
     void update();
@@ -52,6 +53,18 @@ public:
     void setFanInterior(bool enable);
     void setFanExterior(bool enable);
     
+    // DAC control
+    void setDACDevice(GP8403dac* dac) { this->dac = dac; }
+    bool hasDACControl() const { return dac != nullptr; }
+    void setHeatingPower(float percentage); // 0-100%
+    void setCoolingPower(float percentage); // 0-100%
+    void setHumidifierPower(float percentage); // 0-100%
+    void setDehumidifierPower(float percentage); // 0-100%
+    float getHeatingPower() const { return heatingPower; }
+    float getCoolingPower() const { return coolingPower; }
+    float getHumidifierPower() const { return humidifierPower; }
+    float getDehumidifierPower() const { return dehumidifierPower; }
+
     // Status
     bool isHeating() const { return heatingActive; }
     bool isCooling() const { return coolingActive; }
@@ -61,6 +74,7 @@ public:
 private:
     PCF8574gpio* gpio;
     SHTsensor* sensor;
+    GP8403dac* dac;  // Add DAC device pointer
     
     // Setpoints
     float temperatureSetpoint;
@@ -88,7 +102,14 @@ private:
     bool humidifyingActive;
     bool dehumidifyingActive;
     bool tempControlEnabled;
-      // Timing
+    
+    // Power levels for analog control
+    float heatingPower;
+    float coolingPower;
+    float humidifierPower;
+    float dehumidifierPower;
+    
+    // Timing
     unsigned long lastUpdate;
     unsigned long updateInterval;
     
@@ -107,6 +128,9 @@ private:
     void updateSensorReadings();
     void applyTemperatureControl();
     void applyHumidityControl();
+    
+    // DAC control method
+    void applyDACControls();
     
     // Pin mapping helper methods
     void initializePinMappings();
