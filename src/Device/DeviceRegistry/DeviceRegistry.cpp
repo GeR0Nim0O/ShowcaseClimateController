@@ -193,11 +193,16 @@ Device* DeviceRegistry::createDeviceWithThresholds(
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
             }
         }    } else if (type.equalsIgnoreCase("DAC")) {
-        if (typeNumber.equalsIgnoreCase("MCP4725")) {
+        if (typeNumber.equalsIgnoreCase("GP8403") || typeNumber.equalsIgnoreCase("MCP4725")) {
             device = new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
             if (device) {
                 device->deviceName = deviceName; // Set device name
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
+                
+                // Register this device as a DAC device if we need to track it separately
+                if (auto dacDevice = dynamic_cast<GP8403dac*>(device)) {
+                    // You could add to a separate DAC list if needed
+                }
             }
         }    }
     
