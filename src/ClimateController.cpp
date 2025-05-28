@@ -230,27 +230,33 @@ void ClimateController::applyDACControls() {
     // Skip if no DAC device available
     if (!dac || !dac->isConnected()) return;
     
-    // Set temperature power - use DAC0 for power control
+    // Set temperature power using generic DAC methods - use channel 0 (DAC0) for temperature control
     if (heatingActive) {
-        dac->setPowerOutput(heatingPower); // Use new method name
+        // Convert percentage to voltage (0-100% -> 0-10V)
+        float voltage = (heatingPower / 100.0) * 10.0;
+        dac->setChannelVoltage(0, voltage);
     } else if (coolingActive) {
-        dac->setPowerOutput(coolingPower); // Use new method name
+        // Convert percentage to voltage (0-100% -> 0-10V)
+        float voltage = (coolingPower / 100.0) * 10.0;
+        dac->setChannelVoltage(0, voltage);
     } else {
-        dac->setPowerOutput(0.0); // Use new method name
+        dac->setChannelVoltage(0, 0.0);
     }
 }
 
 void ClimateController::setHeatingPower(float percentage) {
     heatingPower = constrain(percentage, 0.0, 100.0);
     if (dac && heatingActive) {
-        dac->setPowerOutput(heatingPower); // Use new method name
+        float voltage = (heatingPower / 100.0) * 10.0;
+        dac->setChannelVoltage(0, voltage);
     }
 }
 
 void ClimateController::setCoolingPower(float percentage) {
     coolingPower = constrain(percentage, 0.0, 100.0);
     if (dac && coolingActive) {
-        dac->setPowerOutput(coolingPower); // Use new method name
+        float voltage = (coolingPower / 100.0) * 10.0;
+        dac->setChannelVoltage(0, voltage);
     }
 }
 
