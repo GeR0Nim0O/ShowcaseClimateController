@@ -3,7 +3,7 @@
 #include "I2CHandler.h"
 
 SHTsensor::SHTsensor(uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(i2cAddress, tcaChannel, threshold, channels, deviceIndex), _address(SHT_ADDRESS), _temperature(NAN), _humidity(NAN) {
+    : Device(threshold, channels, i2cAddress, tcaChannel, deviceIndex), _address(SHT_ADDRESS), _temperature(NAN), _humidity(NAN) {
     
     // Set type - inherited from Device base class
     type = "SHTSensor";
