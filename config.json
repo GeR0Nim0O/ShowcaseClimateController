@@ -27,7 +27,7 @@
     "password": "mqtts_password"
   },
   "Devices": {
-    "DS3231:": {
+    "DS3231": {
       "Type": "RTC",
       "TypeNumber": "DS3231",
       "Address": "0x68",
@@ -36,7 +36,9 @@
           "Name": "Time",
           "Threshold": 0.0
         }
-      }    },    "SHT": {
+      }
+    },
+    "SHT": {
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
@@ -119,7 +121,8 @@
           "Threshold": 1.0
         }
       }
-    },    "PCF8574": {
+    },
+    "PCF8574": {
       "Type": "GPIO",
       "TypeNumber": "PCF8574",
       "Address": "0x20",
