@@ -10,19 +10,39 @@ void WifiMqttHandler::connectToWiFi(const char* ssid, const char* password) {
     Serial.println(ssid);
     Serial.print("Using password: ");
     Serial.println(password);
-    WiFi.begin(ssid, password);
-    unsigned long startAttemptTime = millis();
-    while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 30000) {
-        WiFi.disconnect();
+    
+    int attempts = 0;
+    const int maxAttempts = 5;
+    
+    while (attempts < maxAttempts && WiFi.status() != WL_CONNECTED) {
+        attempts++;
+        Serial.print("WiFi connection attempt ");
+        Serial.print(attempts);
+        Serial.print("/");
+        Serial.println(maxAttempts);
+        
         WiFi.begin(ssid, password);
-        delay(5000); // Delay for retry
+        
+        unsigned long startAttemptTime = millis();
+        while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 10000) {
+            delay(500);
+        }
+        
+        if (WiFi.status() != WL_CONNECTED && attempts < maxAttempts) {
+            Serial.println("Connection failed, trying again...");
+            WiFi.disconnect();
+            delay(2000); // Wait before next attempt
+        }
     }
+    
     if (WiFi.status() == WL_CONNECTED) {
         Serial.println("Connected to WiFi");
         Serial.print("WiFi status: ");
         Serial.println(WiFi.status());
     } else {
-        Serial.println("Failed to connect to WiFi");
+        Serial.print("Failed to connect to WiFi after ");
+        Serial.print(maxAttempts);
+        Serial.println(" attempts. Skipping WiFi connection.");
     }
 }
 
