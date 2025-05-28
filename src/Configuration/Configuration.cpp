@@ -270,14 +270,56 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
         Serial.print("\n--- Initializing Device ");
         Serial.print(i);
         Serial.println(" ---");
-        Serial.print("Type: ");
-        Serial.println(device->getType());
-        Serial.print("Address: 0x");
-        Serial.println(device->getI2CAddress(), HEX);
-        Serial.print("TCA Channel: ");
-        Serial.println(device->getTCAChannel());
         Serial.print("Device Address: 0x");
         Serial.println((uint32_t)device, HEX);
+        
+        // Add memory integrity checks before calling virtual methods
+        Serial.println("Performing memory integrity checks...");
+        
+        // Check if device pointer is in valid memory range
+        if ((uint32_t)device < 0x3F800000 || (uint32_t)device > 0x3FFFFFFF) {
+            Serial.println("ERROR: Device pointer is outside valid ESP32 memory range");
+            continue;
+        }
+        
+        // Add a small delay and yield to prevent watchdog issues
+        delay(10);
+        yield();
+        
+        // Try to safely access device properties with error handling
+        String deviceType = "UNKNOWN";
+        uint8_t deviceAddress = 0;
+        uint8_t tcaChannel = 0;
+        
+        Serial.println("Attempting to read device type...");
+        try {
+            deviceType = device->getType();
+            Serial.print("Type: ");
+            Serial.println(deviceType);
+        } catch (...) {
+            Serial.println("ERROR: Exception while reading device type");
+            continue;
+        }
+        
+        Serial.println("Attempting to read device address...");
+        try {
+            deviceAddress = device->getI2CAddress();
+            Serial.print("Address: 0x");
+            Serial.println(deviceAddress, HEX);
+        } catch (...) {
+            Serial.println("ERROR: Exception while reading device address");
+            continue;
+        }
+        
+        Serial.println("Attempting to read TCA channel...");
+        try {
+            tcaChannel = device->getTCAChannel();
+            Serial.print("TCA Channel: ");
+            Serial.println(tcaChannel);
+        } catch (...) {
+            Serial.println("ERROR: Exception while reading TCA channel");
+            continue;
+        }
         
         // Add safety delay
         delay(100);
