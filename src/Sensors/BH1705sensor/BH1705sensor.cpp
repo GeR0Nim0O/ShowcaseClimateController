@@ -68,11 +68,9 @@ bool BH1705sensor::readBytes(uint8_t *data, uint8_t length) {
     if (wire->requestFrom(_address, length) != length)
     {
         return false;
-    }
-
-    for (uint8_t i = 0; i < length; i++)
+    }    for (uint8_t i = 0; i < length; i++)
     {
-        data[i] = Wire.read();
+        data[i] = wire->read();
     }
 
     return true;
