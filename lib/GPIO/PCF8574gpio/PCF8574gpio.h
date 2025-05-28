@@ -30,12 +30,11 @@ public:
     bool writeBit(uint8_t pin, bool state);    bool readPin(uint8_t pin);
     void writePin(uint8_t pin, bool state);
     uint8_t getGPIOState() const { return _gpioState; }
-    
-    // New methods for mode management
+      // New methods for mode management
     PCF8574Mode getMode() const { return _mode; }
     void setMode(PCF8574Mode mode);
-    bool isOutputMode() const { return _mode == PCF8574Mode::OUTPUT_8X; }
-    bool isInputMode() const { return _mode == PCF8574Mode::INPUT_8X; }
+    bool isOutputMode() const { return _mode == PCF8574Mode::OUTPUT; }
+    bool isInputMode() const { return _mode == PCF8574Mode::INPUT; }
     void initializeOutputs(); // Initialize all outputs to LOW
 
 private:
