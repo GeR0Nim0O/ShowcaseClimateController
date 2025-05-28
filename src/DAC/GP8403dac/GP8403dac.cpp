@@ -11,14 +11,14 @@
 #define REG_CONFIG    0x03   // Configuration register
 #define REG_SYNC_ALL  0x04   // Synchronized update both channels
 
-GP8403dac::GP8403dac(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
-    : Device(i2cAddress, tcaChannel, deviceName, deviceIndex),
+GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
+    : Device(wire, i2cAddress, tcaChannel, deviceName, deviceIndex),
       channelAValue(0), channelBValue(0), vrefValue(32767),
       gain2xA(false), gain2xB(false) {
     type = "GP8403dac";
 }
 
-GP8403dac::GP8403dac(uint8_t i2cAddress, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
+GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
     : Device(threshold, channels, i2cAddress, tcaPort, deviceIndex),
       channelAValue(0), channelBValue(0), vrefValue(32767),
       gain2xA(false), gain2xB(false) {
