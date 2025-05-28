@@ -230,23 +230,16 @@ void ClimateController::applyDACControls() {
     // Skip if no DAC device available
     if (!dac || !dac->isConnected()) return;
     
-    // Set temperature power - use channelA for temperature control
+    // Set temperature power - use channelA (0) for temperature control
     if (heatingActive) {
-        dac->setTemperaturePower(heatingPower);
+        dac->setChannelVoltage(0, (heatingPower / 100.0) * 10.0); // Convert to 0-10V
     } else if (coolingActive) {
-        dac->setTemperaturePower(coolingPower);
+        dac->setChannelVoltage(0, (coolingPower / 100.0) * 10.0); // Convert to 0-10V
     } else {
-        dac->setTemperaturePower(0.0);
+        dac->setChannelVoltage(0, 0.0);
     }
     
-    // Set humidity power - use channelB for humidity control
-    if (humidifyingActive) {
-        dac->setHumidityPower(humidifierPower);
-    } else if (dehumidifyingActive) {
-        dac->setHumidityPower(dehumidifierPower);
-    } else {
-        dac->setHumidityPower(0.0);
-    }
+    // Channel 1 is not connected, so we don't need to control it
 }
 
 void ClimateController::setHeatingPower(float percentage) {
@@ -284,10 +277,9 @@ void ClimateController::emergencyShutdown() {
     gpio->writePin(pinHumidify, false);
     gpio->writePin(pinDehumidify, false);
     
-    // Also disable DAC outputs
+    // Also disable DAC output (only channel 0 is used)
     if (dac) {
         dac->setChannelVoltage(0, 0.0);
-        dac->setChannelVoltage(1, 0.0);
     }
     
     heatingActive = false;
