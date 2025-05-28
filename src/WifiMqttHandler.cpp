@@ -99,33 +99,7 @@ void WifiMqttHandler::connectToMqttBroker(PubSubClient &client, WiFiClientSecure
         Serial.println(topic);
     } else {
         Serial.println("topic: null");
-    }
-
-    if (mqtt_server == nullptr || clientId == nullptr || topic == nullptr) {
-        Serial.println("Error: MQTT parameters are null");
-        return;
-    }void WifiMqttHandler::connectToMqttBroker(PubSubClient &client, WiFiClientSecure &espClient, const char* mqtt_server, const char* rootCACertificate, int mqtt_port, const char* clientId, const char* topic, const char* token) {
-    Serial.println("MQTT parameters:");
-    if (mqtt_server) {
-        Serial.print("mqtt_server: ");
-        Serial.println(mqtt_server);
-    } else {
-        Serial.println("mqtt_server: null");
-    }
-    if (clientId) {
-        Serial.print("clientId: ");
-        Serial.println(clientId);
-    } else {
-        Serial.println("clientId: null");
-    }
-    if (topic) {
-        Serial.print("topic: ");
-        Serial.println(topic);
-    } else {
-        Serial.println("topic: null");
-    }
-
-    if (mqtt_server == nullptr || clientId == nullptr || topic == nullptr) {
+    }    if (mqtt_server == nullptr || clientId == nullptr || topic == nullptr) {
         Serial.println("Error: MQTT parameters are null");
         return;
     }
