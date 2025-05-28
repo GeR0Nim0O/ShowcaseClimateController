@@ -14,6 +14,7 @@ public:
     bool initializeAllDevices();
     void updateAllDevices();    // Device creation
     static Device* createDeviceWithThresholds(
+        TwoWire* wire,
         const String& type, 
         const String& typeNumber, 
         uint8_t address, 
