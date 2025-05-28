@@ -39,6 +39,7 @@ public:
     String deviceName;
 
 protected:
+    TwoWire* wire;  // Wire instance - first member for proper initialization
     uint8_t i2cAddress;
     uint8_t tcaChannel;
     int deviceIndex;
