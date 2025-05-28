@@ -107,16 +107,35 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         }
         Serial.println();
     }
-      // Process each device in the configuration
+
+    // Debug the devices configuration structure
+    Serial.println("\nDevices configuration structure:");
+    Serial.print("Is devices config null? ");
+    Serial.println(devicesConfig.isNull() ? "Yes" : "No");
+    Serial.print("Number of entries in devices config: ");
+    Serial.println(devicesConfig.size());
+    
+    // Process each device in the configuration with improved handling
     for (JsonPair device : devicesConfig) {
-        const String deviceKey = device.key().c_str();
-        JsonObject deviceObj = device.value();
+        // Check if key is valid
+        String deviceKey = "";
+        if (device.key().isNull()) {
+            Serial.println("WARNING: Found device with null key, skipping...");
+            continue;
+        }
+        
+        deviceKey = device.key().c_str();
+        if (deviceKey.isEmpty()) {
+            Serial.println("WARNING: Found device with empty key, skipping...");
+            continue;
+        }
         
         // Check if device object is valid
-        if (deviceObj.isNull()) {
+        JsonObject deviceObj = device.value().as<JsonObject>();
+        if (deviceObj.isNull() || deviceObj.size() == 0) {
             Serial.print("Config Device: ");
             Serial.print(deviceKey);
-            Serial.println(" - WARNING: Skipping null device object");
+            Serial.println(" - WARNING: Skipping null or empty device object");
             continue;
         }
         
