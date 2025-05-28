@@ -53,10 +53,10 @@ public:
     static String getDeviceName();
     static String getTimezone();
     static uint32_t getLogFileSize();
-    
-    // Device configuration
+      // Device configuration
     static JsonObject getDevicesConfig();
     static void initializeEachDevice(std::vector<Device*>& devices);
+    static bool validateDeviceObject(Device* device);
     
     // Initialize devices based on config and scan results
     static std::vector<Device*> initializeDevices(std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults, DS3231rtc*& rtc);
