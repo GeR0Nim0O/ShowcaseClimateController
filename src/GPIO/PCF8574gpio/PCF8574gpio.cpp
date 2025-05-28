@@ -1,7 +1,7 @@
 #include "PCF8574gpio.h"
 
-PCF8574gpio::PCF8574gpio(uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex, PCF8574Mode mode)
-    : Device(threshold, channels, i2cAddress, tcaChannel, deviceIndex), _address(i2cAddress), _gpioState(0xFF), _mode(mode) {
+PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex, PCF8574Mode mode)
+    : Device(wire, threshold, channels, i2cAddress, tcaChannel, deviceIndex), _address(i2cAddress), _gpioState(0xFF), _mode(mode) {
       // Set type - inherited from Device base class
     type = "PCF8574GPIO";
     Serial.println("PCF8574gpio created:");
