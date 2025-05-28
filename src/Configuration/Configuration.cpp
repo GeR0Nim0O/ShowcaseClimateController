@@ -42,27 +42,27 @@ bool Configuration::loadConfig(const JsonObject& config) {
     }
     
     // Parse WiFi configuration
-    if (config.containsKey("wifi")) {
+    if (!config["wifi"].isNull()) {
         parseWiFiConfig(config["wifi"]);
     }
     
     // Parse MQTT configuration
-    if (config.containsKey("mqtt")) {
+    if (!config["mqtt"].isNull()) {
         parseMQTTConfig(config["mqtt"]);
     }
     
     // Parse MQTTS configuration (SSL)
-    if (config.containsKey("mqtts")) {
+    if (!config["mqtts"].isNull()) {
         parseMQTTConfig(config["mqtts"]);
     }
     
     // Parse project configuration
-    if (config.containsKey("project")) {
+    if (!config["project"].isNull()) {
         parseProjectConfig(config["project"]);
     }
     
     // Store devices configuration for later use
-    if (config.containsKey("Devices")) {
+    if (!config["Devices"].isNull()) {
         devicesConfig = config["Devices"].as<JsonObject>();
     }
     
