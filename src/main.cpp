@@ -391,10 +391,10 @@ void readAndPrintInitialSensorData() {
     
     I2CHandler::selectTCA(device->getTCAChannel());
     auto data = device->readData();
-    
-    for (const auto& channel : device->getChannels()) {
+      for (const auto& channel : device->getChannels()) {
       String channelKey = channel.first;
-      std::string key = std::string(channelKey.c_str());
+      String deviceSpecificKey = deviceName + "_" + channelKey; // Make key device-specific
+      std::string key = std::string(deviceSpecificKey.c_str());
       float value = data[channelKey].toFloat();
       
       // Store initial value in lastSensorValues to establish baseline
