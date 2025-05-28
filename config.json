@@ -158,6 +158,21 @@
           "Threshold": 1.0
         }
       }
+    },
+    "GP8403": {
+      "Type": "DAC",
+      "TypeNumber": "GP8403",
+      "Address": "0x62",
+      "Channels": {
+        "TEMP": {
+          "Name": "TemperatureControl",
+          "Threshold": 0.5
+        },
+        "HUM": {
+          "Name": "HumidityControl",
+          "Threshold": 0.5
+        }
+      }
     }
   },
   "timezone": "Europe/Amsterdam",
