@@ -126,7 +126,7 @@ bool PCF8574gpio::isInputMode() const {
 }
 
 void PCF8574gpio::initializeOutputs() {
-    if (_mode == PCF8574Mode::OUTPUT) {
+    if (_mode == PCF8574Mode::OUTPUT_MODE) {
         // Set all outputs to false (0x00)
         writeByte(0x00);
         Serial.println("PCF8574 outputs initialized to false (0x00)");
