@@ -27,7 +27,7 @@ public:
     );
       // Device getters
     PCF8574gpio* getGPIOExpander(int index = 0);
-    SHT31sensor* getTemperatureHumiditySensor(int index = 0);
+    SHTsensor* getTemperatureHumiditySensor(int index = 0);
     Device* getDevice(const String& deviceName);
     Device* getDeviceByIndex(int index);
     
