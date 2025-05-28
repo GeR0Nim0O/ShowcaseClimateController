@@ -238,6 +238,13 @@ uint8_t Configuration::getSensorAddress(const JsonObject& sensorConfig) {
     return strtol(sensorConfig["Address"].as<const char*>(), nullptr, 16);
 }
 
+String Configuration::getDeviceMode(const JsonObject& deviceConfig) {
+    if (deviceConfig.containsKey("Mode")) {
+        return deviceConfig["Mode"].as<String>();
+    }
+    return "OUTPUT_8X"; // Default mode if not specified
+}
+
 float Configuration::getSensorThreshold(const JsonObject& sensorConfig, const String& channelKey) {
     // If using new format and a specific channel is requested, return channel-specific threshold
     if (isNewConfigFormat(sensorConfig) && channelKey.length() > 0) {
