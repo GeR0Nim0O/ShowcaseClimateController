@@ -367,9 +367,8 @@ bool SDHandler::copyDefaultConfig() {
                 "Address": "0x68",
                 "Channels": {
                     "Time": "Time"
-                }
-            },
-            "SHT31": {
+                }            },
+            "SHT": {
                 "Type": "Sensor",
                 "TypeNumber": "SHT31",
                 "Address": "0x44",
