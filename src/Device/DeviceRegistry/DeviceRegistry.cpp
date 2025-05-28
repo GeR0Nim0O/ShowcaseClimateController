@@ -120,6 +120,7 @@ void DeviceRegistry::printDeviceStatus() {
 }
 
 Device* DeviceRegistry::createDeviceWithThresholds(
+    TwoWire* wire,
     const String& type, 
     const String& typeNumber, 
     uint8_t address, 
