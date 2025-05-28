@@ -15,7 +15,7 @@ enum class PCF8574Mode {
 
 class PCF8574gpio : public Device {
 public:
-    PCF8574gpio(uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex, PCF8574Mode mode = PCF8574Mode::OUTPUT_MODE);
+    PCF8574gpio(uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex, PCF8574Mode mode = PCF8574Mode::OUTPUT_MODE);
     
     bool begin() override;
     bool isConnected() override;
