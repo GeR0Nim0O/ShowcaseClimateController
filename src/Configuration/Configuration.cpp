@@ -217,9 +217,9 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             Serial.print("DAC channels after processing: ");
             Serial.println(channelNames.size());
         }
-        
-        // Create the device using DeviceRegistry
+          // Create the device using DeviceRegistry
         static int deviceIndex = 0;        Device* createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
+            &Wire,
             deviceType,
             deviceTypeNumber,
             deviceAddress,
