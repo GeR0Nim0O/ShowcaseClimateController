@@ -281,15 +281,10 @@ void SHT31sensor::update() {
     
     // Try multiple times if needed
     for (int attempt = 0; attempt < 3 && !readingSuccess; attempt++) {
-        uint16_t rawTemperature, rawHumidity;
-        if (readRawData(rawTemperature, rawHumidity)) {
+        uint16_t rawTemperature, rawHumidity;        if (readRawData(rawTemperature, rawHumidity)) {
             _temperature = -45 + 175 * (rawTemperature / 65535.0);
             _humidity = 100 * (rawHumidity / 65535.0);
             readingSuccess = true;
-            Serial.print("SHT31 reading successful - Temp: ");
-            Serial.print(_temperature);
-            Serial.print("°C, Humidity: ");
-            Serial.println(_humidity);
         } else {
             Serial.print("SHT31 reading failed, attempt ");
             Serial.print(attempt + 1);
