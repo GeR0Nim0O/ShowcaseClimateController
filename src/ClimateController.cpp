@@ -175,54 +175,77 @@ void ClimateController::updateHumidityControl() {
     if (humidityMode == HumidityMode::OFF) {
         humidifyingActive = false;
         dehumidifyingActive = false;
-        humidifierPower = 0.0;
-        dehumidifierPower = 0.0;
         return;
     }
     
-    humidityPID->Compute();
+    // Use a simple hysteresis control for humidity (on/off control)
+    const float hysteresis = 2.0; // 2% hysteresis to prevent oscillation
     
     switch (humidityMode) {
         case HumidityMode::HUMIDIFYING:
-            humidifyingActive = (humOutput > 0);
-            dehumidifyingActive = false;
-            humidifierPower = humidifyingActive ? map(humOutput, 0, 100, 0, 100) : 0.0;
-            dehumidifierPower = 0.0;
+            // Only humidifying mode
+            if (currentHumidity < humiditySetpoint - hysteresis) {
+                humidifyingActive = true;  // Turn on humidifier
+            } else if (currentHumidity > humiditySetpoint) {
+                humidifyingActive = false; // Turn off humidifier
+            }
+            // Otherwise keep previous state (hysteresis)
+            dehumidifyingActive = false;   // Ensure dehumidifier is off
             break;
             
         case HumidityMode::DEHUMIDIFYING:
-            humidifyingActive = false;
-            dehumidifyingActive = (humOutput < 0);
-            humidifierPower = 0.0;
-            dehumidifierPower = dehumidifyingActive ? map(-humOutput, 0, 100, 0, 100) : 0.0;
+            // Only dehumidifying mode
+            if (currentHumidity > humiditySetpoint + hysteresis) {
+                dehumidifyingActive = true;  // Turn on dehumidifier
+            } else if (currentHumidity < humiditySetpoint) {
+                dehumidifyingActive = false; // Turn off dehumidifier
+            }
+            // Otherwise keep previous state (hysteresis)
+            humidifyingActive = false;      // Ensure humidifier is off
             break;
             
         case HumidityMode::AUTO:
-            if (humOutput > 5) { // Deadband to prevent oscillation
+            // Auto mode - can switch between humidifying and dehumidifying
+            if (currentHumidity < humiditySetpoint - hysteresis) {
                 humidifyingActive = true;
                 dehumidifyingActive = false;
-                humidifierPower = map(humOutput, 5, 100, 0, 100);
-                dehumidifierPower = 0.0;
-            } else if (humOutput < -5) {
+            } else if (currentHumidity > humiditySetpoint + hysteresis) {
                 humidifyingActive = false;
                 dehumidifyingActive = true;
-                humidifierPower = 0.0;
-                dehumidifierPower = map(-humOutput, 5, 100, 0, 100);
-            } else {
+            } else if (currentHumidity >= humiditySetpoint - 1.0 && 
+                      currentHumidity <= humiditySetpoint + 1.0) {
+                // Within +/- 1% of setpoint, turn everything off
                 humidifyingActive = false;
                 dehumidifyingActive = false;
-                humidifierPower = 0.0;
-                dehumidifierPower = 0.0;
             }
+            // Otherwise keep previous state (hysteresis)
             break;
             
         case HumidityMode::OFF:
         default:
             humidifyingActive = false;
             dehumidifyingActive = false;
-            humidifierPower = 0.0;
-            dehumidifierPower = 0.0;
             break;
+    }
+    
+    // Log output when state changes for debugging
+    static bool lastHumidifyingActive = false;
+    static bool lastDehumidifyingActive = false;
+    
+    if (humidifyingActive != lastHumidifyingActive || 
+        dehumidifyingActive != lastDehumidifyingActive) {
+        
+        Serial.print("Humidity control update - Current: ");
+        Serial.print(currentHumidity);
+        Serial.print("% Setpoint: ");
+        Serial.print(humiditySetpoint);
+        Serial.print("% Humidifier: ");
+        Serial.print(humidifyingActive ? "ON" : "OFF");
+        Serial.print(" Dehumidifier: ");
+        Serial.println(dehumidifyingActive ? "ON" : "OFF");
+        
+        lastHumidifyingActive = humidifyingActive;
+        lastDehumidifyingActive = dehumidifyingActive;
     }
 }
 
@@ -318,13 +341,9 @@ void ClimateController::applyHumidityControl() {
     
     // Debug output
     if (humidifyingActive) {
-        Serial.print("Humidity control: Humidifying at ");
-        Serial.print(humidifierPower);
-        Serial.println("%");
+        Serial.println("Humidity control: Humidifying");
     } else if (dehumidifyingActive) {
-        Serial.print("Humidity control: Dehumidifying at ");
-        Serial.print(dehumidifierPower);
-        Serial.println("%");
+        Serial.println("Humidity control: Dehumidifying");
     } else {
         Serial.println("Humidity control: Idle");
     }
