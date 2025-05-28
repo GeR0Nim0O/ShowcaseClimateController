@@ -507,24 +507,23 @@ void readAndSendDataFromDevices() {
             float valueDiff = abs(value - lastValue);
             bool shouldLog = valueDiff >= threshold;
             bool shouldSendMqtt = shouldPrintData || shouldLog; // Send via MQTT if 60-second cycle OR threshold exceeded
-            
-            // Debug: Always show threshold check for humidity changes
-            if (channelKey == "H" && valueDiff > 0.005) { // Show when humidity changes by more than 0.005
-                Serial.print("HUMIDITY DEBUG: Device ");
-                Serial.print(deviceName);
-                Serial.print(" H=");
-                Serial.print(value);
-                Serial.print(" lastH=");
-                Serial.print(lastValue);
-                Serial.print(" diff=");
-                Serial.print(valueDiff);
-                Serial.print(" threshold=");
-                Serial.print(threshold);
-                Serial.print(" shouldLog=");
-                Serial.print(shouldLog ? "YES" : "NO");
-                Serial.print(" shouldSendMqtt=");
-                Serial.println(shouldSendMqtt ? "YES" : "NO");
-            }
+              // Debug: Always show threshold check for humidity changes (DISABLED)
+            // if (channelKey == "H" && valueDiff > 0.005) { // Show when humidity changes by more than 0.005
+            //     Serial.print("HUMIDITY DEBUG: Device ");
+            //     Serial.print(deviceName);
+            //     Serial.print(" H=");
+            //     Serial.print(value);
+            //     Serial.print(" lastH=");
+            //     Serial.print(lastValue);
+            //     Serial.print(" diff=");
+            //     Serial.print(valueDiff);
+            //     Serial.print(" threshold=");
+            //     Serial.print(threshold);
+            //     Serial.print(" shouldLog=");
+            //     Serial.print(shouldLog ? "YES" : "NO");
+            //     Serial.print(" shouldSendMqtt=");
+            //     Serial.println(shouldSendMqtt ? "YES" : "NO");
+            // }
             
             // Store data for MQTT sending if it's either the 60-second cycle OR threshold exceeded
             if (shouldSendMqtt) {
