@@ -1,7 +1,22 @@
 #include "PCF8574gpio.h"
 
-PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(threshold, channels, i2cChannel, tcaPort, deviceIndex), wire(wire), _address(PCF8574_ADDRESS), _gpioState(0xFF) {
+PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex, PCF8574Mode mode)
+    : Device(threshold, channels, i2cChannel, tcaPort, deviceIndex), wire(wire), _address(PCF8574_ADDRESS), _gpioState(0xFF), _mode(mode) {
+    
+    // Set type - inherited from Device base class
+    type = "PCF8574GPIO";
+    
+    Serial.println("PCF8574gpio created:");
+    Serial.print("Address: 0x");
+    Serial.println(_address, HEX);
+    Serial.print("Mode: ");
+    Serial.println(_mode == PCF8574Mode::INPUT_8X ? "INPUT_8X" : "OUTPUT_8X");
+    Serial.print("Threshold: ");
+    Serial.println(threshold);
+    Serial.print("Number of Channels: ");
+    Serial.println(channels.size());
+    Serial.print("Device Index: ");
+    Serial.println(deviceIndex);
 }
 
 bool PCF8574gpio::begin() {
