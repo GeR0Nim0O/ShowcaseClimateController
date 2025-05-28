@@ -289,10 +289,50 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             Serial.print("Failed to create device: ");
             Serial.println(deviceKey);
         }
-    }
-
-    Serial.println("Device initialization from config complete");
+    }    Serial.println("Device initialization from config complete");
     return devices;
+}
+
+// Helper function to validate device object and vtable integrity
+bool Configuration::validateDeviceObject(Device* device) {
+    if (!device) {
+        Serial.println("Device pointer is NULL");
+        return false;
+    }
+    
+    // Check if device pointer is in valid memory range
+    uint32_t deviceAddr = (uint32_t)device;
+    if (deviceAddr < 0x3F800000 || deviceAddr > 0x3FFFFFFF) {
+        Serial.print("Device pointer 0x");
+        Serial.print(deviceAddr, HEX);
+        Serial.println(" is outside valid ESP32 memory range");
+        return false;
+    }
+    
+    // Try to read the vtable pointer (first 4 bytes of object)
+    volatile uint32_t* vtablePtr = (volatile uint32_t*)device;
+    volatile uint32_t vtableAddr = 0;
+    
+    try {
+        vtableAddr = *vtablePtr;
+        
+        // Check if vtable address is reasonable
+        if (vtableAddr < 0x400D0000 || vtableAddr > 0x40400000) {
+            Serial.print("Vtable address 0x");
+            Serial.print(vtableAddr, HEX);
+            Serial.println(" appears invalid");
+            return false;
+        }
+        
+        Serial.print("Device vtable at: 0x");
+        Serial.println(vtableAddr, HEX);
+        
+    } catch (...) {
+        Serial.println("Exception while reading vtable pointer");
+        return false;
+    }
+    
+    return true;
 }
 
 void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
