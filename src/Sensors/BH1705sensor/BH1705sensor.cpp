@@ -85,8 +85,8 @@ float BH1705sensor::getLux() const {
 // Implementation of pure virtual methods from Device base class
 bool BH1705sensor::isConnected() {
     I2CHandler::selectTCA(getTCAChannel());
-    wire->beginTransmission(_address);
-    return (wire->endTransmission() == 0);
+    Wire.beginTransmission(_address);
+    return (Wire.endTransmission() == 0);
 }
 
 void BH1705sensor::update() {
