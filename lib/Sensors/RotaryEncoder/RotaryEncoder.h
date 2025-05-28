@@ -46,7 +46,7 @@
 
 class RotaryEncoder : public Device {
 public:
-    RotaryEncoder(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
+    RotaryEncoder(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
       bool begin() override;
     bool isConnected() override;
     void update() override;
