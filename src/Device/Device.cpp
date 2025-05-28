@@ -43,38 +43,13 @@ bool Device::isConnected() {
     return testI2CConnection();
 }
 
-float Device::getThreshold(const String& channelId) const {
-    auto it = thresholds.find(channelId);
-    return (it != thresholds.end()) ? it->second : 0.0f;
-}
-
-void Device::addChannel(const String& channelId, const String& channelType, float threshold) {
-    channels[channelId] = channelType;
-    thresholds[channelId] = threshold;
-}
-
-void Device::removeChannel(const String& channelId) {
-    channels.erase(channelId);
-    thresholds.erase(channelId);
-}
-
-void Device::clearChannels() {
-    channels.clear();
-    thresholds.clear();
+void Device::update() {
+    // Default implementation - do nothing
+    // Override in derived classes as needed
 }
 
 std::map<String, String> Device::readData() {
+    // Default implementation - return empty map
+    // Override in derived classes as needed
     return std::map<String, String>();
-}
-
-bool Device::writeData(const std::map<String, String>& data) {
-    return true;
-}
-
-bool Device::connect() {
-    return isConnected();
-}
-
-bool Device::disconnect() {
-    return true;
 }
