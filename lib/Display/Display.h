@@ -56,7 +56,7 @@
 
 class Display : public Device {
 public:
-    Display(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
+    Display(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
     
     bool begin() override;
     bool isConnected() override;
