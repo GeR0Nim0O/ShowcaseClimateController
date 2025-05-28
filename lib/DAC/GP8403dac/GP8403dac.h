@@ -37,8 +37,11 @@ public:
     bool setBothChannels(uint16_t valueA, uint16_t valueB);
     
     // Climate control specific methods
-    bool setTemperaturePower(float percentage); // 0-100%
-    bool setHumidityPower(float percentage);    // 0-100%
+    bool setPowerOutput(float percentage); // 0-100% - replaces setTemperaturePower
+    
+    // Keep existing methods with deprecated comments
+    bool setTemperaturePower(float percentage) { return setPowerOutput(percentage); } // Deprecated, use setPowerOutput
+    bool setHumidityPower(float percentage) { return false; } // Deprecated, not used
     
     // Configuration
     bool setGain(uint8_t channel, bool gain2x);
