@@ -21,86 +21,171 @@ void Configuration::printConfigValues() {
 }
 
 std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vector<uint8_t>> &tcaScanResults, DS3231rtc* &rtc) {
-    // ...existing code...
+    std::vector<Device*> devices;
+    JsonObject devicesConfig = getDevicesConfig();
+    
+    // Debug TCA scan results
+    Serial.println("\nTCA scan results:");
+    for (const auto& result : tcaScanResults) {
+        Serial.print("TCA Port ");
+        Serial.print(result.first);
+        Serial.print(": ");
+        for (const auto& address : result.second) {
+            Serial.print("0x");
+            Serial.print(address, HEX);
+            Serial.print(" ");
+        }
+        Serial.println();
+    }
     
     // Process each device in the configuration
     for (JsonPair device : devicesConfig) {
         const String deviceKey = device.key().c_str();
         JsonObject deviceObj = device.value();
         
-        // Extract common device parameters
-        String deviceType = deviceObj["Type"].as<const char*>();
-        String deviceTypeNumber = deviceObj["TypeNumber"].as<const char*>();
-        uint8_t deviceAddress = (uint8_t)strtol(deviceObj["Address"].as<const char*>(), NULL, 16);
-        uint8_t deviceTcaPort = deviceObj["TCA_Port"] | 0; // Default to 0 if not specified
-        int deviceIndex = deviceObj["DeviceIndex"] | 0;
+        // Get device type, type number, and I2C address
+        String deviceType = deviceObj["Type"].as<String>();
+        String deviceTypeNumber = deviceObj["TypeNumber"].as<String>();
+        uint8_t deviceAddress = strtol(deviceObj["Address"].as<String>().c_str(), NULL, 16);
+        String deviceMode = deviceObj["Mode"] | "";
         
-        // Log device information
-        Serial.print("Configuring device: ");
+        // Log device details for debugging
+        Serial.print("Config Device: ");
+        Serial.print(deviceKey);
+        Serial.print(", Type: ");
         Serial.print(deviceType);
-        Serial.print(" (");
+        Serial.print(", TypeNumber: ");
         Serial.print(deviceTypeNumber);
-        Serial.print(") at address 0x");
-        Serial.print(deviceAddress, HEX);
-        Serial.print(" on TCA port ");
-        Serial.print(deviceTcaPort);
-        Serial.print(", index ");
-        Serial.println(deviceIndex);
-        
-        // Initialize channel parameters
-        std::map<String, float> channelThresholds;
-        std::map<String, String> channelNames;
-        
+        Serial.print(", Address: 0x");
+        Serial.println(deviceAddress, HEX);
+
+        // For DAC devices, log extra debug info
+        if (deviceType.equalsIgnoreCase("DAC")) {
+            Serial.println("DAC device found in config:");
+            Serial.print("  Key: ");
+            Serial.println(deviceKey);
+            Serial.print("  TypeNumber: ");
+            Serial.println(deviceTypeNumber);
+            Serial.print("  Address: 0x");
+            Serial.println(deviceAddress, HEX);
+            
+            Serial.println("  Channel config:");
+            for (JsonPair channel : deviceObj["Channels"].as<JsonObject>()) {
+                String channelKey = channel.key().c_str();
+                JsonObject channelObj = channel.value();
+                Serial.print("    ");
+                Serial.print(channelKey);
+                Serial.print(": ");
+                Serial.println(channelObj["Name"].as<const char*>());
+            }
+        }
+
+        // Find TCA port where this device exists
+        int tcaPort = -1;
+        for (const auto& result : tcaScanResults) {
+            for (const auto& address : result.second) {
+                if (address == deviceAddress) {
+                    tcaPort = result.first;
+                    break;
+                }
+            }
+            if (tcaPort != -1) {
+                break;
+            }
+        }
+
+        // Skip device if it's not found on the I2C bus
+        if (tcaPort == -1) {
+            Serial.print("Device with address 0x");
+            Serial.print(deviceAddress, HEX);
+            Serial.println(" not found on any TCA port, skipping...");
+            continue;
+        }
+
         // Process channels for this device
-        if (deviceObj["Channels"].is<JsonObject>()) {
+        std::map<String, String> channelNames;
+        std::map<String, float> channelThresholds;
+        
+        for (JsonPair channel : deviceObj["Channels"].as<JsonObject>()) {
+            String channelKey = channel.key().c_str();
+            JsonObject channelObj = channel.value();
+            
+            if (channelObj["Name"].is<const char*>()) {
+                channelNames[channelKey] = channelObj["Name"].as<const char*>();
+                
+                // Get threshold if available
+                if (channelObj["Threshold"].is<float>()) {
+                    channelThresholds[channelKey] = channelObj["Threshold"].as<float>();
+                } else {
+                    // Use default threshold
+                    channelThresholds[channelKey] = 1.0f;
+                }
+            }
+        }
+
+        // Special handling for DAC devices - they may not have thresholds
+        if (deviceType.equalsIgnoreCase("DAC")) {
+            Serial.println("Processing DAC device...");
+            
+            if (channelNames.empty()) {
+                Serial.println("WARNING: DAC device has no defined channels in config!");
+            }
+            
             for (JsonPair channel : deviceObj["Channels"].as<JsonObject>()) {
                 String channelKey = channel.key().c_str();
                 JsonObject channelObj = channel.value();
                 
-                // Extract channel parameters
-                float threshold = channelObj["Threshold"] | 0.0;
-                String channelName = channelObj["Name"].as<const char*>();
-                
-                // Log channel information
-                Serial.print("  Channel: ");
-                Serial.print(channelKey);
-                Serial.print(", Name: ");
-                Serial.print(channelName);
-                Serial.print(", Threshold: ");
-                Serial.println(threshold);
-                
-                // Store channel parameters
-                channelThresholds[channelKey] = threshold;
-                channelNames[channelKey] = channelName;
+                // For DAC channels, the name is sufficient
+                if (channelObj["Name"].is<const char*>()) {
+                    channelNames[channelKey] = channelObj["Name"].as<const char*>();
+                    if (!channelObj["Threshold"].is<float>()) {
+                        // No threshold needed for DAC, but set a default for API consistency
+                        channelThresholds[channelKey] = 0.1f;
+                    }
+                }
             }
+            
+            Serial.print("DAC channels after processing: ");
+            Serial.println(channelNames.size());
         }
         
         // Create the device using DeviceRegistry
-        Device* createdDevice = DeviceRegistry::createDeviceWithThresholds(
-            deviceType, 
-            deviceTypeNumber, 
-            &Wire,  // Use default Wire instance
-            deviceAddress, 
-            deviceTcaPort, 
-            channelThresholds, 
-            channelNames, 
-            deviceIndex
+        static int deviceIndex = 0;
+        Device* createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
+            deviceType,
+            deviceTypeNumber,
+            &Wire,
+            deviceAddress,
+            tcaPort,
+            channelThresholds,
+            channelNames,
+            deviceIndex,
+            deviceMode
         );
         
-        // Special log for DAC device after creation attempt
-        if (deviceType.equalsIgnoreCase("DAC")) {
-            if (createdDevice != nullptr) {
-                Serial.print("DAC device created successfully with index ");
-                Serial.println(deviceIndex);
-            } else {
-                Serial.println("WARNING: DAC device creation failed!");
-            }
-        }
+        deviceIndex++;
         
-        // ...existing code...
+        if (createdDevice != nullptr) {
+            devices.push_back(createdDevice);
+            
+            // Special processing for RTC device
+            if (deviceType.equalsIgnoreCase("RTC")) {
+                rtc = static_cast<DS3231rtc*>(createdDevice);
+                Serial.println("RTC device initialized and assigned");
+            }
+            
+            // Special logging for DAC device
+            if (deviceType.equalsIgnoreCase("DAC")) {
+                Serial.println("DAC device added to devices vector");
+            }
+        } else {
+            Serial.print("Failed to create device: ");
+            Serial.println(deviceKey);
+        }
     }
-    
-    // ...existing code...
+
+    Serial.println("Device initialization from config complete");
+    return devices;
 }
 
 void Configuration::setWiFiSSID(const String& ssid) {
