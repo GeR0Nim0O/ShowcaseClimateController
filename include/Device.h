@@ -56,19 +56,28 @@ public:
     void selectTCAChannel(uint8_t channel);
     bool testI2CConnection();
     
+    
 protected:
     TwoWire* wire;
     String type;
-    String deviceName;
     uint8_t i2cAddress;
     uint8_t tcaChannel;
     int deviceIndex;
     bool initialized = false;
     
+    // Make deviceName public accessible through setter
+    String deviceName;
+    
     // Channels map - channel ID to type
     std::map<String, String> channels;
     // Thresholds map - channel ID to threshold value
     std::map<String, float> thresholds;
+    
+public:
+    // Public setter for deviceName to allow DeviceRegistry to set it
+    void setDeviceName(const String& name) { deviceName = name; }
+    
+protected:
 };
 
 #endif // DEVICE_H
