@@ -337,7 +337,6 @@ void loop() {
     
     lastConnectionRetry = millis();
   }
-
   // Reset reconnection attempts when WiFi reconnects successfully
   if (WiFi.status() == WL_CONNECTED && wifiSkipped) {
     Serial.println("WiFi reconnected successfully. Resetting WiFi attempt counter.");
@@ -345,6 +344,7 @@ void loop() {
     wifiSkipped = false;
     mqttReconnectAttempts = 0;
     mqttSkipped = false;
+    offlineMode = false;
   }
 
   // Reset MQTT reconnection attempts when MQTT reconnects successfully
@@ -353,6 +353,9 @@ void loop() {
     mqttReconnectAttempts = 0;
     mqttSkipped = false;
   }
+
+  // Update offline mode status
+  offlineMode = (WiFi.status() != WL_CONNECTED);
 
   if (client.connected()) {
     client.loop(); // Ensure the MQTT client loop is called to maintain the connection
