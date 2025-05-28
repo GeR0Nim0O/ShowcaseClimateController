@@ -171,7 +171,7 @@ Device* DeviceRegistry::createDeviceWithThresholds(
                 device->deviceName = deviceName; // Set device name
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
             }        } else if (typeNumber.equalsIgnoreCase("SCALES")) {
-            device = new SCALESsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+            device = new SCALESsensor(address, tcaPort, threshold, channels, deviceIndex);
             if (device) {
                 device->deviceName = deviceName; // Set device name
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
