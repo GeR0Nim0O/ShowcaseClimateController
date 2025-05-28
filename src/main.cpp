@@ -301,16 +301,15 @@ void loop() {
       Serial.print(mqttReconnectAttempts);
       Serial.print("/");
       Serial.println(maxReconnectAttempts);
-      
-      if (mqttReconnectAttempts <= maxReconnectAttempts) {
-        bool mqttConnected = WifiMqttHandler::connectToMqttBroker(client, espClient, 
+        if (mqttReconnectAttempts <= maxReconnectAttempts) {
+        WifiMqttHandler::connectToMqttBroker(client, espClient, 
                                          Configuration::getMqttsServer().c_str(), 
                                          rootCACertificate, 
                                          Configuration::getMqttsPort(), 
                                          clientId.c_str(), topic.c_str(),
                                          Configuration::getFlespiToken().c_str());
         
-        if (mqttConnected) {
+        if (client.connected()) {
           Serial.println("MQTT connected successfully!");
         } else {
           Serial.println("MQTT connection failed");
