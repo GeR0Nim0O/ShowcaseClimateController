@@ -266,9 +266,14 @@ void loop() {
 
   // Check if it's time to send MQTT data (every minute)
   bool timeToSendMqtt = throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval);
-  
-  // Only attempt reconnections every minute, aligned with MQTT sending schedule
+    // Only attempt reconnections every minute, aligned with MQTT sending schedule
   if (timeToSendMqtt || (millis() - lastConnectionRetry >= connectionRetryInterval)) {
+    
+    // Print connection status for debugging every minute
+    Serial.print("Connection Status - WiFi: ");
+    Serial.print(WiFi.status() == WL_CONNECTED ? "Connected" : "Disconnected");
+    Serial.print(", MQTT: ");
+    Serial.println(client.connected() ? "Connected" : "Disconnected");
     
     // Try to reconnect WiFi if disconnected and not skipped
     if (WiFi.status() != WL_CONNECTED && !wifiSkipped) {
