@@ -5,12 +5,11 @@ PCF8574gpio::PCF8574gpio(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, flo
     
     // Set type - inherited from Device base class
     type = "PCF8574GPIO";
-    
-    Serial.println("PCF8574gpio created:");
+      Serial.println("PCF8574gpio created:");
     Serial.print("Address: 0x");
     Serial.println(_address, HEX);
     Serial.print("Mode: ");
-    Serial.println(_mode == PCF8574Mode::INPUT_8X ? "INPUT_8X" : "OUTPUT_8X");
+    Serial.println(_mode == PCF8574Mode::INPUT ? "INPUT" : "OUTPUT");
     Serial.print("Threshold: ");
     Serial.println(threshold);
     Serial.print("Number of Channels: ");
