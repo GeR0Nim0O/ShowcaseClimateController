@@ -244,14 +244,14 @@ bool SHTsensor::writeCommand(uint16_t command)
 
 bool SHTsensor::readBytes(uint8_t *data, uint8_t length)
 {
-    if (wire->requestFrom(_address, length) != length)
+    if (Wire.requestFrom(_address, length) != length)
     {
         return false;
     }
 
     for (uint8_t i = 0; i < length; i++)
     {
-        data[i] = wire->read();
+        data[i] = Wire.read();
     }
 
     return true;
