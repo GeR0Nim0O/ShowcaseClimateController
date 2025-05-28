@@ -415,6 +415,9 @@ void readAndSendDataFromDevices() {
     // Flag to determine if we should print data this cycle (only true every 60 seconds)
     bool shouldPrintData = throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval);
     
+    // SIMPLE DEBUG: Always print this to verify code is running
+    Serial.println("*** DEBUG: readAndSendDataFromDevices() called ***");
+    
     if (shouldPrintData) {
         Serial.println("\n=== Sensor Readings (60-second update) ===");
     }
