@@ -125,6 +125,7 @@
       "Type": "GPIO",
       "TypeNumber": "PCF8574",
       "Address": "0x20",
+      "Mode": "OUTPUT_8X",
       "Channels": {
         "IO0": {
           "Name": "FanExterior",
