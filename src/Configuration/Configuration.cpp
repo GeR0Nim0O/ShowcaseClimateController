@@ -108,12 +108,53 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         Serial.println();
     }
 
-    // Debug the devices configuration structure
+    // Debug the devices configuration structure with enhanced safety
     Serial.println("\nDevices configuration structure:");
     Serial.print("Is devices config null? ");
     Serial.println(devicesConfig.isNull() ? "Yes" : "No");
-    Serial.print("Number of entries in devices config: ");
-    Serial.println(devicesConfig.size());
+    
+    // Extra defensive check - don't attempt size() if object is null
+    if (devicesConfig.isNull()) {
+        Serial.println("Cannot continue - Devices configuration is null");
+        return devices;  // Return empty vector
+    }
+    
+    // Try accessing the size safely
+    size_t configSize = 0;
+    try {
+        configSize = devicesConfig.size();
+        Serial.print("Number of entries in devices config: ");
+        Serial.println(configSize);
+    }
+    catch (...) {
+        Serial.println("Error accessing devices config size");
+        return devices;  // Return empty vector
+    }
+    
+    if (configSize == 0) {
+        Serial.println("Warning: Devices configuration is empty");
+        return devices;  // Return empty vector
+    }
+    
+    // Extra debug - try to print keys of first few entries
+    Serial.println("Attempting to list device keys:");
+    int keyCount = 0;
+    try {
+        for (JsonPair device : devicesConfig) {
+            if (keyCount < 5) {  // Limit to first 5 to avoid flooding serial
+                if (!device.key().isNull()) {
+                    Serial.print("  Device key: ");
+                    Serial.println(device.key().c_str());
+                } else {
+                    Serial.println("  Found null key");
+                }
+                keyCount++;
+            }
+        }
+    }
+    catch (...) {
+        Serial.println("Error while attempting to list device keys");
+    }
     
     // Process each device in the configuration with improved handling
     for (JsonPair device : devicesConfig) {
