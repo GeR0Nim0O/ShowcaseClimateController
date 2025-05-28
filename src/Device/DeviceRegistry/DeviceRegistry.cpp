@@ -15,12 +15,32 @@ bool DeviceRegistry::registerDevice(Device* device) {
         return false;
     }
     
-    devices.push_back(device);
-    // Removed dynamic_cast and type-specific vectors due to -fno-rtti
-    Serial.print("Registered device: ");
-    Serial.println(device->getDeviceName());
+    // Additional safety checks
+    if ((uint32_t)device < 0x3F800000 || (uint32_t)device > 0x3FFFFFFF) {
+        Serial.println("Cannot register device - pointer outside valid memory range");
+        return false;
+    }
     
-    return true;
+    // Test virtual method calls before registration
+    try {
+        String testName = device->getDeviceName();
+        String testType = device->getType();
+        
+        Serial.print("Registering device: ");
+        Serial.print(testName);
+        Serial.print(" (");
+        Serial.print(testType);
+        Serial.println(")");
+        
+        devices.push_back(device);
+        
+        Serial.println("Device successfully registered");
+        return true;
+        
+    } catch (...) {
+        Serial.println("Cannot register device - virtual method call failed");
+        return false;
+    }
 }
 
 bool DeviceRegistry::initializeAllDevices() {
