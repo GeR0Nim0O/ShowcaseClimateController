@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <SD.h>
+#include <ArduinoJson.h>
 
 #define SD_MISO_PIN 5
 #define SD_MOSI_PIN 6
@@ -444,5 +445,36 @@ bool SDHandler::copyDefaultConfig() {
 
     configFile.print(defaultConfig);
     configFile.close();
+    return true;
+}
+
+bool SDHandler::readJsonFile(const char* filename, JsonDocument& doc) {
+    File file = SD.open(filename);
+    if (!file) {
+        Serial.print("Failed to open file: ");
+        Serial.println(filename);
+        return false;
+    }
+
+    size_t size = file.size();
+    if (size > 8192) {
+        Serial.println("Config file size is too large");
+        file.close();
+        return false;
+    }
+
+    String fileContent;
+    while (file.available()) {
+        fileContent += (char)file.read();
+    }
+    file.close();
+
+    DeserializationError error = deserializeJson(doc, fileContent);
+    if (error) {
+        Serial.print("Failed to parse JSON file: ");
+        Serial.println(error.c_str());
+        return false;
+    }
+
     return true;
 }
