@@ -21,7 +21,7 @@
 class GP8403dac : public Device {
 public:
     GP8403dac(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
-    GP8403dac(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
+    GP8403dac(uint8_t i2cAddress, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex);
     
     bool begin() override;
     bool isConnected() override;
