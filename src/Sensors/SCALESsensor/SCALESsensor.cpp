@@ -71,8 +71,8 @@ float SCALESsensor::getWeight() const {
 // Implementation of pure virtual methods from Device base class
 bool SCALESsensor::isConnected() {
     I2CHandler::selectTCA(getTCAChannel());
-    Wire.beginTransmission(_address);
-    return (Wire.endTransmission() == 0);
+    wire->beginTransmission(_address);
+    return (wire->endTransmission() == 0);
 }
 
 void SCALESsensor::update() {
