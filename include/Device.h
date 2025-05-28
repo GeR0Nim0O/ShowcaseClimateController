@@ -31,8 +31,7 @@ public:
     
     // Add a method to get the wire instance used by this device
     TwoWire* getWireInstance() const { return wire; }
-    
-    // Virtual methods that derived classes can override
+      // Virtual methods that derived classes can override
     virtual bool isConnected();
     virtual void update() {}
     virtual std::map<String, String> getChannels() const { return channels; }
