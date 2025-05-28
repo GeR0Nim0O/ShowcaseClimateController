@@ -249,34 +249,79 @@ void loop() {
   static unsigned long lastSendTime = 0;
   static unsigned long lastReconnectAttempt = 0;
   static bool mqttRetryDone = false;
+  static int wifiReconnectAttempts = 0;
+  static int mqttReconnectAttempts = 0;
+  static bool wifiSkipped = false;
+  static bool mqttSkipped = false;
+  const int maxReconnectAttempts = 5;
 
   // Ensure WiFi and MQTT connections are maintained
-  if (WiFi.status() != WL_CONNECTED) {
+  if (WiFi.status() != WL_CONNECTED && !wifiSkipped) {
     if (millis() - lastReconnectAttempt > 15000) {
-      Serial.println("Reconnecting to WiFi...");
-      WiFi.disconnect();
-      WiFi.begin(Configuration::getWiFiSSID().c_str(), Configuration::getWiFiPassword().c_str());
-      lastReconnectAttempt = millis();
-      mqttRetryDone = false; // Reset MQTT retry flag when WiFi reconnects
+      wifiReconnectAttempts++;
+      Serial.print("Reconnecting to WiFi... Attempt ");
+      Serial.print(wifiReconnectAttempts);
+      Serial.print("/");
+      Serial.println(maxReconnectAttempts);
+      
+      if (wifiReconnectAttempts <= maxReconnectAttempts) {
+        WiFi.disconnect();
+        WiFi.begin(Configuration::getWiFiSSID().c_str(), Configuration::getWiFiPassword().c_str());
+        lastReconnectAttempt = millis();
+        mqttRetryDone = false; // Reset MQTT retry flag when WiFi reconnects
+        mqttReconnectAttempts = 0; // Reset MQTT attempts when WiFi reconnects
+        mqttSkipped = false; // Reset MQTT skip flag when WiFi reconnects
+      } else {
+        Serial.println("Max WiFi reconnection attempts reached. Skipping WiFi reconnection.");
+        wifiSkipped = true;
+      }
     }
     return; // Wait for WLAN UP before proceeding
   }
 
-  if (!client.connected()) {
+  if (!client.connected() && !mqttSkipped && !wifiSkipped) {
     if (millis() - lastReconnectAttempt > 10000) { // Try every 10 seconds
-      Serial.println("Reconnecting to MQTT broker...");
-      WifiMqttHandler::connectToMqttBroker(client, espClient, 
+      mqttReconnectAttempts++;
+      Serial.print("Reconnecting to MQTT broker... Attempt ");
+      Serial.print(mqttReconnectAttempts);
+      Serial.print("/");
+      Serial.println(maxReconnectAttempts);
+      
+      if (mqttReconnectAttempts <= maxReconnectAttempts) {
+        WifiMqttHandler::connectToMqttBroker(client, espClient, 
                                          Configuration::getMqttsServer().c_str(), 
                                          rootCACertificate, 
                                          Configuration::getMqttsPort(), 
                                          clientId.c_str(), topic.c_str(),
                                          Configuration::getFlespiToken().c_str());
-      lastReconnectAttempt = millis();
+        lastReconnectAttempt = millis();
+      } else {
+        Serial.println("Max MQTT reconnection attempts reached. Skipping MQTT reconnection.");
+        mqttSkipped = true;
+      }
     }
     return; // Wait for MQTT UP before proceeding
   }
 
-  client.loop(); // Ensure the MQTT client loop is called to maintain the connection
+  // Reset reconnection attempts when WiFi reconnects successfully
+  if (WiFi.status() == WL_CONNECTED && wifiSkipped) {
+    Serial.println("WiFi reconnected successfully. Resetting WiFi attempt counter.");
+    wifiReconnectAttempts = 0;
+    wifiSkipped = false;
+    mqttReconnectAttempts = 0;
+    mqttSkipped = false;
+  }
+
+  // Reset MQTT reconnection attempts when MQTT reconnects successfully
+  if (client.connected() && mqttSkipped) {
+    Serial.println("MQTT reconnected successfully. Resetting MQTT attempt counter.");
+    mqttReconnectAttempts = 0;
+    mqttSkipped = false;
+  }
+
+  if (client.connected()) {
+    client.loop(); // Ensure the MQTT client loop is called to maintain the connection
+  }
 
   TimeHandler::fetchCurrentTimePeriodically(rtc, lastTimeFetch, timeFetchInterval);
 
