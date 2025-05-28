@@ -6,23 +6,91 @@
 #include "DS3231rtc.h"
 #include "BH1705sensor.h"
 #include "SCALESsensor.h"
+#include "SDHandler.h"
 
+// Initialize static member variables
 std::map<String, String> Configuration::wifiConfig;
 std::map<String, String> Configuration::mqttConfig;
 std::map<String, String> Configuration::projectConfig;
-JsonObject Configuration::devicesConfig;
+JsonObject Configuration::devicesConfig = JsonObject();
 
 bool Configuration::loadConfigFromSD(const char* filename) {
-    // ...existing code...
+    // Parse the JSON file from the SD card
+    DynamicJsonDocument doc(8192);
+    
+    if (!SDHandler::readJsonFile(filename, doc)) {
+        Serial.println("Failed to read config file");
+        return false;
+    }
+    
+    // Load configuration from parsed JSON
+    if (!loadConfig(doc.as<JsonObject>())) {
+        Serial.println("Failed to parse config");
+        return false;
+    }
+    
+    Serial.println("Configuration loaded successfully");
+    return true;
+}
+
+bool Configuration::loadConfig(const JsonObject& config) {
+    if (config.isNull()) {
+        Serial.println("Config is null");
+        return false;
+    }
+    
+    // Parse WiFi configuration
+    if (config.containsKey("wifi")) {
+        parseWiFiConfig(config["wifi"]);
+    }
+    
+    // Parse MQTT configuration
+    if (config.containsKey("mqtt")) {
+        parseMQTTConfig(config["mqtt"]);
+    }
+    
+    // Parse MQTTS configuration (SSL)
+    if (config.containsKey("mqtts")) {
+        parseMQTTConfig(config["mqtts"]);
+    }
+    
+    // Parse project configuration
+    if (config.containsKey("project")) {
+        parseProjectConfig(config["project"]);
+    }
+    
+    // Store devices configuration for later use
+    if (config.containsKey("Devices")) {
+        devicesConfig = config["Devices"].as<JsonObject>();
+    }
+    
+    return true;
 }
 
 void Configuration::printConfigValues() {
-    // ...existing code...
+    Serial.println("Configuration loaded:");
+    Serial.print("WiFi SSID: ");
+    Serial.println(getWiFiSSID());
+    Serial.print("WiFi Password: ");
+    Serial.println(getWiFiPassword());
+    Serial.print("MQTT Server: ");
+    Serial.println(getMqttsServer());
+    Serial.print("MQTT Port: ");
+    Serial.println(getMqttsPort());
+    Serial.print("Project Number: ");
+    Serial.println(getProjectNumber());
+    Serial.print("Showcase ID: ");
+    Serial.println(getShowcaseId());
+    Serial.print("Timezone: ");
+    Serial.println(getTimezone());
+    Serial.print("Device Name: ");
+    Serial.println(getDeviceName());
+    Serial.print("Flespi Token: ");
+    Serial.println(getFlespiToken().length() > 0 ? "Set" : "Not set");
 }
 
-std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vector<uint8_t>> &tcaScanResults, DS3231rtc* &rtc) {
+std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults, DS3231rtc*& rtc) {
     std::vector<Device*> devices;
-    JsonObject devicesConfig = getDevicesConfig();
     
     // Debug TCA scan results
     Serial.println("\nTCA scan results:");
@@ -188,12 +256,109 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
     return devices;
 }
 
+void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
+    Serial.println("\n=== Starting Device Initialization ===");
+    
+    for (size_t i = 0; i < devices.size(); i++) {
+        Device* device = devices[i];
+        if (!device) {
+            Serial.print("Device at index ");
+            Serial.print(i);
+            Serial.println(" is NULL, skipping...");
+            continue;
+        }
+        
+        Serial.print("\n--- Initializing Device ");
+        Serial.print(i);
+        Serial.println(" ---");
+        Serial.print("Type: ");
+        Serial.println(device->getType());
+        Serial.print("Address: 0x");
+        Serial.println(device->getI2CAddress(), HEX);
+        Serial.print("TCA Channel: ");
+        Serial.println(device->getTCAChannel());
+        Serial.print("Device Address: 0x");
+        Serial.println((uint32_t)device, HEX);
+        
+        Serial.println("Selecting TCA channel " + String(device->getTCAChannel()) + "...");
+        
+        // Test I2C connectivity
+        Serial.println("Testing I2C connectivity...");
+        Wire.beginTransmission(device->getI2CAddress());
+        int error = Wire.endTransmission();
+        
+        if (error == 0) {
+            Serial.println("I2C connection test PASSED");
+        } else {
+            Serial.print("I2C connection test FAILED with error code ");
+            Serial.println(error);
+            continue; // Skip device initialization if I2C test fails
+        }
+        
+        Serial.println("Attempting device initialization...");
+        Serial.print("DEBUG: Device address being initialized: ");
+        Serial.println((uint32_t)device, HEX);
+        
+        bool success = device->begin();
+        
+        Serial.print("DEBUG: device->begin() returned: ");
+        Serial.println(success);
+        
+        Serial.print("DEBUG: Device address after begin(): ");
+        Serial.println((uint32_t)device, HEX);
+        
+        Serial.print("DEBUG: device->isInitialized() after begin(): ");
+        Serial.println(device->isInitialized());
+        
+        if (success) {
+            Serial.println("Device initialization: SUCCESS");
+        } else {
+            Serial.println("Device initialization: FAILED");
+        }
+        
+        Serial.print("Final device state - Initialized: ");
+        Serial.println(device->isInitialized() ? "YES" : "NO");
+    }
+    
+    Serial.println("\n=== Device Initialization Complete ===");
+}
+
+// Parse configuration sections
+void Configuration::parseWiFiConfig(const JsonObject& config) {
+    wifiConfig["ssid"] = config["ssid"] | "";
+    wifiConfig["password"] = config["password"] | "";
+}
+
+void Configuration::parseMQTTConfig(const JsonObject& config) {
+    mqttConfig["server"] = config["server"] | "";
+    mqttConfig["port"] = String(config["port"] | 1883);
+    mqttConfig["username"] = config["username"] | "";
+    mqttConfig["password"] = config["password"] | "";
+    mqttConfig["token"] = config["token"] | "";
+}
+
+void Configuration::parseProjectConfig(const JsonObject& config) {
+    projectConfig["number"] = config["number"] | "12345";
+    projectConfig["showcase_id"] = config["showcase_id"] | "0.0";
+    projectConfig["device"] = config["device"] | "Showcase";
+    projectConfig["timezone"] = config["timezone"] | "UTC";
+}
+
+// Getter and setter implementations
 void Configuration::setWiFiSSID(const String& ssid) {
     wifiConfig["ssid"] = ssid;
 }
 
 void Configuration::setWiFiPassword(const String& password) {
     wifiConfig["password"] = password;
+}
+
+String Configuration::getWiFiSSID() {
+    return wifiConfig["ssid"];
+}
+
+String Configuration::getWiFiPassword() {
+    return wifiConfig["password"];
 }
 
 void Configuration::setMqttsServer(const String& server) {
@@ -206,6 +371,18 @@ void Configuration::setMqttsPort(int port) {
 
 void Configuration::setFlespiToken(const String& token) {
     mqttConfig["token"] = token;
+}
+
+String Configuration::getMqttsServer() {
+    return mqttConfig["server"];
+}
+
+int Configuration::getMqttsPort() {
+    return mqttConfig["port"].toInt();
+}
+
+String Configuration::getFlespiToken() {
+    return mqttConfig["token"];
 }
 
 void Configuration::setProjectNumber(const String& number) {
@@ -224,6 +401,30 @@ void Configuration::setTimezone(const String& tz) {
     projectConfig["timezone"] = tz;
 }
 
+String Configuration::getProjectNumber() {
+    return projectConfig["number"];
+}
+
+String Configuration::getShowcaseId() {
+    return projectConfig["showcase_id"];
+}
+
+String Configuration::getDeviceName() {
+    return projectConfig["device"];
+}
+
+String Configuration::getTimezone() {
+    return projectConfig["timezone"];
+}
+
 void Configuration::setLogFileSize(uint32_t size) {
     projectConfig["sd_logfile_size"] = String(size);
+}
+
+uint32_t Configuration::getLogFileSize() {
+    return projectConfig["sd_logfile_size"].toInt();
+}
+
+JsonObject Configuration::getDevicesConfig() {
+    return devicesConfig;
 }
