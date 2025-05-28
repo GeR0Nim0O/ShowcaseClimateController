@@ -18,7 +18,12 @@ public:
     virtual void update() = 0;
     virtual std::map<String, String> readData() = 0;
     virtual std::map<String, String> getChannels() const { return channels; }
-    virtual float getThreshold(const String& channelKey = "") const { return threshold; }
+    virtual float getThreshold(const String& channelKey = "") const { 
+        if (channelKey.length() > 0 && channelThresholds.find(channelKey) != channelThresholds.end()) {
+            return channelThresholds.at(channelKey);
+        }
+        return threshold; 
+    }
     virtual int getChannelsCount() const { return channels.size(); }
     virtual String getTypeNumber() const { return typeNumber; }
     
