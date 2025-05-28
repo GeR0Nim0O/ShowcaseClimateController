@@ -12,10 +12,10 @@ public:
     Device(TwoWire* wire, float threshold, std::map<String, String> channels, uint8_t i2cAddress, uint8_t tcaChannel, int deviceIndex);
     virtual ~Device() = default;
     
-    virtual bool begin() = 0;
-    virtual bool isConnected() = 0;
-    virtual void update() = 0;
-    virtual std::map<String, String> readData() = 0;
+    virtual bool begin();
+    virtual bool isConnected();
+    virtual void update();
+    virtual std::map<String, String> readData();
     virtual std::map<String, String> getChannels() const { return channels; }
     virtual float getThreshold(const String& channelKey = "") const { 
         if (channelKey.length() > 0 && channelThresholds.find(channelKey) != channelThresholds.end()) {
