@@ -113,72 +113,49 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
     Serial.print("Is devices config null? ");
     Serial.println(devicesConfig.isNull() ? "Yes" : "No");
     
-    // Extra defensive check - don't attempt size() if object is null
+    // Completely rebuild the device handling to avoid using problematic size() method
+    Serial.println("Starting safe device initialization...");
+    
+    // Skip any further processing if the configuration is null
     if (devicesConfig.isNull()) {
         Serial.println("Cannot continue - Devices configuration is null");
-        return devices;  // Return empty vector
+        return devices;
     }
+
+    // Try loading the known device types safely from the config
+    String deviceNames[] = {"DS3231", "SHT", "BH1705", "SCALE", "GMX02B", "PCF8574", "GP8403"};
+    int deviceCount = sizeof(deviceNames) / sizeof(deviceNames[0]);
     
-    // Try accessing the size safely
-    size_t configSize = 0;
-    try {
-        configSize = devicesConfig.size();
-        Serial.print("Number of entries in devices config: ");
-        Serial.println(configSize);
-    }
-    catch (...) {
-        Serial.println("Error accessing devices config size");
-        return devices;  // Return empty vector
-    }
+    Serial.print("Attempting to load ");
+    Serial.print(deviceCount);
+    Serial.println(" known device types");
     
-    if (configSize == 0) {
-        Serial.println("Warning: Devices configuration is empty");
-        return devices;  // Return empty vector
-    }
-    
-    // Extra debug - try to print keys of first few entries
-    Serial.println("Attempting to list device keys:");
-    int keyCount = 0;
-    try {
-        for (JsonPair device : devicesConfig) {
-            if (keyCount < 5) {  // Limit to first 5 to avoid flooding serial
-                if (!device.key().isNull()) {
-                    Serial.print("  Device key: ");
-                    Serial.println(device.key().c_str());
-                } else {
-                    Serial.println("  Found null key");
-                }
-                keyCount++;
-            }
-        }
-    }
-    catch (...) {
-        Serial.println("Error while attempting to list device keys");
-    }
-    
-    // Process each device in the configuration with improved handling
-    for (JsonPair device : devicesConfig) {
-        // Check if key is valid
-        String deviceKey = "";
-        if (device.key().isNull()) {
-            Serial.println("WARNING: Found device with null key, skipping...");
-            continue;
-        }
+    for (int i = 0; i < deviceCount; i++) {
+        String deviceKey = deviceNames[i];
+        Serial.print("Checking for device: ");
+        Serial.println(deviceKey);
         
-        deviceKey = device.key().c_str();
-        if (deviceKey.isEmpty()) {
-            Serial.println("WARNING: Found device with empty key, skipping...");
-            continue;
-        }
-        
-        // Check if device object is valid
-        JsonObject deviceObj = device.value().as<JsonObject>();
-        if (deviceObj.isNull() || deviceObj.size() == 0) {
-            Serial.print("Config Device: ");
+        // Safely check if this device exists in the config
+        JsonVariant deviceVariant = devicesConfig[deviceKey];
+        if (deviceVariant.isNull()) {
+            Serial.print("  Device '");
             Serial.print(deviceKey);
-            Serial.println(" - WARNING: Skipping null or empty device object");
+            Serial.println("' not found in config, skipping");
             continue;
         }
+        
+        JsonObject deviceObj = deviceVariant.as<JsonObject>();
+        if (deviceObj.isNull()) {
+            Serial.print("  Device '");
+            Serial.print(deviceKey);
+            Serial.println("' has invalid configuration, skipping");
+            continue;
+        }
+        
+        // From here, process this device's configuration safely
+        Serial.print("  Found device '");
+        Serial.print(deviceKey);
+        Serial.println("', processing configuration");
         
         // Get device type, type number, and I2C address with null checks
         JsonVariant typeVariant = deviceObj["Type"];
@@ -187,9 +164,9 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         
         // Check if required fields exist and are not null
         if (typeVariant.isNull() || typeNumberVariant.isNull() || addressVariant.isNull()) {
-            Serial.print("Config Device: ");
+            Serial.print("  Device '");
             Serial.print(deviceKey);
-            Serial.println(" - WARNING: Skipping device with null required fields");
+            Serial.println("' - WARNING: Skipping device with null required fields");
             continue;
         }
         
@@ -198,20 +175,20 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         String addressString = addressVariant.as<String>();
         String deviceMode = deviceObj["Mode"] | "";
         
-        // Skip devices with null or empty type or typeNumber early to avoid crash
+        // Skip devices with null or empty type or typeNumber
         if (deviceType.isEmpty() || deviceType.equalsIgnoreCase("null") || 
             deviceTypeNumber.isEmpty() || deviceTypeNumber.equalsIgnoreCase("null")) {
-            Serial.print("Config Device: ");
+            Serial.print("  Device '");
             Serial.print(deviceKey);
-            Serial.println(" - WARNING: Skipping device with null or empty type/typeNumber");
+            Serial.println("' - WARNING: Skipping device with null or empty type/typeNumber");
             continue;
         }
         
         // Validate address string before conversion
         if (addressString.isEmpty() || addressString.equalsIgnoreCase("null")) {
-            Serial.print("Config Device: ");
+            Serial.print("  Device '");
             Serial.print(deviceKey);
-            Serial.println(" - WARNING: Skipping device with null or empty address");
+            Serial.println("' - WARNING: Skipping device with null or empty address");
             continue;
         }
         
@@ -222,27 +199,27 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         
         // Check if conversion was successful and address is valid
         if (*endPtr != '\0' || addressLong < 0 || addressLong > 0xFF) {
-            Serial.print("Config Device: ");
+            Serial.print("  Device '");
             Serial.print(deviceKey);
-            Serial.print(" - WARNING: Invalid address format: ");
+            Serial.print("' - WARNING: Invalid address format: ");
             Serial.println(addressString);
             continue;
         }
         
         deviceAddress = (uint8_t)addressLong;
         
-        // Skip devices with invalid addresses (0x00) early to avoid crash
+        // Skip devices with invalid addresses (0x00)
         if (deviceAddress == 0) {
-            Serial.print("Config Device: ");
+            Serial.print("  Device '");
             Serial.print(deviceKey);
-            Serial.println(" - WARNING: Skipping device with invalid address 0x00");
+            Serial.println("' - WARNING: Skipping device with invalid address 0x00");
             continue;
         }
         
-        // Log device details for debugging (after validation to avoid crashes)
-        Serial.print("Config Device: ");
+        // Log device details for debugging
+        Serial.print("  Device '");
         Serial.print(deviceKey);
-        Serial.print(", Type: ");
+        Serial.print("', Type: ");
         Serial.print(deviceType);
         Serial.print(", TypeNumber: ");
         Serial.print(deviceTypeNumber);
