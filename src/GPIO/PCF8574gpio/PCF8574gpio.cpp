@@ -61,10 +61,10 @@ bool PCF8574gpio::writeByte(uint8_t data) {
 }
 
 bool PCF8574gpio::readByte(uint8_t &data) {
-    if (wire->requestFrom(_address, (uint8_t)1) != 1) {
+    if (Wire.requestFrom(_address, (uint8_t)1) != 1) {
         return false;
     }
-    data = wire->read();
+    data = Wire.read();
     _gpioState = data;
     return true;
 }
