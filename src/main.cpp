@@ -824,17 +824,13 @@ void initializeClimateController() {
       }
     }
     
-    if (climateDac == nullptr) {
-      Serial.println("WARNING: No DAC device found in devices list");
-    }
-    
     // Print device counts for debugging
     int gpioCount = 0, sensorCount = 0, dacCount = 0;
     for (Device* device : devices) {
       if (device == nullptr) continue;
-      if (device->getType() == "PCF8574gpio" || device->getType() == "PCF8574GPIO") gpioCount++;
-      if (device->getType() == "SHTSensor" || device->getType() == "SHTsensor") sensorCount++;
-      if (device->getType() == "GP8403dac" || device->getType() == "GP8403DAC" || device->getType() == "DAC") dacCount++;
+      if (device->getType().equalsIgnoreCase("PCF8574gpio")) gpioCount++;
+      if (device->getType().equalsIgnoreCase("SHTSensor")) sensorCount++;
+      if (device->getType().equalsIgnoreCase("GP8403dac") || device->getType().equalsIgnoreCase("DAC")) dacCount++;
     }
     Serial.print("Device counts - GPIO: ");
     Serial.print(gpioCount);
@@ -842,22 +838,6 @@ void initializeClimateController() {
     Serial.print(sensorCount);
     Serial.print(", DACs: ");
     Serial.println(dacCount);
-    
-    // Double check devices are initialized
-    if (gpioExpander != nullptr && !gpioExpander->isInitialized()) {
-      Serial.println("WARNING: GPIO expander found but not initialized. Forcing initialization.");
-      gpioExpander->forceInitialized(true);
-    }
-    
-    if (climateTemperatureSensor != nullptr && !climateTemperatureSensor->isInitialized()) {
-      Serial.println("WARNING: Temperature sensor found but not initialized. Forcing initialization.");
-      climateTemperatureSensor->forceInitialized(true);
-    }
-    
-    if (climateDac != nullptr && !climateDac->isInitialized()) {
-      Serial.println("WARNING: DAC found but not initialized. Forcing initialization.");
-      climateDac->forceInitialized(true);
-    }
     
     // Create climate controller if we found the required devices
     if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
@@ -916,9 +896,6 @@ void initializeClimateController() {
             
             Serial.print("Analog control: ");
             Serial.println(climateController->hasDACControl() ? "Available" : "Not available");
-            
-            // Defer DAC testing for safety
-            // testDACOutput(); // Commented out for safety
           } else {
             Serial.println("Failed to initialize climate controller");
             delete climateController;
@@ -928,16 +905,8 @@ void initializeClimateController() {
           Serial.println("Failed to allocate climate controller");
         }
       }
-      catch (const std::exception& e) {
-        Serial.print("Exception during climate controller initialization: ");
-        Serial.println(e.what());
-        if (climateController != nullptr) {
-          delete climateController;
-          climateController = nullptr;
-        }
-      }
       catch (...) {
-        Serial.println("Unknown exception during climate controller initialization");
+        Serial.println("Exception during climate controller initialization");
         if (climateController != nullptr) {
           delete climateController;
           climateController = nullptr;
