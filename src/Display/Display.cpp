@@ -280,9 +280,9 @@ void Display::expanderWrite(uint8_t data) {
         data |= LCD_BACKLIGHT;
     }
     
-    Wire.beginTransmission(i2cAddress);
-    Wire.write(data);
-    Wire.endTransmission();
+    wire->beginTransmission(i2cAddress);
+    wire->write(data);
+    wire->endTransmission();
 }
 
 void Display::pulseEnable(uint8_t data) {
