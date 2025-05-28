@@ -5,7 +5,8 @@
 #include <ArduinoJson.h>
 #include <map>
 #include <vector>
-#include "Device.h"
+#include "Device.h" 
+#include "DS3231rtc.h"
 
 // Forward declaration of DS3231rtc class
 class DS3231rtc;
