@@ -199,13 +199,12 @@ bool GP8403dac::writeConfig() {
     // Set gain bits
     if (gain2xA) config |= 0x01;
     if (gain2xB) config |= 0x02;
+      I2CHandler::selectTCA(getTCAChannel());
     
-    I2CHandler::selectTCA(getTCAChannel());
-    
-    this->wire->beginTransmission(getI2CAddress());
-    this->wire->write(REG_CONFIG);
-    this->wire->write(config);
-    return (this->wire->endTransmission() == 0);
+    Wire.beginTransmission(getI2CAddress());
+    Wire.write(REG_CONFIG);
+    Wire.write(config);
+    return (Wire.endTransmission() == 0);
 }
 
 uint16_t GP8403dac::voltageToDAC(float voltage) {
