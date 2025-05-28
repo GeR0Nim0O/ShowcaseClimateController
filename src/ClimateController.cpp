@@ -15,14 +15,16 @@
 #define DEFAULT_HUM_KI 0.2
 #define DEFAULT_HUM_KD 0.05
 
-ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor)
-    : gpio(gpioExpander), sensor(tempHumSensor),
+ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac)
+    : gpio(gpioExpander), sensor(tempHumSensor), dac(dac),
       temperatureSetpoint(22.0), humiditySetpoint(50.0),
       currentTemperature(0.0), currentHumidity(0.0),
       climateMode(ClimateMode::AUTO), humidityMode(HumidityMode::AUTO),
       heatingActive(false), coolingActive(false), 
       humidifyingActive(false), dehumidifyingActive(false),
-      tempControlEnabled(false), lastUpdate(0), updateInterval(1000) {
+      tempControlEnabled(false), lastUpdate(0), updateInterval(1000),
+      heatingPower(0.0), coolingPower(0.0), 
+      humidifierPower(0.0), dehumidifierPower(0.0) {
     
     // Initialize pin mappings from configuration
     initializePinMappings();
@@ -50,7 +52,23 @@ bool ClimateController::begin() {
         Serial.println("ClimateController: Devices not connected");
         return false;
     }
-      // Initialize all outputs to safe state
+    
+    // Check if DAC is available but don't fail if it's not
+    if (dac) {
+        if (!dac->isConnected()) {
+            Serial.println("ClimateController: Warning - DAC not connected, using digital control only");
+            dac = nullptr; // Disable DAC control if not connected
+        } else {
+            Serial.println("ClimateController: DAC connected, using analog control");
+            // Initialize DAC to zero outputs
+            dac->setChannelVoltage(0, 0.0);
+            dac->setChannelVoltage(1, 0.0);
+        }
+    } else {
+        Serial.println("ClimateController: No DAC available, using digital control only");
+    }
+    
+    // Initialize all outputs to safe state
     gpio->writePin(pinTemperatureEnable, false);
     gpio->writePin(pinTemperatureHeat, false);
     gpio->writePin(pinTemperatureCool, false);
@@ -72,6 +90,7 @@ void ClimateController::update() {
             updateHumidityControl();
             applyTemperatureControl();
             applyHumidityControl();
+            applyDACControls(); // Apply DAC controls
         } else {
             emergencyShutdown();
         }
@@ -97,6 +116,8 @@ void ClimateController::updateTemperatureControl() {
         tempControlEnabled = false;
         heatingActive = false;
         coolingActive = false;
+        heatingPower = 0.0;
+        coolingPower = 0.0;
         return;
     }
     
@@ -107,24 +128,34 @@ void ClimateController::updateTemperatureControl() {
             heatingActive = (tempOutput > 0);
             coolingActive = false;
             tempControlEnabled = heatingActive;
+            heatingPower = heatingActive ? map(tempOutput, 0, 100, 0, 100) : 0.0;
+            coolingPower = 0.0;
             break;
             
         case ClimateMode::COOLING:
             heatingActive = false;
             coolingActive = (tempOutput < 0);
             tempControlEnabled = coolingActive;
+            heatingPower = 0.0;
+            coolingPower = coolingActive ? map(-tempOutput, 0, 100, 0, 100) : 0.0;
             break;
             
         case ClimateMode::AUTO:
             if (tempOutput > 5) { // Deadband to prevent oscillation
                 heatingActive = true;
                 coolingActive = false;
+                heatingPower = map(tempOutput, 5, 100, 0, 100);
+                coolingPower = 0.0;
             } else if (tempOutput < -5) {
                 heatingActive = false;
                 coolingActive = true;
+                heatingPower = 0.0;
+                coolingPower = map(-tempOutput, 5, 100, 0, 100);
             } else {
                 heatingActive = false;
                 coolingActive = false;
+                heatingPower = 0.0;
+                coolingPower = 0.0;
             }
             tempControlEnabled = (heatingActive || coolingActive);
             break;
@@ -134,6 +165,8 @@ void ClimateController::updateTemperatureControl() {
             tempControlEnabled = false;
             heatingActive = false;
             coolingActive = false;
+            heatingPower = 0.0;
+            coolingPower = 0.0;
             break;
     }
 }
@@ -142,6 +175,8 @@ void ClimateController::updateHumidityControl() {
     if (humidityMode == HumidityMode::OFF) {
         humidifyingActive = false;
         dehumidifyingActive = false;
+        humidifierPower = 0.0;
+        dehumidifierPower = 0.0;
         return;
     }
     
@@ -151,23 +186,33 @@ void ClimateController::updateHumidityControl() {
         case HumidityMode::HUMIDIFYING:
             humidifyingActive = (humOutput > 0);
             dehumidifyingActive = false;
+            humidifierPower = humidifyingActive ? map(humOutput, 0, 100, 0, 100) : 0.0;
+            dehumidifierPower = 0.0;
             break;
             
         case HumidityMode::DEHUMIDIFYING:
             humidifyingActive = false;
             dehumidifyingActive = (humOutput < 0);
+            humidifierPower = 0.0;
+            dehumidifierPower = dehumidifyingActive ? map(-humOutput, 0, 100, 0, 100) : 0.0;
             break;
             
         case HumidityMode::AUTO:
             if (humOutput > 5) { // Deadband to prevent oscillation
                 humidifyingActive = true;
                 dehumidifyingActive = false;
+                humidifierPower = map(humOutput, 5, 100, 0, 100);
+                dehumidifierPower = 0.0;
             } else if (humOutput < -5) {
                 humidifyingActive = false;
                 dehumidifyingActive = true;
+                humidifierPower = 0.0;
+                dehumidifierPower = map(-humOutput, 5, 100, 0, 100);
             } else {
                 humidifyingActive = false;
                 dehumidifyingActive = false;
+                humidifierPower = 0.0;
+                dehumidifierPower = 0.0;
             }
             break;
             
@@ -175,40 +220,61 @@ void ClimateController::updateHumidityControl() {
         default:
             humidifyingActive = false;
             dehumidifyingActive = false;
+            humidifierPower = 0.0;
+            dehumidifierPower = 0.0;
             break;
     }
 }
 
-void ClimateController::applyTemperatureControl() {
-    gpio->writePin(pinTemperatureEnable, tempControlEnabled);
-    gpio->writePin(pinTemperatureHeat, heatingActive);
-    gpio->writePin(pinTemperatureCool, coolingActive);
+void ClimateController::applyDACControls() {
+    // Skip if no DAC device available
+    if (!dac || !dac->isConnected()) return;
+    
+    // Set temperature power - use channelA for temperature control
+    if (heatingActive) {
+        dac->setTemperaturePower(heatingPower);
+    } else if (coolingActive) {
+        dac->setTemperaturePower(coolingPower);
+    } else {
+        dac->setTemperaturePower(0.0);
+    }
+    
+    // Set humidity power - use channelB for humidity control
+    if (humidifyingActive) {
+        dac->setHumidityPower(humidifierPower);
+    } else if (dehumidifyingActive) {
+        dac->setHumidityPower(dehumidifierPower);
+    } else {
+        dac->setHumidityPower(0.0);
+    }
 }
 
-void ClimateController::applyHumidityControl() {
-    gpio->writePin(pinHumidify, humidifyingActive);
-    gpio->writePin(pinDehumidify, dehumidifyingActive);
+void ClimateController::setHeatingPower(float percentage) {
+    heatingPower = constrain(percentage, 0.0, 100.0);
+    if (dac && heatingActive) {
+        dac->setTemperaturePower(heatingPower);
+    }
 }
 
-void ClimateController::setTemperaturePID(double kp, double ki, double kd) {
-    temperaturePID->SetTunings(kp, ki, kd);
+void ClimateController::setCoolingPower(float percentage) {
+    coolingPower = constrain(percentage, 0.0, 100.0);
+    if (dac && coolingActive) {
+        dac->setTemperaturePower(coolingPower);
+    }
 }
 
-void ClimateController::setHumidityPID(double kp, double ki, double kd) {
-    humidityPID->SetTunings(kp, ki, kd);
+void ClimateController::setHumidifierPower(float percentage) {
+    humidifierPower = constrain(percentage, 0.0, 100.0);
+    if (dac && humidifyingActive) {
+        dac->setHumidityPower(humidifierPower);
+    }
 }
 
-void ClimateController::setFanInterior(bool enable) {
-    gpio->writePin(pinFanInterior, enable);
-}
-
-void ClimateController::setFanExterior(bool enable) {
-    gpio->writePin(pinFanExterior, enable);
-}
-
-bool ClimateController::checkSafetyLimits() {
-    return (currentTemperature >= MIN_TEMPERATURE && currentTemperature <= MAX_TEMPERATURE &&
-            currentHumidity >= MIN_HUMIDITY && currentHumidity <= MAX_HUMIDITY);
+void ClimateController::setDehumidifierPower(float percentage) {
+    dehumidifierPower = constrain(percentage, 0.0, 100.0);
+    if (dac && dehumidifyingActive) {
+        dac->setHumidityPower(dehumidifierPower);
+    }
 }
 
 void ClimateController::emergencyShutdown() {
@@ -218,11 +284,21 @@ void ClimateController::emergencyShutdown() {
     gpio->writePin(pinHumidify, false);
     gpio->writePin(pinDehumidify, false);
     
+    // Also disable DAC outputs
+    if (dac) {
+        dac->setChannelVoltage(0, 0.0);
+        dac->setChannelVoltage(1, 0.0);
+    }
+    
     heatingActive = false;
     coolingActive = false;
     humidifyingActive = false;
     dehumidifyingActive = false;
     tempControlEnabled = false;
+    heatingPower = 0.0;
+    coolingPower = 0.0;
+    humidifierPower = 0.0;
+    dehumidifierPower = 0.0;
     
     Serial.println("EMERGENCY SHUTDOWN: Safety limits exceeded!");
 }
