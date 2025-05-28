@@ -30,18 +30,12 @@ public:
     // Override pure virtual methods from Device
     std::map<String, String> getChannels() const override { return channels; }
     float getThreshold(const String& channelKey) const override { return threshold; }
-      // DAC control methods
+      
+    // Universal DAC control methods - no domain-specific names
     bool setChannelA(uint16_t value);
     bool setChannelB(uint16_t value);
     bool setChannelVoltage(uint8_t channel, float voltage);
     bool setBothChannels(uint16_t valueA, uint16_t valueB);
-    
-    // Climate control specific methods
-    bool setPowerOutput(float percentage); // 0-100% - replaces setTemperaturePower
-    
-    // Keep existing methods with deprecated comments
-    bool setTemperaturePower(float percentage) { return setPowerOutput(percentage); } // Deprecated, use setPowerOutput
-    bool setHumidityPower(float percentage) { return false; } // Deprecated, not used
     
     // Configuration
     bool setGain(uint8_t channel, bool gain2x);
