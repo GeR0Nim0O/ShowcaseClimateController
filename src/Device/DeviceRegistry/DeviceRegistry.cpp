@@ -180,9 +180,11 @@ Device* DeviceRegistry::createDeviceWithThresholds(
             
             Serial.print("Creating PCF8574 with mode: ");
             Serial.println(mode.length() > 0 ? mode : "OUTPUT_MODE (default)");
-            
-            device = new PCF8574gpio(wire, address, tcaPort, threshold, channels, deviceIndex, pcfMode);
-            if (device) device->deviceName = deviceName; // Set device name
+              device = new PCF8574gpio(wire, address, tcaPort, threshold, channels, deviceIndex, pcfMode);
+            if (device) {
+                device->deviceName = deviceName; // Set device name
+                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
+            }
         }
     } else if (type.equalsIgnoreCase("RTC")) {
         if (typeNumber.equalsIgnoreCase("DS3231")) {
