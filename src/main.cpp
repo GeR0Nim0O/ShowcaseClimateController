@@ -212,9 +212,9 @@ void setup()
   // Try to connect to WiFi (don't stop if it fails)
   Serial.println("Attempting WiFi connection...");
   bool wifiConnected = WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword());
-  
-  if (wifiConnected) {
+    if (wifiConnected) {
     Serial.println("WiFi connected successfully in setup.");
+    offlineMode = false;
     
     // Connect to TimeAPI and NTP only if WiFi is connected
     // Only fetch time from RTC if RTC is connected and initialized
@@ -237,6 +237,7 @@ void setup()
   } else {
     Serial.println("WiFi connection failed in setup - program will continue offline");
     Serial.println("WiFi and MQTT connections will be retried in main loop");
+    offlineMode = true;
   }
 
   pinMode(BUTTON_PIN, INPUT_PULLUP); // Initialize button pin
