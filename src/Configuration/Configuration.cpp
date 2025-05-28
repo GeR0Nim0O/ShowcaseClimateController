@@ -142,13 +142,7 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         Serial.print(", TypeNumber: ");
         Serial.print(deviceTypeNumber);
         Serial.print(", Address: 0x");
-        Serial.println(deviceAddress, HEX);
-        
-        // Skip devices with invalid addresses (0x00)
-        if (deviceAddress == 0) {
-            Serial.println("WARNING: Skipping device with invalid address 0x00");
-            continue;
-        }
+        Serial.println(deviceAddress, HEX);        // (Removed duplicate check for invalid addresses)
 
         // For DAC devices, log extra debug info
         if (deviceType.equalsIgnoreCase("DAC")) {
