@@ -48,6 +48,7 @@ protected:
     bool initialized;
     float threshold;
     std::map<String, String> channels;
+    std::map<String, float> channelThresholds;  // Channel-specific thresholds
     
     void selectTCAChannel(uint8_t channel);
     bool testI2CConnection();
