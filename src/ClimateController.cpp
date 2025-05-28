@@ -84,32 +84,14 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
 bool ClimateController::begin() {
     Serial.println("ClimateController: *** ENTERING begin() method ***");
     Serial.flush();
-    delay(10);
+    delay(100);
     
-    Serial.println("ClimateController: Starting initialization");
+    Serial.println("ClimateController: begin() completed successfully");
     Serial.flush();
-    delay(10);
+    delay(100);
     
-    // Initialize pin mappings from configuration now that config is loaded
-    // TEMPORARILY COMMENTED OUT TO AVOID CRASH
-    // initializePinMappings();
-    Serial.println("ClimateController: Using default pin mappings only");
-    Serial.flush();
-    delay(10);
-    
-    // Add defensive checks for device pointers and connections
-    Serial.println("ClimateController: Checking device pointers");
-    Serial.flush();
-    delay(10);
-    
-    if (!gpio || !sensor) {
-        Serial.println("ClimateController: Invalid device pointers");
-        return false;
-    }
-    
-    Serial.println("ClimateController: Device pointers are valid");
-    Serial.flush();
-    delay(10);
+    return true;
+}
     
     // Use a safer approach with I2CHandler
     bool gpioConnected = false;
