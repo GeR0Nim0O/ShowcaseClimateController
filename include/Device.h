@@ -10,7 +10,16 @@
 
 class Device {
 public:
+    // Primary constructor - used by most devices
     Device(TwoWire* wire, const String& type, const String& deviceName, uint8_t i2cAddress, uint8_t tcaChannel, int deviceIndex);
+    
+    // Alternative constructor for legacy devices that specify threshold and channels first
+    Device(TwoWire* wire, float threshold, std::map<String, String> channels, uint8_t i2cAddress, uint8_t tcaChannel, int deviceIndex);
+    
+    // Constructor for devices that only need basic parameters
+    Device(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
+    
+    virtual ~Device() = default;
     
     virtual bool begin();
     virtual bool isInitialized() const { return initialized; }
@@ -23,12 +32,17 @@ public:
     // Add a method to get the wire instance used by this device
     TwoWire* getWireInstance() const { return wire; }
     
+    // Virtual methods that derived classes can override
+    virtual bool isConnected();
+    virtual void update() {}
+    virtual std::map<String, String> getChannels() const { return channels; }
+    virtual float getThreshold(const String& channelId) const;
+    virtual void setChannelThresholds(const std::map<String, float>& channelThresholds) { thresholds = channelThresholds; }
+    
     // Channel management
     void addChannel(const String& channelId, const String& channelType, float threshold = 0.0);
     void removeChannel(const String& channelId);
     void clearChannels();
-    const std::map<String, String>& getChannels() const { return channels; }
-    float getThreshold(const String& channelId) const;
     
     // Data reading/writing
     virtual std::map<String, String> readData();
@@ -37,7 +51,10 @@ public:
     // Connection management
     virtual bool connect();
     virtual bool disconnect();
-    virtual bool isConnected() const;
+    
+    // I2C utility methods
+    void selectTCAChannel(uint8_t channel);
+    bool testI2CConnection();
     
 protected:
     TwoWire* wire;
