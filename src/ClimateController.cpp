@@ -230,43 +230,27 @@ void ClimateController::applyDACControls() {
     // Skip if no DAC device available
     if (!dac || !dac->isConnected()) return;
     
-    // Set temperature power - use channelA (0) for temperature control
+    // Set temperature power - use DAC0 for power control
     if (heatingActive) {
-        dac->setChannelVoltage(0, (heatingPower / 100.0) * 10.0); // Convert to 0-10V
+        dac->setPowerOutput(heatingPower); // Use new method name
     } else if (coolingActive) {
-        dac->setChannelVoltage(0, (coolingPower / 100.0) * 10.0); // Convert to 0-10V
+        dac->setPowerOutput(coolingPower); // Use new method name
     } else {
-        dac->setChannelVoltage(0, 0.0);
+        dac->setPowerOutput(0.0); // Use new method name
     }
-    
-    // Channel 1 is not connected, so we don't need to control it
 }
 
 void ClimateController::setHeatingPower(float percentage) {
     heatingPower = constrain(percentage, 0.0, 100.0);
     if (dac && heatingActive) {
-        dac->setTemperaturePower(heatingPower);
+        dac->setPowerOutput(heatingPower); // Use new method name
     }
 }
 
 void ClimateController::setCoolingPower(float percentage) {
     coolingPower = constrain(percentage, 0.0, 100.0);
     if (dac && coolingActive) {
-        dac->setTemperaturePower(coolingPower);
-    }
-}
-
-void ClimateController::setHumidifierPower(float percentage) {
-    humidifierPower = constrain(percentage, 0.0, 100.0);
-    if (dac && humidifyingActive) {
-        dac->setHumidityPower(humidifierPower);
-    }
-}
-
-void ClimateController::setDehumidifierPower(float percentage) {
-    dehumidifierPower = constrain(percentage, 0.0, 100.0);
-    if (dac && dehumidifyingActive) {
-        dac->setHumidityPower(dehumidifierPower);
+        dac->setPowerOutput(coolingPower); // Use new method name
     }
 }
 
