@@ -127,6 +127,7 @@ void setMqttThrottling(bool enable, unsigned long interval = 60000); // Declare 
 void sendAllChangedSensorData(); // Add this function declaration
 void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
+void testDACOutput(); // Add this new function for testing DAC
 void setup()
 {
   Serial.begin(115200);
