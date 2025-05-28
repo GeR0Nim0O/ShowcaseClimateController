@@ -415,6 +415,26 @@ void readAndSendDataFromDevices() {
     // Flag to determine if we should print data this cycle (only true every 60 seconds)
     bool shouldPrintData = throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval);
     
+    // Debug timing information
+    unsigned long currentTime = millis();
+    unsigned long timeSinceLastSend = currentTime - lastMqttSendTime;
+    static unsigned long lastDebugTime = 0;
+    if (currentTime - lastDebugTime >= 10000) { // Show timing info every 10 seconds
+        Serial.print("TIMING DEBUG: millis=");
+        Serial.print(currentTime);
+        Serial.print(", lastMqttSendTime=");
+        Serial.print(lastMqttSendTime);
+        Serial.print(", timeSinceLastSend=");
+        Serial.print(timeSinceLastSend);
+        Serial.print(", throttleInterval=");
+        Serial.print(mqttThrottleInterval);
+        Serial.print(", throttleMqtt=");
+        Serial.print(throttleMqtt);
+        Serial.print(", shouldPrintData=");
+        Serial.println(shouldPrintData);
+        lastDebugTime = currentTime;
+    }
+    
     if (shouldPrintData) {
         Serial.println("\n=== Sensor Readings (60-second update) ===");
     }
