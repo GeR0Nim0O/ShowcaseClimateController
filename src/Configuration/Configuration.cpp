@@ -337,19 +337,24 @@ bool Configuration::validateDeviceObject(Device* device) {
 
 void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
     Serial.println("\n=== Starting Device Initialization ===");
+    Serial.print("Total devices to initialize: ");
+    Serial.println(devices.size());
+    Serial.print("Free heap at start: ");
+    Serial.println(ESP.getFreeHeap());
     
     for (size_t i = 0; i < devices.size(); i++) {
         Device* device = devices[i];
-        if (!device) {
-            Serial.print("Device at index ");
-            Serial.print(i);
-            Serial.println(" is NULL, skipping...");
-            continue;
-        }
         
         Serial.print("\n--- Initializing Device ");
         Serial.print(i);
         Serial.println(" ---");
+        
+        // First, validate the device object thoroughly
+        if (!validateDeviceObject(device)) {
+            Serial.println("Device validation failed, skipping initialization");
+            continue;
+        }
+        
         Serial.print("Device Address: 0x");
         Serial.println((uint32_t)device, HEX);
         
