@@ -104,6 +104,7 @@ int ntpRetryCount = 0;
 // Global variables for climate controller
 PCF8574gpio* gpioExpander = nullptr;
 SHTsensor* climateTemperatureSensor = nullptr;
+GP8403dac* climateDac = nullptr;  // Add DAC pointer
 ClimateController* climateController = nullptr;
 bool climateControllerEnabled = true;
 
@@ -794,9 +795,18 @@ void initializeClimateController() {
     }
   }
   
-  // Create climate controller if we found both required devices
+  // Find a DAC for analog control
+  for (Device* device : devices) {
+    if (device->getType() == "GP8403dac" && device->isInitialized()) {
+      climateDac = static_cast<GP8403dac*>(device);
+      Serial.println("Found DAC for analog climate control");
+      break;
+    }
+  }
+  
+  // Create climate controller if we found the required devices
   if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
-    climateController = new ClimateController(gpioExpander, climateTemperatureSensor);
+    climateController = new ClimateController(gpioExpander, climateTemperatureSensor, climateDac);
     
     if (climateController->begin()) {
       Serial.println("Climate controller initialized successfully");
@@ -817,6 +827,9 @@ void initializeClimateController() {
       Serial.print("°C, Humidity: ");
       Serial.print(humiditySetpoint);
       Serial.println("%");
+      
+      Serial.print("Analog control: ");
+      Serial.println(climateController->hasDACControl() ? "Available" : "Not available");
     } else {
       Serial.println("Failed to initialize climate controller");
       delete climateController;
@@ -828,6 +841,8 @@ void initializeClimateController() {
     Serial.println(gpioExpander != nullptr ? "Found" : "Not found");
     Serial.print("Temperature sensor: ");
     Serial.println(climateTemperatureSensor != nullptr ? "Found" : "Not found");
+    Serial.print("DAC: ");
+    Serial.println(climateDac != nullptr ? "Found" : "Not found (optional)");
   }
 }
 
@@ -858,13 +873,43 @@ void updateClimateController() {
     Serial.println("%)");
     
     Serial.print("Heating: ");
-    Serial.println(climateController->isHeating() ? "ON" : "OFF");
+    Serial.print(climateController->isHeating() ? "ON" : "OFF");
+    if (climateController->isHeating()) {
+      Serial.print(" (Power: ");
+      Serial.print(climateController->getHeatingPower());
+      Serial.print("%)");
+    }
+    Serial.println();
+    
     Serial.print("Cooling: ");
-    Serial.println(climateController->isCooling() ? "ON" : "OFF");
+    Serial.print(climateController->isCooling() ? "ON" : "OFF");
+    if (climateController->isCooling()) {
+      Serial.print(" (Power: ");
+      Serial.print(climateController->getCoolingPower());
+      Serial.print("%)");
+    }
+    Serial.println();
+    
     Serial.print("Humidifying: ");
-    Serial.println(climateController->isHumidifying() ? "ON" : "OFF");
+    Serial.print(climateController->isHumidifying() ? "ON" : "OFF");
+    if (climateController->isHumidifying()) {
+      Serial.print(" (Power: ");
+      Serial.print(climateController->getHumidifierPower());
+      Serial.print("%)");
+    }
+    Serial.println();
+    
     Serial.print("Dehumidifying: ");
-    Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
+    Serial.print(climateController->isDehumidifying() ? "ON" : "OFF");
+    if (climateController->isDehumidifying()) {
+      Serial.print(" (Power: ");
+      Serial.print(climateController->getDehumidifierPower());
+      Serial.print("%)");
+    }
+    Serial.println();
+    
+    Serial.print("Analog Control: ");
+    Serial.println(climateController->hasDACControl() ? "Enabled" : "Disabled");
     Serial.println("===============================");
     
     lastClimateLog = millis();
