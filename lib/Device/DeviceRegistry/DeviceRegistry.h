@@ -13,8 +13,7 @@ public:
       bool registerDevice(Device* device);
     bool initializeAllDevices();
     void updateAllDevices();
-    
-    // Device creation
+      // Device creation
     static Device* createDeviceWithThresholds(
         const String& type, 
         const String& typeNumber, 
@@ -23,7 +22,8 @@ public:
         uint8_t tcaPort, 
         const std::map<String, float>& channelThresholds, 
         const std::map<String, String>& channelNames, 
-        int deviceIndex
+        int deviceIndex,
+        const String& mode = ""
     );
       // Device getters
     PCF8574gpio* getGPIOExpander(int index = 0);
