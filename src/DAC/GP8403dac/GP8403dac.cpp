@@ -220,3 +220,22 @@ uint16_t GP8403dac::voltageToDAC(float voltage) {
 float GP8403dac::dacToVoltage(uint16_t dacValue) {
     return ((float)dacValue / DAC_MAX_VALUE) * DAC_MAX_VOLTAGE;
 }
+
+bool GP8403dac::setChannelVoltage(uint8_t channel, float voltage) {
+    if (voltage < 0.0 || voltage > DAC_MAX_VOLTAGE) {
+        Serial.print("Voltage out of range (0-");
+        Serial.print(DAC_MAX_VOLTAGE);
+        Serial.println("V)!");
+        return false;
+    }
+    
+    uint16_t dacValue = voltageToDAC(voltage);
+    
+    if (channel == 0) {
+        return setChannelA(dacValue);
+    } else if (channel == 1) {
+        return setChannelB(dacValue);
+    }
+    
+    return false;
+}
