@@ -234,9 +234,41 @@ Device* DeviceRegistry::createDeviceWithThresholds(
             Serial.println(typeNumber);
         }
     }
-    
-    if (device) {
+      if (device) {
         Serial.println("Device created successfully");
+        
+        // Add device validation before registration
+        Serial.println("Validating device object integrity...");
+        
+        // Check if device pointer is in valid memory range
+        if ((uint32_t)device < 0x3F800000 || (uint32_t)device > 0x3FFFFFFF) {
+            Serial.println("ERROR: Device pointer is outside valid ESP32 memory range");
+            delete device;
+            return nullptr;
+        }
+        
+        // Test basic virtual method calls
+        try {
+            String testType = device->getType();
+            uint8_t testAddress = device->getI2CAddress();
+            uint8_t testChannel = device->getTCAChannel();
+            
+            Serial.print("Device validation successful - Type: ");
+            Serial.print(testType);
+            Serial.print(", Address: 0x");
+            Serial.print(testAddress, HEX);
+            Serial.print(", Channel: ");
+            Serial.println(testChannel);
+        } catch (...) {
+            Serial.println("ERROR: Device validation failed - virtual method call exception");
+            delete device;
+            return nullptr;
+        }
+        
+        // Add a small delay to ensure memory is stable
+        delay(10);
+        yield();
+        
         // Register the device in the registry
         DeviceRegistry& registry = DeviceRegistry::getInstance();
         if (registry.registerDevice(device)) {
@@ -249,6 +281,8 @@ Device* DeviceRegistry::createDeviceWithThresholds(
             }
         } else {
             Serial.println("Failed to register device in registry");
+            delete device;
+            return nullptr;
         }
     } else {
         Serial.println("Failed to create device - unknown type/typeNumber combination");
