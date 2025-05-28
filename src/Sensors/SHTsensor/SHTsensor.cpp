@@ -22,12 +22,11 @@ SHTsensor::SHTsensor(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, floa
 }
 
 bool SHTsensor::begin() {
-    // Make sure to select the correct TCA channel before initializing
-    selectTCAChannel(tcaChannel);
+    // Make sure to select the correct TCA channel before initializing    selectTCAChannel(tcaChannel);
     
     // Check if the sensor is connected before trying to initialize it
-    Wire.beginTransmission(i2cAddress);
-    if (Wire.endTransmission() != 0) {
+    wire->beginTransmission(i2cAddress);
+    if (wire->endTransmission() != 0) {
         Serial.print("SHT sensor not found at address 0x");
         Serial.print(i2cAddress, HEX);
         Serial.print(" on TCA channel ");
