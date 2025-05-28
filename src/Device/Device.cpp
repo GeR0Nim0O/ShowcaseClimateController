@@ -3,26 +3,20 @@
 #define PCA9548A_ADDRESS 0x70
 
 // Primary constructor
-Device::Device(TwoWire* wire, const String& type, const String& deviceName, uint8_t i2cAddress, uint8_t tcaChannel, int deviceIndex)
-    : wire(wire), type(type), i2cAddress(i2cAddress), tcaChannel(tcaChannel), 
-      deviceIndex(deviceIndex), initialized(false), deviceName(deviceName) {
+Device::Device(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
+    : wire(wire), i2cAddress(i2cAddress), tcaChannel(tcaChannel), 
+      deviceIndex(deviceIndex), initialized(false), deviceName(deviceName), threshold(0.0) {
 }
 
 // Alternative constructor for legacy devices that specify threshold and channels first
 Device::Device(TwoWire* wire, float threshold, std::map<String, String> channels, uint8_t i2cAddress, uint8_t tcaChannel, int deviceIndex)
-    : wire(wire), type("Generic"), i2cAddress(i2cAddress), tcaChannel(tcaChannel), 
+    : wire(wire), i2cAddress(i2cAddress), tcaChannel(tcaChannel), 
       deviceIndex(deviceIndex), initialized(false), deviceName(""), 
       channels(channels), threshold(threshold) {
     // Set the threshold for all channels
     for (const auto& channel : channels) {
-        thresholds[channel.first] = threshold;
+        channelThresholds[channel.first] = threshold;
     }
-}
-
-// Constructor for devices that only need basic parameters
-Device::Device(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
-    : wire(wire), type("Generic"), i2cAddress(i2cAddress), tcaChannel(tcaChannel), 
-      deviceIndex(deviceIndex), initialized(false), deviceName(deviceName) {
 }
 
 void Device::selectTCAChannel(uint8_t channel) {
