@@ -167,11 +167,11 @@ bool GP8403dac::isReady() {
 bool GP8403dac::writeRegister(uint8_t reg, uint16_t value) {
     I2CHandler::selectTCA(getTCAChannel());
     
-    this->wire->beginTransmission(getI2CAddress());
-    this->wire->write(reg);
-    this->wire->write((value >> 8) & 0xFF); // MSB
-    this->wire->write(value & 0xFF);        // LSB
-    return (this->wire->endTransmission() == 0);
+    Wire.beginTransmission(getI2CAddress());
+    Wire.write(reg);
+    Wire.write((value >> 8) & 0xFF); // MSB
+    Wire.write(value & 0xFF);        // LSB
+    return (Wire.endTransmission() == 0);
 }
 
 uint16_t GP8403dac::readRegister(uint8_t reg) {
