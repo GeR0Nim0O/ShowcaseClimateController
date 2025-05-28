@@ -120,17 +120,11 @@ std::map<String, String> SHT31sensor::readData()
     uint16_t rawTemperature, rawHumidity;
     
     if (readRawData(rawTemperature, rawHumidity))
-    {
-        // Convert raw values to actual temperature and humidity values
+    {        // Convert raw values to actual temperature and humidity values
         // T = -45 + 175 * (rawTemperature / 65535.0)
         // RH = 100 * (rawHumidity / 65535.0)
         _temperature = -45.0f + 175.0f * (float(rawTemperature) / 65535.0f);
         _humidity = 100.0f * (float(rawHumidity) / 65535.0f);
-        
-        Serial.print("SHT31 converted values - Temp: ");
-        Serial.print(_temperature);
-        Serial.print("°C, Humidity: ");
-        Serial.println(_humidity);
     }
     else
     {
