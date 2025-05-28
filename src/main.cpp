@@ -37,7 +37,7 @@ PubSubClient client(espClient);
 
 // Custom WiFi settings
 String customSSID = "Ron&Rowie_Gast";
-String customPassword = "Gast@Ron";
+String customPassword = "Gast@Ron&Rowie";
 bool useCustomWiFi = true; // Set to true to use custom WiFi settings
 
 // Custom MQTT settings
