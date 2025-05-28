@@ -16,50 +16,63 @@
 #define DEFAULT_HUM_KD 0.05
 
 ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac)
-{
-    // SAFETY: Initialize all class members with safe defaults first
-    gpio = nullptr;
-    sensor = nullptr;
-    this->dac = nullptr;
-    temperatureSetpoint = 22.0f;
-    humiditySetpoint = 50.0f;
-    currentTemperature = 0.0f;
-    currentHumidity = 0.0f;
-    climateMode = ClimateMode::AUTO;
-    humidityMode = HumidityMode::AUTO;
-    heatingActive = false;
-    coolingActive = false;
-    humidifyingActive = false;
-    dehumidifyingActive = false;
-    tempControlEnabled = false;
-    lastUpdate = 0;
-    updateInterval = 1000;
-    heatingPower = 0.0f;
-    coolingPower = 0.0f;
-    humidifierPower = 0.0f;
-    dehumidifierPower = 0.0f;
-    temperaturePID = nullptr;
-    humidityPID = nullptr;
-    tempInput = 0.0;
-    tempOutput = 0.0;
-    tempSetpoint = temperatureSetpoint;
-    humInput = 0.0;
-    humOutput = 0.0;
-    humSetpoint = humiditySetpoint;
-    pinFanExterior = 0;
-    pinFanInterior = 1;
-    pinHumidify = 2;
-    pinDehumidify = 3;
-    pinTemperatureEnable = 4;
-    pinTemperatureCool = 5;
-    pinTemperatureHeat = 6;
+    : gpio(nullptr), sensor(nullptr), dac(nullptr),
+      temperatureSetpoint(22.0), humiditySetpoint(50.0),
+      currentTemperature(0.0), currentHumidity(0.0),
+      climateMode(ClimateMode::AUTO), humidityMode(HumidityMode::AUTO),
+      heatingActive(false), coolingActive(false), 
+      humidifyingActive(false), dehumidifyingActive(false),
+      tempControlEnabled(false), lastUpdate(0), updateInterval(1000),
+      heatingPower(0.0), coolingPower(0.0), 
+      humidifierPower(0.0), dehumidifierPower(0.0),
+      temperaturePID(nullptr), humidityPID(nullptr),
+      tempInput(0.0), tempOutput(0.0), tempSetpoint(temperatureSetpoint),
+      humInput(0.0), humOutput(0.0), humSetpoint(humiditySetpoint) {
     
-    // Store pointers only - defer actual initialization to begin()
+    // Safely assign the device pointers
     this->gpio = gpioExpander;
     this->sensor = tempHumSensor;
     this->dac = dac;
     
-    Serial.println("ClimateController constructor completed");
+    // Initialize pin mappings from configuration
+    initializePinMappings();
+    
+    // Initialize PID controllers - with safety checks
+    try {
+        Serial.println("Initializing Temperature PID controller");
+        temperaturePID = new PID(&tempInput, &tempOutput, &tempSetpoint, 
+                                DEFAULT_TEMP_KP, DEFAULT_TEMP_KI, DEFAULT_TEMP_KD, DIRECT);
+        
+        if (temperaturePID != nullptr) {
+            temperaturePID->SetMode(AUTOMATIC);
+            temperaturePID->SetOutputLimits(-100, 100); // -100 = full cooling, +100 = full heating
+            Serial.println("Temperature PID initialized successfully");
+        }
+        
+        Serial.println("Initializing Humidity PID controller");
+        humidityPID = new PID(&humInput, &humOutput, &humSetpoint,
+                             DEFAULT_HUM_KP, DEFAULT_HUM_KI, DEFAULT_HUM_KD, DIRECT);
+        
+        if (humidityPID != nullptr) {
+            humidityPID->SetMode(AUTOMATIC);
+            humidityPID->SetOutputLimits(-100, 100); // -100 = full dehumidify, +100 = full humidify
+            Serial.println("Humidity PID initialized successfully");
+        }
+    }
+    catch (...) {
+        Serial.println("Exception during PID controller initialization");
+        // Clean up if an exception occurs
+        if (temperaturePID != nullptr) {
+            delete temperaturePID;
+            temperaturePID = nullptr;
+        }
+        if (humidityPID != nullptr) {
+            delete humidityPID;
+            humidityPID = nullptr;
+        }
+    }
+    
+    Serial.println("ClimateController constructor completed successfully");
 }
 
 // Define this method to be called after constructor from begin() method
