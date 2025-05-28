@@ -437,10 +437,11 @@ void readAndSendDataFromDevices() {
             continue;
         }
         I2CHandler::selectTCA(device->getTCAChannel());
-        auto data = device->readData();
-        for (const auto& channel : device->getChannels()) {
+        auto data = device->readData();        for (const auto& channel : device->getChannels()) {
             String channelKey = channel.first;
-            std::string key = std::string(channelKey.c_str()); // Convert channelKey to std::string
+            String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
+            String deviceSpecificKey = deviceName + "_" + channelKey; // Make key device-specific
+            std::string key = std::string(deviceSpecificKey.c_str()); // Convert to std::string
             float value = data[channelKey].toFloat(); // Use String key and convert to float
             String currentTime;
             // Only fetch time from RTC if RTC is connected and initialized
@@ -449,7 +450,6 @@ void readAndSendDataFromDevices() {
             } else {
                 currentTime = "";
             }
-            String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
             String projectNr = Configuration::getProjectNumber();
             String showcaseId = Configuration::getShowcaseId();            // Get the last value and threshold for this sensor channel
             float lastValue = lastSensorValues[key];
