@@ -477,8 +477,15 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
             
             if (success) {
                 Serial.println("Device direct initialization: SUCCESS");
-                // Force initialized state
-                device->setInitialized(true);
+                // Instead of setting initialized state directly, call begin() to properly initialize
+                device->begin();
+                
+                // Check if the initialization was successful
+                if (device->isInitialized()) {
+                    Serial.println("Device is now properly initialized");
+                } else {
+                    Serial.println("Device still not initialized after begin()");
+                }
             } else {
                 Serial.println("Device direct initialization: FAILED");
             }
