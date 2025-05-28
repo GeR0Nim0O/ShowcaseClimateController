@@ -34,8 +34,14 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
     this->sensor = tempHumSensor;
     this->dac = dac;
     
-    // Initialize pin mappings from configuration
-    initializePinMappings();
+    // Initialize with default pin mappings - will be updated in begin()
+    pinFanExterior = 0;
+    pinFanInterior = 1;
+    pinHumidify = 2;
+    pinDehumidify = 3;
+    pinTemperatureEnable = 4;
+    pinTemperatureCool = 5;
+    pinTemperatureHeat = 6;
     
     // Initialize PID controllers - with safety checks
     try {
