@@ -24,6 +24,7 @@ bool PCF8574gpio::begin() {
     bool connected = isConnected();
     if (connected) {
         initialized = true;  // Set initialized flag to true when connection is successful
+        initializeOutputs();  // Initialize pins based on mode
     }
     return connected;
 }
