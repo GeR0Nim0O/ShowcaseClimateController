@@ -164,7 +164,7 @@
       "TypeNumber": "GP8403",
       "Address": "0x62",
       "Channels": {
-        "TEMP": {
+        "POWER": {
           "Name": "TemperatureControl",
           "Threshold": 0.5
         }
