@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "Device.h"
 #include "BH1705Sensor/BH1705sensor.h"
-#include "SHT31Sensor/SHT31sensor.h"
+#include "SHTSensor/SHTsensor.h"
 #include "SCALESSensor/SCALESsensor.h"
 #include "DS3231Rtc/DS3231rtc.h" // Include the DS3231rtc header
 
