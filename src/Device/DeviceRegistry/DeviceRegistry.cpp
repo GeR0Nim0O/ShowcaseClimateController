@@ -163,15 +163,15 @@ Device* DeviceRegistry::createDeviceWithThresholds(
             if (device) device->deviceName = deviceName; // Set device name
         }    } else if (type.equalsIgnoreCase("GPIO")) {        if (typeNumber.equalsIgnoreCase("PCF8574")) {
             // Parse mode from string
-            PCF8574Mode pcfMode = PCF8574Mode::OUTPUT; // Default
-            if (mode.equalsIgnoreCase("INPUT")) {
-                pcfMode = PCF8574Mode::INPUT;
-            } else if (mode.equalsIgnoreCase("OUTPUT")) {
-                pcfMode = PCF8574Mode::OUTPUT;
+            PCF8574Mode pcfMode = PCF8574Mode::OUTPUT_MODE; // Default
+            if (mode.equalsIgnoreCase("INPUT") || mode.equalsIgnoreCase("INPUT_MODE")) {
+                pcfMode = PCF8574Mode::INPUT_MODE;
+            } else if (mode.equalsIgnoreCase("OUTPUT") || mode.equalsIgnoreCase("OUTPUT_MODE")) {
+                pcfMode = PCF8574Mode::OUTPUT_MODE;
             }
             
             Serial.print("Creating PCF8574 with mode: ");
-            Serial.println(mode.length() > 0 ? mode : "OUTPUT (default)");
+            Serial.println(mode.length() > 0 ? mode : "OUTPUT_MODE (default)");
             
             device = new PCF8574gpio(wire, address, tcaPort, threshold, channels, deviceIndex, pcfMode);
             if (device) device->deviceName = deviceName; // Set device name
