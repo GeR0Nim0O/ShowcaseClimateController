@@ -2,8 +2,14 @@
 #include "I2CHandler.h"
 
 // GP8403 DAC Constants
-#define DAC_MAX_VALUE 32767  // 15-bit resolution
-#define DAC_MAX_VOLTAGE 5.0  // Changed from 10.0V to 5.0V output range
+#define DAC_MAX_VALUE 32767  // 15-bit resolution (Official library uses this)
+#define DAC_MAX_VOLTAGE 5.0  // 0-5V output range
+
+// GP8403 Register addresses - from official DFRobot library
+#define REG_DAC_A     0x01   // Write to DAC channel A  
+#define REG_DAC_B     0x02   // Write to DAC channel B
+#define REG_CONFIG    0x03   // Configuration register
+#define REG_SYNC_ALL  0x04   // Synchronized update both channels
 
 GP8403dac::GP8403dac(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : Device(i2cAddress, tcaChannel, deviceName, deviceIndex),
@@ -30,13 +36,15 @@ bool GP8403dac::begin() {
         return false;
     }
     
-    // Initialize configuration
-    if (!writeConfig()) {
-        Serial.println("Failed to configure DAC");
-        return false;
-    }
-      // Set both channels to 0V
+    // Initialize DAC - based on official library
+    delay(10);
+    
+    // Set both channels to 0V
     setBothChannels(0, 0);
+    
+    // Set output range to 0-5V
+    setGain(0, false); // Channel A, 1x gain
+    setGain(1, false); // Channel B, 1x gain
     
     Serial.println("GP8403 DAC Module initialized successfully");
     initialized = true; // Set initialized flag to true
@@ -78,11 +86,20 @@ bool GP8403dac::setChannelA(uint16_t value) {
         value = DAC_MAX_VALUE;
     }
     
-    if (writeRegister(DAC_REG_CHANNEL_A, value)) {
+    // Using register approach like in the official library
+    I2CHandler::selectTCA(getTCAChannel());
+    
+    this->wire->beginTransmission(getI2CAddress());
+    this->wire->write(REG_DAC_A);
+    this->wire->write((value >> 8) & 0xFF); // MSB
+    this->wire->write(value & 0xFF);        // LSB
+    
+    bool success = (this->wire->endTransmission() == 0);
+    
+    if (success) {
         channelAValue = value;
-        return true;
     }
-    return false;
+    return success;
 }
 
 bool GP8403dac::setChannelB(uint16_t value) {
@@ -90,34 +107,38 @@ bool GP8403dac::setChannelB(uint16_t value) {
         value = DAC_MAX_VALUE;
     }
     
-    if (writeRegister(DAC_REG_CHANNEL_B, value)) {
+    // Using register approach like in the official library
+    I2CHandler::selectTCA(getTCAChannel());
+    
+    this->wire->beginTransmission(getI2CAddress());
+    this->wire->write(REG_DAC_B);
+    this->wire->write((value >> 8) & 0xFF); // MSB
+    this->wire->write(value & 0xFF);        // LSB
+    
+    bool success = (this->wire->endTransmission() == 0);
+    
+    if (success) {
         channelBValue = value;
-        return true;
     }
-    return false;
-}
-
-bool GP8403dac::setChannelVoltage(uint8_t channel, float voltage) {
-    if (voltage < 0.0 || voltage > DAC_MAX_VOLTAGE) {
-        Serial.println("Voltage out of range (0-5V)!");
-        return false;
-    }
-    
-    uint16_t dacValue = voltageToDAC(voltage);
-    
-    if (channel == 0) {
-        return setChannelA(dacValue);
-    } else if (channel == 1) {
-        return setChannelB(dacValue);
-    }
-    
-    return false;
+    return success;
 }
 
 bool GP8403dac::setBothChannels(uint16_t valueA, uint16_t valueB) {
-    bool successA = setChannelA(valueA);
-    bool successB = setChannelB(valueB);
-    return successA && successB;
+    // Using register approach like in the official library
+    I2CHandler::selectTCA(getTCAChannel());
+    
+    // Set channel A value
+    if (!setChannelA(valueA)) {
+        return false;
+    }
+    
+    // Set channel B value 
+    if (!setChannelB(valueB)) {
+        return false;
+    }
+    
+    // Optionally sync channels (not required for this use case)
+    return true;
 }
 
 bool GP8403dac::setGain(uint8_t channel, bool gain2x) {
@@ -175,12 +196,18 @@ uint16_t GP8403dac::readRegister(uint8_t reg) {
 }
 
 bool GP8403dac::writeConfig() {
-    uint16_t config = DAC_CONFIG_READY;
+    uint8_t config = 0; // Start with 0
     
-    if (gain2xA) config |= (DAC_CONFIG_GAIN_2X << 0);
-    if (gain2xB) config |= (DAC_CONFIG_GAIN_2X << 1);
+    // Set gain bits
+    if (gain2xA) config |= 0x01;
+    if (gain2xB) config |= 0x02;
     
-    return writeRegister(DAC_REG_CONFIG, config);
+    I2CHandler::selectTCA(getTCAChannel());
+    
+    this->wire->beginTransmission(getI2CAddress());
+    this->wire->write(REG_CONFIG);
+    this->wire->write(config);
+    return (this->wire->endTransmission() == 0);
 }
 
 uint16_t GP8403dac::voltageToDAC(float voltage) {
