@@ -200,8 +200,8 @@ Device* DeviceRegistry::createDeviceWithThresholds(
                 device->deviceName = deviceName; // Set device name
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
             }
-        }
-    }
+        }    }
+    
     if (device) {
         Serial.println("Device created successfully");
         // Register the device in the registry
