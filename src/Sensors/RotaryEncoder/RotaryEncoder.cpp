@@ -181,18 +181,18 @@ uint8_t RotaryEncoder::readRegister(uint8_t reg) {
 int32_t RotaryEncoder::readRegister32(uint8_t reg) {
     selectTCAChannel(tcaChannel);
     
-    Wire.beginTransmission(i2cAddress);
-    Wire.write(reg);
-    if (Wire.endTransmission() != 0) {
+    wire->beginTransmission(i2cAddress);
+    wire->write(reg);
+    if (wire->endTransmission() != 0) {
         return 0;
     }
     
-    Wire.requestFrom(i2cAddress, (uint8_t)4);
-    if (Wire.available() >= 4) {
-        int32_t value = (int32_t)Wire.read() << 24;
-        value |= (int32_t)Wire.read() << 16;
-        value |= (int32_t)Wire.read() << 8;
-        value |= Wire.read();
+    wire->requestFrom(i2cAddress, (uint8_t)4);
+    if (wire->available() >= 4) {
+        int32_t value = (int32_t)wire->read() << 24;
+        value |= (int32_t)wire->read() << 16;
+        value |= (int32_t)wire->read() << 8;
+        value |= wire->read();
         return value;
     }
     
