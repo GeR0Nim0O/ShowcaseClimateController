@@ -33,24 +33,24 @@ std::map<String, String> DS3231rtc::readData() {
 bool DS3231rtc::readTime(unsigned char* second, unsigned char* minute, unsigned char* hour,
                          unsigned char* dayOfWeek, unsigned char* dayOfMonth, unsigned char* month,
                          unsigned char* year) {
-    Wire.beginTransmission(DS3231_ADDRESS);
-    Wire.write(0x00); // Start at register 0x00
-    if (Wire.endTransmission() != 0) {
+    wire->beginTransmission(DS3231_ADDRESS);
+    wire->write(0x00); // Start at register 0x00
+    if (wire->endTransmission() != 0) {
         return false;
     }
 
-    if (Wire.requestFrom(DS3231_ADDRESS, 7) != 7) {
+    if (wire->requestFrom(DS3231_ADDRESS, 7) != 7) {
         return false;
     }
 
     // Convert from BCD to decimal
-    *second = bcdToDec(Wire.read() & 0x7F);
-    *minute = bcdToDec(Wire.read());
-    *hour = bcdToDec(Wire.read() & 0x3F); // 24 hour mode
-    *dayOfWeek = bcdToDec(Wire.read());
-    *dayOfMonth = bcdToDec(Wire.read());
-    *month = bcdToDec(Wire.read());
-    *year = bcdToDec(Wire.read());
+    *second = bcdToDec(wire->read() & 0x7F);
+    *minute = bcdToDec(wire->read());
+    *hour = bcdToDec(wire->read() & 0x3F); // 24 hour mode
+    *dayOfWeek = bcdToDec(wire->read());
+    *dayOfMonth = bcdToDec(wire->read());
+    *month = bcdToDec(wire->read());
+    *year = bcdToDec(wire->read());
     
     return true;
 }
