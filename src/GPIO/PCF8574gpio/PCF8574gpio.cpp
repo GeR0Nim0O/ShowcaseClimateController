@@ -54,10 +54,10 @@ std::map<String, String> PCF8574gpio::readData() {
 }
 
 bool PCF8574gpio::writeByte(uint8_t data) {
-    wire->beginTransmission(_address);
-    wire->write(data);
+    Wire.beginTransmission(_address);
+    Wire.write(data);
     _gpioState = data;
-    return (wire->endTransmission() == 0);
+    return (Wire.endTransmission() == 0);
 }
 
 bool PCF8574gpio::readByte(uint8_t &data) {
