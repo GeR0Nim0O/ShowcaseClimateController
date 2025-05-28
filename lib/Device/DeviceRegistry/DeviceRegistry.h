@@ -44,7 +44,7 @@ private:
     
     std::vector<Device*> devices;
     std::vector<PCF8574gpio*> gpioExpanders;
-    std::vector<SHT31sensor*> temperatureHumiditySensors;
+    std::vector<SHTsensor*> temperatureHumiditySensors;
 };
 
 #endif // DEVICE_REGISTRY_H
