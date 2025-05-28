@@ -28,8 +28,8 @@ GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float t
 bool GP8403dac::begin() {
     I2CHandler::selectTCA(getTCAChannel());
     
-    this->wire->beginTransmission(getI2CAddress());
-    bool connected = (this->wire->endTransmission() == 0);
+    Wire.beginTransmission(getI2CAddress());
+    bool connected = (Wire.endTransmission() == 0);
     
     if (!connected) {
         Serial.println("GP8403 DAC Module not found!");
