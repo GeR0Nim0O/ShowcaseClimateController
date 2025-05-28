@@ -29,25 +29,3 @@ bool Device::testI2CConnection() {
     wire->beginTransmission(i2cAddress);
     return (wire->endTransmission() == 0);
 }
-
-// Add safe method to set initialized state
-void Device::forceInitialized(bool state) {
-    initialized = state;
-}
-
-// Add method to check if device is connected to I2C bus
-bool Device::isConnected() {
-    return testI2CConnection();
-}
-
-// Safe method to get channel threshold with error handling
-float Device::getThreshold(const String& channelKey) const {
-    // First try to find a channel-specific threshold
-    auto it = channelThresholds.find(channelKey);
-    if (it != channelThresholds.end()) {
-        return it->second;
-    }
-    
-    // If not found, return the default threshold
-    return threshold;
-}
