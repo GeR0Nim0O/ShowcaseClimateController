@@ -491,8 +491,7 @@ void readAndSendDataFromDevices() {
                 Serial.print(", diff: ");
                 Serial.println(abs(value - lastValue));
             }
-            
-            // Always print data every 60 seconds, aligned with MQTT sending, even if no change
+              // Always print data every 60 seconds, aligned with MQTT sending, even if no change
             if (shouldPrintData) {
                 Serial.print(deviceName);
                 Serial.print(" - ");
@@ -502,23 +501,12 @@ void readAndSendDataFromDevices() {
                 Serial.print(" (");
                 Serial.print(channel.second);
                 Serial.println(")");
-                
-                // Always store the data for MQTT sending, regardless of threshold
-                SensorData sensorData;
-                sensorData.deviceName = deviceName;
-                sensorData.projectNr = projectNr;
-                sensorData.showcaseId = showcaseId;
-                sensorData.sensorType = channel.second;
-                sensorData.sensorValue = value;
-                sensorData.currentTime = currentTime;
-                sensorData.deviceIndex = device->getDeviceIndex();
-                sensorData.changed = true;
-                
-                changedSensorData[key] = sensorData;
             }
-              // This conditional is still used for logging to SD and determining meaningful changes
+            
+            // This conditional is used for logging to SD and determining meaningful changes
             float valueDiff = abs(value - lastValue);
             bool shouldLog = valueDiff >= threshold;
+            bool shouldSendMqtt = shouldPrintData || shouldLog; // Send via MQTT if 60-second cycle OR threshold exceeded
             
             // Debug: Always show threshold check for humidity changes
             if (channelKey == "H" && valueDiff > 0.005) { // Show when humidity changes by more than 0.005
@@ -533,9 +521,41 @@ void readAndSendDataFromDevices() {
                 Serial.print(" threshold=");
                 Serial.print(threshold);
                 Serial.print(" shouldLog=");
-                Serial.println(shouldLog ? "YES" : "NO");
+                Serial.print(shouldLog ? "YES" : "NO");
+                Serial.print(" shouldSendMqtt=");
+                Serial.println(shouldSendMqtt ? "YES" : "NO");
             }
             
+            // Store data for MQTT sending if it's either the 60-second cycle OR threshold exceeded
+            if (shouldSendMqtt) {
+                SensorData sensorData;
+                sensorData.deviceName = deviceName;
+                sensorData.projectNr = projectNr;
+                sensorData.showcaseId = showcaseId;
+                sensorData.sensorType = channel.second;
+                sensorData.sensorValue = value;
+                sensorData.currentTime = currentTime;
+                sensorData.deviceIndex = device->getDeviceIndex();
+                sensorData.changed = true;
+                
+                changedSensorData[key] = sensorData;
+                
+                if (shouldLog) {
+                    Serial.print("THRESHOLD EXCEEDED - ");
+                    Serial.print(deviceName);
+                    Serial.print(" ");
+                    Serial.print(channelKey);
+                    Serial.print(": ");
+                    Serial.print(value);
+                    Serial.print(" (diff: ");
+                    Serial.print(valueDiff);
+                    Serial.print(" >= ");
+                    Serial.print(threshold);
+                    Serial.println(")");
+                }
+            }
+            
+            // Log to SD only when threshold is exceeded
             if (shouldLog) {
                 lastSensorValues[key] = value;
 
