@@ -2,9 +2,9 @@
 
 PCF8574gpio::PCF8574gpio(uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex, PCF8574Mode mode)
     : Device(threshold, channels, i2cAddress, tcaChannel, deviceIndex), _address(i2cAddress), _gpioState(0xFF), _mode(mode) {
-    
-    // Set type - inherited from Device base class
-    type = "PCF8574GPIO";    Serial.println("PCF8574gpio created:");
+      // Set type - inherited from Device base class
+    type = "PCF8574GPIO";
+    Serial.println("PCF8574gpio created:");
     Serial.print("Address: 0x");
     Serial.println(_address, HEX);
     Serial.print("Mode: ");
