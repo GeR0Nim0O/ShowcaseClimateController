@@ -58,19 +58,19 @@ bool DS3231rtc::readTime(unsigned char* second, unsigned char* minute, unsigned 
 bool DS3231rtc::setTime(unsigned char second, unsigned char minute, unsigned char hour,
                         unsigned char dayOfWeek, unsigned char dayOfMonth, unsigned char month,
                         unsigned char year) {
-    Wire.beginTransmission(DS3231_ADDRESS);
-    Wire.write(0x00); // Start at register 0x00
+    wire->beginTransmission(DS3231_ADDRESS);
+    wire->write(0x00); // Start at register 0x00
     
     // Convert from decimal to BCD
-    Wire.write(decToBcd(second));
-    Wire.write(decToBcd(minute));
-    Wire.write(decToBcd(hour));
-    Wire.write(decToBcd(dayOfWeek));
-    Wire.write(decToBcd(dayOfMonth));
-    Wire.write(decToBcd(month));
-    Wire.write(decToBcd(year));
+    wire->write(decToBcd(second));
+    wire->write(decToBcd(minute));
+    wire->write(decToBcd(hour));
+    wire->write(decToBcd(dayOfWeek));
+    wire->write(decToBcd(dayOfMonth));
+    wire->write(decToBcd(month));
+    wire->write(decToBcd(year));
     
-    return (Wire.endTransmission() == 0);
+    return (wire->endTransmission() == 0);
 }
 
 // Helper functions for BCD conversion
