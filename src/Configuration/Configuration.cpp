@@ -218,11 +218,9 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         }
         
         // Create the device using DeviceRegistry
-        static int deviceIndex = 0;
-        Device* createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
+        static int deviceIndex = 0;        Device* createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
             deviceType,
             deviceTypeNumber,
-            &Wire,
             deviceAddress,
             tcaPort,
             channelThresholds,
