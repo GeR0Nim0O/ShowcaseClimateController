@@ -150,9 +150,8 @@ Device* DeviceRegistry::createDeviceWithThresholds(
     Serial.println(typeNumber);
     Serial.print("Device Name: ");
     Serial.println(deviceName);
-      if (type.equalsIgnoreCase("Sensor")) {
-        if (typeNumber.equalsIgnoreCase("SHT31")) {
-            device = new SHT31sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+      if (type.equalsIgnoreCase("Sensor")) {        if (typeNumber.equalsIgnoreCase("SHT31")) {
+            device = new SHTsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
             if (device) {
                 device->deviceName = deviceName; // Set device name
                 device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
