@@ -75,64 +75,6 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
     Serial.println("ClimateController constructor completed successfully");
 }
 
-// Define this method to be called after constructor from begin() method
-void ClimateController::initializePinMappings() {
-    // Safe initialization with default values
-    pinFanExterior = 0;
-    pinFanInterior = 1;
-    pinHumidify = 2;
-    pinDehumidify = 3;
-    pinTemperatureEnable = 4;
-    pinTemperatureCool = 5;
-    pinTemperatureHeat = 6;
-    
-    try {
-        // Try to load from configuration
-        JsonObject devicesConfig = Configuration::getDevicesConfig();
-        
-        if (devicesConfig.containsKey("PCF8574") && 
-            devicesConfig["PCF8574"].is<JsonObject>()) {
-            
-            JsonObject pcfConfig = devicesConfig["PCF8574"];
-            if (pcfConfig.containsKey("Channels") && 
-                pcfConfig["Channels"].is<JsonObject>()) {
-                
-                JsonObject channels = pcfConfig["Channels"];
-                
-                // Enumerate channels to find pins by name
-                for (JsonPair channel : channels) {
-                    String channelKey = channel.key().c_str();
-                    JsonObject channelObj = channel.value();
-                    
-                    if (channelObj.containsKey("Name") && 
-                        channelObj["Name"].is<const char*>()) {
-                        
-                        String name = channelObj["Name"].as<const char*>();
-                        
-                        // Extract pin number from channel key (e.g., "IO0" -> 0)
-                        if (channelKey.startsWith("IO")) {
-                            uint8_t pinNum = channelKey.substring(2).toInt();
-                            
-                            // Assign to the right pin based on name
-                            if (name == "FanExterior") pinFanExterior = pinNum;
-                            else if (name == "FanInterior") pinFanInterior = pinNum;
-                            else if (name == "Humidify") pinHumidify = pinNum;
-                            else if (name == "Dehumidify") pinDehumidify = pinNum;
-                            else if (name == "TemperatureEnable") pinTemperatureEnable = pinNum;
-                            else if (name == "TemperatureCool") pinTemperatureCool = pinNum;
-                            else if (name == "TemperatureHeat") pinTemperatureHeat = pinNum;
-                        }
-                    }
-                }
-            }
-        }
-    }
-    catch (...) {
-        Serial.println("Exception during pin mapping initialization");
-        // Use default pin mappings if exception occurs
-    }
-}
-
 bool ClimateController::begin() {
     // Add defensive checks for device pointers and connections
     if (!gpio || !sensor) {
