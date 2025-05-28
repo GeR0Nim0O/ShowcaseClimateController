@@ -18,14 +18,14 @@ Device::Device(TwoWire* wire, float threshold, std::map<String, String> channels
 void Device::selectTCAChannel(uint8_t channel) {
     if (channel > 7) return; // PCA9548A has 8 channels (0-7)
     
-    Wire.beginTransmission(PCA9548A_ADDRESS);
-    Wire.write(1 << channel);
-    Wire.endTransmission();
+    wire->beginTransmission(PCA9548A_ADDRESS);
+    wire->write(1 << channel);
+    wire->endTransmission();
 }
 
 bool Device::testI2CConnection() {
     selectTCAChannel(tcaChannel);
     
-    Wire.beginTransmission(i2cAddress);
-    return (Wire.endTransmission() == 0);
+    wire->beginTransmission(i2cAddress);
+    return (wire->endTransmission() == 0);
 }
