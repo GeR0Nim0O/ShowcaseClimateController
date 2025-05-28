@@ -119,11 +119,11 @@ void PCF8574gpio::setMode(PCF8574Mode mode) {
 }
 
 bool PCF8574gpio::isOutputMode() const {
-    return _mode == PCF8574Mode::OUTPUT_8X;
+    return _mode == PCF8574Mode::OUTPUT;
 }
 
 bool PCF8574gpio::isInputMode() const {
-    return _mode == PCF8574Mode::INPUT_8X;
+    return _mode == PCF8574Mode::INPUT;
 }
 
 void PCF8574gpio::initializeOutputs() {
