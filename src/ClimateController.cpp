@@ -464,6 +464,8 @@ void ClimateController::emergencyShutdown() {
 
 // Pin mapping helper methods
 void ClimateController::initializePinMappings() {
+    Serial.println("ClimateController: Starting initializePinMappings()");
+    
     // Initialize with default values matching config.json
     pinFanExterior = 0;
     pinFanInterior = 1;
@@ -473,14 +475,47 @@ void ClimateController::initializePinMappings() {
     pinTemperatureCool = 5;
     pinTemperatureHeat = 6;
     
-    // Try to load from configuration
-    pinFanExterior = getPinFromChannelName("FanExterior");
-    pinFanInterior = getPinFromChannelName("FanInterior");
-    pinHumidify = getPinFromChannelName("Humidify");
-    pinDehumidify = getPinFromChannelName("Dehumidify");
-    pinTemperatureEnable = getPinFromChannelName("TemperatureEnable");
-    pinTemperatureCool = getPinFromChannelName("TemperatureCool");
-    pinTemperatureHeat = getPinFromChannelName("TemperatureHeat");
+    Serial.println("ClimateController: Default pin mappings set");
+    
+    // Try to load from configuration with extensive error checking
+    try {
+        Serial.println("ClimateController: Attempting to load pin mappings from configuration");
+        
+        pinFanExterior = getPinFromChannelName("FanExterior");
+        Serial.print("ClimateController: FanExterior pin: ");
+        Serial.println(pinFanExterior);
+        
+        pinFanInterior = getPinFromChannelName("FanInterior");
+        Serial.print("ClimateController: FanInterior pin: ");
+        Serial.println(pinFanInterior);
+        
+        pinHumidify = getPinFromChannelName("Humidify");
+        Serial.print("ClimateController: Humidify pin: ");
+        Serial.println(pinHumidify);
+        
+        pinDehumidify = getPinFromChannelName("Dehumidify");
+        Serial.print("ClimateController: Dehumidify pin: ");
+        Serial.println(pinDehumidify);
+        
+        pinTemperatureEnable = getPinFromChannelName("TemperatureEnable");
+        Serial.print("ClimateController: TemperatureEnable pin: ");
+        Serial.println(pinTemperatureEnable);
+        
+        pinTemperatureCool = getPinFromChannelName("TemperatureCool");
+        Serial.print("ClimateController: TemperatureCool pin: ");
+        Serial.println(pinTemperatureCool);
+        
+        pinTemperatureHeat = getPinFromChannelName("TemperatureHeat");
+        Serial.print("ClimateController: TemperatureHeat pin: ");
+        Serial.println(pinTemperatureHeat);
+        
+        Serial.println("ClimateController: Pin mappings loaded successfully");
+    }
+    catch (...) {
+        Serial.println("ClimateController: Exception during pin mapping loading, using defaults");
+    }
+    
+    Serial.println("ClimateController: initializePinMappings() completed");
 }
 
 uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
