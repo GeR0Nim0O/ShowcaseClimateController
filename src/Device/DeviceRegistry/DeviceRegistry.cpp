@@ -152,6 +152,19 @@ Device* DeviceRegistry::createDeviceWithThresholds(
 ) {
     Device* device = nullptr;
     
+    // Check available heap memory before creating device
+    size_t freeHeap = ESP.getFreeHeap();
+    size_t minFreeHeap = ESP.getMinFreeHeap();
+    Serial.print("Free heap before device creation: ");
+    Serial.print(freeHeap);
+    Serial.print(" bytes, Min free heap: ");
+    Serial.print(minFreeHeap);
+    Serial.println(" bytes");
+    
+    if (freeHeap < 10000) {  // Less than 10KB free
+        Serial.println("WARNING: Low memory detected before device creation");
+    }
+    
     // Add debugging for all device creation attempts
     Serial.print("Creating device with type: ");
     Serial.print(type);
