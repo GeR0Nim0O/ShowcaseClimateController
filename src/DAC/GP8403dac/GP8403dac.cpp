@@ -53,8 +53,8 @@ bool GP8403dac::begin() {
 
 bool GP8403dac::isConnected() {
     I2CHandler::selectTCA(getTCAChannel());
-    this->wire->beginTransmission(getI2CAddress());
-    return (this->wire->endTransmission() == 0);
+    Wire.beginTransmission(getI2CAddress());
+    return (Wire.endTransmission() == 0);
 }
 
 void GP8403dac::update() {
