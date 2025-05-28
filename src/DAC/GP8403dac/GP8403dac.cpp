@@ -3,7 +3,7 @@
 
 // GP8403 DAC Constants
 #define DAC_MAX_VALUE 32767  // 15-bit resolution
-#define DAC_MAX_VOLTAGE 10.0 // 0-10V output range
+#define DAC_MAX_VOLTAGE 5.0  // Changed from 10.0V to 5.0V output range
 
 GP8403dac::GP8403dac(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : Device(i2cAddress, tcaChannel, deviceName, deviceIndex),
@@ -99,7 +99,7 @@ bool GP8403dac::setChannelB(uint16_t value) {
 
 bool GP8403dac::setChannelVoltage(uint8_t channel, float voltage) {
     if (voltage < 0.0 || voltage > DAC_MAX_VOLTAGE) {
-        Serial.println("Voltage out of range (0-10V)!");
+        Serial.println("Voltage out of range (0-5V)!");
         return false;
     }
     
