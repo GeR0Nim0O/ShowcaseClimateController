@@ -882,7 +882,7 @@ void updateClimateController() {
       Serial.print(" (Power: ");
       Serial.print(climateController->getHeatingPower());
       Serial.print("%, DAC Output: ");
-      Serial.print((climateController->getHeatingPower() / 100.0) * 10.0, 1);
+      Serial.print((climateController->getHeatingPower() / 100.0) * 5.0, 1); // Changed to 5.0V max
       Serial.print("V)");
     }
     Serial.println();
@@ -893,7 +893,7 @@ void updateClimateController() {
       Serial.print(" (Power: ");
       Serial.print(climateController->getCoolingPower());
       Serial.print("%, DAC Output: ");
-      Serial.print((climateController->getCoolingPower() / 100.0) * 10.0, 1);
+      Serial.print((climateController->getCoolingPower() / 100.0) * 5.0, 1); // Changed to 5.0V max
       Serial.print("V)");
     }
     Serial.println();
@@ -915,7 +915,7 @@ void updateClimateController() {
 // Add this new function for testing DAC
 void testDACOutput() {
     if (climateDac != nullptr && climateDac->isConnected()) {
-        // Set DAC to output 4.00V for testing
+        // Set DAC to output 4.00V for testing (within the 0-5V range)
         float testVoltage = 4.0f;
         Serial.print("Setting DAC output to ");
         Serial.print(testVoltage);
