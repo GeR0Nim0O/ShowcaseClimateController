@@ -7,14 +7,6 @@ Device::Device(uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName,
       deviceIndex(deviceIndex), type("Generic"), typeNumber(""), initialized(false), threshold(0.0f) {
 }
 
-// Constructor for sensor devices with threshold and channels
-Device::Device(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-    : i2cAddress(i2cChannel), tcaChannel(tcaPort), deviceName(""), 
-      deviceIndex(deviceIndex), type("Generic"), typeNumber(""), initialized(false), 
-      threshold(threshold), channels(channels) {
-    // This constructor is used by sensor classes that handle their own addressing
-}
-
 // Constructor for devices that specify threshold and channels first
 Device::Device(float threshold, std::map<String, String> channels, uint8_t i2cAddress, uint8_t tcaChannel, int deviceIndex)
     : i2cAddress(i2cAddress), tcaChannel(tcaChannel), deviceName(""), 
