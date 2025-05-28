@@ -110,10 +110,10 @@ PCF8574Mode PCF8574gpio::getMode() const {
 void PCF8574gpio::setMode(PCF8574Mode mode) {
     _mode = mode;
     Serial.print("PCF8574 mode changed to: ");
-    Serial.println(_mode == PCF8574Mode::INPUT_8X ? "INPUT_8X" : "OUTPUT_8X");
+    Serial.println(_mode == PCF8574Mode::INPUT ? "INPUT" : "OUTPUT");
     
     // If switching to output mode, initialize all outputs to false
-    if (_mode == PCF8574Mode::OUTPUT_8X) {
+    if (_mode == PCF8574Mode::OUTPUT) {
         initializeOutputs();
     }
 }
