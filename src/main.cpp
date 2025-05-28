@@ -780,7 +780,7 @@ void setCustomMqttSettings() {
 void initializeClimateController() {
   // Find a PCF8574 GPIO expander in the devices list
   for (Device* device : devices) {
-    if (device->getType() == "PCF8574gpio" && device->isInitialized()) {
+    if (device->getType() == "PCF8574gpio" || device->getType() == "PCF8574GPIO") {
       gpioExpander = static_cast<PCF8574gpio*>(device);
       Serial.println("Found GPIO expander for climate control");
       break;
@@ -789,21 +789,40 @@ void initializeClimateController() {
   
   // Find an SHT temperature/humidity sensor
   for (Device* device : devices) {
-    if (device->getType() == "SHTSensor" && device->isInitialized()) {
+    if (device->getType() == "SHTSensor" || device->getType() == "SHTsensor") {
       climateTemperatureSensor = static_cast<SHTsensor*>(device);
       Serial.println("Found temperature/humidity sensor for climate control");
       break;
     }
   }
   
-  // Find a DAC for analog control
+  // Find a DAC for analog control - with improved type checking
   for (Device* device : devices) {
-    if (device->getType() == "GP8403dac" && device->isInitialized()) {
+    if (device->getType() == "GP8403dac" || device->getType() == "GP8403DAC" || device->getType() == "DAC") {
+      Serial.print("Found DAC device: ");
+      Serial.print(device->getType());
+      Serial.print(" with name: ");
+      Serial.println(device->getDeviceName());
+      
       climateDac = static_cast<GP8403dac*>(device);
       Serial.println("Found DAC for analog climate control");
       break;
     }
   }
+  
+  // Print device counts for debugging
+  int gpioCount = 0, sensorCount = 0, dacCount = 0;
+  for (Device* device : devices) {
+    if (device->getType() == "PCF8574gpio" || device->getType() == "PCF8574GPIO") gpioCount++;
+    if (device->getType() == "SHTSensor" || device->getType() == "SHTsensor") sensorCount++;
+    if (device->getType() == "GP8403dac" || device->getType() == "GP8403DAC" || device->getType() == "DAC") dacCount++;
+  }
+  Serial.print("Device counts - GPIO: ");
+  Serial.print(gpioCount);
+  Serial.print(", Sensors: ");
+  Serial.print(sensorCount);
+  Serial.print(", DACs: ");
+  Serial.println(dacCount);
   
   // Create climate controller if we found the required devices
   if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
