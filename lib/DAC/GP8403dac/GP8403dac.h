@@ -3,7 +3,8 @@
 
 #include "Device.h"
 
-#define DAC_DEFAULT_ADDRESS 0x62
+// Default I2C address for GP8403
+#define DAC_DEFAULT_ADDRESS 0x5F  // Updated to match DFRobot library default
 
 // Register addresses for GP8403 DAC
 #define DAC_REG_CONFIG     0x00
@@ -14,8 +15,8 @@
 // DAC Configuration bits
 #define DAC_CONFIG_READY   0x80
 #define DAC_CONFIG_BUSY    0x00
-#define DAC_CONFIG_GAIN_1X 0x00
-#define DAC_CONFIG_GAIN_2X 0x01
+#define DAC_GAIN_1X 0x00
+#define DAC_GAIN_2X 0x01
 
 class GP8403dac : public Device {
 public:
