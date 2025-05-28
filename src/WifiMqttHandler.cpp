@@ -168,12 +168,11 @@ void WifiMqttHandler::connectToMqttBroker(PubSubClient &client, WiFiClientSecure
     if (client.connected()) {
         Serial.print("MQTT connection status: ");
         Serial.println(client.state());
-    } else {
+        } else {
         Serial.print("Failed to connect to MQTT broker after ");
         Serial.print(maxAttempts);
         Serial.println(" attempts. Skipping MQTT connection.");
     }
-}
 }
 
 bool WifiMqttHandler::connectToMqttBrokerWithCheck(PubSubClient &client, WiFiClientSecure &espClient, const String& mqtt_server, const char* rootCACertificate, int mqtt_port, const String& clientId, const String& topic, const String& token) {
