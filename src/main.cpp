@@ -779,8 +779,9 @@ void setCustomMqttSettings() {
 // Function to initialize the climate controller
 void initializeClimateController() {
   // Find a PCF8574 GPIO expander in the devices list
+  gpioExpander = nullptr;
   for (Device* device : devices) {
-    if (device->getType() == "PCF8574gpio" || device->getType() == "PCF8574GPIO") {
+    if (device->getType().equalsIgnoreCase("PCF8574gpio")) {
       gpioExpander = static_cast<PCF8574gpio*>(device);
       Serial.println("Found GPIO expander for climate control");
       break;
@@ -788,26 +789,39 @@ void initializeClimateController() {
   }
   
   // Find an SHT temperature/humidity sensor
+  climateTemperatureSensor = nullptr;
   for (Device* device : devices) {
-    if (device->getType() == "SHTSensor" || device->getType() == "SHTsensor") {
+    if (device->getType().equalsIgnoreCase("SHTSensor")) {
       climateTemperatureSensor = static_cast<SHTsensor*>(device);
       Serial.println("Found temperature/humidity sensor for climate control");
       break;
     }
   }
   
-  // Find a DAC for analog control - with improved type checking
+  // Find a DAC for analog control - more thorough search and debug
+  climateDac = nullptr;
+  Serial.println("Looking for DAC device...");
   for (Device* device : devices) {
-    if (device->getType() == "GP8403dac" || device->getType() == "GP8403DAC" || device->getType() == "DAC") {
+    // Print type for debugging
+    Serial.print("Checking device type: '");
+    Serial.print(device->getType());
+    Serial.println("'");
+    
+    // Case insensitive check
+    if (device->getType().equalsIgnoreCase("GP8403dac") || 
+        device->getType().equalsIgnoreCase("DAC")) {
       Serial.print("Found DAC device: ");
       Serial.print(device->getType());
       Serial.print(" with name: ");
       Serial.println(device->getDeviceName());
       
       climateDac = static_cast<GP8403dac*>(device);
-      Serial.println("Found DAC for analog climate control");
       break;
     }
+  }
+  
+  if (climateDac == nullptr) {
+    Serial.println("WARNING: No DAC device found in devices list");
   }
   
   // Print device counts for debugging
