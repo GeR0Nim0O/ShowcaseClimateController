@@ -496,9 +496,27 @@ void readAndSendDataFromDevices() {
                 
                 changedSensorData[key] = sensorData;
             }
+              // This conditional is still used for logging to SD and determining meaningful changes
+            float valueDiff = abs(value - lastValue);
+            bool shouldLog = valueDiff >= threshold;
             
-            // This conditional is still used for logging to SD and determining meaningful changes
-            if (abs(value - lastValue) >= threshold) {
+            // Debug: Always show threshold check for humidity changes
+            if (channelKey == "H" && valueDiff > 0.005) { // Show when humidity changes by more than 0.005
+                Serial.print("HUMIDITY DEBUG: Device ");
+                Serial.print(deviceName);
+                Serial.print(" H=");
+                Serial.print(value);
+                Serial.print(" lastH=");
+                Serial.print(lastValue);
+                Serial.print(" diff=");
+                Serial.print(valueDiff);
+                Serial.print(" threshold=");
+                Serial.print(threshold);
+                Serial.print(" shouldLog=");
+                Serial.println(shouldLog ? "YES" : "NO");
+            }
+            
+            if (shouldLog) {
                 lastSensorValues[key] = value;
 
                 if (channel.second != "Time") {
