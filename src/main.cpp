@@ -34,7 +34,7 @@ WiFiClientSecure espClient; // Use WiFiClientSecure instead of WiFiClient
 PubSubClient client(espClient);
 
 // Custom WiFi settings
-String customSSID = "Ron&Rowie_Gast";
+String customSSID = "Guest";
 String customPassword = "Gast@Ron&Rowie";
 bool useCustomWiFi = true; // Set to true to use custom WiFi settings
 
