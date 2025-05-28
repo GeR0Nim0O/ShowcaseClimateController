@@ -260,6 +260,76 @@ void ClimateController::setCoolingPower(float percentage) {
     }
 }
 
+void ClimateController::setFanInterior(bool enable) {
+    if (!gpio) return;
+    gpio->writePin(pinFanInterior, enable);
+    Serial.print("Interior fan set to ");
+    Serial.println(enable ? "ON" : "OFF");
+}
+
+void ClimateController::setFanExterior(bool enable) {
+    if (!gpio) return;
+    gpio->writePin(pinFanExterior, enable);
+    Serial.print("Exterior fan set to ");
+    Serial.println(enable ? "ON" : "OFF");
+}
+
+bool ClimateController::checkSafetyLimits() {
+    // Check if temperature and humidity are within safety limits
+    bool tempSafe = (currentTemperature >= MIN_TEMPERATURE && currentTemperature <= MAX_TEMPERATURE);
+    bool humiditySafe = (currentHumidity >= MIN_HUMIDITY && currentHumidity <= MAX_HUMIDITY);
+    
+    // Return true if both are safe, false if either is unsafe
+    return tempSafe && humiditySafe;
+}
+
+void ClimateController::applyTemperatureControl() {
+    if (!gpio) return;
+    
+    // Update main temperature enable pin
+    gpio->writePin(pinTemperatureEnable, tempControlEnabled);
+    
+    // Update heating and cooling pins based on currently active mode
+    gpio->writePin(pinTemperatureHeat, heatingActive);
+    gpio->writePin(pinTemperatureCool, coolingActive);
+    
+    // Debug output
+    if (heatingActive) {
+        Serial.print("Temperature control: Heating at ");
+        Serial.print(heatingPower);
+        Serial.println("%");
+    } else if (coolingActive) {
+        Serial.print("Temperature control: Cooling at ");
+        Serial.print(coolingPower);
+        Serial.println("%");
+    } else if (!tempControlEnabled) {
+        Serial.println("Temperature control: Disabled");
+    } else {
+        Serial.println("Temperature control: Idle");
+    }
+}
+
+void ClimateController::applyHumidityControl() {
+    if (!gpio) return;
+    
+    // Update humidify and dehumidify pins based on currently active mode
+    gpio->writePin(pinHumidify, humidifyingActive);
+    gpio->writePin(pinDehumidify, dehumidifyingActive);
+    
+    // Debug output
+    if (humidifyingActive) {
+        Serial.print("Humidity control: Humidifying at ");
+        Serial.print(humidifierPower);
+        Serial.println("%");
+    } else if (dehumidifyingActive) {
+        Serial.print("Humidity control: Dehumidifying at ");
+        Serial.print(dehumidifierPower);
+        Serial.println("%");
+    } else {
+        Serial.println("Humidity control: Idle");
+    }
+}
+
 void ClimateController::emergencyShutdown() {
     gpio->writePin(pinTemperatureEnable, false);
     gpio->writePin(pinTemperatureHeat, false);
