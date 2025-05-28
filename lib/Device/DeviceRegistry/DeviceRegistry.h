@@ -12,12 +12,10 @@ public:
     static DeviceRegistry& getInstance();
       bool registerDevice(Device* device);
     bool initializeAllDevices();
-    void updateAllDevices();
-      // Device creation
+    void updateAllDevices();    // Device creation
     static Device* createDeviceWithThresholds(
         const String& type, 
         const String& typeNumber, 
-        TwoWire* wire, 
         uint8_t address, 
         uint8_t tcaPort, 
         const std::map<String, float>& channelThresholds, 
