@@ -37,7 +37,6 @@ public:
     void initializeOutputs(); // Initialize all outputs to LOW
 
 private:
-    TwoWire* wire;
     uint8_t _address;
     uint8_t _gpioState;
     PCF8574Mode _mode;
