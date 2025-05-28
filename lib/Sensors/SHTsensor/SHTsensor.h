@@ -10,7 +10,7 @@
 
 class SHTsensor : public Device {
 public:
-    SHTsensor(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex);
+    SHTsensor(uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex);
     
     bool begin() override;    bool isConnected() override;
     void update() override;    std::map<String, String> readData() override; // Return a map of sensor data
