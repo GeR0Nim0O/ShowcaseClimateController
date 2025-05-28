@@ -117,8 +117,24 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         String deviceTypeNumber = deviceObj["TypeNumber"].as<String>();
         uint8_t deviceAddress = strtol(deviceObj["Address"].as<String>().c_str(), NULL, 16);
         String deviceMode = deviceObj["Mode"] | "";
+          // Skip devices with null or empty type or typeNumber early to avoid crash
+        if (deviceType.isEmpty() || deviceType.equalsIgnoreCase("null") || 
+            deviceTypeNumber.isEmpty() || deviceTypeNumber.equalsIgnoreCase("null")) {
+            Serial.print("Config Device: ");
+            Serial.print(deviceKey);
+            Serial.println(" - WARNING: Skipping device with null or empty type/typeNumber");
+            continue;
+        }
         
-        // Log device details for debugging
+        // Skip devices with invalid addresses (0x00) early to avoid crash
+        if (deviceAddress == 0) {
+            Serial.print("Config Device: ");
+            Serial.print(deviceKey);
+            Serial.println(" - WARNING: Skipping device with invalid address 0x00");
+            continue;
+        }
+        
+        // Log device details for debugging (after validation to avoid crashes)
         Serial.print("Config Device: ");
         Serial.print(deviceKey);
         Serial.print(", Type: ");
@@ -127,13 +143,6 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         Serial.print(deviceTypeNumber);
         Serial.print(", Address: 0x");
         Serial.println(deviceAddress, HEX);
-        
-        // Skip devices with null or empty type or typeNumber
-        if (deviceType.isEmpty() || deviceType.equalsIgnoreCase("null") || 
-            deviceTypeNumber.isEmpty() || deviceTypeNumber.equalsIgnoreCase("null")) {
-            Serial.println("WARNING: Skipping device with null or empty type/typeNumber");
-            continue;
-        }
         
         // Skip devices with invalid addresses (0x00)
         if (deviceAddress == 0) {
