@@ -68,6 +68,7 @@ unsigned long lastTimeFetch = 0;
 const unsigned long timeFetchInterval = 3600000; // Fetch time every 1 hour
 
 bool setupComplete = false; // Flag to indicate setup completion
+bool offlineMode = false; // Flag to indicate if running in offline mode
 
 std::vector<Device*> devices; // Vector to hold device pointers
 std::map<uint8_t, std::vector<uint8_t>> tcaScanResults; // Map to store TCA scan results
