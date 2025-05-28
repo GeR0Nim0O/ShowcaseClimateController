@@ -26,53 +26,117 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
       heatingPower(0.0), coolingPower(0.0), 
       humidifierPower(0.0), dehumidifierPower(0.0),
       temperaturePID(nullptr), humidityPID(nullptr),
-      tempInput(0.0), tempOutput(0.0), tempSetpoint(temperatureSetpoint),
-      humInput(0.0), humOutput(0.0), humSetpoint(humiditySetpoint) {
+      tempInput(0.0), tempOutput(0.0), tempSetpoint(22.0),
+      humInput(0.0), humOutput(0.0), humSetpoint(50.0) {
     
-    // Safely assign the device pointers
+    Serial.println("ClimateController constructor starting");
+    
+    // Safely copy device pointers
     this->gpio = gpioExpander;
     this->sensor = tempHumSensor;
     this->dac = dac;
     
-    // Initialize pin mappings from configuration
-    initializePinMappings();
+    // Initialize pin mappings with default values first (don't try to read config yet)
+    pinFanExterior = 0;
+    pinFanInterior = 1;
+    pinHumidify = 2;
+    pinDehumidify = 3;
+    pinTemperatureEnable = 4;
+    pinTemperatureCool = 5;
+    pinTemperatureHeat = 6;
     
-    // Initialize PID controllers - with safety checks
+    // Initialize PID controllers
+    Serial.println("Initializing PID controllers");
     try {
-        Serial.println("Initializing Temperature PID controller");
         temperaturePID = new PID(&tempInput, &tempOutput, &tempSetpoint, 
                                 DEFAULT_TEMP_KP, DEFAULT_TEMP_KI, DEFAULT_TEMP_KD, DIRECT);
         
-        if (temperaturePID != nullptr) {
+        if (temperaturePID) {
             temperaturePID->SetMode(AUTOMATIC);
             temperaturePID->SetOutputLimits(-100, 100); // -100 = full cooling, +100 = full heating
-            Serial.println("Temperature PID initialized successfully");
         }
         
-        Serial.println("Initializing Humidity PID controller");
         humidityPID = new PID(&humInput, &humOutput, &humSetpoint,
                              DEFAULT_HUM_KP, DEFAULT_HUM_KI, DEFAULT_HUM_KD, DIRECT);
         
-        if (humidityPID != nullptr) {
+        if (humidityPID) {
             humidityPID->SetMode(AUTOMATIC);
             humidityPID->SetOutputLimits(-100, 100); // -100 = full dehumidify, +100 = full humidify
-            Serial.println("Humidity PID initialized successfully");
         }
     }
     catch (...) {
-        Serial.println("Exception during PID controller initialization");
-        // Clean up if an exception occurs
-        if (temperaturePID != nullptr) {
+        Serial.println("Exception during PID initialization");
+        // Clean up if exception occurs
+        if (temperaturePID) {
             delete temperaturePID;
             temperaturePID = nullptr;
         }
-        if (humidityPID != nullptr) {
+        if (humidityPID) {
             delete humidityPID;
             humidityPID = nullptr;
         }
     }
     
-    Serial.println("ClimateController constructor completed successfully");
+    // Safely initialize pin mappings later, after constructor completes
+    Serial.println("ClimateController constructor completed");
+}
+
+// Define this method to be called after constructor from begin() method
+void ClimateController::initializePinMappings() {
+    // Safe initialization with default values
+    pinFanExterior = 0;
+    pinFanInterior = 1;
+    pinHumidify = 2;
+    pinDehumidify = 3;
+    pinTemperatureEnable = 4;
+    pinTemperatureCool = 5;
+    pinTemperatureHeat = 6;
+    
+    try {
+        // Try to load from configuration
+        JsonObject devicesConfig = Configuration::getDevicesConfig();
+        
+        if (devicesConfig.containsKey("PCF8574") && 
+            devicesConfig["PCF8574"].is<JsonObject>()) {
+            
+            JsonObject pcfConfig = devicesConfig["PCF8574"];
+            if (pcfConfig.containsKey("Channels") && 
+                pcfConfig["Channels"].is<JsonObject>()) {
+                
+                JsonObject channels = pcfConfig["Channels"];
+                
+                // Enumerate channels to find pins by name
+                for (JsonPair channel : channels) {
+                    String channelKey = channel.key().c_str();
+                    JsonObject channelObj = channel.value();
+                    
+                    if (channelObj.containsKey("Name") && 
+                        channelObj["Name"].is<const char*>()) {
+                        
+                        String name = channelObj["Name"].as<const char*>();
+                        
+                        // Extract pin number from channel key (e.g., "IO0" -> 0)
+                        if (channelKey.startsWith("IO")) {
+                            uint8_t pinNum = channelKey.substring(2).toInt();
+                            
+                            // Assign to the right pin based on name
+                            if (name == "FanExterior") pinFanExterior = pinNum;
+                            else if (name == "FanInterior") pinFanInterior = pinNum;
+                            else if (name == "Humidify") pinHumidify = pinNum;
+                            else if (name == "Dehumidify") pinDehumidify = pinNum;
+                            else if (name == "TemperatureEnable") pinTemperatureEnable = pinNum;
+                            else if (name == "TemperatureCool") pinTemperatureCool = pinNum;
+                            else if (name == "TemperatureHeat") pinTemperatureHeat = pinNum;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    catch (...) {
+        Serial.println("Exception during pin mapping initialization");
+        // Use default pin mappings if exception occurs
+    }
 }
 
 bool ClimateController::begin() {
