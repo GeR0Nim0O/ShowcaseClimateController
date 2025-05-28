@@ -17,7 +17,7 @@ JsonObject Configuration::devicesConfig = JsonObject();
 
 bool Configuration::loadConfigFromSD(const char* filename) {
     // Parse the JSON file from the SD card
-    DynamicJsonDocument doc();
+    JsonDocument doc();
     
     if (!SDHandler::readJsonFile(filename, doc)) {
         Serial.println("Failed to read config file");
