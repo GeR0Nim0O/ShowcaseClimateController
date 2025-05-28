@@ -152,13 +152,13 @@ bool RotaryEncoder::writeRegister(uint8_t reg, uint8_t value) {
 bool RotaryEncoder::writeRegister32(uint8_t reg, int32_t value) {
     selectTCAChannel(tcaChannel);
     
-    Wire.beginTransmission(i2cAddress);
-    Wire.write(reg);
-    Wire.write((value >> 24) & 0xFF);
-    Wire.write((value >> 16) & 0xFF);
-    Wire.write((value >> 8) & 0xFF);
-    Wire.write(value & 0xFF);
-    return (Wire.endTransmission() == 0);
+    wire->beginTransmission(i2cAddress);
+    wire->write(reg);
+    wire->write((value >> 24) & 0xFF);
+    wire->write((value >> 16) & 0xFF);
+    wire->write((value >> 8) & 0xFF);
+    wire->write(value & 0xFF);
+    return (wire->endTransmission() == 0);
 }
 
 uint8_t RotaryEncoder::readRegister(uint8_t reg) {
