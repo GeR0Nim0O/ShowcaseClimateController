@@ -778,189 +778,230 @@ void setCustomMqttSettings() {
 
 // Function to initialize the climate controller
 void initializeClimateController() {
-  // Find a PCF8574 GPIO expander in the devices list
-  gpioExpander = nullptr;
-  for (Device* device : devices) {
-    if (device->getType().equalsIgnoreCase("PCF8574gpio")) {
-      gpioExpander = static_cast<PCF8574gpio*>(device);
-      Serial.println("Found GPIO expander for climate control");
-      break;
+  // Add extra safety
+  try {
+    // Find a PCF8574 GPIO expander in the devices list
+    gpioExpander = nullptr;
+    for (Device* device : devices) {
+      if (device != nullptr && device->getType().equalsIgnoreCase("PCF8574gpio")) {
+        gpioExpander = static_cast<PCF8574gpio*>(device);
+        Serial.println("Found GPIO expander for climate control");
+        break;
+      }
     }
-  }
-  
-  // Find an SHT temperature/humidity sensor
-  climateTemperatureSensor = nullptr;
-  for (Device* device : devices) {
-    if (device->getType().equalsIgnoreCase("SHTSensor")) {
-      climateTemperatureSensor = static_cast<SHTsensor*>(device);
-      Serial.println("Found temperature/humidity sensor for climate control");
-      break;
-    }
-  }
-  
-  // Find a DAC for analog control - more thorough search and debug
-  climateDac = nullptr;
-  Serial.println("Looking for DAC device...");
-  for (Device* device : devices) {
-    // Print type for debugging
-    Serial.print("Checking device type: '");
-    Serial.print(device->getType());
-    Serial.println("'");
     
-    // Case insensitive check
-    if (device->getType().equalsIgnoreCase("GP8403dac") || 
-        device->getType().equalsIgnoreCase("DAC")) {
-      Serial.print("Found DAC device: ");
+    // Find an SHT temperature/humidity sensor
+    climateTemperatureSensor = nullptr;
+    for (Device* device : devices) {
+      if (device != nullptr && device->getType().equalsIgnoreCase("SHTSensor")) {
+        climateTemperatureSensor = static_cast<SHTsensor*>(device);
+        Serial.println("Found temperature/humidity sensor for climate control");
+        break;
+      }
+    }
+    
+    // Find a DAC for analog control - more thorough search and debug
+    climateDac = nullptr;
+    Serial.println("Looking for DAC device...");
+    for (Device* device : devices) {
+      if (device == nullptr) continue;
+      
+      // Print type for debugging
+      Serial.print("Checking device type: '");
       Serial.print(device->getType());
-      Serial.print(" with name: ");
-      Serial.println(device->getDeviceName());
+      Serial.println("'");
       
-      climateDac = static_cast<GP8403dac*>(device);
-      break;
+      // Case insensitive check
+      if (device->getType().equalsIgnoreCase("GP8403dac") || 
+          device->getType().equalsIgnoreCase("DAC")) {
+        Serial.print("Found DAC device: ");
+        Serial.print(device->getType());
+        Serial.print(" with name: ");
+        Serial.println(device->getDeviceName());
+        
+        climateDac = static_cast<GP8403dac*>(device);
+        break;
+      }
     }
-  }
-  
-  if (climateDac == nullptr) {
-    Serial.println("WARNING: No DAC device found in devices list");
-  }
-  
-  // Print device counts for debugging
-  int gpioCount = 0, sensorCount = 0, dacCount = 0;
-  for (Device* device : devices) {
-    if (device->getType() == "PCF8574gpio" || device->getType() == "PCF8574GPIO") gpioCount++;
-    if (device->getType() == "SHTSensor" || device->getType() == "SHTsensor") sensorCount++;
-    if (device->getType() == "GP8403dac" || device->getType() == "GP8403DAC" || device->getType() == "DAC") dacCount++;
-  }
-  Serial.print("Device counts - GPIO: ");
-  Serial.print(gpioCount);
-  Serial.print(", Sensors: ");
-  Serial.print(sensorCount);
-  Serial.print(", DACs: ");
-  Serial.println(dacCount);
-  
-  // Create climate controller if we found the required devices
-  if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
-    climateController = new ClimateController(gpioExpander, climateTemperatureSensor, climateDac);
     
-    if (climateController->begin()) {
-      Serial.println("Climate controller initialized successfully");
+    if (climateDac == nullptr) {
+      Serial.println("WARNING: No DAC device found in devices list");
+    }
+    
+    // Print device counts for debugging
+    int gpioCount = 0, sensorCount = 0, dacCount = 0;
+    for (Device* device : devices) {
+      if (device == nullptr) continue;
+      if (device->getType() == "PCF8574gpio" || device->getType() == "PCF8574GPIO") gpioCount++;
+      if (device->getType() == "SHTSensor" || device->getType() == "SHTsensor") sensorCount++;
+      if (device->getType() == "GP8403dac" || device->getType() == "GP8403DAC" || device->getType() == "DAC") dacCount++;
+    }
+    Serial.print("Device counts - GPIO: ");
+    Serial.print(gpioCount);
+    Serial.print(", Sensors: ");
+    Serial.print(sensorCount);
+    Serial.print(", DACs: ");
+    Serial.println(dacCount);
+    
+    // Double check devices are initialized
+    if (gpioExpander != nullptr && !gpioExpander->isInitialized()) {
+      Serial.println("WARNING: GPIO expander found but not initialized. Forcing initialization.");
+      gpioExpander->forceInitialized(true);
+    }
+    
+    if (climateTemperatureSensor != nullptr && !climateTemperatureSensor->isInitialized()) {
+      Serial.println("WARNING: Temperature sensor found but not initialized. Forcing initialization.");
+      climateTemperatureSensor->forceInitialized(true);
+    }
+    
+    if (climateDac != nullptr && !climateDac->isInitialized()) {
+      Serial.println("WARNING: DAC found but not initialized. Forcing initialization.");
+      climateDac->forceInitialized(true);
+    }
+    
+    // Create climate controller if we found the required devices
+    if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
+      Serial.println("Creating climate controller with devices:");
+      Serial.print("- GPIO expander: ");
+      Serial.print(gpioExpander->getType());
+      Serial.print(" at address 0x");
+      Serial.print(gpioExpander->getI2CAddress(), HEX);
+      Serial.print(" on TCA port ");
+      Serial.println(gpioExpander->getTCAChannel());
       
-      // Set initial parameters
-      climateController->setTemperatureSetpoint(temperatureSetpoint);
-      climateController->setHumiditySetpoint(humiditySetpoint);
-      climateController->setClimateMode(climateMode);
-      climateController->setHumidityMode(humidityMode);
+      Serial.print("- Temperature sensor: ");
+      Serial.print(climateTemperatureSensor->getType());
+      Serial.print(" at address 0x");
+      Serial.print(climateTemperatureSensor->getI2CAddress(), HEX);
+      Serial.print(" on TCA port ");
+      Serial.println(climateTemperatureSensor->getTCAChannel());
       
-      // Turn on interior fan by default
-      if (autoFanControlEnabled) {
-        climateController->setFanInterior(true);
+      if (climateDac != nullptr) {
+        Serial.print("- DAC: ");
+        Serial.print(climateDac->getType());
+        Serial.print(" at address 0x");
+        Serial.print(climateDac->getI2CAddress(), HEX);
+        Serial.print(" on TCA port ");
+        Serial.println(climateDac->getTCAChannel());
       }
       
-      Serial.print("Climate controller setpoints - Temperature: ");
-      Serial.print(temperatureSetpoint);
-      Serial.print("°C, Humidity: ");
-      Serial.print(humiditySetpoint);
-      Serial.println("%");
-      
-      Serial.print("Analog control: ");
-      Serial.println(climateController->hasDACControl() ? "Available" : "Not available");
-      
-      // Add test call here - comment out when not testing
-      testDACOutput();
-    } else {
-      Serial.println("Failed to initialize climate controller");
-      delete climateController;
-      climateController = nullptr;
-    }
-  } else {
-    Serial.println("Could not find required devices for climate controller:");
-    Serial.print("GPIO expander: ");
-    Serial.println(gpioExpander != nullptr ? "Found" : "Not found");
-    Serial.print("Temperature sensor: ");
-    Serial.println(climateTemperatureSensor != nullptr ? "Found" : "Not found");
-    Serial.print("DAC: ");
-    Serial.println(climateDac != nullptr ? "Found" : "Not found (optional)");
-  }
-}
-
-// Function to update the climate controller
-void updateClimateController() {
-  if (climateController == nullptr) return;
-  
-  // Update the controller (reads sensors and applies control logic)
-  climateController->update();
-  
-  // Log climate controller status every minute
-  static unsigned long lastClimateLog = 0;
-  if (millis() - lastClimateLog >= 60000) { // Every minute
-    float currentTemp = climateController->getCurrentTemperature();
-    float currentHum = climateController->getCurrentHumidity();
-    
-    Serial.println("=== Climate Controller Status ===");
-    Serial.print("Temperature: ");
-    Serial.print(currentTemp);
-    Serial.print("°C (setpoint: ");
-    Serial.print(climateController->getTemperatureSetpoint());
-    Serial.println("°C)");
-    
-    Serial.print("Humidity: ");
-    Serial.print(currentHum);
-    Serial.print("% (setpoint: ");
-    Serial.print(climateController->getHumiditySetpoint());
-    Serial.println("%)");
-    
-    Serial.print("Heating: ");
-    Serial.print(climateController->isHeating() ? "ON" : "OFF");
-    if (climateController->isHeating()) {
-      Serial.print(" (Power: ");
-      Serial.print(climateController->getHeatingPower());
-      Serial.print("%, DAC Output: ");
-      Serial.print((climateController->getHeatingPower() / 100.0) * 5.0, 1); // Changed to 5.0V max
-      Serial.print("V)");
-    }
-    Serial.println();
-    
-    Serial.print("Cooling: ");
-    Serial.print(climateController->isCooling() ? "ON" : "OFF");
-    if (climateController->isCooling()) {
-      Serial.print(" (Power: ");
-      Serial.print(climateController->getCoolingPower());
-      Serial.print("%, DAC Output: ");
-      Serial.print((climateController->getCoolingPower() / 100.0) * 5.0, 1); // Changed to 5.0V max
-      Serial.print("V)");
-    }
-    Serial.println();
-    
-    Serial.print("Humidifying: ");
-    Serial.println(climateController->isHumidifying() ? "ON" : "OFF");
-    
-    Serial.print("Dehumidifying: ");
-    Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
-    
-    Serial.print("Analog Control: ");
-    Serial.println(climateController->hasDACControl() ? "Enabled (Temperature Only)" : "Disabled");
-    Serial.println("===============================");
-    
-    lastClimateLog = millis();
-  }
-}
-
-// Add this new function for testing DAC
-void testDACOutput() {
-    if (climateDac != nullptr && climateDac->isConnected()) {
-        // Set DAC to output 4.00V for testing (within the 0-5V range)
-        float testVoltage = 4.0f;
-        Serial.print("Setting DAC output to ");
-        Serial.print(testVoltage);
-        Serial.println(" volts for testing");
+      // Create with safe checks
+      try {
+        Serial.println("Allocating climate controller...");
+        climateController = new ClimateController(gpioExpander, climateTemperatureSensor, climateDac);
         
-        // Use channel 0 (DAC0) - generic channel number
-        bool success = climateDac->setChannelVoltage(0, testVoltage);
-        
-        if (success) {
-            Serial.println("DAC test voltage set successfully");
+        if (climateController != nullptr) {
+          Serial.println("Climate controller allocated, calling begin()");
+          
+          if (climateController->begin()) {
+            Serial.println("Climate controller initialized successfully");
+            
+            // Set initial parameters
+            climateController->setTemperatureSetpoint(temperatureSetpoint);
+            climateController->setHumiditySetpoint(humiditySetpoint);
+            climateController->setClimateMode(climateMode);
+            climateController->setHumidityMode(humidityMode);
+            
+            // Turn on interior fan by default
+            if (autoFanControlEnabled) {
+              Serial.println("Turning on interior fan by default");
+              climateController->setFanInterior(true);
+            }
+            
+            Serial.print("Climate controller setpoints - Temperature: ");
+            Serial.print(temperatureSetpoint);
+            Serial.print("°C, Humidity: ");
+            Serial.print(humiditySetpoint);
+            Serial.println("%");
+            
+            Serial.print("Analog control: ");
+            Serial.println(climateController->hasDACControl() ? "Available" : "Not available");
+            
+            // Defer DAC testing for safety
+            // testDACOutput(); // Commented out for safety
+          } else {
+            Serial.println("Failed to initialize climate controller");
+            delete climateController;
+            climateController = nullptr;
+          }
         } else {
-            Serial.println("Failed to set DAC test voltage");
+          Serial.println("Failed to allocate climate controller");
+        }
+      }
+      catch (const std::exception& e) {
+        Serial.print("Exception during climate controller initialization: ");
+        Serial.println(e.what());
+        if (climateController != nullptr) {
+          delete climateController;
+          climateController = nullptr;
+        }
+      }
+      catch (...) {
+        Serial.println("Unknown exception during climate controller initialization");
+        if (climateController != nullptr) {
+          delete climateController;
+          climateController = nullptr;
+        }
+      }
+    } else {
+      Serial.println("Could not find required devices for climate controller:");
+      Serial.print("GPIO expander: ");
+      Serial.println(gpioExpander != nullptr ? "Found" : "Not found");
+      Serial.print("Temperature sensor: ");
+      Serial.println(climateTemperatureSensor != nullptr ? "Found" : "Not found");
+      Serial.print("DAC: ");
+      Serial.println(climateDac != nullptr ? "Found" : "Not found (optional)");
+    }
+  }
+  catch (...) {
+    Serial.println("Exception during device discovery for climate controller");
+  }
+}
+
+// Update testDACOutput with better safety checks
+void testDACOutput() {
+    if (climateDac != nullptr) {
+        try {
+            Serial.println("Testing DAC output...");
+            
+            // First verify DAC is connected and responding
+            bool isConnected = climateDac->isConnected();
+            Serial.print("DAC connection test: ");
+            Serial.println(isConnected ? "PASSED" : "FAILED");
+            
+            if (isConnected) {
+                // Set DAC to a safer initial test voltage (2.5V = 50% of range)
+                float testVoltage = 2.5f;
+                Serial.print("Setting DAC output to ");
+                Serial.print(testVoltage);
+                Serial.println(" volts for testing");
+                
+                // Use channel 0 (DAC0) - generic channel number
+                bool success = climateDac->setChannelVoltage(0, testVoltage);
+                
+                if (success) {
+                    Serial.println("DAC test voltage set successfully");
+                    delay(1000); // Wait for stability
+                    
+                    // Gradually ramp down to 0V
+                    Serial.println("Ramping DAC down to 0V...");
+                    for (float v = testVoltage; v >= 0.0f; v -= 0.5f) {
+                        climateDac->setChannelVoltage(0, v);
+                        Serial.print("DAC: ");
+                        Serial.print(v);
+                        Serial.println("V");
+                        delay(200);
+                    }
+                    climateDac->setChannelVoltage(0, 0.0f); // Ensure final value is 0
+                    Serial.println("DAC test complete");
+                } else {
+                    Serial.println("Failed to set DAC test voltage");
+                }
+            } else {
+                Serial.println("DAC not responding, skipping test");
+            }
+        } catch (...) {
+            Serial.println("Exception during DAC testing");
         }
     } else {
         Serial.println("DAC not available for testing");
