@@ -2,6 +2,7 @@
 #define SDHANDLER_H
 
 #include <SD.h>
+#include <ArduinoJson.h>
 
 const int MAX_FILE_SIZE = 1024 * 10; // Value *1KB limit for the log file
 
@@ -12,6 +13,9 @@ public:
 
     // Function to log JSON data to the SD card
     static void logJson(const char* json);
+
+    // Function to read and parse JSON file from SD card
+    static bool readJsonFile(const char* filename, JsonDocument& doc);
 
     // Directory and file operations
     static void listDir(const char* dirname, uint8_t levels);
