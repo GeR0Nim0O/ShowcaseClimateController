@@ -60,7 +60,7 @@ public:
 
 private:
     PCF8574gpio* gpio;
-    SHT31sensor* sensor;
+    SHTsensor* sensor;
     
     // Setpoints
     float temperatureSetpoint;
