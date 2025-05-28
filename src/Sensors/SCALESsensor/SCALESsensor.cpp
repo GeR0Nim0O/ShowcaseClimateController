@@ -45,13 +45,13 @@ std::map<String, String> SCALESsensor::readData() {
 }
 
 bool SCALESsensor::writeCommand(uint8_t command) {
-    Wire.beginTransmission(_address);
-    Wire.write(command);
-    return Wire.endTransmission() == 0;
+    wire->beginTransmission(_address);
+    wire->write(command);
+    return wire->endTransmission() == 0;
 }
 
 bool SCALESsensor::readBytes(uint8_t *data, uint8_t length) {
-    if (Wire.requestFrom(_address, length) != length)
+    if (wire->requestFrom(_address, length) != length)
     {
         return false;
     }
