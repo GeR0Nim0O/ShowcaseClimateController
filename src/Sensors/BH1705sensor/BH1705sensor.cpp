@@ -2,8 +2,8 @@
 #include "BH1705sensor.h"
 #include "I2CHandler.h"
 
-BH1705sensor::BH1705sensor(TwoWire* wire, uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(wire, i2cChannel, tcaPort, threshold, channels, deviceIndex), wire(wire), _address(BH1705_ADDRESS), _lux(NAN) {
+BH1705sensor::BH1705sensor(uint8_t i2cChannel, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
+    : Device(i2cChannel, tcaPort, threshold, channels, deviceIndex), _address(BH1705_ADDRESS), _lux(NAN) {
     type = "Sensor"; // Fixed type
     this->typeNumber = "BH1705"; // Fixed type number
     Serial.println("BH1705sensor created:");    Serial.print("Address: ");
