@@ -167,10 +167,6 @@
         "TEMP": {
           "Name": "TemperatureControl",
           "Threshold": 0.5
-        },
-        "HUM": {
-          "Name": "HumidityControl",
-          "Threshold": 0.5
         }
       }
     }
