@@ -177,16 +177,16 @@ bool GP8403dac::writeRegister(uint8_t reg, uint16_t value) {
 uint16_t GP8403dac::readRegister(uint8_t reg) {
     I2CHandler::selectTCA(getTCAChannel());
     
-    this->wire->beginTransmission(getI2CAddress());
-    this->wire->write(reg);
-    if (this->wire->endTransmission() != 0) {
+    Wire.beginTransmission(getI2CAddress());
+    Wire.write(reg);
+    if (Wire.endTransmission() != 0) {
         return 0;
     }
     
-    this->wire->requestFrom(getI2CAddress(), (uint8_t)2);
-    if (this->wire->available() >= 2) {
-        uint16_t value = this->wire->read() << 8; // MSB
-        value |= this->wire->read();              // LSB
+    Wire.requestFrom(getI2CAddress(), (uint8_t)2);
+    if (Wire.available() >= 2) {
+        uint16_t value = Wire.read() << 8; // MSB
+        value |= Wire.read();              // LSB
         return value;
     }
     
