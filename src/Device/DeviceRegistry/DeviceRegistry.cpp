@@ -165,6 +165,19 @@ Device* DeviceRegistry::createDeviceWithThresholds(
         Serial.println("WARNING: Low memory detected before device creation");
     }
     
+    // Safety check for null or empty type/typeNumber
+    if (type.isEmpty() || type.equalsIgnoreCase("null") || 
+        typeNumber.isEmpty() || typeNumber.equalsIgnoreCase("null")) {
+        Serial.println("ERROR: Cannot create device with null or empty type/typeNumber");
+        return nullptr;
+    }
+    
+    // Safety check for invalid address
+    if (address == 0) {
+        Serial.println("ERROR: Cannot create device with invalid address 0x00");
+        return nullptr;
+    }
+    
     // Add debugging for all device creation attempts
     Serial.print("Creating device with type: ");
     Serial.print(type);
