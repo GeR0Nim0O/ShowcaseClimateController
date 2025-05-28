@@ -130,6 +130,7 @@ Device* DeviceRegistry::createDeviceWithThresholds(
     int deviceIndex,
     const String& mode
 ) {
+) {
     Device* device = nullptr;
     
     // Convert channelThresholds to a single threshold (use first threshold found)
