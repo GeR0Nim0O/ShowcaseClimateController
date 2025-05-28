@@ -59,9 +59,9 @@ std::map<String, String> BH1705sensor::readData() {
 }
 
 bool BH1705sensor::writeCommand(uint8_t command) {
-    wire->beginTransmission(_address);
-    wire->write(command);
-    return wire->endTransmission() == 0;
+    Wire.beginTransmission(_address);
+    Wire.write(command);
+    return Wire.endTransmission() == 0;
 }
 
 bool BH1705sensor::readBytes(uint8_t *data, uint8_t length) {
