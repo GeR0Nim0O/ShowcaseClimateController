@@ -4,19 +4,32 @@
 #include "Device.h"
 
 // Default I2C address for GP8403
-#define DAC_DEFAULT_ADDRESS 0x5F  // Updated to match DFRobot library default
+#define DAC_DEFAULT_ADDRESS 0x58  // Updated to match DFRobot library default (0x58)
 
-// Register addresses for GP8403 DAC
-#define DAC_REG_CONFIG     0x00
-#define DAC_REG_CHANNEL_A  0x01
-#define DAC_REG_CHANNEL_B  0x02
-#define DAC_REG_VREF       0x03
+// Register addresses for GP8403 DAC - Based on DFRobot library
+#define GP8302_CONFIG_CURRENT_REG 0x02  // Register for DAC data transmission
+#define OUTPUT_RANGE            0x01    // Output range configuration register
+
+// Output range constants
+#define OUTPUT_RANGE_5V         0x00    // 0-5V output range
+#define OUTPUT_RANGE_10V        0x11    // 0-10V output range
+
+// Channel selection
+#define CHANNEL0                0       // Channel A
+#define CHANNEL1                1       // Channel B
+#define CHANNELALL              2       // Both channels
 
 // DAC Configuration bits
-#define DAC_CONFIG_READY   0x80
-#define DAC_CONFIG_BUSY    0x00
-#define DAC_GAIN_1X 0x00
-#define DAC_GAIN_2X 0x01
+#define DAC_CONFIG_READY        0x80
+#define DAC_CONFIG_BUSY         0x00
+#define DAC_GAIN_1X             0x00
+#define DAC_GAIN_2X             0x01
+
+// These are kept for backward compatibility with existing code
+#define DAC_REG_CONFIG          0x00
+#define DAC_REG_CHANNEL_A       0x01
+#define DAC_REG_CHANNEL_B       0x02
+#define DAC_REG_VREF            0x03
 
 class GP8403dac : public Device {
 public:    GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
