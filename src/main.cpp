@@ -1066,38 +1066,12 @@ void testTCAStability(PCF8574gpio* gpio) {
             Serial.println("PASS");
         } else {
             Serial.print("FAIL (error ");
-        delay(5);
-        
-        Wire.beginTransmission(testGpio->getI2CAddress());
-        Wire.write(testPatterns[i]);
-        error = Wire.endTransmission();
-        
-        if (error == 0) {
-            Serial.println("SUCCESS");
-            delay(1000); // Hold pattern for 1 second
-            
-            // Verify by reading back
-            I2CHandler::selectTCA(testGpio->getTCAChannel());
-            delay(5);
-            Wire.requestFrom(testGpio->getI2CAddress(), (uint8_t)1);
-            if (Wire.available()) {
-                uint8_t readBack = Wire.read();
-                Serial.print("  Readback: 0x");
-                Serial.print(readBack, HEX);
-                if (readBack == testPatterns[i]) {
-                    Serial.println(" - VERIFIED");
-                } else {
-                    Serial.println(" - MISMATCH!");
-                }
-            }
-        } else {
-            Serial.print("FAILED (error ");
             Serial.print(error);
             Serial.println(")");
         }
+        
+        delay(100);
     }
-    
-    Serial.println("GPIO hardware diagnostics complete");
 }
 
 // NEW: Diagnostic test using climate controller
