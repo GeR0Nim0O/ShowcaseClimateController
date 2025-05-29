@@ -1084,3 +1084,111 @@ void initializeAllGPIOToFalse() {
   
   Serial.println("GPIO initialization complete");
 }
+
+// Function to update the climate controller (called every loop)
+void updateClimateController() {
+    if (climateController == nullptr) {
+        return; // Exit if climate controller is not initialized
+    }
+    
+    // Only update climate controller every few seconds to avoid GPIO conflicts
+    static unsigned long lastClimateUpdate = 0;
+    if (millis() - lastClimateUpdate >= 5000) { // Update every 5 seconds
+        climateController->update();
+        lastClimateUpdate = millis();
+    }
+    
+    // Optional: Print climate controller status periodically
+    static unsigned long lastStatusPrint = 0;
+    if (millis() - lastStatusPrint > 60000) { // Print status every 60 seconds
+        Serial.print("Climate status - Temperature: ");
+        Serial.print(climateController->getCurrentTemperature());
+        Serial.print("°C (setpoint: ");
+        Serial.print(climateController->getTemperatureSetpoint());
+        Serial.print("°C), Humidity: ");
+        Serial.print(climateController->getCurrentHumidity());
+        Serial.print("% (setpoint: ");
+        Serial.print(climateController->getHumiditySetpoint());
+        Serial.println("%)");
+        
+        // Print heater/cooler status
+        Serial.print("Climate control - Heating: ");
+        Serial.print(climateController->isHeating() ? "ON" : "OFF");
+        Serial.print(", Cooling: ");
+        Serial.print(climateController->isCooling() ? "ON" : "OFF");
+        Serial.print(", Humidifying: ");
+        Serial.print(climateController->isHumidifying() ? "ON" : "OFF");
+        Serial.print(", Dehumidifying: ");
+        Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
+        
+        // Enhanced fan status reporting with detailed diagnostics
+        bool climateActive = (climateController->isHeating() || climateController->isCooling() || 
+                             climateController->isHumidifying() || climateController->isDehumidifying());
+        
+        Serial.print("Fan control - Interior: ");
+        Serial.print(climateController->isFanInteriorOn() ? "ON" : "OFF");
+        Serial.print(", Exterior: ");
+        Serial.print(climateController->isFanExteriorOn() ? "ON" : "OFF");
+        Serial.print(" (Expected: ");
+        Serial.print(climateActive ? "BOTH ON" : "BOTH OFF");
+        Serial.print(", Auto control: ");
+        Serial.print(climateController->isAutoFanControlEnabled() ? "ENABLED" : "DISABLED");
+        Serial.println(")");
+        
+        // GPIO pin state checking for fans
+        if (gpioExpander != nullptr) {
+            uint8_t gpioState = gpioExpander->getGPIOState();
+            Serial.print("GPIO state: 0x");
+            Serial.print(gpioState, HEX);
+            
+            // Check individual fan pins
+            bool pin0State = (gpioState & 0x01) != 0; // Pin 0 (FanExterior)
+            bool pin1State = (gpioState & 0x02) != 0; // Pin 1 (FanInterior)
+            
+            Serial.print(" (Fan pins - Exterior(0): ");
+            Serial.print(pin0State ? "HIGH" : "LOW");
+            Serial.print(", Interior(1): ");
+            Serial.print(pin1State ? "HIGH" : "LOW");
+            Serial.println(")");
+            
+            // Warn if fans should be on but pins are not set
+            if (climateActive) {
+                if (!pin0State) {
+                    Serial.println("WARNING: Exterior fan should be ON but pin 0 is LOW!");
+                }
+                if (!pin1State) {
+                    Serial.println("WARNING: Interior fan should be ON but pin 1 is LOW!");
+                }
+            }
+            
+            // Force refresh GPIO state to ensure it's maintained
+            gpioExpander->refreshOutputState();
+        }
+        
+        lastStatusPrint = millis();
+    }
+    
+    // More frequent fan status check (every 10 seconds)
+    static unsigned long lastFanCheck = 0;
+    if (millis() - lastFanCheck > 10000) { // Check every 10 seconds
+        if (climateController != nullptr && gpioExpander != nullptr) {
+            bool climateActive = (climateController->isHeating() || climateController->isCooling() || 
+                                 climateController->isHumidifying() || climateController->isDehumidifying());
+            
+            if (climateActive) {
+                // If climate is active but fans are not reported as on, manually turn them on
+                if (!climateController->isFanInteriorOn()) {
+                    Serial.println("FIXING: Interior fan should be on, enabling manually");
+                    climateController->setAutoFanControl(true);
+                    climateController->setFanInterior(true);
+                }
+                if (!climateController->isFanExteriorOn()) {
+                    Serial.println("FIXING: Exterior fan should be on, enabling manually");
+                    climateController->setAutoFanControl(true);
+                    climateController->setFanExterior(true);
+                }
+            }
+        }
+        lastFanCheck = millis();
+    }
+}
