@@ -52,6 +52,10 @@ public:
     // Fan control
     void setFanInterior(bool enable);
     void setFanExterior(bool enable);
+    void setAutoFanControl(bool enable) { autoFanControlEnabled = enable; }
+    bool isAutoFanControlEnabled() const { return autoFanControlEnabled; }
+    bool isFanInteriorOn() const { return fanInteriorActive; }
+    bool isFanExteriorOn() const { return fanExteriorActive; }
       // DAC control
     void setDACDevice(GP8403dac* dac) { this->dac = dac; }
     bool hasDACControl() const { return dac != nullptr; }
@@ -104,6 +108,9 @@ private:
     bool humidifyingActive;
     bool dehumidifyingActive;
     bool tempControlEnabled;
+    bool fanInteriorActive;      // Add fan state tracking
+    bool fanExteriorActive;      // Add fan state tracking
+    bool autoFanControlEnabled; // Add auto fan control flag
     
     // Power levels for analog control
     float heatingPower;
@@ -127,9 +134,11 @@ private:
     // Control methods
     void updateTemperatureControl();
     void updateHumidityControl();
+    void updateFanControl();        // Add fan control method
     void updateSensorReadings();
     void applyTemperatureControl();
     void applyHumidityControl();
+    void applyFanControl();         // Add fan application method
     
     // DAC control method
     void applyDACControls();
