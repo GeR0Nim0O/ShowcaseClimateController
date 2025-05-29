@@ -1,8 +1,8 @@
 #include "DeviceRegistry/DeviceRegistry.h"
 // Hardware-specific includes - contained within DeviceRegistry.cpp
-#include "Sensor/SHTsensor/SHTsensor.h"
-#include "Sensor/BH1705sensor/BH1705sensor.h" 
-#include "Sensor/SCALESsensor/SCALESsensor.h"
+#include "Sensors/SHTsensor/SHTsensor.h"
+#include "Sensors/BH1705sensor/BH1705sensor.h" 
+#include "Sensors/SCALESsensor/SCALESsensor.h"
 #include "GPIO/PCF8574gpio/PCF8574gpio.h"
 #include "DAC/GP8403dac/GP8403dac.h"
 #include "RTC/DS3231rtc/DS3231rtc.h"
