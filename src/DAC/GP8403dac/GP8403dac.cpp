@@ -68,19 +68,16 @@ bool GP8403dac::begin() {
     if (wire->endTransmission() != 0) {
         Serial.println("GP8403: Failed to set output range");
         return initializeLimitedMode();
-    }
-      // Try comprehensive validation
+    }    // Try comprehensive validation
     if (validateDAC()) {
-        setConnected(true);
-        setInitialized(true);
+        initialized = true;  // Direct access to protected member
         Serial.println("GP8403: Full initialization and validation successful!");
         return true;
     } else {
         // Fall back to gentle validation
         Serial.println("GP8403: Full validation failed, trying gentle validation...");
         if (validateDACGentle()) {
-            setConnected(true);
-            setInitialized(true);
+            initialized = true;  // Direct access to protected member
             Serial.println("GP8403: Limited initialization successful (gentle validation passed)");
             return true;
         } else {
