@@ -270,9 +270,7 @@ bool GP8403dac::setChannelA(uint16_t value) {
     }
     Serial.print("GP8403: Setting Channel A to raw value ");
     Serial.println(value);
-    // Save original value for later reference
     uint16_t originalValue = value;
-    // Shift left by 4 bits as per DFRobot's library
     value = value << 4;
     const int maxRetries = 3;
     bool success = false;
@@ -281,8 +279,8 @@ bool GP8403dac::setChannelA(uint16_t value) {
         delayMicroseconds(200);
         wire->beginTransmission(getI2CAddress());
         wire->write(0x01); // Channel A register
-        wire->write((value >> 8) & 0xFF); // MSB first
-        wire->write(value & 0xFF);        // LSB
+        wire->write(value & 0xFF);        // LSB first
+        wire->write((value >> 8) & 0xFF); // MSB second
         int result = wire->endTransmission();
         success = (result == 0);
         if (success) {
@@ -312,7 +310,6 @@ bool GP8403dac::setChannelB(uint16_t value) {
     Serial.print("GP8403: Setting Channel B to raw value ");
     Serial.println(value);
     uint16_t originalValue = value;
-    // Shift left by 4 bits as per DFRobot's library
     value = value << 4;
     const int maxRetries = 3;
     bool success = false;
@@ -321,8 +318,8 @@ bool GP8403dac::setChannelB(uint16_t value) {
         delayMicroseconds(200);
         wire->beginTransmission(getI2CAddress());
         wire->write(0x02); // Channel B register
-        wire->write((value >> 8) & 0xFF); // MSB first
-        wire->write(value & 0xFF);        // LSB
+        wire->write(value & 0xFF);        // LSB first
+        wire->write((value >> 8) & 0xFF); // MSB second
         int result = wire->endTransmission();
         success = (result == 0);
         if (success) {
