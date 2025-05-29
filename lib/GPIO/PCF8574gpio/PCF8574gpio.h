@@ -36,14 +36,7 @@ public:
     bool isInputMode() const;
     void initializeOutputs(); // Initialize all outputs to LOW
 
-    // NEW: Advanced hardware diagnostics
-    bool performHardwareDiagnostics();
-    bool performPowerSupplyTest();
-    bool performGroundTest();
-    bool performIndividualPinTest();
-    bool performLoadTest();
-    
-    // NEW: Methods to maintain output state
+    // Methods to maintain output state
     void refreshOutputState();
     void forceOutputMode();
     

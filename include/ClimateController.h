@@ -68,9 +68,6 @@ public:
     float getHumidifierPower() const { return humidifierPower; }
     float getDehumidifierPower() const { return dehumidifierPower; }
     
-    // DAC testing
-    void testDAC();
-
     // Status
     bool isHeating() const { return heatingActive; }
     bool isCooling() const { return coolingActive; }
