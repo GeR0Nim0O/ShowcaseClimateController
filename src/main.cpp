@@ -9,6 +9,7 @@
 #include "DS3231Rtc/DS3231rtc.h" // Include the DS3231rtc header
 #include "PCF8574gpio.h" // Add PCF8574 GPIO include
 #include "ClimateController.h" // Add climate controller include
+#include "DeviceRegistry/DeviceRegistry.h" // Add DeviceRegistry include
 
 #include <WiFiClientSecure.h> 
 #include <string>
