@@ -1,8 +1,119 @@
 #include "DeviceRegistry/DeviceRegistry.h"
+// Hardware-specific includes - contained within DeviceRegistry.cpp
+#include "Sensor/SHTsensor/SHTsensor.h"
+#include "Sensor/BH1705sensor/BH1705sensor.h" 
+#include "Sensor/SCALESsensor/SCALESsensor.h"
+#include "GPIO/PCF8574gpio/PCF8574gpio.h"
+#include "DAC/GP8403dac/GP8403dac.h"
+#include "RTC/DS3231rtc/DS3231rtc.h"
+
+// Initialize the static factory registry
+std::map<std::pair<String, String>, 
+    std::function<Device*(TwoWire*, uint8_t, uint8_t, float, const std::map<String, String>&, int)>> 
+    DeviceRegistry::deviceFactory;
 
 DeviceRegistry& DeviceRegistry::getInstance() {
     static DeviceRegistry instance;
     return instance;
+}
+
+// Hardware-agnostic device type registration
+bool DeviceRegistry::registerDeviceType(const String& type, const String& typeNumber, 
+    std::function<Device*(TwoWire*, uint8_t, uint8_t, float, const std::map<String, String>&, int)> creator) {
+    
+    Serial.print("DeviceRegistry: Registering device type: ");
+    Serial.print(type);
+    Serial.print("/");
+    Serial.println(typeNumber);
+    
+    deviceFactory[{type, typeNumber}] = creator;
+    return true;
+}
+
+// Hardware-agnostic device creation
+Device* DeviceRegistry::createDevice(const String& type, const String& typeNumber, 
+    TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
+    const std::map<String, String>& channels, int deviceIndex) {
+    
+    Serial.print("DeviceRegistry: Creating device - Type: ");
+    Serial.print(type);
+    Serial.print(", Model: ");
+    Serial.println(typeNumber);
+
+    auto it = deviceFactory.find({type, typeNumber});
+    if (it != deviceFactory.end()) {
+        Serial.println("DeviceRegistry: Device type found in factory registry");
+        Device* device = it->second(wire, address, tcaPort, threshold, channels, deviceIndex);
+        if (device) {
+            Serial.println("DeviceRegistry: Device created successfully via factory");
+        } else {
+            Serial.println("DeviceRegistry: Device creation failed");
+        }
+        return device;
+    } else {
+        Serial.print("DeviceRegistry: ERROR - Device type not registered: ");
+        Serial.print(type);
+        Serial.print("/");
+        Serial.println(typeNumber);
+    }
+    return nullptr;
+}
+
+Device* DeviceRegistry::createDeviceWithThresholds(
+    TwoWire* wire,
+    const String& type, 
+    const String& typeNumber, 
+    uint8_t address, 
+    uint8_t tcaPort, 
+    const std::map<String, float>& channelThresholds, 
+    const std::map<String, String>& channelNames, 
+    int deviceIndex,
+    const String& mode
+) {
+    // Input validation
+    if (type.isEmpty() || typeNumber.isEmpty() || address == 0) {
+        Serial.println("DeviceRegistry: Invalid parameters for device creation");
+        return nullptr;
+    }
+    
+    // Memory check
+    size_t freeHeap = ESP.getFreeHeap();
+    if (freeHeap < 10000) {
+        Serial.println("DeviceRegistry: WARNING - Low memory detected");
+    }
+    
+    // Convert channelThresholds to single threshold (use first or default)
+    float threshold = 1.0f;
+    if (!channelThresholds.empty()) {
+        threshold = channelThresholds.begin()->second;
+    }
+    
+    // Create device using the factory pattern
+    Device* device = createDevice(type, typeNumber, wire, address, tcaPort, threshold, channelNames, deviceIndex);
+    
+    if (device) {
+        // Set device name
+        String deviceName = typeNumber + "_TCA" + String(tcaPort) + "_" + String(deviceIndex);
+        device->deviceName = deviceName;
+        
+        // Set channel-specific thresholds
+        device->setChannelThresholds(channelThresholds);
+        
+        // Handle special mode parameter (e.g., for GPIO devices)
+        // This could be extended to support mode setting in the future
+        
+        // Register the device
+        if (registerDevice(device)) {
+            Serial.println("DeviceRegistry: Device registered successfully");
+            return device;
+        } else {
+            Serial.println("DeviceRegistry: Failed to register device");
+            delete device;
+            return nullptr;
+        }
+    }
+    
+    return nullptr;
 }
 
 bool DeviceRegistry::registerDevice(Device* device) {
