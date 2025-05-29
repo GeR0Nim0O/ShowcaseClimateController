@@ -22,10 +22,6 @@ GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaPort, float t
 bool GP8403dac::begin() {
     Serial.println("GP8403: Starting DAC initialization (DFRobot compatible)...");
     
-    // Initialize I2C with proper clock speed (400kHz as per official library)
-    wire->begin();
-    wire->setClock(400000);
-    
     // First, try basic I2C connectivity using official begin() method
     bool basicConnection = false;
     for (int attempt = 1; attempt <= 3; attempt++) {
