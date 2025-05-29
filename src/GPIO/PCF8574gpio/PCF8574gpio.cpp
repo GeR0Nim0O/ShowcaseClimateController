@@ -33,12 +33,37 @@ bool PCF8574gpio::isConnected() {
 }
 
 void PCF8574gpio::update() {
-    // Update GPIO state by reading the current state
+    // CRITICAL FIX: Do NOT update (read) GPIO state if device is in OUTPUT mode
+    if (_mode == PCF8574Mode::OUTPUT_MODE) {
+        // In output mode, we trust our internal state and don't read from device
+        Serial.println("PCF8574: Skipping update() - device is in OUTPUT mode");
+        return;
+    }
+    
+    // Only read from device if in INPUT mode
     readByte(_gpioState);
 }
 
 std::map<String, String> PCF8574gpio::readData() {
     std::map<String, String> result;
+    
+    // CRITICAL FIX: Do NOT read from GPIO device if it's in OUTPUT mode
+    // Reading from an output-mode PCF8574 can interfere with the current output states
+    if (_mode == PCF8574Mode::OUTPUT_MODE) {
+        Serial.println("PCF8574: Skipping readData() - device is in OUTPUT mode");
+        
+        // Instead of reading, return the current known state
+        for (const auto& channel : channels) {
+            int pin = channel.second.toInt();
+            if (pin >= 0 && pin <= 7) {
+                bool state = (_gpioState & (1 << pin)) != 0;
+                result[channel.first] = state ? "1" : "0";
+            }
+        }
+        return result;
+    }
+    
+    // Only perform actual I2C read if in INPUT mode
     update();
     
     // Convert GPIO states to a map of channel values
