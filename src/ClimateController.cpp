@@ -130,19 +130,30 @@ bool ClimateController::begin() {
     // Initialize pin mappings
     initializePinMappings();
     
-    // NEW: Ensure GPIO is in output mode and force refresh
+    // Ensure GPIO is in output mode and all pins start LOW
     if (gpio != nullptr) {
-        Serial.println("ClimateController: Ensuring GPIO is in output mode");
+        Serial.println("ClimateController: Ensuring GPIO is in output mode and all pins LOW");
         gpio->forceOutputMode();
         
-        // Initialize all control pins to known safe state
-        gpio->writePin(pinTemperatureEnable, false);
-        gpio->writePin(pinTemperatureHeat, false);
-        gpio->writePin(pinTemperatureCool, false);
-        gpio->writePin(pinHumidify, false);
-        gpio->writePin(pinDehumidify, false);
+        // Initialize ALL pins to LOW/false state (not just control pins)
+        Serial.println("ClimateController: Setting all GPIO pins to LOW");
+        for (int pin = 0; pin < 8; pin++) {
+            gpio->writePin(pin, false);
+        }
         
-        Serial.println("ClimateController: GPIO pins initialized to safe state");
+        // Verify all pins are LOW
+        uint8_t finalState = gpio->getGPIOState();
+        Serial.print("ClimateController: Final GPIO state: 0x");
+        Serial.print(finalState, HEX);
+        
+        if (finalState == 0x00) {
+            Serial.println(" - All pins confirmed LOW");
+        } else {
+            Serial.println(" - WARNING: Some pins not LOW, forcing 0x00");
+            gpio->writeByte(0x00);
+        }
+    } else {
+        Serial.println("ClimateController: WARNING - No GPIO device available");
     }
     
     Serial.println("ClimateController: begin() completed successfully");
