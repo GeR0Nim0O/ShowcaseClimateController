@@ -137,6 +137,20 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         }
     }
     
+    // Debug: Print what we're looking for
+    Serial.print("Looking for DAC at address 0x");
+    Serial.print(I2C_ADDR_GP8403, HEX);
+    Serial.println(" ...");
+    
+    // Debug: Print addressToTcaPort map contents
+    Serial.println("AddressToTcaPort map contents:");
+    for (const auto& pair : addressToTcaPort) {
+        Serial.print("  Address 0x");
+        Serial.print(pair.first, HEX);
+        Serial.print(" -> TCA Port ");
+        Serial.println(pair.second);
+    }
+    
     // Now create devices based on the detected addresses
     static int deviceIndex = 0;
     Device* createdDevice = nullptr;
