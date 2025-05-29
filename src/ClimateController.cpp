@@ -188,6 +188,9 @@ void ClimateController::update() {
         bool fanStateChanged = (fanInteriorActive != lastFanInteriorActive) ||
                               (fanExteriorActive != lastFanExteriorActive);
         
+        // NEW: Always apply fan control if climate control is active to ensure fans stay on
+        bool forceApplyFans = (fanInteriorActive || fanExteriorActive);
+        
         if (tempStateChanged) {
             applyTemperatureControl();
             lastTempControlEnabled = tempControlEnabled;
@@ -201,7 +204,7 @@ void ClimateController::update() {
             lastDehumidifyingActive = dehumidifyingActive;
         }
         
-        if (fanStateChanged) {
+        if (fanStateChanged || forceApplyFans) {
             applyFanControl();
             lastFanInteriorActive = fanInteriorActive;
             lastFanExteriorActive = fanExteriorActive;
@@ -219,12 +222,10 @@ void ClimateController::update() {
                 Serial.println(gpioStateAfter, HEX);
                 
                 // This suggests an external interference - force refresh our desired state
-                if (tempStateChanged || humidityStateChanged || fanStateChanged) {
-                    Serial.println("Re-applying climate control due to state corruption");
-                    applyTemperatureControl();
-                    applyHumidityControl();
-                    applyFanControl();
-                }
+                Serial.println("Re-applying climate control due to state corruption");
+                applyTemperatureControl();
+                applyHumidityControl();
+                applyFanControl();  // Re-apply fan control
             }
         }
         
@@ -233,6 +234,11 @@ void ClimateController::update() {
         if (currentTime - lastGpioRefresh >= 10000) { // Every 10 seconds
             if (gpio != nullptr) {
                 gpio->refreshOutputState();
+                // Force re-apply fan control during refresh
+                if (fanInteriorActive || fanExteriorActive) {
+                    Serial.println("Refreshing fan control during GPIO refresh");
+                    applyFanControl();
+                }
             }
             lastGpioRefresh = currentTime;
         }
@@ -395,14 +401,18 @@ void ClimateController::updateFanControl() {
         return;
     }
     
-    // Determine if climate control is active (either temperature or humidity control)
-    bool climateControlActive = (climateMode != ClimateMode::OFF) && 
-                               (tempControlEnabled || heatingActive || coolingActive || 
-                                humidifyingActive || dehumidifyingActive);
+    // Determine if ANY climate control is active (temperature OR humidity control)
+    bool tempControlActive = (climateMode != ClimateMode::OFF) && 
+                            (tempControlEnabled || heatingActive || coolingActive);
     
-    // SIMPLIFIED FAN LOGIC: Both fans always on when climate control is active
+    bool humidityControlActive = (humidityMode != HumidityMode::OFF) && 
+                                (humidifyingActive || dehumidifyingActive);
+    
+    bool climateControlActive = tempControlActive || humidityControlActive;
+    
+    // SIMPLIFIED FAN LOGIC: Both fans always on when ANY climate control is active
     fanInteriorActive = climateControlActive;
-    fanExteriorActive = climateControlActive;  // Changed: Always on when climate active
+    fanExteriorActive = climateControlActive;  // Both fans on when climate active
     
     // Debug output when fan states change
     static bool lastFanInteriorActive = false;
@@ -415,10 +425,56 @@ void ClimateController::updateFanControl() {
         Serial.print(fanExteriorActive ? "ON" : "OFF");
         Serial.print(" (Climate active: ");
         Serial.print(climateControlActive ? "YES" : "NO");
+        Serial.print(", Temp control: ");
+        Serial.print(tempControlActive ? "YES" : "NO");
+        Serial.print(", Humidity control: ");
+        Serial.print(humidityControlActive ? "YES" : "NO");
         Serial.println(")");
         
         lastFanInteriorActive = fanInteriorActive;
         lastFanExteriorActive = fanExteriorActive;
+    }
+}
+
+void ClimateController::applyFanControl() {
+    Serial.print("ClimateController: Applying fan control - Interior: ");
+    Serial.print(fanInteriorActive ? "ON" : "OFF");
+    Serial.print(", Exterior: ");
+    Serial.print(fanExteriorActive ? "ON" : "OFF");
+    Serial.print(" (pins ");
+    Serial.print(pinFanInterior);
+    Serial.print(" and ");
+    Serial.print(pinFanExterior);
+    Serial.println(")");
+    
+    // Apply interior fan state
+    bool interiorResult = safeWritePin(pinFanInterior, fanInteriorActive);
+    Serial.print("Interior fan pin ");
+    Serial.print(pinFanInterior);
+    Serial.print(" result: ");
+    Serial.println(interiorResult ? "SUCCESS" : "FAILED");
+    
+    // Apply exterior fan state
+    bool exteriorResult = safeWritePin(pinFanExterior, fanExteriorActive);
+    Serial.print("Exterior fan pin ");
+    Serial.print(pinFanExterior);
+    Serial.print(" result: ");
+    Serial.println(exteriorResult ? "SUCCESS" : "FAILED");
+    
+    // NEW: Additional debug - show GPIO state after fan control
+    if (gpio != nullptr) {
+        uint8_t gpioState = gpio->getGPIOState();
+        Serial.print("GPIO state after fan control: 0x");
+        Serial.print(gpioState, HEX);
+        Serial.print(" (pin ");
+        Serial.print(pinFanInterior);
+        Serial.print("=");
+        Serial.print((gpioState & (1 << pinFanInterior)) ? "HIGH" : "LOW");
+        Serial.print(", pin ");
+        Serial.print(pinFanExterior);
+        Serial.print("=");
+        Serial.print((gpioState & (1 << pinFanExterior)) ? "HIGH" : "LOW");
+        Serial.println(")");
     }
 }
 
@@ -513,67 +569,6 @@ void ClimateController::setCoolingPower(float percentage) {
     if (dac && coolingActive) {
         float voltage = (coolingPower / 100.0) * 5.0; // Changed to 5.0V max
         dac->setChannelVoltage(0, voltage);
-    }
-}
-
-void ClimateController::applyFanControl() {
-    Serial.print("ClimateController: Applying fan control - Interior: ");
-    Serial.print(fanInteriorActive ? "ON" : "OFF");
-    Serial.print(", Exterior: ");
-    Serial.println(fanExteriorActive ? "ON" : "OFF");
-    
-    // Apply interior fan state
-    bool interiorResult = safeWritePin(pinFanInterior, fanInteriorActive);
-    Serial.print("Interior fan pin result: ");
-    Serial.println(interiorResult ? "SUCCESS" : "FAILED");
-    
-    // Apply exterior fan state
-    bool exteriorResult = safeWritePin(pinFanExterior, fanExteriorActive);
-    Serial.print("Exterior fan pin result: ");
-    Serial.println(exteriorResult ? "SUCCESS" : "FAILED");
-}
-
-void ClimateController::setFanInterior(bool enable) {
-    Serial.print("ClimateController: Manual setting interior fan to ");
-    Serial.print(enable ? "ON" : "OFF");
-    Serial.print(" (pin ");
-    Serial.print(pinFanInterior);
-    Serial.print(") - ");
-    
-    // If auto fan control is enabled, disable it temporarily for manual control
-    if (autoFanControlEnabled && !enable) {
-        Serial.println("NOTICE: Disabling auto fan control for manual operation");
-        autoFanControlEnabled = false;
-    }
-    
-    fanInteriorActive = enable;
-    
-    if (safeWritePin(pinFanInterior, enable)) {
-        Serial.println("SUCCESS");
-    } else {
-        Serial.println("FAILED");
-    }
-}
-
-void ClimateController::setFanExterior(bool enable) {
-    Serial.print("ClimateController: Manual setting exterior fan to ");
-    Serial.print(enable ? "ON" : "OFF");
-    Serial.print(" (pin ");
-    Serial.print(pinFanExterior);
-    Serial.print(") - ");
-    
-    // If auto fan control is enabled, disable it temporarily for manual control
-    if (autoFanControlEnabled && !enable) {
-        Serial.println("NOTICE: Disabling auto fan control for manual operation");
-        autoFanControlEnabled = false;
-    }
-    
-    fanExteriorActive = enable;
-    
-    if (safeWritePin(pinFanExterior, enable)) {
-        Serial.println("SUCCESS");
-    } else {
-        Serial.println("FAILED");
     }
 }
 
