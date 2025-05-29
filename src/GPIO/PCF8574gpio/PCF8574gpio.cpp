@@ -53,6 +53,7 @@ std::map<String, String> PCF8574gpio::readData() {
 }
 
 bool PCF8574gpio::writeByte(uint8_t data) {
+    selectTCAChannel(tcaChannel);  // Select TCA channel before communication
     wire->beginTransmission(_address);
     wire->write(data);
     _gpioState = data;
