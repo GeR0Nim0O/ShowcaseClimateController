@@ -4,11 +4,34 @@
 #include <Arduino.h>
 #include <vector>
 #include <map>
+#include <functional>
 #include "Device.h"
 
 class DeviceRegistry {
 public:
     static DeviceRegistry& getInstance();
+    
+    // Hardware-agnostic device factory registration
+    static bool registerDeviceType(const String& type, const String& typeNumber, 
+        std::function<Device*(TwoWire*, uint8_t, uint8_t, float, const std::map<String, String>&, int)> creator);
+    
+    // Hardware-agnostic device creation
+    static Device* createDevice(const String& type, const String& typeNumber, 
+        TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
+        const std::map<String, String>& channels, int deviceIndex);
+    
+    // Device creation with extended parameters (for backward compatibility)
+    Device* createDeviceWithThresholds(
+        TwoWire* wire,
+        const String& type, 
+        const String& typeNumber, 
+        uint8_t address, 
+        uint8_t tcaPort, 
+        const std::map<String, float>& channelThresholds, 
+        const std::map<String, String>& channelNames, 
+        int deviceIndex,
+        const String& mode = ""
+    );
     
     // Core device management - generic and hardware-agnostic
     bool registerDevice(Device* device);
@@ -40,6 +63,10 @@ private:
     DeviceRegistry& operator=(const DeviceRegistry&) = delete;
     
     std::vector<Device*> devices;
+    
+    // Static factory registry for hardware-agnostic device creation
+    static std::map<std::pair<String, String>, 
+        std::function<Device*(TwoWire*, uint8_t, uint8_t, float, const std::map<String, String>&, int)>> deviceFactory;
     
     // Internal helper for type-based operations
     bool isTypeMatch(const String& deviceType, const String& searchType) const;
