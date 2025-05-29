@@ -61,6 +61,7 @@ bool PCF8574gpio::writeByte(uint8_t data) {
 }
 
 bool PCF8574gpio::readByte(uint8_t &data) {
+    selectTCAChannel(tcaChannel);  // Select TCA channel before communication
     if (wire->requestFrom(_address, (uint8_t)1) != 1) {
         return false;
     }
