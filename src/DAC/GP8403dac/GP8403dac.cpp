@@ -28,19 +28,25 @@ GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaPort, float t
 }
 
 bool GP8403dac::begin() {
-    Serial.println("GP8403: Starting DAC initialization...");
+    Serial.println("GP8403: Starting DAC initialization (DFRobot compatible)...");
     
-    // First, try basic I2C connectivity multiple times
+    // Initialize I2C with proper clock speed (400kHz as per official library)
+    wire->begin();
+    wire->setClock(400000);
+    
+    // First, try basic I2C connectivity using official begin() method
     bool basicConnection = false;
     for (int attempt = 1; attempt <= 3; attempt++) {
-        Serial.print("GP8403: Basic connection attempt ");
+        Serial.print("GP8403: Connection attempt ");
         Serial.print(attempt);
         Serial.print("/3...");
         
         I2CHandler::selectTCA(getTCAChannel());
         delayMicroseconds(500); // Extended stabilization delay
         
+        // Use DFRobot's begin() method approach
         wire->beginTransmission(getI2CAddress());
+        wire->write(OUTPUT_RANGE);  // Write to output range register
         int result = wire->endTransmission();
         
         if (result == 0) {
@@ -51,39 +57,45 @@ bool GP8403dac::begin() {
             Serial.print(" FAILED (error: ");
             Serial.print(result);
             Serial.println(")");
-            delay(10); // Longer delay between attempts
+            delay(100); // Wait before retry
         }
     }
     
     if (!basicConnection) {
-        Serial.println("GP8403: Basic I2C connection failed after all attempts!");
-        return false;
+        Serial.println("GP8403: Basic connection failed - trying fallback...");
+        // Fall back to limited mode if we can't get full validation
+        return initializeLimitedMode();
     }
     
-    // Try DAC reset/recovery sequence
-    Serial.println("GP8403: Attempting DAC recovery sequence...");
+    // Set the DAC to 5V output range (as per official library default)
+    Serial.println("GP8403: Setting output range to 5V...");
+    I2CHandler::selectTCA(getTCAChannel());
+    wire->beginTransmission(getI2CAddress());
+    wire->write(OUTPUT_RANGE);
+    wire->write(OUTPUT_RANGE_5V);
+    if (wire->endTransmission() != 0) {
+        Serial.println("GP8403: Failed to set output range");
+        return initializeLimitedMode();
+    }
     
-    // Extended stabilization period
-    delay(50);
-    
-    // Try to initialize with minimal operations first
-    Serial.println("GP8403: Starting minimal initialization...");
-    
-    // Skip aggressive initialization - just mark as initialized for now
-    Serial.println("GP8403: Basic connection established - skipping aggressive initialization");
-    initialized = true;
-    
-    // Try gentle validation
-    if (!validateDACGentle()) {
-        Serial.println("GP8403: Gentle validation failed - marking as partially initialized");
-        // Don't fail completely - allow basic functionality
-        initialized = true; // Keep it initialized but note the limitation
-        Serial.println("GP8403: DAC will operate in limited mode");
+    // Try comprehensive validation
+    if (validateDAC()) {
+        setConnected(true);
+        setInitialized(true);
+        Serial.println("GP8403: Full initialization and validation successful!");
         return true;
+    } else {
+        // Fall back to gentle validation
+        Serial.println("GP8403: Full validation failed, trying gentle validation...");
+        if (validateDACGentle()) {
+            setConnected(true);
+            setInitialized(true);
+            Serial.println("GP8403: Limited initialization successful (gentle validation passed)");
+            return true;
+        } else {
+            return initializeLimitedMode();
+        }
     }
-    
-    Serial.println("GP8403: DAC validation passed!");
-    return true;
 }
 
 bool GP8403dac::validateDACGentle() {
