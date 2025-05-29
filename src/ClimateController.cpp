@@ -197,7 +197,7 @@ void ClimateController::updateTemperatureControl() {
             heatingPower = 0.0;
             coolingPower = coolingActive ? map(-tempOutput, 0, 100, 0, 100) : 0.0;
             break;        case ClimateMode::AUTO:
-            if (tempOutput > 0.1) { // Very small deadband for precise control
+            if (tempOutput > 0.1) // Very small deadband for precise control
                 heatingActive = true;
                 coolingActive = false;
                 heatingPower = map(tempOutput, 0.1, 100, 0, 100);
@@ -632,7 +632,7 @@ void ClimateController::testDAC() {
         return;
     }
     
-    Serial.println("ClimateController: Starting DAC test sequence...");
+    Serial.println("ClimateController: Starting comprehensive DAC test sequence...");
     
     // First verify DAC is connected and responding
     bool isConnected = dac->isConnected();
@@ -645,43 +645,62 @@ void ClimateController::testDAC() {
     }
     
     try {
-        // Test sequence: 0V -> 2.5V -> 5V -> 0V with delays for measurement
-        float testVoltages[] = {0.0f, 1.25f, 2.5f, 3.75f, 5.0f, 3.75f, 2.5f, 1.25f, 0.0f};
-        int numSteps = sizeof(testVoltages) / sizeof(testVoltages[0]);
-        
-        Serial.println("ClimateController: Running voltage test sequence...");
+        // Test both channels separately with detailed logging
+        Serial.println("=== Testing Channel A ===");
+        float testVoltagesA[] = {0.0f, 1.0f, 2.5f, 5.0f, 0.0f};
+        int numSteps = sizeof(testVoltagesA) / sizeof(testVoltagesA[0]);
         
         for (int i = 0; i < numSteps; i++) {
-            float voltage = testVoltages[i];
-            Serial.print("ClimateController: Setting DAC to ");
+            float voltage = testVoltagesA[i];
+            Serial.print("Setting Channel A to ");
             Serial.print(voltage, 2);
             Serial.println("V");
             
             bool success = dac->setChannelVoltage(0, voltage);
-            if (success) {
-                Serial.println("ClimateController: Voltage set successfully");
-            } else {
-                Serial.println("ClimateController: Failed to set voltage");
-                break;
-            }
+            Serial.print("Result: ");
+            Serial.println(success ? "SUCCESS" : "FAILED");
             
-            // Hold voltage for measurement
-            delay(1000);
+            delay(2000); // 2 second hold for measurement
         }
         
-        // Ensure DAC is set to 0V at end of test
-        Serial.println("ClimateController: Setting DAC to 0V (test complete)");
-        if (dac->setChannelVoltage(0, 0.0f)) {
-            Serial.println("ClimateController: DAC test completed successfully");
-        } else {
-            Serial.println("ClimateController: Warning - Failed to reset DAC to 0V");
+        Serial.println("\n=== Testing Channel B ===");
+        float testVoltagesB[] = {0.0f, 1.0f, 2.5f, 5.0f, 0.0f};
+        
+        for (int i = 0; i < numSteps; i++) {
+            float voltage = testVoltagesB[i];
+            Serial.print("Setting Channel B to ");
+            Serial.print(voltage, 2);
+            Serial.println("V");
+            
+            bool success = dac->setChannelVoltage(1, voltage);
+            Serial.print("Result: ");
+            Serial.println(success ? "SUCCESS" : "FAILED");
+            
+            delay(2000); // 2 second hold for measurement
         }
+        
+        // Test both channels simultaneously
+        Serial.println("\n=== Testing Both Channels Simultaneously ===");
+        Serial.println("Setting both channels to 2.5V");
+        uint16_t dacValue = 2047; // Approximately 2.5V
+        bool success = dac->setBothChannels(dacValue, dacValue);
+        Serial.print("Both channels result: ");
+        Serial.println(success ? "SUCCESS" : "FAILED");
+        
+        delay(3000);
+        
+        // Reset both channels to 0V
+        Serial.println("Resetting both channels to 0V");
+        dac->setBothChannels(0, 0);
+        
+        Serial.println("ClimateController: DAC test completed");
         
     } catch (...) {
         Serial.println("ClimateController: Exception during DAC testing");
         // Try to reset DAC to 0V on error
         try {
             dac->setChannelVoltage(0, 0.0f);
+            dac->setChannelVoltage(1, 0.0f);
         } catch (...) {
             Serial.println("ClimateController: Failed to reset DAC after exception");
         }
