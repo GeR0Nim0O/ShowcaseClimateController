@@ -202,6 +202,23 @@ bool GP8403dac::validateDAC() {
     return true;
 }
 
+bool GP8403dac::initializeLimitedMode() {
+    Serial.println("GP8403: Initializing in limited mode...");
+    
+    // Mark as connected but with limited functionality
+    setConnected(true);
+    setInitialized(true);
+    
+    // Set safe default values
+    channelAValue = 0;
+    channelBValue = 0;
+    
+    Serial.println("GP8403: Limited mode initialization complete");
+    Serial.println("GP8403: WARNING - DAC operating with reduced validation");
+    
+    return true;
+}
+
 bool GP8403dac::isConnected() {
     // Improved connection check with better I2C handling
     const int maxRetries = 2;
