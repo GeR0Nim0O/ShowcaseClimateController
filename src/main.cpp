@@ -212,17 +212,7 @@ void setup()
       Serial.print("Type: ");
       Serial.print(device->getType());
       Serial.print(", Initialized: ");
-      Serial.print(device->isInitialized() ? "Yes" : "No");
-      
-      // Additional validation for DAC devices
-      if (device->getType().equalsIgnoreCase("GP8403dac")) {
-        GP8403dac* dac = (GP8403dac*)device;
-        Serial.print(", Connection: ");
-        Serial.print(dac->isConnected() ? "OK" : "FAILED");
-        Serial.print(", Validated: ");
-        Serial.print(dac->isInitialized() ? "YES" : "NO");
-      }
-      Serial.println();
+      Serial.println(device->isInitialized() ? "Yes" : "No");
     }
   }
 
