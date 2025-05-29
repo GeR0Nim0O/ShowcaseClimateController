@@ -1138,8 +1138,12 @@ void updateClimateController() {
         return; // Exit if climate controller is not initialized
     }
     
-    // Update the climate controller (calls update() to handle temp/humidity control)
-    climateController->update();
+    // Only update climate controller every few seconds to avoid GPIO conflicts
+    static unsigned long lastClimateUpdate = 0;
+    if (millis() - lastClimateUpdate >= 5000) { // Update every 5 seconds
+        climateController->update();
+        lastClimateUpdate = millis();
+    }
     
     // Optional: Print climate controller status periodically
     static unsigned long lastStatusPrint = 0;
@@ -1168,6 +1172,9 @@ void updateClimateController() {
         if (gpioExpander != nullptr) {
             Serial.print("GPIO state: 0x");
             Serial.println(gpioExpander->getGPIOState(), HEX);
+            
+            // Force refresh GPIO state to ensure it's maintained
+            gpioExpander->refreshOutputState();
         }
         
         lastStatusPrint = millis();
