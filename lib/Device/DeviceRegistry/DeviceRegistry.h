@@ -3,39 +3,35 @@
 
 #include <Arduino.h>
 #include <vector>
+#include <map>
 #include "Device.h"
-#include "PCF8574gpio.h"
-#include "SHTsensor.h"
-#include "GP8403dac.h"
 
 class DeviceRegistry {
 public:
     static DeviceRegistry& getInstance();
-      bool registerDevice(Device* device);
+    
+    // Core device management - generic and hardware-agnostic
+    bool registerDevice(Device* device);
     bool initializeAllDevices();
-    void updateAllDevices();    // Device creation
-    static Device* createDeviceWithThresholds(
-        TwoWire* wire,
-        const String& type, 
-        const String& typeNumber, 
-        uint8_t address, 
-        uint8_t tcaPort, 
-        const std::map<String, float>& channelThresholds, 
-        const std::map<String, String>& channelNames, 
-        int deviceIndex,
-        const String& mode = ""
-    );
-      // Device getters
-    PCF8574gpio* getGPIOExpander(int index = 0);
-    SHTsensor* getTemperatureHumiditySensor(int index = 0);
-    GP8403dac* getDAC(int index = 0);
+    void updateAllDevices();
+    
+    // Generic device getters - no hardware-specific types
     Device* getDevice(const String& deviceName);
     Device* getDeviceByIndex(int index);
+    std::vector<Device*> getDevicesByType(const String& type);
+    Device* getDeviceByType(const String& type, int index = 0);
     
-    // Status
+    // Status and utility methods
     int getDeviceCount() const { return devices.size(); }
+    int getDeviceCountByType(const String& type) const;
     bool allDevicesConnected();
     void printDeviceStatus();
+    
+    // Iterator support for range-based loops
+    std::vector<Device*>::iterator begin() { return devices.begin(); }
+    std::vector<Device*>::iterator end() { return devices.end(); }
+    std::vector<Device*>::const_iterator begin() const { return devices.begin(); }
+    std::vector<Device*>::const_iterator end() const { return devices.end(); }
 
 private:
     DeviceRegistry() = default;
@@ -44,9 +40,9 @@ private:
     DeviceRegistry& operator=(const DeviceRegistry&) = delete;
     
     std::vector<Device*> devices;
-    std::vector<PCF8574gpio*> gpioExpanders;
-    std::vector<SHTsensor*> temperatureHumiditySensors;
-    std::vector<GP8403dac*> dacDevices;
+    
+    // Internal helper for type-based operations
+    bool isTypeMatch(const String& deviceType, const String& searchType) const;
 };
 
 #endif // DEVICE_REGISTRY_H
