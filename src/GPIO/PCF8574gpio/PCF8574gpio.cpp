@@ -290,3 +290,34 @@ bool PCF8574gpio::performHardwareDiagnostics() {
     Serial.println("\n=== Diagnostic Summary ===");
     Serial.print("I2C Communication: ");
     Serial.println("PASS");
+    Serial.print("Power Supply Test: ");
+    Serial.println(powerTestResult ? "PASS" : "FAIL");
+    Serial.print("Ground Test: ");
+    Serial.println(groundTestResult ? "PASS" : "FAIL");
+    Serial.print("Individual Pin Test: ");
+    Serial.println(pinTestResult ? "PASS" : "FAIL");
+    Serial.print("Load Test: ");
+    Serial.println(loadTestResult ? "PASS" : "FAIL");
+    
+    // Provide recommendations
+    if (!powerTestResult) {
+        Serial.println("\n⚠️  POWER SUPPLY ISSUE DETECTED:");
+        Serial.println("  - Check VCC connection to PCF8574");
+        Serial.println("  - Verify 3.3V or 5V supply voltage");
+        Serial.println("  - Check for loose connections");
+    }
+    
+    if (!groundTestResult) {
+        Serial.println("\n⚠️  GROUND CONNECTION ISSUE:");
+        Serial.println("  - Check GND connection to PCF8574");
+        Serial.println("  - Verify common ground with microcontroller");
+    }
+    
+    if (!pinTestResult) {
+        Serial.println("\n⚠️  PIN CONTROL ISSUE DETECTED:");
+        Serial.println("  - PCF8574 may be damaged");
+        Serial.println("  - Check for external load preventing pin changes");
+        Serial.println("  - Verify pull-up resistors (10kΩ recommended)");
+    }
+    
+    if (!loadTestResult) {
