@@ -4,6 +4,8 @@
 // GP8403 DAC Constants - Based on official DFRobot library
 #define DAC_MAX_VALUE 4095   // 12-bit resolution (0-4095)
 #define DAC_MAX_VOLTAGE 5.0  // 0-5V output range
+#define GP8403_BOTH_CHANNEL_REG 0x03
+#define GP8403_VREF_REG 0x04
 
 GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : Device(wire, i2cAddress, tcaChannel, deviceName, deviceIndex),
@@ -372,7 +374,7 @@ bool GP8403dac::setBothChannels(uint16_t valueA, uint16_t valueB) {
         
         // Follow DFRobot's implementation pattern for both channels
         wire->beginTransmission(getI2CAddress());
-        wire->write(GP8302_CONFIG_CURRENT_REG);
+        wire->write(GP8403_BOTH_CHANNEL_REG); // Use correct register for both channel write
         wire->write(valueA & 0xFF);         // LSB first for channel A
         wire->write((valueA >> 8) & 0xFF);  // MSB second for channel A
         wire->write(valueB & 0xFF);         // LSB first for channel B
@@ -417,7 +419,7 @@ bool GP8403dac::setGain(uint8_t channel, bool gain2x) {
 }
 
 bool GP8403dac::setVRef(uint16_t vref) {
-    if (writeRegister(DAC_REG_VREF, vref)) {
+    if (writeRegister(GP8403_VREF_REG, vref)) { // Use correct register for VREF
         vrefValue = vref;
         return true;
     }
