@@ -7,9 +7,7 @@
 #define GP8403_BOTH_CHANNEL_REG 0x03
 #define GP8403_VREF_REG 0x04
 
-// Add these defines for output range if missing
-#define OUTPUT_RANGE 0x00
-#define OUTPUT_RANGE_5V 0x01
+// Note: OUTPUT_RANGE and OUTPUT_RANGE_5V are defined in GP8403dac.h
 
 GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : Device(wire, i2cAddress, tcaChannel, deviceName, deviceIndex),
