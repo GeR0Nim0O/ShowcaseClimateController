@@ -395,19 +395,14 @@ void ClimateController::updateFanControl() {
         return;
     }
     
-    // Determine if climate control is active
+    // Determine if climate control is active (either temperature or humidity control)
     bool climateControlActive = (climateMode != ClimateMode::OFF) && 
                                (tempControlEnabled || heatingActive || coolingActive || 
                                 humidifyingActive || dehumidifyingActive);
     
-    // Interior fan logic: Always on when climate control is active
+    // SIMPLIFIED FAN LOGIC: Both fans always on when climate control is active
     fanInteriorActive = climateControlActive;
-    
-    // Exterior fan logic: On when cooling or dehumidifying, or when temperature is high
-    bool needsCooling = coolingActive || (currentTemperature > temperatureSetpoint + 2.0);
-    bool needsVentilation = dehumidifyingActive || (currentHumidity > humiditySetpoint + 5.0);
-    
-    fanExteriorActive = climateControlActive && (needsCooling || needsVentilation);
+    fanExteriorActive = climateControlActive;  // Changed: Always on when climate active
     
     // Debug output when fan states change
     static bool lastFanInteriorActive = false;
@@ -420,146 +415,6 @@ void ClimateController::updateFanControl() {
         Serial.print(fanExteriorActive ? "ON" : "OFF");
         Serial.print(" (Climate active: ");
         Serial.print(climateControlActive ? "YES" : "NO");
-        Serial.print(", Cooling: ");
-        Serial.print(needsCooling ? "YES" : "NO");
-        Serial.print(", Ventilation: ");
-        Serial.print(needsVentilation ? "YES" : "NO");
-        Serial.println(")");
-        
-        lastFanInteriorActive = fanInteriorActive;
-        lastFanExteriorActive = fanExteriorActive;
-    }
-}
-
-void ClimateController::applyDACControls() {
-    // Skip if no DAC device available
-    if (!dac) {
-        return; // Reduce log spam
-    }
-    
-    // Rate limiting: Only update DAC if enough time has passed since last update
-    static unsigned long lastDACUpdate = 0;
-    static float lastDACVoltage = -1.0; // Initialize to invalid value
-    const unsigned long DAC_UPDATE_INTERVAL = 1000; // Update DAC max every 1000ms
-    const float VOLTAGE_THRESHOLD = 0.1; // 100mV threshold
-    
-    unsigned long currentTime = millis();
-    
-    // Calculate desired voltage based on current state
-    float desiredVoltage = 0.0;
-    String operation = "idle";
-    
-    if (heatingActive) {
-        desiredVoltage = (heatingPower / 100.0) * 5.0;
-        operation = "heating";
-    } else if (coolingActive) {
-        desiredVoltage = (coolingPower / 100.0) * 5.0;
-        operation = "cooling";
-    }
-    
-    // Check if we should update (time passed OR significant voltage change)
-    bool timeToUpdate = (currentTime - lastDACUpdate >= DAC_UPDATE_INTERVAL);
-    bool significantChange = (abs(desiredVoltage - lastDACVoltage) >= VOLTAGE_THRESHOLD);
-    bool forceUpdate = (lastDACVoltage < 0); // First time
-    
-    if (!timeToUpdate && !significantChange && !forceUpdate) {
-        return; // Skip this update
-    }
-    
-    // Check if device is still connected before attempting operation
-    if (!dac->isConnected()) {
-        // Only log connection issues every 10 seconds to reduce spam
-        static unsigned long lastConnErrorLog = 0;
-        if (currentTime - lastConnErrorLog > 10000) {
-            Serial.println("DAC: Device not connected");
-            lastConnErrorLog = currentTime;
-        }
-        return;
-    }
-    
-    // Log what we're about to do
-    Serial.print("DAC: Setting ");
-    Serial.print(desiredVoltage, 2);
-    Serial.print("V (");
-    Serial.print(operation);
-    if (heatingActive) {
-        Serial.print(" at ");
-        Serial.print(heatingPower, 1);
-        Serial.print("%");
-    } else if (coolingActive) {
-        Serial.print(" at ");
-        Serial.print(coolingPower, 1);
-        Serial.print("%");
-    }
-    Serial.println(")");
-    
-    // Attempt to set the new voltage
-    bool success = dac->setChannelVoltage(0, desiredVoltage);
-    
-    if (success) {
-        lastDACVoltage = desiredVoltage;
-        lastDACUpdate = currentTime;
-        // Only log success for significant changes to reduce spam
-        if (significantChange || forceUpdate) {
-            Serial.println("DAC: Voltage set successfully");
-        }
-    } else {
-        Serial.println("DAC: Failed to set voltage");
-        // Don't update lastDACUpdate on failure, so we'll try again sooner
-    }
-}
-
-void ClimateController::setHeatingPower(float percentage) {
-    heatingPower = constrain(percentage, 0.0, 100.0);
-    if (dac && heatingActive) {
-        float voltage = (heatingPower / 100.0) * 5.0; // Changed to 5.0V max
-        dac->setChannelVoltage(0, voltage);
-    }
-}
-
-void ClimateController::setCoolingPower(float percentage) {
-    coolingPower = constrain(percentage, 0.0, 100.0);
-    if (dac && coolingActive) {
-        float voltage = (coolingPower / 100.0) * 5.0; // Changed to 5.0V max
-        dac->setChannelVoltage(0, voltage);
-    }
-}
-
-void ClimateController::updateFanControl() {
-    if (!autoFanControlEnabled) {
-        // If auto fan control is disabled, don't change fan states
-        return;
-    }
-    
-    // Determine if climate control is active
-    bool climateControlActive = (climateMode != ClimateMode::OFF) && 
-                               (tempControlEnabled || heatingActive || coolingActive || 
-                                humidifyingActive || dehumidifyingActive);
-    
-    // Interior fan logic: Always on when climate control is active
-    fanInteriorActive = climateControlActive;
-    
-    // Exterior fan logic: On when cooling or dehumidifying, or when temperature is high
-    bool needsCooling = coolingActive || (currentTemperature > temperatureSetpoint + 2.0);
-    bool needsVentilation = dehumidifyingActive || (currentHumidity > humiditySetpoint + 5.0);
-    
-    fanExteriorActive = climateControlActive && (needsCooling || needsVentilation);
-    
-    // Debug output when fan states change
-    static bool lastFanInteriorActive = false;
-    static bool lastFanExteriorActive = false;
-    
-    if (fanInteriorActive != lastFanInteriorActive || fanExteriorActive != lastFanExteriorActive) {
-        Serial.print("Fan control update - Interior: ");
-        Serial.print(fanInteriorActive ? "ON" : "OFF");
-        Serial.print(", Exterior: ");
-        Serial.print(fanExteriorActive ? "ON" : "OFF");
-        Serial.print(" (Climate active: ");
-        Serial.print(climateControlActive ? "YES" : "NO");
-        Serial.print(", Cooling: ");
-        Serial.print(needsCooling ? "YES" : "NO");
-        Serial.print(", Ventilation: ");
-        Serial.print(needsVentilation ? "YES" : "NO");
         Serial.println(")");
         
         lastFanInteriorActive = fanInteriorActive;
