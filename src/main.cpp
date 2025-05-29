@@ -130,6 +130,9 @@ void sendAllChangedSensorData(); // Add this function declaration
 void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
 void testDACOutput(); // Add this new function for testing DAC
+void testGPIOHardware(); // Add this function prototype
+void diagnosticGPIOTest(); // Add this function prototype
+
 void setup()
 {
   Serial.begin(115200);
@@ -195,6 +198,11 @@ void setup()
   
   // Initialize climate controller
   initializeClimateController();
+  
+  // NEW: Add hardware diagnostic test after climate controller initialization
+  Serial.println("\n=== GPIO Hardware Diagnostics ===");
+  testGPIOHardware();
+  diagnosticGPIOTest();
   
   // NEW: Read and print initial sensor values after initialization
   Serial.println("\n=== Initial Sensor Readings ===");
@@ -988,6 +996,168 @@ void testDACOutput() {
     }
 }
 
+// NEW: Hardware diagnostic function for GPIO
+void testGPIOHardware() {
+    Serial.println("Starting GPIO hardware diagnostics...");
+    
+    // Find the GPIO expander device
+    PCF8574gpio* testGpio = nullptr;
+    for (Device* device : devices) {
+        if (device != nullptr && device->getType().equalsIgnoreCase("PCF8574GPIO")) {
+            testGpio = (PCF8574gpio*)device;
+            break;
+        }
+    }
+    
+    if (testGpio == nullptr) {
+        Serial.println("ERROR: No GPIO expander found for testing");
+        return;
+    }
+    
+    Serial.print("Testing GPIO at address 0x");
+    Serial.print(testGpio->getI2CAddress(), HEX);
+    Serial.print(" on TCA port ");
+    Serial.println(testGpio->getTCAChannel());
+    
+    // Select the TCA channel
+    I2CHandler::selectTCA(testGpio->getTCAChannel());
+    delay(10);
+    
+    // Test 1: Basic I2C communication
+    Serial.println("Test 1: Basic I2C communication");
+    Wire.beginTransmission(testGpio->getI2CAddress());
+    int error = Wire.endTransmission();
+    Serial.print("I2C communication result: ");
+    Serial.println(error == 0 ? "SUCCESS" : "FAILED");
+    
+    if (error != 0) {
+        Serial.print("I2C Error code: ");
+        Serial.println(error);
+        return;
+    }
+    
+    // Test 2: Read current GPIO state
+    Serial.println("Test 2: Reading current GPIO state");
+    Wire.requestFrom(testGpio->getI2CAddress(), (uint8_t)1);
+    if (Wire.available()) {
+        uint8_t currentState = Wire.read();
+        Serial.print("Current GPIO state: 0x");
+        Serial.println(currentState, HEX);
+        for (int i = 0; i < 8; i++) {
+            Serial.print("Pin ");
+            Serial.print(i);
+            Serial.print(": ");
+            Serial.println((currentState & (1 << i)) ? "HIGH" : "LOW");
+        }
+    } else {
+        Serial.println("Failed to read GPIO state");
+        return;
+    }
+    
+    // Test 3: Write test patterns
+    Serial.println("Test 3: Writing test patterns");
+    uint8_t testPatterns[] = {0x00, 0xFF, 0xAA, 0x55, 0x00};
+    int numPatterns = sizeof(testPatterns) / sizeof(testPatterns[0]);
+    
+    for (int i = 0; i < numPatterns; i++) {
+        Serial.print("Writing pattern 0x");
+        Serial.print(testPatterns[i], HEX);
+        Serial.print(" - ");
+        
+        // Select TCA channel before each write
+        I2CHandler::selectTCA(testGpio->getTCAChannel());
+        delay(5);
+        
+        Wire.beginTransmission(testGpio->getI2CAddress());
+        Wire.write(testPatterns[i]);
+        error = Wire.endTransmission();
+        
+        if (error == 0) {
+            Serial.println("SUCCESS");
+            delay(1000); // Hold pattern for 1 second
+            
+            // Verify by reading back
+            I2CHandler::selectTCA(testGpio->getTCAChannel());
+            delay(5);
+            Wire.requestFrom(testGpio->getI2CAddress(), (uint8_t)1);
+            if (Wire.available()) {
+                uint8_t readBack = Wire.read();
+                Serial.print("  Readback: 0x");
+                Serial.print(readBack, HEX);
+                if (readBack == testPatterns[i]) {
+                    Serial.println(" - VERIFIED");
+                } else {
+                    Serial.println(" - MISMATCH!");
+                }
+            }
+        } else {
+            Serial.print("FAILED (error ");
+            Serial.print(error);
+            Serial.println(")");
+        }
+    }
+    
+    Serial.println("GPIO hardware diagnostics complete");
+}
+
+// NEW: Diagnostic test using climate controller
+void diagnosticGPIOTest() {
+    Serial.println("\nStarting climate controller GPIO diagnostics...");
+    
+    if (climateController == nullptr) {
+        Serial.println("ERROR: Climate controller not initialized");
+        return;
+    }
+    
+    // Test each GPIO pin individually
+    Serial.println("Testing individual GPIO pins through climate controller...");
+    
+    // Test interior fan
+    Serial.println("Testing interior fan (should be pin 1)...");
+    climateController->setFanInterior(true);
+    delay(2000);
+    climateController->setFanInterior(false);
+    delay(1000);
+    
+    // Test exterior fan
+    Serial.println("Testing exterior fan (should be pin 0)...");
+    climateController->setFanExterior(true);
+    delay(2000);
+    climateController->setFanExterior(false);
+    delay(1000);
+    
+    // Test manual GPIO operations
+    Serial.println("Testing direct GPIO operations...");
+    if (gpioExpander != nullptr) {
+        Serial.println("Direct GPIO pin tests:");
+        
+        for (int pin = 0; pin < 8; pin++) {
+            Serial.print("Testing pin ");
+            Serial.print(pin);
+            Serial.print(" - ");
+            
+            // Turn pin ON
+            gpioExpander->writePin(pin, true);
+            delay(500);
+            
+            // Verify state
+            bool state = gpioExpander->readPin(pin);
+            Serial.print(state ? "HIGH" : "LOW");
+            
+            // Turn pin OFF
+            gpioExpander->writePin(pin, false);
+            delay(500);
+            
+            // Verify state
+            state = gpioExpander->readPin(pin);
+            Serial.print(" -> ");
+            Serial.println(state ? "HIGH" : "LOW");
+        }
+    }
+    
+    Serial.println("Climate controller GPIO diagnostics complete");
+}
+
 // Function to update the climate controller (called every loop)
 void updateClimateController() {
     if (climateController == nullptr) {
@@ -1019,6 +1189,12 @@ void updateClimateController() {
         Serial.print(climateController->isHumidifying() ? "ON" : "OFF");
         Serial.print(", Dehumidifying: ");
         Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
+        
+        // NEW: Add GPIO state verification
+        if (gpioExpander != nullptr) {
+            Serial.print("GPIO state: 0x");
+            Serial.println(gpioExpander->getGPIOState(), HEX);
+        }
         
         lastStatusPrint = millis();
     }
