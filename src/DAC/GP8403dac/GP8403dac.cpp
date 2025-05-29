@@ -84,6 +84,35 @@ bool GP8403dac::begin() {
     return true;
 }
 
+bool GP8403dac::validateDACGentle() {
+    Serial.println("GP8403: Starting gentle DAC validation...");
+    
+    // Test 1: Basic connectivity check with extended retries
+    for (int attempt = 1; attempt <= 5; attempt++) {
+        I2CHandler::selectTCA(getTCAChannel());
+        delayMicroseconds(1000); // Extended delay
+        
+        wire->beginTransmission(getI2CAddress());
+        int result = wire->endTransmission();
+        
+        if (result == 0) {
+            Serial.println("GP8403 Gentle Validation: Basic connectivity test PASSED");
+            return true; // If we can connect, that's sufficient for gentle validation
+        }
+        
+        Serial.print("GP8403 Gentle Validation: Connection attempt ");
+        Serial.print(attempt);
+        Serial.print("/5 failed (error: ");
+        Serial.print(result);
+        Serial.println(")");
+        
+        delay(20); // Longer delay between attempts
+    }
+    
+    Serial.println("GP8403 Gentle Validation: All connection attempts failed");
+    return false;
+}
+
 bool GP8403dac::validateDAC() {
     Serial.println("GP8403: Starting comprehensive DAC validation...");
     
