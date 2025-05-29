@@ -20,7 +20,7 @@
 
 // Channel addresses - Using the actual DFRobot register format
 #define GP8403_CHANNEL_A        0x02
-#define GP8403_CHANNEL_B        0x02
+#define GP8403_CHANNEL_B        0x03
 
 // DAC Configuration bits
 #define DAC_CONFIG_READY        0x80
