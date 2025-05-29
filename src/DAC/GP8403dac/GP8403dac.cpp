@@ -217,19 +217,33 @@ float GP8403dac::dacToVoltage(uint16_t dacValue) {
 
 bool GP8403dac::setChannelVoltage(uint8_t channel, float voltage) {
     if (voltage < 0.0 || voltage > DAC_MAX_VOLTAGE) {
-        Serial.print("Voltage out of range (0-");
+        Serial.print("GP8403: Voltage out of range (0-");
         Serial.print(DAC_MAX_VOLTAGE);
-        Serial.println("V)!");
+        Serial.print("V)! Requested: ");
+        Serial.println(voltage);
         return false;
     }
     
     uint16_t dacValue = voltageToDAC(voltage);
     
+    Serial.print("GP8403: Converting ");
+    Serial.print(voltage, 2);
+    Serial.print("V to DAC value ");
+    Serial.println(dacValue);
+    
+    bool success = false;
     if (channel == 0) {
-        return setChannelA(dacValue);
+        success = setChannelA(dacValue);
+        Serial.print("GP8403: Channel A set result: ");
+        Serial.println(success ? "SUCCESS" : "FAILED");
     } else if (channel == 1) {
-        return setChannelB(dacValue);
+        success = setChannelB(dacValue);
+        Serial.print("GP8403: Channel B set result: ");
+        Serial.println(success ? "SUCCESS" : "FAILED");
+    } else {
+        Serial.print("GP8403: Invalid channel: ");
+        Serial.println(channel);
     }
     
-    return false;
+    return success;
 }
