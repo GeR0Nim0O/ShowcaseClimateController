@@ -136,19 +136,52 @@ bool GP8403dac::setChannelA(uint16_t value) {
 bool GP8403dac::setChannelB(uint16_t value) {
     if (value > DAC_MAX_VALUE) {
         value = DAC_MAX_VALUE;
-    }      // Using register approach like in the official library
-    I2CHandler::selectTCA(getTCAChannel());
+    }
     
-    wire->beginTransmission(getI2CAddress());
-    wire->write(REG_DAC_B);
-    wire->write((value >> 8) & 0xFF); // MSB
-    wire->write(value & 0xFF);        // LSB
+    Serial.print("GP8403: Setting Channel B to raw value ");
+    Serial.println(value);
     
-    bool success = (wire->endTransmission() == 0);
+    // Retry mechanism for I2C communication
+    const int maxRetries = 3;
+    bool success = false;
+    
+    for (int attempt = 1; attempt <= maxRetries && !success; attempt++) {
+        // Using register approach like in the official library
+        I2CHandler::selectTCA(getTCAChannel());
+        
+        // Small delay to ensure TCA selection is stable
+        delay(1);
+        
+        wire->beginTransmission(getI2CAddress());
+        wire->write(REG_DAC_B);
+        wire->write((value >> 8) & 0xFF); // MSB
+        wire->write(value & 0xFF);        // LSB
+        
+        int result = wire->endTransmission();
+        success = (result == 0);
+        
+        Serial.print("GP8403: I2C transmission attempt ");
+        Serial.print(attempt);
+        Serial.print(" result: ");
+        Serial.print(result);
+        Serial.print(" (");
+        Serial.print(success ? "SUCCESS" : "FAILED");
+        Serial.println(")");
+        
+        if (!success && attempt < maxRetries) {
+            Serial.println("GP8403: Retrying I2C communication...");
+            delay(5); // Short delay before retry
+        }
+    }
     
     if (success) {
         channelBValue = value;
+        Serial.print("GP8403: Channel B updated to ");
+        Serial.println(channelBValue);
+    } else {
+        Serial.println("GP8403: Failed to update Channel B after all retries");
     }
+    
     return success;
 }
 
