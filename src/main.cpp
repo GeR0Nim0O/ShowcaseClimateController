@@ -780,48 +780,34 @@ void setCustomMqttSettings() {
 void initializeClimateController() {
   // Add extra safety
   try {
-    // Find a PCF8574 GPIO expander in the devices list
-    gpioExpander = nullptr;
-    for (Device* device : devices) {
-      if (device != nullptr && device->getType().equalsIgnoreCase("PCF8574gpio")) {
-        gpioExpander = static_cast<PCF8574gpio*>(device);
-        Serial.println("Found GPIO expander for climate control");
-        break;
-      }
+    // Use DeviceRegistry to get devices instead of manual searching
+    DeviceRegistry& registry = DeviceRegistry::getInstance();
+    
+    // Get GPIO expander from DeviceRegistry
+    gpioExpander = registry.getGPIOExpander(0);  // Get first GPIO expander
+    if (gpioExpander != nullptr) {
+      Serial.println("Found GPIO expander for climate control via DeviceRegistry");
+    } else {
+      Serial.println("No GPIO expander found in DeviceRegistry");
     }
     
-    // Find an SHT temperature/humidity sensor
-    climateTemperatureSensor = nullptr;
-    for (Device* device : devices) {
-      if (device != nullptr && device->getType().equalsIgnoreCase("SHTSensor")) {
-        climateTemperatureSensor = static_cast<SHTsensor*>(device);
-        Serial.println("Found temperature/humidity sensor for climate control");
-        break;
-      }
+    // Get temperature/humidity sensor from DeviceRegistry
+    climateTemperatureSensor = registry.getTemperatureHumiditySensor(0);  // Get first SHT sensor
+    if (climateTemperatureSensor != nullptr) {
+      Serial.println("Found temperature/humidity sensor for climate control via DeviceRegistry");
+    } else {
+      Serial.println("No temperature/humidity sensor found in DeviceRegistry");
     }
     
-    // Find a DAC for analog control - more thorough search and debug
-    climateDac = nullptr;
-    Serial.println("Looking for DAC device...");
-    for (Device* device : devices) {
-      if (device == nullptr) continue;
-      
-      // Print type for debugging
-      Serial.print("Checking device type: '");
-      Serial.print(device->getType());
-      Serial.println("'");
-      
-      // Case insensitive check
-      if (device->getType().equalsIgnoreCase("GP8403dac") || 
-          device->getType().equalsIgnoreCase("DAC")) {
-        Serial.print("Found DAC device: ");
-        Serial.print(device->getType());
-        Serial.print(" with name: ");
-        Serial.println(device->getDeviceName());
-        
-        climateDac = static_cast<GP8403dac*>(device);
-        break;
-      }
+    // Get DAC from DeviceRegistry - using proper DeviceRegistry access pattern
+    climateDac = registry.getDAC(0);  // Get first DAC
+    if (climateDac != nullptr) {
+      Serial.print("Found DAC device via DeviceRegistry: ");
+      Serial.print(climateDac->getType());
+      Serial.print(" with name: ");
+      Serial.println(climateDac->getDeviceName());
+    } else {
+      Serial.println("No DAC found in DeviceRegistry");
     }
     
     // Print device counts for debugging
