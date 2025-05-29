@@ -783,9 +783,8 @@ void initializeClimateController() {
   try {
     // Use DeviceRegistry to get devices instead of manual searching
     DeviceRegistry& registry = DeviceRegistry::getInstance();
-    
-    // Get GPIO expander from DeviceRegistry
-    gpioExpander = registry.getGPIOExpander(0);  // Get first GPIO expander
+      // Get GPIO expander from DeviceRegistry
+    gpioExpander = (PCF8574gpio*)registry.getDeviceByType("GPIO", 0);  // Get first GPIO expander
     if (gpioExpander != nullptr) {
       Serial.println("Found GPIO expander for climate control via DeviceRegistry");
     } else {
@@ -793,7 +792,7 @@ void initializeClimateController() {
     }
     
     // Get temperature/humidity sensor from DeviceRegistry
-    climateTemperatureSensor = registry.getTemperatureHumiditySensor(0);  // Get first SHT sensor
+    climateTemperatureSensor = (SHTsensor*)registry.getDeviceByType("TemperatureHumidity", 0);  // Get first SHT sensor
     if (climateTemperatureSensor != nullptr) {
       Serial.println("Found temperature/humidity sensor for climate control via DeviceRegistry");
     } else {
