@@ -199,7 +199,6 @@ void setup()
   // NEW: Read and print initial sensor values after initialization
   Serial.println("\n=== Initial Sensor Readings ===");
   readAndPrintInitialSensorData();
-
   // Additional debug: Check each device individually
   Serial.println("Device validation:");
   for (size_t i = 0; i < devices.size(); i++) {
@@ -213,7 +212,17 @@ void setup()
       Serial.print("Type: ");
       Serial.print(device->getType());
       Serial.print(", Initialized: ");
-      Serial.println(device->isInitialized() ? "Yes" : "No");
+      Serial.print(device->isInitialized() ? "Yes" : "No");
+      
+      // Additional validation for DAC devices
+      if (device->getType().equalsIgnoreCase("GP8403dac")) {
+        GP8403dac* dac = (GP8403dac*)device;
+        Serial.print(", Connection: ");
+        Serial.print(dac->isConnected() ? "OK" : "FAILED");
+        Serial.print(", Validated: ");
+        Serial.print(dac->isInitialized() ? "YES" : "NO");
+      }
+      Serial.println();
     }
   }
 
