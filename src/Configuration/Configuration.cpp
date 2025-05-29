@@ -61,10 +61,12 @@ bool Configuration::loadConfig(const JsonObject& config) {
     if (!config["project"].isNull()) {
         parseProjectConfig(config["project"]);
     }
-    
-    // Store devices configuration for later use
+      // Store devices configuration for later use
     if (!config["Devices"].isNull()) {
-        devicesConfig = config["Devices"].as<JsonObject>();
+        // Clear the existing document and copy the Devices section to it
+        devicesConfigDoc.clear();
+        devicesConfigDoc.set(config["Devices"]);
+        devicesConfig = devicesConfigDoc.as<JsonObject>();
     }
     
     return true;
