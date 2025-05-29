@@ -257,6 +257,9 @@ bool GP8403dac::setChannelA(uint16_t value) {
     Serial.print("GP8403: Setting Channel A to raw value ");
     Serial.println(value);
     
+    // Shift left by 4 bits as per DFRobot's library format
+    value = value << 4;
+    
     // Improved retry mechanism with better timing
     const int maxRetries = 3;
     bool success = false;
@@ -268,10 +271,12 @@ bool GP8403dac::setChannelA(uint16_t value) {
         // Minimal delay for TCA stabilization
         delayMicroseconds(200);
         
+        // Follow DFRobot's implementation pattern:
+        // Write to GP8302_CONFIG_CURRENT_REG for channel A
         wire->beginTransmission(getI2CAddress());
-        wire->write(REG_DAC_A);
-        wire->write((value >> 8) & 0xFF); // MSB
-        wire->write(value & 0xFF);        // LSB
+        wire->write(GP8302_CONFIG_CURRENT_REG);
+        wire->write(value & 0xFF);         // LSB first 
+        wire->write((value >> 8) & 0xFF);  // MSB second
         
         int result = wire->endTransmission();
         success = (result == 0);
