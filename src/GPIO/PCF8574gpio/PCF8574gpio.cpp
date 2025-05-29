@@ -321,3 +321,226 @@ bool PCF8574gpio::performHardwareDiagnostics() {
     }
     
     if (!loadTestResult) {
+        Serial.println("\n⚠️  CURRENT SINKING ISSUE:");
+        Serial.println("  - External load may be too high");
+        Serial.println("  - Check LED/relay connections");
+        Serial.println("  - PCF8574 max sink current is 25mA per pin");
+    }
+    
+    Serial.println("=================================");
+    
+    return powerTestResult && groundTestResult && pinTestResult;
+}
+
+bool PCF8574gpio::performPowerSupplyTest() {
+    // Try to set all pins HIGH and verify
+    selectTCAChannel(tcaChannel);
+    delay(10);
+    
+    wire->beginTransmission(_address);
+    wire->write(0xFF);
+    int writeResult = wire->endTransmission();
+    
+    if (writeResult != 0) {
+        Serial.print("Write failed with error: ");
+        Serial.println(writeResult);
+        return false;
+    }
+    
+    delay(50); // Allow time for pins to settle
+    
+    // Read back the state
+    uint8_t readValue = 0x00;
+    if (wire->requestFrom(_address, (uint8_t)1) == 1) {
+        readValue = wire->read();
+        
+        Serial.print("Wrote 0xFF, Read 0x");
+        Serial.print(readValue, HEX);
+        
+        if (readValue == 0xFF) {
+            Serial.println(" - PASS");
+            return true;
+        } else {
+            Serial.print(" - FAIL (");
+            int failedPins = 0;
+            for (int pin = 0; pin < 8; pin++) {
+                if ((readValue & (1 << pin)) == 0) {
+                    if (failedPins > 0) Serial.print(", ");
+                    Serial.print("Pin");
+                    Serial.print(pin);
+                    failedPins++;
+                }
+            }
+            Serial.print(" stuck LOW)");
+            Serial.println();
+            return false;
+        }
+    } else {
+        Serial.println("Read failed - no response");
+        return false;
+    }
+}
+
+bool PCF8574gpio::performGroundTest() {
+    // Try to set all pins LOW and verify
+    selectTCAChannel(tcaChannel);
+    delay(10);
+    
+    wire->beginTransmission(_address);
+    wire->write(0x00);
+    int writeResult = wire->endTransmission();
+    
+    if (writeResult != 0) {
+        Serial.print("Write failed with error: ");
+        Serial.println(writeResult);
+        return false;
+    }
+    
+    delay(50); // Allow time for pins to settle
+    
+    // Read back the state
+    uint8_t readValue = 0xFF;
+    if (wire->requestFrom(_address, (uint8_t)1) == 1) {
+        readValue = wire->read();
+        
+        Serial.print("Wrote 0x00, Read 0x");
+        Serial.print(readValue, HEX);
+        
+        if (readValue == 0x00) {
+            Serial.println(" - PASS");
+            return true;
+        } else {
+            Serial.print(" - FAIL (");
+            int failedPins = 0;
+            for (int pin = 0; pin < 8; pin++) {
+                if ((readValue & (1 << pin)) != 0) {
+                    if (failedPins > 0) Serial.print(", ");
+                    Serial.print("Pin");
+                    Serial.print(pin);
+                    failedPins++;
+                }
+            }
+            Serial.print(" stuck HIGH)");
+            Serial.println();
+            return false;
+        }
+    } else {
+        Serial.println("Read failed - no response");
+        return false;
+    }
+}
+
+bool PCF8574gpio::performIndividualPinTest() {
+    bool allPassed = true;
+    
+    for (int pin = 0; pin < 8; pin++) {
+        Serial.print("Testing Pin ");
+        Serial.print(pin);
+        Serial.print(": ");
+        
+        // Test HIGH
+        uint8_t testValue = (1 << pin);
+        selectTCAChannel(tcaChannel);
+        delay(5);
+        
+        wire->beginTransmission(_address);
+        wire->write(testValue);
+        if (wire->endTransmission() != 0) {
+            Serial.println("Write FAIL");
+            allPassed = false;
+            continue;
+        }
+        
+        delay(20);
+        
+        uint8_t readValue = 0x00;
+        if (wire->requestFrom(_address, (uint8_t)1) == 1) {
+            readValue = wire->read();
+            
+            if ((readValue & (1 << pin)) != 0) {
+                Serial.print("HIGH✓ ");
+            } else {
+                Serial.print("HIGH✗ ");
+                allPassed = false;
+            }
+        } else {
+            Serial.print("READ✗ ");
+            allPassed = false;
+            continue;
+        }
+        
+        // Test LOW
+        selectTCAChannel(tcaChannel);
+        delay(5);
+        
+        wire->beginTransmission(_address);
+        wire->write(0x00);
+        if (wire->endTransmission() != 0) {
+            Serial.println("Write FAIL");
+            allPassed = false;
+            continue;
+        }
+        
+        delay(20);
+        
+        if (wire->requestFrom(_address, (uint8_t)1) == 1) {
+            readValue = wire->read();
+            
+            if ((readValue & (1 << pin)) == 0) {
+                Serial.println("LOW✓");
+            } else {
+                Serial.println("LOW✗");
+                allPassed = false;
+            }
+        } else {
+            Serial.println("READ✗");
+            allPassed = false;
+        }
+    }
+    
+    return allPassed;
+}
+
+bool PCF8574gpio::performLoadTest() {
+    // This test checks if external loads are preventing proper operation
+    Serial.println("Checking for excessive external loads...");
+    
+    // Test pattern that would normally work
+    uint8_t testPatterns[] = {0x55, 0xAA, 0xFF, 0x00};
+    bool allPassed = true;
+    
+    for (int i = 0; i < 4; i++) {
+        selectTCAChannel(tcaChannel);
+        delay(10);
+        
+        wire->beginTransmission(_address);
+        wire->write(testPatterns[i]);
+        if (wire->endTransmission() != 0) {
+            allPassed = false;
+            continue;
+        }
+        
+        delay(50); // Longer delay for loads to settle
+        
+        uint8_t readValue;
+        if (wire->requestFrom(_address, (uint8_t)1) == 1) {
+            readValue = wire->read();
+            
+            Serial.print("Pattern 0x");
+            Serial.print(testPatterns[i], HEX);
+            Serial.print(" -> 0x");
+            Serial.print(readValue, HEX);
+            
+            if (readValue == testPatterns[i]) {
+                Serial.println(" ✓");
+            } else {
+                Serial.println(" ✗");
+                allPassed = false;
+            }
+        } else {
+            allPassed = false;
+        }
+    }
+    
+    return allPassed;
+}
