@@ -27,6 +27,7 @@ bool PCF8574gpio::begin() {
 }
 
 bool PCF8574gpio::isConnected() {
+    selectTCAChannel(tcaChannel);  // Select TCA channel before communication
     wire->beginTransmission(_address);
     return (wire->endTransmission() == 0);
 }
