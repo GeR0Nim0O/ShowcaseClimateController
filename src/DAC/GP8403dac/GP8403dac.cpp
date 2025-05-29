@@ -52,16 +52,18 @@ bool GP8403dac::begin() {
         return initializeLimitedMode();
     }
     
-    // Set the DAC to 5V output range using DFRobot method
+    // Set the DAC to 5V output range using CORRECTED DFRobot method
     Serial.println("GP8403: Setting output range to 5V...");
     I2CHandler::selectTCA(getTCAChannel());
     wire->beginTransmission(getI2CAddress());
-    wire->write(OUTPUT_RANGE);
-    wire->write(OUTPUT_RANGE_5V);
+    wire->write(OUTPUT_RANGE);      // Register 0x01
+    wire->write(OUTPUT_RANGE_5V);   // Value 0x01 for 0-5V (CORRECTED)
     if (wire->endTransmission() != 0) {
         Serial.println("GP8403: Failed to set output range");
         return initializeLimitedMode();
     }
+    
+    Serial.println("GP8403: Output range set successfully");
     
     // Try comprehensive validation
     if (validateDAC()) {
@@ -114,11 +116,11 @@ bool GP8403dac::initializeLimitedMode() {
     Serial.println("GP8403: Falling back to limited mode operation");
     
     // Just mark the device as initialized but with limitations
-    initialized = true;  // Direct access to protected member
+    initialized = true;
     
     // Try one last basic connection check
     I2CHandler::selectTCA(getTCAChannel());
-    delay(50); // Extended stabilization
+    delay(50);
     
     wire->beginTransmission(getI2CAddress());
     if (wire->endTransmission() == 0) {
@@ -127,11 +129,11 @@ bool GP8403dac::initializeLimitedMode() {
         Serial.println("GP8403: Device not responding, but proceeding with limited functionality");
     }
     
-    // Try minimal initialization - just set output range to 5V
+    // Try minimal initialization - set output range to 5V with CORRECTED value
     I2CHandler::selectTCA(getTCAChannel());
     wire->beginTransmission(getI2CAddress());
-    wire->write(OUTPUT_RANGE);      // Register address 0x00
-    wire->write(OUTPUT_RANGE_5V);   // Data 0x01 for 0-5V
+    wire->write(OUTPUT_RANGE);      // Register 0x01
+    wire->write(OUTPUT_RANGE_5V);   // Value 0x01 for 0-5V (CORRECTED)
     if (wire->endTransmission() == 0) {
         Serial.println("GP8403: Successfully set output range in limited mode");
     }
@@ -271,16 +273,24 @@ bool GP8403dac::setChannelA(uint16_t value) {
     Serial.print("GP8403: Setting Channel A to raw value ");
     Serial.println(value);
     
+    // Add more detailed debugging
+    Serial.print("GP8403: Channel A - Register: 0x");
+    Serial.print(GP8403_CHANNEL_A, HEX);
+    Serial.print(", MSB: 0x");
+    Serial.print((value >> 8) & 0xFF, HEX);
+    Serial.print(", LSB: 0x");
+    Serial.println(value & 0xFF, HEX);
+    
     const int maxRetries = 3;
     bool success = false;
     
     for (int attempt = 1; attempt <= maxRetries && !success; attempt++) {
         I2CHandler::selectTCA(getTCAChannel());
-        delayMicroseconds(200);
+        delayMicroseconds(500); // Increased delay
         
         wire->beginTransmission(getI2CAddress());
-        wire->write(GP8403_CHANNEL_A);          // Channel A register
-        wire->write((value >> 8) & 0xFF);       // MSB first (DFRobot format)
+        wire->write(GP8403_CHANNEL_A);          // Channel A register (0x02)
+        wire->write((value >> 8) & 0xFF);       // MSB first
         wire->write(value & 0xFF);              // LSB second
         
         int result = wire->endTransmission();
@@ -296,7 +306,7 @@ bool GP8403dac::setChannelA(uint16_t value) {
             Serial.print(" failed with error: ");
             Serial.println(result);
             if (attempt < maxRetries) {
-                delay(attempt * 2);
+                delay(attempt * 5); // Increased delay
             }
         }
     }
@@ -316,16 +326,24 @@ bool GP8403dac::setChannelB(uint16_t value) {
     Serial.print("GP8403: Setting Channel B to raw value ");
     Serial.println(value);
     
+    // Add more detailed debugging
+    Serial.print("GP8403: Channel B - Register: 0x");
+    Serial.print(GP8403_CHANNEL_B, HEX);
+    Serial.print(", MSB: 0x");
+    Serial.print((value >> 8) & 0xFF, HEX);
+    Serial.print(", LSB: 0x");
+    Serial.println(value & 0xFF, HEX);
+    
     const int maxRetries = 3;
     bool success = false;
     
     for (int attempt = 1; attempt <= maxRetries && !success; attempt++) {
         I2CHandler::selectTCA(getTCAChannel());
-        delayMicroseconds(200);
+        delayMicroseconds(500); // Increased delay
         
         wire->beginTransmission(getI2CAddress());
-        wire->write(GP8403_CHANNEL_B);          // Channel B register
-        wire->write((value >> 8) & 0xFF);       // MSB first (DFRobot format)
+        wire->write(GP8403_CHANNEL_B);          // Channel B register (0x03)
+        wire->write((value >> 8) & 0xFF);       // MSB first
         wire->write(value & 0xFF);              // LSB second
         
         int result = wire->endTransmission();
@@ -341,7 +359,7 @@ bool GP8403dac::setChannelB(uint16_t value) {
             Serial.print(" failed with error: ");
             Serial.println(result);
             if (attempt < maxRetries) {
-                delay(attempt * 2);
+                delay(attempt * 5); // Increased delay
             }
         }
     }
