@@ -268,39 +268,24 @@ bool GP8403dac::setChannelA(uint16_t value) {
     if (value > DAC_MAX_VALUE) {
         value = DAC_MAX_VALUE;
     }
-    
     Serial.print("GP8403: Setting Channel A to raw value ");
     Serial.println(value);
-    
     // Save original value for later reference
     uint16_t originalValue = value;
-    
-    // Shift left by 4 bits as per DFRobot's library format
-    value = value << 4;
-    
-    // Improved retry mechanism with better timing
+    // No left shift for GP8403, send as 12-bit value (MSB first)
     const int maxRetries = 3;
     bool success = false;
-    
     for (int attempt = 1; attempt <= maxRetries && !success; attempt++) {
-        // Select TCA port before transmission
         I2CHandler::selectTCA(getTCAChannel());
-        
-        // Minimal delay for TCA stabilization
         delayMicroseconds(200);
-        
-        // Follow DFRobot's implementation pattern:
-        // Write to GP8302_CONFIG_CURRENT_REG for channel A (0)
         wire->beginTransmission(getI2CAddress());
-        wire->write(GP8302_CONFIG_CURRENT_REG);
-        wire->write(value & 0xFF);         // LSB first 
-        wire->write((value >> 8) & 0xFF);  // MSB second
-        
+        wire->write(0x01); // Channel A register
+        wire->write((value >> 8) & 0xFF); // MSB first
+        wire->write(value & 0xFF);        // LSB
         int result = wire->endTransmission();
         success = (result == 0);
-        
         if (success) {
-            channelAValue = originalValue;  // Store the unshifted value for reference
+            channelAValue = originalValue;
             Serial.print("GP8403: Channel A updated to ");
             Serial.println(channelAValue);
         } else {
@@ -308,18 +293,14 @@ bool GP8403dac::setChannelA(uint16_t value) {
             Serial.print(attempt);
             Serial.print(" failed with error: ");
             Serial.println(result);
-            
             if (attempt < maxRetries) {
-                // Progressive delay increase for retries
                 delay(attempt * 2);
             }
         }
     }
-    
     if (!success) {
         Serial.println("GP8403: Failed to update Channel A after all retries");
     }
-    
     return success;
 }
 
@@ -327,39 +308,23 @@ bool GP8403dac::setChannelB(uint16_t value) {
     if (value > DAC_MAX_VALUE) {
         value = DAC_MAX_VALUE;
     }
-    
     Serial.print("GP8403: Setting Channel B to raw value ");
     Serial.println(value);
-    
-    // Save original value for later reference
     uint16_t originalValue = value;
-    
-    // Shift left by 4 bits as per DFRobot's library format
-    value = value << 4;
-    
-    // Improved retry mechanism with better timing
+    // No left shift for GP8403, send as 12-bit value (MSB first)
     const int maxRetries = 3;
     bool success = false;
-    
     for (int attempt = 1; attempt <= maxRetries && !success; attempt++) {
-        // Select TCA port before transmission
         I2CHandler::selectTCA(getTCAChannel());
-        
-        // Minimal delay for TCA stabilization
         delayMicroseconds(200);
-        
-        // Follow DFRobot's implementation pattern:
-        // Write to GP8302_CONFIG_CURRENT_REG<<1 for channel B (1)
         wire->beginTransmission(getI2CAddress());
-        wire->write(GP8302_CONFIG_CURRENT_REG << 1);
-        wire->write(value & 0xFF);         // LSB first 
-        wire->write((value >> 8) & 0xFF);  // MSB second
-        
+        wire->write(0x02); // Channel B register
+        wire->write((value >> 8) & 0xFF); // MSB first
+        wire->write(value & 0xFF);        // LSB
         int result = wire->endTransmission();
         success = (result == 0);
-        
         if (success) {
-            channelBValue = originalValue;  // Store the unshifted value for reference
+            channelBValue = originalValue;
             Serial.print("GP8403: Channel B updated to ");
             Serial.println(channelBValue);
         } else {
@@ -367,18 +332,14 @@ bool GP8403dac::setChannelB(uint16_t value) {
             Serial.print(attempt);
             Serial.print(" failed with error: ");
             Serial.println(result);
-            
             if (attempt < maxRetries) {
-                // Progressive delay increase for retries
                 delay(attempt * 2);
             }
         }
     }
-    
     if (!success) {
         Serial.println("GP8403: Failed to update Channel B after all retries");
     }
-    
     return success;
 }
 
