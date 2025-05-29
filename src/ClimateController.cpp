@@ -307,41 +307,78 @@ void ClimateController::updateHumidityControl() {
 void ClimateController::applyDACControls() {
     // Skip if no DAC device available
     if (!dac) {
-        Serial.println("DAC: No DAC device available");
-        return;
+        return; // Reduce log spam
     }
     
-    if (!dac->isConnected()) {
-        Serial.println("DAC: Device not connected");
-        return;
-    }
+    // Rate limiting: Only update DAC if enough time has passed since last update
+    static unsigned long lastDACUpdate = 0;
+    static float lastDACVoltage = -1.0; // Initialize to invalid value
+    const unsigned long DAC_UPDATE_INTERVAL = 1000; // Update DAC max every 1000ms
+    const float VOLTAGE_THRESHOLD = 0.1; // 100mV threshold
     
-    // Set temperature power using generic DAC methods - use channel 0 (DAC0) for temperature control
+    unsigned long currentTime = millis();
+    
+    // Calculate desired voltage based on current state
+    float desiredVoltage = 0.0;
+    String operation = "idle";
+    
     if (heatingActive) {
-        // Convert percentage to voltage (0-100% -> 0-5V)
-        float voltage = (heatingPower / 100.0) * 5.0;
-        Serial.print("DAC: Setting heating voltage to ");
-        Serial.print(voltage, 2);
-        Serial.println("V");
-        
-        if (!dac->setChannelVoltage(0, voltage)) {
-            Serial.println("DAC: Failed to set heating voltage");
-        }
+        desiredVoltage = (heatingPower / 100.0) * 5.0;
+        operation = "heating";
     } else if (coolingActive) {
-        // Convert percentage to voltage (0-100% -> 0-5V)
-        float voltage = (coolingPower / 100.0) * 5.0;
-        Serial.print("DAC: Setting cooling voltage to ");
-        Serial.print(voltage, 2);
-        Serial.println("V");
-        
-        if (!dac->setChannelVoltage(0, voltage)) {
-            Serial.println("DAC: Failed to set cooling voltage");
+        desiredVoltage = (coolingPower / 100.0) * 5.0;
+        operation = "cooling";
+    }
+    
+    // Check if we should update (time passed OR significant voltage change)
+    bool timeToUpdate = (currentTime - lastDACUpdate >= DAC_UPDATE_INTERVAL);
+    bool significantChange = (abs(desiredVoltage - lastDACVoltage) >= VOLTAGE_THRESHOLD);
+    bool forceUpdate = (lastDACVoltage < 0); // First time
+    
+    if (!timeToUpdate && !significantChange && !forceUpdate) {
+        return; // Skip this update
+    }
+    
+    // Check if device is still connected before attempting operation
+    if (!dac->isConnected()) {
+        // Only log connection issues every 10 seconds to reduce spam
+        static unsigned long lastConnErrorLog = 0;
+        if (currentTime - lastConnErrorLog > 10000) {
+            Serial.println("DAC: Device not connected");
+            lastConnErrorLog = currentTime;
+        }
+        return;
+    }
+    
+    // Log what we're about to do
+    Serial.print("DAC: Setting ");
+    Serial.print(desiredVoltage, 2);
+    Serial.print("V (");
+    Serial.print(operation);
+    if (heatingActive) {
+        Serial.print(" at ");
+        Serial.print(heatingPower, 1);
+        Serial.print("%");
+    } else if (coolingActive) {
+        Serial.print(" at ");
+        Serial.print(coolingPower, 1);
+        Serial.print("%");
+    }
+    Serial.println(")");
+    
+    // Attempt to set the new voltage
+    bool success = dac->setChannelVoltage(0, desiredVoltage);
+    
+    if (success) {
+        lastDACVoltage = desiredVoltage;
+        lastDACUpdate = currentTime;
+        // Only log success for significant changes to reduce spam
+        if (significantChange || forceUpdate) {
+            Serial.println("DAC: Voltage set successfully");
         }
     } else {
-        Serial.println("DAC: Setting voltage to 0V (idle)");
-        if (!dac->setChannelVoltage(0, 0.0)) {
-            Serial.println("DAC: Failed to set idle voltage");
-        }
+        Serial.println("DAC: Failed to set voltage");
+        // Don't update lastDACUpdate on failure, so we'll try again sooner
     }
 }
 
