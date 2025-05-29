@@ -22,15 +22,9 @@ GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaPort, float t
 }
 
 bool GP8403dac::begin() {
-    Serial.println("GP8403: Starting DAC initialization (DFRobot compatible)...");
-    
     // First, try basic I2C connectivity
     bool basicConnection = false;
     for (int attempt = 1; attempt <= 3; attempt++) {
-        Serial.print("GP8403: Connection attempt ");
-        Serial.print(attempt);
-        Serial.print("/3...");
-        
         I2CHandler::selectTCA(getTCAChannel());
         delayMicroseconds(500);
         
@@ -38,46 +32,34 @@ bool GP8403dac::begin() {
         int result = wire->endTransmission();
         
         if (result == 0) {
-            Serial.println(" SUCCESS");
             basicConnection = true;
             break;
         } else {
-            Serial.print(" FAILED (error: ");
-            Serial.print(result);
-            Serial.println(")");
             delay(100);
         }
     }
     
     if (!basicConnection) {
-        Serial.println("GP8403: Basic connection failed - trying fallback...");
         return initializeLimitedMode();
     }
     
     // Set the DAC to 5V output range using actual DFRobot method
-    Serial.println("GP8403: Setting output range to 5V...");
     I2CHandler::selectTCA(getTCAChannel());
     wire->beginTransmission(getI2CAddress());
     wire->write(OUTPUT_RANGE);      // Register 0x01
-    wire->write(OUTPUT_RANGE_5V);   // Value 0x00 for 0-5V (corrected back)
+    wire->write(OUTPUT_RANGE_5V);   // Value 0x00 for 0-5V
     if (wire->endTransmission() != 0) {
-        Serial.println("GP8403: Failed to set output range");
         return initializeLimitedMode();
     }
-    
-    Serial.println("GP8403: Output range set successfully");
     
     // Try comprehensive validation
     if (validateDAC()) {
         initialized = true;
-        Serial.println("GP8403: Full initialization and validation successful!");
         return true;
     } else {
         // Fall back to gentle validation
-        Serial.println("GP8403: Full validation failed, trying gentle validation...");
         if (validateDACGentle()) {
             initialized = true;
-            Serial.println("GP8403: Limited initialization successful (gentle validation passed)");
             return true;
         } else {
             return initializeLimitedMode();
@@ -86,8 +68,6 @@ bool GP8403dac::begin() {
 }
 
 bool GP8403dac::validateDACGentle() {
-    Serial.println("GP8403: Starting gentle DAC validation...");
-    
     // Test 1: Basic connectivity check with extended retries
     for (int attempt = 1; attempt <= 5; attempt++) {
         I2CHandler::selectTCA(getTCAChannel());
@@ -97,26 +77,16 @@ bool GP8403dac::validateDACGentle() {
         int result = wire->endTransmission();
         
         if (result == 0) {
-            Serial.println("GP8403 Gentle Validation: Basic connectivity test PASSED");
             return true; // If we can connect, that's sufficient for gentle validation
         }
-        
-        Serial.print("GP8403 Gentle Validation: Connection attempt ");
-        Serial.print(attempt);
-        Serial.print("/5 failed (error: ");
-        Serial.print(result);
-        Serial.println(")");
         
         delay(20); // Longer delay between attempts
     }
     
-    Serial.println("GP8403 Gentle Validation: All connection attempts failed");
     return false;
 }
 
 bool GP8403dac::initializeLimitedMode() {
-    Serial.println("GP8403: Falling back to limited mode operation");
-    
     // Just mark the device as initialized but with limitations
     initialized = true;
     
@@ -125,98 +95,68 @@ bool GP8403dac::initializeLimitedMode() {
     delay(50);
     
     wire->beginTransmission(getI2CAddress());
-    if (wire->endTransmission() == 0) {
-        Serial.println("GP8403: Device responds to I2C in limited mode");
-    } else {
-        Serial.println("GP8403: Device not responding, but proceeding with limited functionality");
-    }
+    wire->endTransmission();
     
-    // Try minimal initialization - set output range to 5V with corrected value
+    // Try minimal initialization - set output range to 5V
     I2CHandler::selectTCA(getTCAChannel());
     wire->beginTransmission(getI2CAddress());
     wire->write(OUTPUT_RANGE);      // Register 0x01
-    wire->write(OUTPUT_RANGE_5V);   // Value 0x00 for 0-5V (corrected back)
-    if (wire->endTransmission() == 0) {
-        Serial.println("GP8403: Successfully set output range in limited mode");
-    }
+    wire->write(OUTPUT_RANGE_5V);   // Value 0x00 for 0-5V
+    wire->endTransmission();
     
-    Serial.println("GP8403: Limited mode initialization complete");
     return true;
 }
 
 bool GP8403dac::validateDAC() {
-    Serial.println("GP8403: Starting comprehensive DAC validation...");
-    
     // Test 1: Basic connectivity check
     if (!isConnected()) {
-        Serial.println("GP8403 Validation: Basic connectivity test FAILED");
         return false;
     }
-    Serial.println("GP8403 Validation: Basic connectivity test PASSED");
     
     // Test 2: Test Channel A write/verify cycle
     float testVoltage = 1.0f; // Test with 1V
     if (!setChannelVoltage(0, testVoltage)) {
-        Serial.println("GP8403 Validation: Channel A write test FAILED");
         return false;
     }
     delay(10); // Allow voltage to settle
     
-    // Verify the value was stored internally (we can't read back from GP8403, but we can check our internal state)
+    // Verify the value was stored internally
     float expectedDAC = voltageToDAC(testVoltage);
     if (abs(channelAValue - expectedDAC) > 100) { // Allow some tolerance
-        Serial.print("GP8403 Validation: Channel A value mismatch - Expected: ");
-        Serial.print((int)expectedDAC);
-        Serial.print(", Got: ");
-        Serial.println(channelAValue);
         return false;
     }
-    Serial.println("GP8403 Validation: Channel A write test PASSED");
     
     // Test 3: Test Channel B write/verify cycle
     if (!setChannelVoltage(1, testVoltage)) {
-        Serial.println("GP8403 Validation: Channel B write test FAILED");
         return false;
     }
     delay(10);
     
     if (abs(channelBValue - expectedDAC) > 100) {
-        Serial.print("GP8403 Validation: Channel B value mismatch - Expected: ");
-        Serial.print((int)expectedDAC);
-        Serial.print(", Got: ");
-        Serial.println(channelBValue);
         return false;
     }
-    Serial.println("GP8403 Validation: Channel B write test PASSED");
     
     // Test 4: Test range validation (set to 0V)
     if (!setChannelVoltage(0, 0.0f)) {
-        Serial.println("GP8403 Validation: Channel A zero voltage test FAILED");
         return false;
     }
     if (!setChannelVoltage(1, 0.0f)) {
-        Serial.println("GP8403 Validation: Channel B zero voltage test FAILED");
         return false;
     }
-    Serial.println("GP8403 Validation: Zero voltage test PASSED");
     
     // Test 5: Test maximum safe voltage (4V - below 5V max)
     float maxSafeVoltage = 4.0f;
     if (!setChannelVoltage(0, maxSafeVoltage)) {
-        Serial.println("GP8403 Validation: Channel A max voltage test FAILED");
         return false;
     }
     if (!setChannelVoltage(1, maxSafeVoltage)) {
-        Serial.println("GP8403 Validation: Channel B max voltage test FAILED");
         return false;
     }
-    Serial.println("GP8403 Validation: Max voltage test PASSED");
     
     // Reset to safe state (0V)
     setChannelVoltage(0, 0.0f);
     setChannelVoltage(1, 0.0f);
     
-    Serial.println("GP8403 Validation: All tests PASSED - DAC is fully functional");
     return true;
 }
 
@@ -272,21 +212,8 @@ bool GP8403dac::setChannelA(uint16_t value) {
         value = DAC_MAX_VALUE;
     }
     
-    Serial.print("GP8403: Setting Channel A to raw value ");
-    Serial.println(value);
-    
     // Use DFRobot's actual protocol: shift left by 4 and format correctly
     uint16_t dacData = value << 4;
-    
-    // Add more detailed debugging
-    Serial.print("GP8403: Channel A - Register: 0x");
-    Serial.print(GP8403_CHANNEL_A, HEX);
-    Serial.print(", Shifted Value: 0x");
-    Serial.print(dacData, HEX);
-    Serial.print(", Byte1: 0x");
-    Serial.print(dacData & 0xFF, HEX);
-    Serial.print(", Byte2: 0x");
-    Serial.println((dacData >> 8) & 0xFF, HEX);
     
     const int maxRetries = 3;
     bool success = false;
@@ -305,21 +232,11 @@ bool GP8403dac::setChannelA(uint16_t value) {
         
         if (success) {
             channelAValue = value;
-            Serial.print("GP8403: Channel A updated to ");
-            Serial.println(channelAValue);
         } else {
-            Serial.print("GP8403: I2C transmission attempt ");
-            Serial.print(attempt);
-            Serial.print(" failed with error: ");
-            Serial.println(result);
             if (attempt < maxRetries) {
                 delay(attempt * 5);
             }
         }
-    }
-    
-    if (!success) {
-        Serial.println("GP8403: Failed to update Channel A after all retries");
     }
     
     return success;
@@ -330,21 +247,8 @@ bool GP8403dac::setChannelB(uint16_t value) {
         value = DAC_MAX_VALUE;
     }
     
-    Serial.print("GP8403: Setting Channel B to raw value ");
-    Serial.println(value);
-    
     // Use DFRobot's actual protocol: shift left by 4 and format correctly
     uint16_t dacData = value << 4;
-    
-    // Add more detailed debugging
-    Serial.print("GP8403: Channel B - Register: 0x");
-    Serial.print(GP8403_CHANNEL_B, HEX);
-    Serial.print(", Shifted Value: 0x");
-    Serial.print(dacData, HEX);
-    Serial.print(", Byte1: 0x");
-    Serial.print(dacData & 0xFF, HEX);
-    Serial.print(", Byte2: 0x");
-    Serial.println((dacData >> 8) & 0xFF, HEX);
     
     const int maxRetries = 3;
     bool success = false;
@@ -363,21 +267,11 @@ bool GP8403dac::setChannelB(uint16_t value) {
         
         if (success) {
             channelBValue = value;
-            Serial.print("GP8403: Channel B updated to ");
-            Serial.println(channelBValue);
         } else {
-            Serial.print("GP8403: I2C transmission attempt ");
-            Serial.print(attempt);
-            Serial.print(" failed with error: ");
-            Serial.println(result);
             if (attempt < maxRetries) {
                 delay(attempt * 5);
             }
         }
-    }
-    
-    if (!success) {
-        Serial.println("GP8403: Failed to update Channel B after all retries");
     }
     
     return success;
@@ -386,11 +280,6 @@ bool GP8403dac::setChannelB(uint16_t value) {
 bool GP8403dac::setBothChannels(uint16_t valueA, uint16_t valueB) {
     if (valueA > DAC_MAX_VALUE) valueA = DAC_MAX_VALUE;
     if (valueB > DAC_MAX_VALUE) valueB = DAC_MAX_VALUE;
-    
-    Serial.print("GP8403: Setting both channels to values A:");
-    Serial.print(valueA);
-    Serial.print(" B:");
-    Serial.println(valueB);
     
     // Use DFRobot's actual protocol: shift left by 4 for both channels
     uint16_t dacDataA = valueA << 4;
@@ -416,21 +305,11 @@ bool GP8403dac::setBothChannels(uint16_t valueA, uint16_t valueB) {
         if (success) {
             channelAValue = valueA;
             channelBValue = valueB;
-            Serial.println("GP8403: Both channels updated successfully");
         } else {
-            Serial.print("GP8403: I2C transmission attempt ");
-            Serial.print(attempt);
-            Serial.print(" failed with error: ");
-            Serial.println(result);
-            
             if (attempt < maxRetries) {
                 delay(attempt * 5);
             }
         }
-    }
-    
-    if (!success) {
-        Serial.println("GP8403: Failed to update both channels after all retries");
     }
     
     return success;
@@ -500,32 +379,16 @@ float GP8403dac::dacToVoltage(uint16_t dacValue) {
 
 bool GP8403dac::setChannelVoltage(uint8_t channel, float voltage) {
     if (voltage < 0.0 || voltage > DAC_MAX_VOLTAGE) {
-        Serial.print("GP8403: Voltage out of range (0-");
-        Serial.print(DAC_MAX_VOLTAGE);
-        Serial.print("V)! Requested: ");
-        Serial.println(voltage);
         return false;
     }
     
     uint16_t dacValue = voltageToDAC(voltage);
     
-    Serial.print("GP8403: Converting ");
-    Serial.print(voltage, 2);
-    Serial.print("V to DAC value ");
-    Serial.println(dacValue);
-    
     bool success = false;
     if (channel == 0) {
         success = setChannelA(dacValue);
-        Serial.print("GP8403: Channel A set result: ");
-        Serial.println(success ? "SUCCESS" : "FAILED");
     } else if (channel == 1) {
         success = setChannelB(dacValue);
-        Serial.print("GP8403: Channel B set result: ");
-        Serial.println(success ? "SUCCESS" : "FAILED");
-    } else {
-        Serial.print("GP8403: Invalid channel: ");
-        Serial.println(channel);
     }
     
     return success;
