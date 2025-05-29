@@ -277,7 +277,10 @@ bool GP8403dac::writeConfig() {
     
     // Set gain bits
     if (gain2xA) config |= 0x01;
-    if (gain2xB) config |= 0x02;      I2CHandler::selectTCA(getTCAChannel());
+    if (gain2xB) config |= 0x02;
+    
+    I2CHandler::selectTCA(getTCAChannel());
+    delayMicroseconds(200);
     
     wire->beginTransmission(getI2CAddress());
     wire->write(REG_CONFIG);
