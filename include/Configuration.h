@@ -17,6 +17,7 @@ public:
     static std::map<String, String> wifiConfig;
     static std::map<String, String> mqttConfig;
     static std::map<String, String> projectConfig;
+    static JsonDocument devicesConfigDoc;  // Changed to JsonDocument to persist the data
     static JsonObject devicesConfig;
     
     // Config loading functions
