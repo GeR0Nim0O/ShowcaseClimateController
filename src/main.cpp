@@ -510,6 +510,16 @@ void readAndSendDataFromDevices() {
         Serial.println("\n=== Sensor Readings (60-second update) ===");
     }
     
+    // CRITICAL FIX: Store climate controller GPIO state before reading other devices
+    uint8_t climateGpioStateBefore = 0x00;
+    if (gpioExpander != nullptr) {
+        climateGpioStateBefore = gpioExpander->getGPIOState();
+        if (shouldPrintData) {
+            Serial.print("Climate GPIO state before device reading: 0x");
+            Serial.println(climateGpioStateBefore, HEX);
+        }
+    }
+    
     for (size_t i = 0; i < devices.size(); i++) {
         Device* device = devices[i];
         if (device == nullptr) {
@@ -527,6 +537,19 @@ void readAndSendDataFromDevices() {
             delay(100);
             continue;
         }
+        
+        // CRITICAL FIX: Skip GPIO devices that are being used by climate controller
+        bool isClimateGpio = (device == gpioExpander);
+        if (isClimateGpio && device->getType().equalsIgnoreCase("PCF8574GPIO")) {
+            if (shouldPrintData) {
+                Serial.print("Skipping climate controller GPIO device: ");
+                Serial.print(device->getType());
+                Serial.print("_");
+                Serial.println(device->getDeviceIndex());
+            }
+            continue; // Skip reading from climate controller GPIO
+        }
+        
         I2CHandler::selectTCA(device->getTCAChannel());
         auto data = device->readData();        
         
@@ -630,6 +653,29 @@ void readAndSendDataFromDevices() {
                 }
             }
             // No else clause needed since we always update changedSensorData on the 60-second cycle
+        }
+    }
+    
+    // CRITICAL FIX: Restore climate controller GPIO state after device reading
+    if (gpioExpander != nullptr) {
+        uint8_t climateGpioStateAfter = gpioExpander->getGPIOState();
+        if (climateGpioStateAfter != climateGpioStateBefore) {
+            Serial.print("WARNING: Climate GPIO state changed during device reading! Before: 0x");
+            Serial.print(climateGpioStateBefore, HEX);
+            Serial.print(", After: 0x");
+            Serial.println(climateGpioStateAfter, HEX);
+            
+            // Force restore the state
+            Serial.println("Forcing restore of climate controller GPIO state...");
+            gpioExpander->writeByte(climateGpioStateBefore);
+            
+            // Verify restoration
+            uint8_t restoredState = gpioExpander->getGPIOState();
+            Serial.print("GPIO state after restoration: 0x");
+            Serial.println(restoredState, HEX);
+        } else if (shouldPrintData) {
+            Serial.print("Climate GPIO state preserved: 0x");
+            Serial.println(climateGpioStateAfter, HEX);
         }
     }
     
