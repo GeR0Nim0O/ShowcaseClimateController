@@ -1,15 +1,17 @@
 #include "GP8403dac.h"
 #include "I2CHandler.h"
 
-// GP8403 DAC Constants
-#define DAC_MAX_VALUE 32767  // 15-bit resolution (Official library uses this)
+// GP8403 DAC Constants - Based on official DFRobot library
+#define DAC_MAX_VALUE 4095   // 12-bit resolution (0-4095)
 #define DAC_MAX_VOLTAGE 5.0  // 0-5V output range
 
 // GP8403 Register addresses - from official DFRobot library
-#define REG_DAC_A     0x01   // Write to DAC channel A  
-#define REG_DAC_B     0x02   // Write to DAC channel B
-#define REG_CONFIG    0x03   // Configuration register
-#define REG_SYNC_ALL  0x04   // Synchronized update both channels
+#define GP8302_CONFIG_CURRENT_REG 0x02  // Register for DAC data transmission
+#define OUTPUT_RANGE 0x01               // Output range configuration register
+
+// Output range constants
+#define OUTPUT_RANGE_5V  0x00   // 0-5V output range
+#define OUTPUT_RANGE_10V 0x11   // 0-10V output range
 
 GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : Device(wire, i2cAddress, tcaChannel, deviceName, deviceIndex),
