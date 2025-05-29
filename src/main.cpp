@@ -129,8 +129,6 @@ void setMqttThrottling(bool enable, unsigned long interval = 60000); // Declare 
 void sendAllChangedSensorData(); // Add this function declaration
 void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
-void testDACOutput(); // Add this new function for testing DAC
-void initializeAllGPIOToFalse(); // Add this new function
 
 void setup()
 {
@@ -194,9 +192,6 @@ void setup()
   
   // Print created sensors for debugging (moved after initialization)
   printCreatedSensors();
-  
-  // NEW: Initialize all GPIO pins to false/LOW state before climate controller
-  initializeAllGPIOToFalse();
   
   // Initialize climate controller
   initializeClimateController();
@@ -506,16 +501,6 @@ void readAndSendDataFromDevices() {
         Serial.println("\n=== Sensor Readings (60-second update) ===");
     }
     
-    // CRITICAL FIX: Store climate controller GPIO state before reading other devices
-    uint8_t climateGpioStateBefore = 0x00;
-    if (gpioExpander != nullptr) {
-        climateGpioStateBefore = gpioExpander->getGPIOState();
-        if (shouldPrintData) {
-            Serial.print("Climate GPIO state before device reading: 0x");
-            Serial.println(climateGpioStateBefore, HEX);
-        }
-    }
-    
     for (size_t i = 0; i < devices.size(); i++) {
         Device* device = devices[i];
         if (device == nullptr) {
@@ -532,18 +517,6 @@ void readAndSendDataFromDevices() {
             Serial.println(device->getI2CAddress(), HEX);
             delay(100);
             continue;
-        }
-        
-        // CRITICAL FIX: Skip GPIO devices that are being used by climate controller
-        bool isClimateGpio = (device == gpioExpander);
-        if (isClimateGpio && device->getType().equalsIgnoreCase("PCF8574GPIO")) {
-            if (shouldPrintData) {
-                Serial.print("Skipping climate controller GPIO device: ");
-                Serial.print(device->getType());
-                Serial.print("_");
-                Serial.println(device->getDeviceIndex());
-            }
-            continue; // Skip reading from climate controller GPIO
         }
         
         I2CHandler::selectTCA(device->getTCAChannel());
@@ -649,29 +622,6 @@ void readAndSendDataFromDevices() {
                 }
             }
             // No else clause needed since we always update changedSensorData on the 60-second cycle
-        }
-    }
-    
-    // CRITICAL FIX: Restore climate controller GPIO state after device reading
-    if (gpioExpander != nullptr) {
-        uint8_t climateGpioStateAfter = gpioExpander->getGPIOState();
-        if (climateGpioStateAfter != climateGpioStateBefore) {
-            Serial.print("WARNING: Climate GPIO state changed during device reading! Before: 0x");
-            Serial.print(climateGpioStateBefore, HEX);
-            Serial.print(", After: 0x");
-            Serial.println(climateGpioStateAfter, HEX);
-            
-            // Force restore the state
-            Serial.println("Forcing restore of climate controller GPIO state...");
-            gpioExpander->writeByte(climateGpioStateBefore);
-            
-            // Verify restoration
-            uint8_t restoredState = gpioExpander->getGPIOState();
-            Serial.print("GPIO state after restoration: 0x");
-            Serial.println(restoredState, HEX);
-        } else if (shouldPrintData) {
-            Serial.print("Climate GPIO state preserved: 0x");
-            Serial.println(climateGpioStateAfter, HEX);
         }
     }
     
@@ -844,7 +794,8 @@ void initializeClimateController() {
   try {
     // Use DeviceRegistry to get devices instead of manual searching
     DeviceRegistry& registry = DeviceRegistry::getInstance();
-      // Get GPIO expander from DeviceRegistry
+    
+    // Get GPIO expander from DeviceRegistry
     gpioExpander = (PCF8574gpio*)registry.getDeviceByType("GPIO", 0);  // Get first GPIO expander
     if (gpioExpander != nullptr) {
       Serial.println("Found GPIO expander for climate control via DeviceRegistry");
@@ -859,7 +810,8 @@ void initializeClimateController() {
     } else {
       Serial.println("No temperature/humidity sensor found in DeviceRegistry");
     }
-      // Get DAC from DeviceRegistry - using proper DeviceRegistry access pattern
+    
+    // Get DAC from DeviceRegistry - using proper DeviceRegistry access pattern
     climateDac = (GP8403dac*)registry.getDeviceByType("DAC", 0);  // Get first DAC
     if (climateDac != nullptr) {
       Serial.print("Found DAC device via DeviceRegistry: ");
@@ -870,62 +822,9 @@ void initializeClimateController() {
       Serial.println("No DAC found in DeviceRegistry");
     }
     
-    // Print device counts for debugging
-    int gpioCount = 0, sensorCount = 0, dacCount = 0;
-    for (Device* device : devices) {
-      if (device == nullptr) continue;
-      if (device->getType().equalsIgnoreCase("PCF8574gpio")) gpioCount++;
-      if (device->getType().equalsIgnoreCase("SHTSensor")) sensorCount++;
-      if (device->getType().equalsIgnoreCase("GP8403dac") || device->getType().equalsIgnoreCase("DAC")) dacCount++;
-    }
-    Serial.print("Device counts - GPIO: ");
-    Serial.print(gpioCount);
-    Serial.print(", Sensors: ");
-    Serial.print(sensorCount);
-    Serial.print(", DACs: ");
-    Serial.println(dacCount);
-    
-    // Double check devices are initialized
-    if (gpioExpander != nullptr && !gpioExpander->isInitialized()) {
-      Serial.println("WARNING: GPIO expander found but not initialized. Trying initialization.");
-      gpioExpander->begin();  // Use existing begin() method instead of forceInitialized
-    }
-    
-    if (climateTemperatureSensor != nullptr && !climateTemperatureSensor->isInitialized()) {
-      Serial.println("WARNING: Temperature sensor found but not initialized. Trying initialization.");
-      climateTemperatureSensor->begin();  // Use existing begin() method instead of forceInitialized
-    }
-    
-    if (climateDac != nullptr && !climateDac->isInitialized()) {
-      Serial.println("WARNING: DAC found but not initialized. Trying initialization.");
-      climateDac->begin();  // Use existing begin() method instead of forceInitialized
-    }
-    
     // Create climate controller if we found the required devices
     if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
-      Serial.println("Creating climate controller with devices:");
-      Serial.print("- GPIO expander: ");
-      Serial.print(gpioExpander->getType());
-      Serial.print(" at address 0x");
-      Serial.print(gpioExpander->getI2CAddress(), HEX);
-      Serial.print(" on TCA port ");
-      Serial.println(gpioExpander->getTCAChannel());
-      
-      Serial.print("- Temperature sensor: ");
-      Serial.print(climateTemperatureSensor->getType());
-      Serial.print(" at address 0x");
-      Serial.print(climateTemperatureSensor->getI2CAddress(), HEX);
-      Serial.print(" on TCA port ");
-      Serial.println(climateTemperatureSensor->getTCAChannel());
-      
-      if (climateDac != nullptr) {
-        Serial.print("- DAC: ");
-        Serial.print(climateDac->getType());
-        Serial.print(" at address 0x");
-        Serial.print(climateDac->getI2CAddress(), HEX);
-        Serial.print(" on TCA port ");
-        Serial.println(climateDac->getTCAChannel());
-      }
+      Serial.println("Creating climate controller with devices");
       
       // Create with safe checks
       try {
@@ -953,9 +852,6 @@ void initializeClimateController() {
             Serial.print("°C, Humidity: ");
             Serial.print(humiditySetpoint);
             Serial.println("%");
-            
-            Serial.print("Analog control: ");
-            Serial.println(climateController->hasDACControl() ? "Available" : "Not available");
           } else {
             Serial.println("Failed to initialize climate controller");
             delete climateController;
@@ -973,116 +869,12 @@ void initializeClimateController() {
         }
       }
     } else {
-      Serial.println("Could not find required devices for climate controller:");
-      Serial.print("GPIO expander: ");
-      Serial.println(gpioExpander != nullptr ? "Found" : "Not found");
-      Serial.print("Temperature sensor: ");
-      Serial.println(climateTemperatureSensor != nullptr ? "Found" : "Not found");
-      Serial.print("DAC: ");
-      Serial.println(climateDac != nullptr ? "Found" : "Not found (optional)");
+      Serial.println("Could not find required devices for climate controller");
     }
   }
   catch (...) {
     Serial.println("Exception during device discovery for climate controller");
   }
-}
-
-// Update testDACOutput with better safety checks
-void testDACOutput() {
-    if (climateDac != nullptr) {
-        try {
-            Serial.println("Testing DAC output...");
-            
-            // First verify DAC is connected and responding
-            bool isConnected = climateDac->isConnected();
-            Serial.print("DAC connection test: ");
-            Serial.println(isConnected ? "PASSED" : "FAILED");
-            
-            if (isConnected) {
-                // Set DAC to a safer initial test voltage (2.5V = 50% of range)
-                float testVoltage = 2.5f;
-                Serial.print("Setting DAC output to ");
-                Serial.print(testVoltage);
-                Serial.println(" volts for testing");
-                
-                // Use channel 0 (DAC0) - generic channel number
-                bool success = climateDac->setChannelVoltage(0, testVoltage);
-                
-                if (success) {
-                    Serial.println("DAC test voltage set successfully");
-                    delay(1000); // Wait for stability
-                    
-                    // Gradually ramp down to 0V
-                    Serial.println("Ramping DAC down to 0V...");
-                    for (float v = testVoltage; v >= 0.0f; v -= 0.5f) {
-                        climateDac->setChannelVoltage(0, v);
-                        Serial.print("DAC: ");
-                        Serial.print(v);
-                        Serial.println("V");
-                        delay(200);
-                    }
-                    climateDac->setChannelVoltage(0, 0.0f); // Ensure final value is 0
-                    Serial.println("DAC test complete");
-                } else {
-                    Serial.println("Failed to set DAC test voltage");
-                }
-            } else {
-                Serial.println("DAC not responding, skipping test");
-            }
-        } catch (...) {
-            Serial.println("Exception during DAC testing");
-        }
-    } else {
-        Serial.println("DAC not available for testing");
-    }
-}
-
-// NEW: Function to initialize all GPIO pins to false/LOW state
-void initializeAllGPIOToFalse() {
-  Serial.println("\n=== Initializing All GPIO Pins to LOW ===");
-  
-  // Find all GPIO devices and set all pins to LOW
-  for (Device* device : devices) {
-    if (device != nullptr && device->getType().equalsIgnoreCase("PCF8574GPIO")) {
-      PCF8574gpio* gpio = (PCF8574gpio*)device;
-      
-      Serial.print("Initializing GPIO at address 0x");
-      Serial.print(gpio->getI2CAddress(), HEX);
-      Serial.print(" on TCA port ");
-      Serial.println(gpio->getTCAChannel());
-      
-      // Ensure device is in output mode
-      gpio->forceOutputMode();
-      
-      // Set all 8 pins to LOW (false)
-      for (int pin = 0; pin < 8; pin++) {
-        gpio->writePin(pin, false);
-        delay(10); // Small delay between pin writes
-      }
-      
-      // Verify all pins are LOW by reading GPIO state
-      uint8_t gpioState = gpio->getGPIOState();
-      Serial.print("GPIO state after initialization: 0x");
-      Serial.print(gpioState, HEX);
-      
-      if (gpioState == 0x00) {
-        Serial.println(" - All pins successfully set to LOW");
-      } else {
-        Serial.println(" - WARNING: Some pins may not be LOW");
-        
-        // Debug individual pin states
-        for (int pin = 0; pin < 8; pin++) {
-          bool state = (gpioState & (1 << pin)) != 0;
-          Serial.print("  Pin ");
-          Serial.print(pin);
-          Serial.print(": ");
-          Serial.println(state ? "HIGH" : "LOW");
-        }
-      }
-    }
-  }
-  
-  Serial.println("GPIO initialization complete");
 }
 
 // Function to update the climate controller (called every loop)
@@ -1111,7 +903,7 @@ void updateClimateController() {
         Serial.print(climateController->getHumiditySetpoint());
         Serial.println("%)");
         
-        // Print heater/cooler status
+        // Print control status
         Serial.print("Climate control - Heating: ");
         Serial.print(climateController->isHeating() ? "ON" : "OFF");
         Serial.print(", Cooling: ");
@@ -1121,74 +913,12 @@ void updateClimateController() {
         Serial.print(", Dehumidifying: ");
         Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
         
-        // Enhanced fan status reporting with detailed diagnostics
-        bool climateActive = (climateController->isHeating() || climateController->isCooling() || 
-                             climateController->isHumidifying() || climateController->isDehumidifying());
-        
+        // Basic fan status
         Serial.print("Fan control - Interior: ");
         Serial.print(climateController->isFanInteriorOn() ? "ON" : "OFF");
         Serial.print(", Exterior: ");
-        Serial.print(climateController->isFanExteriorOn() ? "ON" : "OFF");
-        Serial.print(" (Expected: ");
-        Serial.print(climateActive ? "BOTH ON" : "BOTH OFF");
-        Serial.print(", Auto control: ");
-        Serial.print(climateController->isAutoFanControlEnabled() ? "ENABLED" : "DISABLED");
-        Serial.println(")");
-        
-        // GPIO pin state checking for fans
-        if (gpioExpander != nullptr) {
-            uint8_t gpioState = gpioExpander->getGPIOState();
-            Serial.print("GPIO state: 0x");
-            Serial.print(gpioState, HEX);
-            
-            // Check individual fan pins
-            bool pin0State = (gpioState & 0x01) != 0; // Pin 0 (FanExterior)
-            bool pin1State = (gpioState & 0x02) != 0; // Pin 1 (FanInterior)
-            
-            Serial.print(" (Fan pins - Exterior(0): ");
-            Serial.print(pin0State ? "HIGH" : "LOW");
-            Serial.print(", Interior(1): ");
-            Serial.print(pin1State ? "HIGH" : "LOW");
-            Serial.println(")");
-            
-            // Warn if fans should be on but pins are not set
-            if (climateActive) {
-                if (!pin0State) {
-                    Serial.println("WARNING: Exterior fan should be ON but pin 0 is LOW!");
-                }
-                if (!pin1State) {
-                    Serial.println("WARNING: Interior fan should be ON but pin 1 is LOW!");
-                }
-            }
-            
-            // Force refresh GPIO state to ensure it's maintained
-            gpioExpander->refreshOutputState();
-        }
+        Serial.println(climateController->isFanExteriorOn() ? "ON" : "OFF");
         
         lastStatusPrint = millis();
-    }
-    
-    // More frequent fan status check (every 10 seconds)
-    static unsigned long lastFanCheck = 0;
-    if (millis() - lastFanCheck > 10000) { // Check every 10 seconds
-        if (climateController != nullptr && gpioExpander != nullptr) {
-            bool climateActive = (climateController->isHeating() || climateController->isCooling() || 
-                                 climateController->isHumidifying() || climateController->isDehumidifying());
-            
-            if (climateActive) {
-                // If climate is active but fans are not reported as on, manually turn them on
-                if (!climateController->isFanInteriorOn()) {
-                    Serial.println("FIXING: Interior fan should be on, enabling manually");
-                    climateController->setAutoFanControl(true);
-                    climateController->setFanInterior(true);
-                }
-                if (!climateController->isFanExteriorOn()) {
-                    Serial.println("FIXING: Exterior fan should be on, enabling manually");
-                    climateController->setAutoFanControl(true);
-                    climateController->setFanExterior(true);
-                }
-            }
-        }
-        lastFanCheck = millis();
     }
 }
