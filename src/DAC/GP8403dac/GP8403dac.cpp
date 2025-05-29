@@ -77,9 +77,8 @@ bool GP8403dac::validateDAC() {
         return false;
     }
     delay(10); // Allow voltage to settle
-    
-    // Verify the value was stored internally (we can't read back from GP8403, but we can check our internal state)
-    float expectedDAC = voltageToDac(testVoltage);
+      // Verify the value was stored internally (we can't read back from GP8403, but we can check our internal state)
+    float expectedDAC = voltageToDAC(testVoltage);
     if (abs(channelAValue - expectedDAC) > 100) { // Allow some tolerance
         Serial.print("GP8403 Validation: Channel A value mismatch - Expected: ");
         Serial.print((int)expectedDAC);
