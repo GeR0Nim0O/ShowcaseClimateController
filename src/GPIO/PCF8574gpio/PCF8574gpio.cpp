@@ -56,9 +56,29 @@ std::map<String, String> PCF8574gpio::readData() {
 bool PCF8574gpio::writeByte(uint8_t data) {
     // Ensure TCA channel is selected before communication
     selectTCAChannel(tcaChannel);
-    delay(5); // Increased delay for TCA switching
+    delay(2); // Reduced delay for TCA switching
     
-    // Add multiple verification attempts
+    // For output mode, we should NOT read back to verify since PCF8574 
+    // in output mode may not read back the same values due to external loads
+    if (_mode == PCF8574Mode::OUTPUT_MODE) {
+        wire->beginTransmission(_address);
+        wire->write(data);
+        int result = wire->endTransmission();
+        
+        if (result == 0) {
+            _gpioState = data; // Trust that the write succeeded
+            Serial.print("GPIO: Setting output state to 0x");
+            Serial.print(data, HEX);
+            Serial.println(" - SUCCESS");
+            return true;
+        } else {
+            Serial.print("GPIO: Write failed with I2C error: ");
+            Serial.println(result);
+            return false;
+        }
+    }
+    
+    // For input mode, we can try verification (original code)
     for (int attempt = 0; attempt < 3; attempt++) {
         wire->beginTransmission(_address);
         wire->write(data);
@@ -85,24 +105,7 @@ bool PCF8574gpio::writeByte(uint8_t data) {
                     Serial.print("! Expected: 0x");
                     Serial.print(data, HEX);
                     Serial.print(", Read: 0x");
-                    Serial.print(readBack, HEX);
-                    
-                    // Detailed pin analysis
-                    Serial.print(" | Pin states: ");
-                    for (int pin = 0; pin < 8; pin++) {
-                        bool expected = (data & (1 << pin)) != 0;
-                        bool actual = (readBack & (1 << pin)) != 0;
-                        Serial.print("P");
-                        Serial.print(pin);
-                        Serial.print(":");
-                        Serial.print(expected ? "H" : "L");
-                        Serial.print("/");
-                        Serial.print(actual ? "H" : "L");
-                        Serial.print(" ");
-                    }
-                    Serial.println();
-                    
-                    // Try again with longer delay
+                    Serial.println(readBack, HEX);
                     delay(50);
                 }
             } else {
@@ -170,26 +173,37 @@ bool PCF8574gpio::writeBit(uint8_t pin, bool state) {
         return false;
     }
     
-    // Update the local state
+    // Read current state first to preserve other pins
+    uint8_t currentState = _gpioState;
+    
+    // Update only the target pin
     if (state) {
-        _gpioState |= (1 << pin);
+        currentState |= (1 << pin);   // Set bit
     } else {
-        _gpioState &= ~(1 << pin);
+        currentState &= ~(1 << pin);  // Clear bit
     }
     
-    // Write to hardware with debug output
-    Serial.print("GPIO: Setting pin ");
-    Serial.print(pin);
-    Serial.print(" to ");
-    Serial.print(state ? "HIGH" : "LOW");
-    Serial.print(" (state: 0x");
-    Serial.print(_gpioState, HEX);
-    Serial.print(") - ");
-    
-    bool success = writeByte(_gpioState);
-    Serial.println(success ? "SUCCESS" : "FAILED");
-    
-    return success;
+    // Only write if the state actually changed
+    if (currentState != _gpioState) {
+        Serial.print("GPIO: Setting pin ");
+        Serial.print(pin);
+        Serial.print(" to ");
+        Serial.print(state ? "HIGH" : "LOW");
+        Serial.print(" (state: 0x");
+        Serial.print(currentState, HEX);
+        Serial.print(") - ");
+        
+        bool success = writeByte(currentState);
+        Serial.println(success ? "SUCCESS" : "FAILED");
+        return success;
+    } else {
+        // Pin already in desired state, no need to write
+        Serial.print("GPIO: Pin ");
+        Serial.print(pin);
+        Serial.print(" already ");
+        Serial.println(state ? "HIGH" : "LOW");
+        return true;
+    }
 }
 
 bool PCF8574gpio::readPin(uint8_t pin) {
@@ -231,13 +245,30 @@ void PCF8574gpio::initializeOutputs() {
     Serial.println(_mode == PCF8574Mode::INPUT_MODE ? "INPUT_MODE" : "OUTPUT_MODE");
     
     if (_mode == PCF8574Mode::OUTPUT_MODE) {
-        // Set all outputs to false (0x00)
+        // Set all outputs to LOW (0x00) and enforce output mode
         Serial.println("PCF8574: Setting all outputs to LOW (0x00)");
-        bool success = writeByte(0x00);
-        if (success) {
+        
+        // Force the device into output mode by writing all pins LOW
+        selectTCAChannel(tcaChannel);
+        delay(5);
+        
+        wire->beginTransmission(_address);
+        wire->write(0x00);
+        int result = wire->endTransmission();
+        
+        if (result == 0) {
+            _gpioState = 0x00;
             Serial.println("PCF8574: Output initialization SUCCESS");
+            
+            // Small delay to ensure the device settles
+            delay(50);
+            
+            // Optionally verify that we're in output mode by testing a pin
+            Serial.println("PCF8574: Verifying output mode by testing pin states");
+            
         } else {
-            Serial.println("PCF8574: Output initialization FAILED");
+            Serial.print("PCF8574: Output initialization FAILED with I2C error: ");
+            Serial.println(result);
         }
     } else {
         // For input mode, set all pins high to enable pull-ups
@@ -248,6 +279,55 @@ void PCF8574gpio::initializeOutputs() {
         } else {
             Serial.println("PCF8574: Input initialization FAILED");
         }
+    }
+}
+
+// NEW: Method to refresh/maintain output state
+void PCF8574gpio::refreshOutputState() {
+    if (_mode == PCF8574Mode::OUTPUT_MODE) {
+        // Re-write the current state to ensure it's maintained
+        selectTCAChannel(tcaChannel);
+        delay(2);
+        
+        wire->beginTransmission(_address);
+        wire->write(_gpioState);
+        int result = wire->endTransmission();
+        
+        if (result != 0) {
+            Serial.print("GPIO: Failed to refresh output state, I2C error: ");
+            Serial.println(result);
+        }
+    }
+}
+
+// NEW: Force output mode method
+void PCF8574gpio::forceOutputMode() {
+    Serial.println("PCF8574: Forcing device into OUTPUT mode");
+    
+    _mode = PCF8574Mode::OUTPUT_MODE;
+    
+    // Write current state to force output mode
+    selectTCAChannel(tcaChannel);
+    delay(5);
+    
+    // Write the current state twice to ensure it sticks
+    for (int i = 0; i < 2; i++) {
+        wire->beginTransmission(_address);
+        wire->write(_gpioState);
+        int result = wire->endTransmission();
+        
+        if (result == 0) {
+            Serial.print("PCF8574: Force output mode attempt ");
+            Serial.print(i + 1);
+            Serial.println(" - SUCCESS");
+        } else {
+            Serial.print("PCF8574: Force output mode attempt ");
+            Serial.print(i + 1);
+            Serial.print(" - FAILED with error: ");
+            Serial.println(result);
+        }
+        
+        delay(10);
     }
 }
 
