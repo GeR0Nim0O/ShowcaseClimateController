@@ -14,6 +14,7 @@
 std::map<String, String> Configuration::wifiConfig;
 std::map<String, String> Configuration::mqttConfig;
 std::map<String, String> Configuration::projectConfig;
+JsonDocument Configuration::devicesConfigDoc;
 JsonObject Configuration::devicesConfig = JsonObject();
 
 bool Configuration::loadConfigFromSD(const char* filename) {
