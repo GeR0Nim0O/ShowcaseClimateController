@@ -368,6 +368,35 @@ void ClimateController::applyHumidityControl() {
     safeWritePin(pinDehumidify, dehumidifyingActive);
 }
 
+void ClimateController::applyDACControls() {
+    if (!dac || !dac->isInitialized()) {
+        return; // No DAC available or not initialized
+    }
+    
+    try {
+        // Use channel 0 for temperature control power
+        float dacVoltage = 0.0;
+        
+        if (heatingActive && heatingPower > 0) {
+            // Convert heating power (0-100%) to voltage (0-5V)
+            dacVoltage = (heatingPower / 100.0) * 5.0;
+        } else if (coolingActive && coolingPower > 0) {
+            // Convert cooling power (0-100%) to voltage (0-5V)
+            dacVoltage = (coolingPower / 100.0) * 5.0;
+        }
+        
+        // Clamp voltage to safe range
+        if (dacVoltage > 5.0) dacVoltage = 5.0;
+        if (dacVoltage < 0.0) dacVoltage = 0.0;
+        
+        // Set DAC output voltage
+        dac->setChannelVoltage(0, dacVoltage);
+        
+    } catch (...) {
+        // Silently handle DAC errors
+    }
+}
+
 /*
 void ClimateController::emergencyShutdown() {
     safeWritePin(pinTemperatureEnable, false);
