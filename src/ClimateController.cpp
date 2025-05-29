@@ -199,7 +199,7 @@ void ClimateController::updateTemperatureControl() {
             break;
             
         case ClimateMode::AUTO:
-            if (tempOutput > 0.1) // Very small deadband for precise control
+            if (tempOutput > 0.1) { // Very small deadband for precise control
                 heatingActive = true;
                 coolingActive = false;
                 heatingPower = map(tempOutput, 0.1, 100, 0, 100);
@@ -235,7 +235,8 @@ void ClimateController::updateHumidityControl() {
         dehumidifyingActive = false;
         return;
     }
-      // Use a simple hysteresis control for humidity (on/off control)
+    
+    // Use a simple hysteresis control for humidity (on/off control)
     const float hysteresis = 0.5; // Small hysteresis for precise humidity control
     
     switch (humidityMode) {
