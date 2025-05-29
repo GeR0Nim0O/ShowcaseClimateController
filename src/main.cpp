@@ -130,9 +130,7 @@ void sendAllChangedSensorData(); // Add this function declaration
 void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
 void testDACOutput(); // Add this new function for testing DAC
-void testGPIOHardware(); // Add this function prototype
-void diagnosticGPIOTest(); // Add this function prototype
-void testTCAStability(PCF8574gpio* gpio); // Add this missing function declaration
+void initializeAllGPIOToFalse(); // Add this new function
 
 void setup()
 {
@@ -197,13 +195,11 @@ void setup()
   // Print created sensors for debugging (moved after initialization)
   printCreatedSensors();
   
+  // NEW: Initialize all GPIO pins to false/LOW state before climate controller
+  initializeAllGPIOToFalse();
+  
   // Initialize climate controller
   initializeClimateController();
-  
-  // NEW: Add hardware diagnostic test after climate controller initialization
-  Serial.println("\n=== GPIO Hardware Diagnostics ===");
-  testGPIOHardware();
-  diagnosticGPIOTest();
   
   // NEW: Read and print initial sensor values after initialization
   Serial.println("\n=== Initial Sensor Readings ===");
@@ -1041,246 +1037,50 @@ void testDACOutput() {
     }
 }
 
-// NEW: Hardware diagnostic function for GPIO
-void testGPIOHardware() {
-    Serial.println("Starting comprehensive GPIO hardware diagnostics...");
-    
-    // Find the GPIO expander device
-    PCF8574gpio* testGpio = nullptr;
-    for (Device* device : devices) {
-        if (device != nullptr && device->getType().equalsIgnoreCase("PCF8574GPIO")) {
-            testGpio = (PCF8574gpio*)device;
-            break;
-        }
-    }
-    
-    if (testGpio == nullptr) {
-        Serial.println("ERROR: No GPIO expander found for testing");
-        return;
-    }
-    
-    Serial.print("Testing GPIO at address 0x");
-    Serial.print(testGpio->getI2CAddress(), HEX);
-    Serial.print(" on TCA port ");
-    Serial.println(testGpio->getTCAChannel());
-    
-    // Run comprehensive hardware diagnostics
-    bool diagnosticResult = testGpio->performHardwareDiagnostics();
-    
-    Serial.println("\n=== FINAL DIAGNOSIS ===");
-    if (diagnosticResult) {
-        Serial.println("✅ GPIO hardware appears to be working correctly");
-        Serial.println("   Issue may be software-related or timing-sensitive");
-    } else {
-        Serial.println("❌ GPIO hardware issues detected");
-        Serial.println("   Check the recommendations above");
-        Serial.println("   Consider replacing the PCF8574 or checking wiring");
-    }
-    
-    // Additional TCA-specific test
-    Serial.println("\n=== TCA MULTIPLEXER TEST ===");
-    testTCAStability(testGpio);
-    
-    Serial.println("=========================");
-}
-
-// NEW: Test TCA multiplexer stability
-void testTCAStability(PCF8574gpio* gpio) {
-    Serial.println("Testing TCA multiplexer stability...");
-    
-    uint8_t tcaPort = gpio->getTCAChannel();
-    uint8_t address = gpio->getI2CAddress();
-    
-    // Test multiple TCA switches
-    for (int test = 0; test < 5; test++) {
-        Serial.print("TCA stability test ");
-        Serial.print(test + 1);
-        Serial.print("/5: ");
+// NEW: Function to initialize all GPIO pins to false/LOW state
+void initializeAllGPIOToFalse() {
+  Serial.println("\n=== Initializing All GPIO Pins to LOW ===");
+  
+  // Find all GPIO devices and set all pins to LOW
+  for (Device* device : devices) {
+    if (device != nullptr && device->getType().equalsIgnoreCase("PCF8574GPIO")) {
+      PCF8574gpio* gpio = (PCF8574gpio*)device;
+      
+      Serial.print("Initializing GPIO at address 0x");
+      Serial.print(gpio->getI2CAddress(), HEX);
+      Serial.print(" on TCA port ");
+      Serial.println(gpio->getTCAChannel());
+      
+      // Ensure device is in output mode
+      gpio->forceOutputMode();
+      
+      // Set all 8 pins to LOW (false)
+      for (int pin = 0; pin < 8; pin++) {
+        gpio->writePin(pin, false);
+        delay(10); // Small delay between pin writes
+      }
+      
+      // Verify all pins are LOW by reading GPIO state
+      uint8_t gpioState = gpio->getGPIOState();
+      Serial.print("GPIO state after initialization: 0x");
+      Serial.print(gpioState, HEX);
+      
+      if (gpioState == 0x00) {
+        Serial.println(" - All pins successfully set to LOW");
+      } else {
+        Serial.println(" - WARNING: Some pins may not be LOW");
         
-        // Switch to different port and back
-        I2CHandler::selectTCA(7); // Switch away
-        delay(10);
-        I2CHandler::selectTCA(tcaPort); // Switch back
-        delay(10);
-        
-        // Test communication
-        Wire.beginTransmission(address);
-        int error = Wire.endTransmission();
-        
-        if (error == 0) {
-            Serial.println("PASS");
-        } else {
-            Serial.print("FAIL (error ");
-            Serial.print(error);
-            Serial.println(")");
-        }
-        
-        delay(100);
-    }
-}
-
-// NEW: Diagnostic test using climate controller
-void diagnosticGPIOTest() {
-    Serial.println("\nStarting climate controller GPIO diagnostics...");
-    
-    if (climateController == nullptr) {
-        Serial.println("ERROR: Climate controller not initialized");
-        return;
-    }
-    
-    // Test each GPIO pin individually
-    Serial.println("Testing individual GPIO pins through climate controller...");
-    
-    // Test interior fan
-    Serial.println("Testing interior fan (should be pin 1)...");
-    climateController->setFanInterior(true);
-    delay(2000);
-    climateController->setFanInterior(false);
-    delay(1000);
-    
-    // Test exterior fan
-    Serial.println("Testing exterior fan (should be pin 0)...");
-    climateController->setFanExterior(true);
-    delay(2000);
-    climateController->setFanExterior(false);
-    delay(1000);
-    
-    // Test manual GPIO operations
-    Serial.println("Testing direct GPIO operations...");
-    if (gpioExpander != nullptr) {
-        Serial.println("Direct GPIO pin tests:");
-        
+        // Debug individual pin states
         for (int pin = 0; pin < 8; pin++) {
-            Serial.print("Testing pin ");
-            Serial.print(pin);
-            Serial.print(" - ");
-            
-            // Turn pin ON
-            gpioExpander->writePin(pin, true);
-            delay(500);
-            
-            // Verify state
-            bool state = gpioExpander->readPin(pin);
-            Serial.print(state ? "HIGH" : "LOW");
-            
-            // Turn pin OFF
-            gpioExpander->writePin(pin, false);
-            delay(500);
-            
-            // Verify state
-            state = gpioExpander->readPin(pin);
-            Serial.print(" -> ");
-            Serial.println(state ? "HIGH" : "LOW");
+          bool state = (gpioState & (1 << pin)) != 0;
+          Serial.print("  Pin ");
+          Serial.print(pin);
+          Serial.print(": ");
+          Serial.println(state ? "HIGH" : "LOW");
         }
+      }
     }
-    
-    Serial.println("Climate controller GPIO diagnostics complete");
-}
-
-// Function to update the climate controller (called every loop)
-void updateClimateController() {
-    if (climateController == nullptr) {
-        return; // Exit if climate controller is not initialized
-    }
-    
-    // Only update climate controller every few seconds to avoid GPIO conflicts
-    static unsigned long lastClimateUpdate = 0;
-    if (millis() - lastClimateUpdate >= 5000) { // Update every 5 seconds
-        climateController->update();
-        lastClimateUpdate = millis();
-    }
-    
-    // Optional: Print climate controller status periodically
-    static unsigned long lastStatusPrint = 0;
-    if (millis() - lastStatusPrint > 60000) { // Print status every 60 seconds
-        Serial.print("Climate status - Temperature: ");
-        Serial.print(climateController->getCurrentTemperature());
-        Serial.print("°C (setpoint: ");
-        Serial.print(climateController->getTemperatureSetpoint());
-        Serial.print("°C), Humidity: ");
-        Serial.print(climateController->getCurrentHumidity());
-        Serial.print("% (setpoint: ");
-        Serial.print(climateController->getHumiditySetpoint());
-        Serial.println("%)");
-        
-        // Print heater/cooler status
-        Serial.print("Climate control - Heating: ");
-        Serial.print(climateController->isHeating() ? "ON" : "OFF");
-        Serial.print(", Cooling: ");
-        Serial.print(climateController->isCooling() ? "ON" : "OFF");
-        Serial.print(", Humidifying: ");
-        Serial.print(climateController->isHumidifying() ? "ON" : "OFF");
-        Serial.print(", Dehumidifying: ");
-        Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
-        
-        // Enhanced fan status reporting with detailed diagnostics
-        bool climateActive = (climateController->isHeating() || climateController->isCooling() || 
-                             climateController->isHumidifying() || climateController->isDehumidifying());
-        
-        Serial.print("Fan control - Interior: ");
-        Serial.print(climateController->isFanInteriorOn() ? "ON" : "OFF");
-        Serial.print(", Exterior: ");
-        Serial.print(climateController->isFanExteriorOn() ? "ON" : "OFF");
-        Serial.print(" (Expected: ");
-        Serial.print(climateActive ? "BOTH ON" : "BOTH OFF");
-        Serial.print(", Auto control: ");
-        Serial.print(climateController->isAutoFanControlEnabled() ? "ENABLED" : "DISABLED");
-        Serial.println(")");
-        
-        // NEW: Detailed GPIO pin state checking for fans
-        if (gpioExpander != nullptr) {
-            uint8_t gpioState = gpioExpander->getGPIOState();
-            Serial.print("GPIO state: 0x");
-            Serial.print(gpioState, HEX);
-            
-            // Check individual fan pins
-            bool pin0State = (gpioState & 0x01) != 0; // Pin 0 (FanExterior)
-            bool pin1State = (gpioState & 0x02) != 0; // Pin 1 (FanInterior)
-            
-            Serial.print(" (Fan pins - Exterior(0): ");
-            Serial.print(pin0State ? "HIGH" : "LOW");
-            Serial.print(", Interior(1): ");
-            Serial.print(pin1State ? "HIGH" : "LOW");
-            Serial.println(")");
-            
-            // Warn if fans should be on but pins are not set
-            if (climateActive) {
-                if (!pin0State) {
-                    Serial.println("WARNING: Exterior fan should be ON but pin 0 is LOW!");
-                }
-                if (!pin1State) {
-                    Serial.println("WARNING: Interior fan should be ON but pin 1 is LOW!");
-                }
-            }
-            
-            // Force refresh GPIO state to ensure it's maintained
-            gpioExpander->refreshOutputState();
-        }
-        
-        lastStatusPrint = millis();
-    }
-    
-    // NEW: More frequent fan status check (every 10 seconds)
-    static unsigned long lastFanCheck = 0;
-    if (millis() - lastFanCheck > 10000) { // Check every 10 seconds
-        if (climateController != nullptr && gpioExpander != nullptr) {
-            bool climateActive = (climateController->isHeating() || climateController->isCooling() || 
-                                 climateController->isHumidifying() || climateController->isDehumidifying());
-            
-            if (climateActive) {
-                // If climate is active but fans are not reported as on, manually turn them on
-                if (!climateController->isFanInteriorOn()) {
-                    Serial.println("FIXING: Interior fan should be on, enabling manually");
-                    climateController->setAutoFanControl(true);
-                    climateController->setFanInterior(true);
-                }
-                if (!climateController->isFanExteriorOn()) {
-                    Serial.println("FIXING: Exterior fan should be on, enabling manually");
-                    climateController->setAutoFanControl(true);
-                    climateController->setFanExterior(true);
-                }
-            }
-        }
-        lastFanCheck = millis();
-    }
+  }
+  
+  Serial.println("GPIO initialization complete");
 }
