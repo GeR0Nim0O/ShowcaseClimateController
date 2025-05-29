@@ -45,6 +45,9 @@ public:    GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, cons
     uint16_t getChannelA() const { return channelAValue; }
     uint16_t getChannelB() const { return channelBValue; }
     bool isReady();
+    
+    // Validation method
+    bool validateDAC();
 
 private:
     uint16_t channelAValue;
