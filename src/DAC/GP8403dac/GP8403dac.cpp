@@ -122,8 +122,8 @@ bool GP8403dac::initializeLimitedMode() {
     Serial.println("GP8403: Falling back to limited mode operation");
     
     // Just mark the device as connected but with limitations
-    connected = true;
-    initialized = true;
+    setConnected(true);
+    setInitialized(true);
     
     // Try one last basic connection check
     I2CHandler::selectTCA(getTCAChannel());
