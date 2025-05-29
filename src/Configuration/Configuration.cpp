@@ -195,13 +195,30 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         } else {
             Serial.println("Failed to create PCF8574 device");
         }
+    }    
+    // Check for GP8403 DAC with fallback addresses
+    uint8_t dacAddress = 0;
+    uint8_t tcaPort = 0;
+    
+    // Define possible DAC addresses to try (primary and fallback)
+    std::vector<uint8_t> dacAddresses = {I2C_ADDR_GP8403, 0x5F};  // Try 0x5B first, then 0x5F
+    
+    // Try to find DAC at any of the possible addresses
+    for (uint8_t addr : dacAddresses) {
+        if (addressToTcaPort.find(addr) != addressToTcaPort.end()) {
+            dacAddress = addr;
+            tcaPort = addressToTcaPort[addr];
+            Serial.print("Found GP8403 DAC at address 0x");
+            Serial.print(dacAddress, HEX);
+            Serial.print(" on TCA port ");
+            Serial.println(tcaPort);
+            break;
+        }
     }
     
-    // Check for GP8403 DAC
-    if (addressToTcaPort.find(I2C_ADDR_GP8403) != addressToTcaPort.end()) {
-        uint8_t tcaPort = addressToTcaPort[I2C_ADDR_GP8403];
-        Serial.print("Creating GP8403 device at address 0x");
-        Serial.print(I2C_ADDR_GP8403, HEX);
+    if (dacAddress != 0) {
+        Serial.print("Creating GP8403 device at detected address 0x");
+        Serial.print(dacAddress, HEX);
         Serial.print(" on TCA port ");
         Serial.println(tcaPort);
         
@@ -212,20 +229,23 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         channelNames["DAC0"] = "TemperaturePower";
         channelThresholds["DAC0"] = 0.1f;
         
-        // Create the device
+        // Create the device using the detected address
         createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
-            &Wire, "DAC", "GP8403", I2C_ADDR_GP8403, tcaPort, 
+            &Wire, "DAC", "GP8403", dacAddress, tcaPort, 
             channelThresholds, channelNames, deviceIndex, ""
         );
         
         deviceIndex++;
         
         if (createdDevice != nullptr) {
-            Serial.println("GP8403 DAC device created successfully");
+            Serial.print("GP8403 DAC device created successfully at address 0x");
+            Serial.println(dacAddress, HEX);
             devices.push_back(createdDevice);
         } else {
-            Serial.println("Failed to create GP8403 DAC device");
+            Serial.println("Failed to create GP8403 device");
         }
+    } else {
+        Serial.println("No GP8403 DAC found at any known address (0x5B, 0x5F)");
     }
     
     // Check for SHT temperature/humidity sensor
