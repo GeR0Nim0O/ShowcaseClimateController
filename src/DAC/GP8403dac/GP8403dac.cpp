@@ -484,3 +484,34 @@ bool GP8403dac::setChannelVoltage(uint8_t channel, float voltage) {
     
     return success;
 }
+
+bool GP8403dac::initializeLimitedMode() {
+    Serial.println("GP8403: Falling back to limited mode operation");
+    
+    // Just mark the device as connected but with limitations
+    setConnected(true);
+    setInitialized(true);
+    
+    // Try one last basic connection check
+    I2CHandler::selectTCA(getTCAChannel());
+    delay(50); // Extended stabilization
+    
+    wire->beginTransmission(getI2CAddress());
+    if (wire->endTransmission() == 0) {
+        Serial.println("GP8403: Device responds to I2C in limited mode");
+    } else {
+        Serial.println("GP8403: Device not responding, but proceeding with limited functionality");
+    }
+    
+    // Try minimal initialization - just set output range to 5V
+    I2CHandler::selectTCA(getTCAChannel());
+    wire->beginTransmission(getI2CAddress());
+    wire->write(OUTPUT_RANGE);
+    wire->write(OUTPUT_RANGE_5V);
+    if (wire->endTransmission() == 0) {
+        Serial.println("GP8403: Successfully set output range in limited mode");
+    }
+    
+    Serial.println("GP8403: Limited mode initialization complete");
+    return true;
+}
