@@ -177,18 +177,17 @@ void ClimateController::updateTemperatureControl() {
             tempControlEnabled = coolingActive;
             heatingPower = 0.0;
             coolingPower = coolingActive ? map(-tempOutput, 0, 100, 0, 100) : 0.0;
-            break;
-              case ClimateMode::AUTO:
-            if (tempOutput > 1) { // Reduced deadband to prevent oscillation
+            break;        case ClimateMode::AUTO:
+            if (tempOutput > 0.1) { // Very small deadband for precise control
                 heatingActive = true;
                 coolingActive = false;
-                heatingPower = map(tempOutput, 1, 100, 0, 100);
+                heatingPower = map(tempOutput, 0.1, 100, 0, 100);
                 coolingPower = 0.0;
-            } else if (tempOutput < -1) {
+            } else if (tempOutput < -0.1) {
                 heatingActive = false;
                 coolingActive = true;
                 heatingPower = 0.0;
-                coolingPower = map(-tempOutput, 1, 100, 0, 100);
+                coolingPower = map(-tempOutput, 0.1, 100, 0, 100);
             } else {
                 heatingActive = false;
                 coolingActive = false;
