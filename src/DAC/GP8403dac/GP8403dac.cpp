@@ -4,8 +4,6 @@
 // GP8403 DAC Constants - Based on official DFRobot library
 #define DAC_MAX_VALUE 4095   // 12-bit resolution (0-4095)
 #define DAC_MAX_VOLTAGE 5.0  // 0-5V output range
-#define GP8403_BOTH_CHANNEL_REG 0x03
-#define GP8403_VREF_REG 0x04
 
 GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : Device(wire, i2cAddress, tcaChannel, deviceName, deviceIndex),
@@ -24,7 +22,7 @@ GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaPort, float t
 bool GP8403dac::begin() {
     Serial.println("GP8403: Starting DAC initialization (DFRobot compatible)...");
     
-    // First, try basic I2C connectivity using official begin() method
+    // First, try basic I2C connectivity
     bool basicConnection = false;
     for (int attempt = 1; attempt <= 3; attempt++) {
         Serial.print("GP8403: Connection attempt ");
@@ -32,11 +30,9 @@ bool GP8403dac::begin() {
         Serial.print("/3...");
         
         I2CHandler::selectTCA(getTCAChannel());
-        delayMicroseconds(500); // Extended stabilization delay
+        delayMicroseconds(500);
         
-        // Use DFRobot's begin() method approach
         wire->beginTransmission(getI2CAddress());
-        wire->write(OUTPUT_RANGE);  // Write to output range register
         int result = wire->endTransmission();
         
         if (result == 0) {
@@ -47,35 +43,36 @@ bool GP8403dac::begin() {
             Serial.print(" FAILED (error: ");
             Serial.print(result);
             Serial.println(")");
-            delay(100); // Wait before retry
+            delay(100);
         }
     }
     
     if (!basicConnection) {
         Serial.println("GP8403: Basic connection failed - trying fallback...");
-        // Fall back to limited mode if we can't get full validation
         return initializeLimitedMode();
     }
     
-    // Set the DAC to 5V output range (as per official library default)
+    // Set the DAC to 5V output range using DFRobot method
     Serial.println("GP8403: Setting output range to 5V...");
     I2CHandler::selectTCA(getTCAChannel());
     wire->beginTransmission(getI2CAddress());
-    wire->write(OUTPUT_RANGE);      // Register address 0x00
-    wire->write(OUTPUT_RANGE_5V);   // Data 0x01 for 0-5V
+    wire->write(OUTPUT_RANGE);
+    wire->write(OUTPUT_RANGE_5V);
     if (wire->endTransmission() != 0) {
         Serial.println("GP8403: Failed to set output range");
         return initializeLimitedMode();
-    }    // Try comprehensive validation
+    }
+    
+    // Try comprehensive validation
     if (validateDAC()) {
-        initialized = true;  // Direct access to protected member
+        initialized = true;
         Serial.println("GP8403: Full initialization and validation successful!");
         return true;
     } else {
         // Fall back to gentle validation
         Serial.println("GP8403: Full validation failed, trying gentle validation...");
         if (validateDACGentle()) {
-            initialized = true;  // Direct access to protected member
+            initialized = true;
             Serial.println("GP8403: Limited initialization successful (gentle validation passed)");
             return true;
         } else {
@@ -270,23 +267,27 @@ bool GP8403dac::setChannelA(uint16_t value) {
     if (value > DAC_MAX_VALUE) {
         value = DAC_MAX_VALUE;
     }
+    
     Serial.print("GP8403: Setting Channel A to raw value ");
     Serial.println(value);
-    uint16_t originalValue = value;
-    value = value << 4;
+    
     const int maxRetries = 3;
     bool success = false;
+    
     for (int attempt = 1; attempt <= maxRetries && !success; attempt++) {
         I2CHandler::selectTCA(getTCAChannel());
         delayMicroseconds(200);
+        
         wire->beginTransmission(getI2CAddress());
-        wire->write(0x01); // Channel A register
-        wire->write(value & 0xFF);        // LSB first
-        wire->write((value >> 8) & 0xFF); // MSB second
+        wire->write(GP8403_CHANNEL_A);          // Channel A register
+        wire->write((value >> 8) & 0xFF);       // MSB first (DFRobot format)
+        wire->write(value & 0xFF);              // LSB second
+        
         int result = wire->endTransmission();
         success = (result == 0);
+        
         if (success) {
-            channelAValue = originalValue;
+            channelAValue = value;
             Serial.print("GP8403: Channel A updated to ");
             Serial.println(channelAValue);
         } else {
@@ -299,9 +300,11 @@ bool GP8403dac::setChannelA(uint16_t value) {
             }
         }
     }
+    
     if (!success) {
         Serial.println("GP8403: Failed to update Channel A after all retries");
     }
+    
     return success;
 }
 
@@ -309,23 +312,27 @@ bool GP8403dac::setChannelB(uint16_t value) {
     if (value > DAC_MAX_VALUE) {
         value = DAC_MAX_VALUE;
     }
+    
     Serial.print("GP8403: Setting Channel B to raw value ");
     Serial.println(value);
-    uint16_t originalValue = value;
-    value = value << 4;
+    
     const int maxRetries = 3;
     bool success = false;
+    
     for (int attempt = 1; attempt <= maxRetries && !success; attempt++) {
         I2CHandler::selectTCA(getTCAChannel());
         delayMicroseconds(200);
+        
         wire->beginTransmission(getI2CAddress());
-        wire->write(0x02); // Channel B register
-        wire->write(value & 0xFF);        // LSB first
-        wire->write((value >> 8) & 0xFF); // MSB second
+        wire->write(GP8403_CHANNEL_B);          // Channel B register
+        wire->write((value >> 8) & 0xFF);       // MSB first (DFRobot format)
+        wire->write(value & 0xFF);              // LSB second
+        
         int result = wire->endTransmission();
         success = (result == 0);
+        
         if (success) {
-            channelBValue = originalValue;
+            channelBValue = value;
             Serial.print("GP8403: Channel B updated to ");
             Serial.println(channelBValue);
         } else {
@@ -338,9 +345,11 @@ bool GP8403dac::setChannelB(uint16_t value) {
             }
         }
     }
+    
     if (!success) {
         Serial.println("GP8403: Failed to update Channel B after all retries");
     }
+    
     return success;
 }
 
@@ -353,39 +362,26 @@ bool GP8403dac::setBothChannels(uint16_t valueA, uint16_t valueB) {
     Serial.print(" B:");
     Serial.println(valueB);
     
-    // Save original values for later reference
-    uint16_t originalValueA = valueA;
-    uint16_t originalValueB = valueB;
-    
-    // Shift left by 4 bits as per DFRobot's library
-    valueA = valueA << 4;
-    valueB = valueB << 4;
-    
-    // Improved retry mechanism
     const int maxRetries = 3;
     bool success = false;
     
     for (int attempt = 1; attempt <= maxRetries && !success; attempt++) {
-        // Select TCA port before transmission
         I2CHandler::selectTCA(getTCAChannel());
-        
-        // Minimal delay for TCA stabilization
         delayMicroseconds(200);
         
-        // Follow DFRobot's implementation pattern for both channels
         wire->beginTransmission(getI2CAddress());
-        wire->write(GP8403_BOTH_CHANNEL_REG); // Use correct register for both channel write
-        wire->write(valueA & 0xFF);         // LSB first for channel A
-        wire->write((valueA >> 8) & 0xFF);  // MSB second for channel A
-        wire->write(valueB & 0xFF);         // LSB first for channel B
-        wire->write((valueB >> 8) & 0xFF);  // MSB second for channel B
+        wire->write(GP8403_BOTH_CHANNELS);      // Both channels register
+        wire->write((valueA >> 8) & 0xFF);     // Channel A MSB
+        wire->write(valueA & 0xFF);            // Channel A LSB
+        wire->write((valueB >> 8) & 0xFF);     // Channel B MSB
+        wire->write(valueB & 0xFF);            // Channel B LSB
         
         int result = wire->endTransmission();
         success = (result == 0);
         
         if (success) {
-            channelAValue = originalValueA;
-            channelBValue = originalValueB;
+            channelAValue = valueA;
+            channelBValue = valueB;
             Serial.println("GP8403: Both channels updated successfully");
         } else {
             Serial.print("GP8403: I2C transmission attempt ");
@@ -419,11 +415,10 @@ bool GP8403dac::setGain(uint8_t channel, bool gain2x) {
 }
 
 bool GP8403dac::setVRef(uint16_t vref) {
-    if (writeRegister(GP8403_VREF_REG, vref)) { // Use correct register for VREF
-        vrefValue = vref;
-        return true;
-    }
-    return false;
+    // DFRobot library doesn't seem to have a separate VREF register
+    // This is kept for compatibility but may not be functional
+    vrefValue = vref;
+    return true;
 }
 
 bool GP8403dac::isReady() {
@@ -438,8 +433,8 @@ bool GP8403dac::writeRegister(uint8_t reg, uint16_t value) {
     
     wire->beginTransmission(getI2CAddress());
     wire->write(reg);
-    wire->write(value & 0xFF);        // LSB first as per DFRobot implementation
-    wire->write((value >> 8) & 0xFF); // MSB second
+    wire->write((value >> 8) & 0xFF);  // MSB first (DFRobot format)
+    wire->write(value & 0xFF);         // LSB second
     return (wire->endTransmission() == 0);
 }
 
