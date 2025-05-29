@@ -158,6 +158,14 @@ void ClimateController::updateTemperatureControl() {
     
     temperaturePID->Compute();
     
+    // Add debug output to see PID values
+    Serial.print("DEBUG: Temperature PID - Input: ");
+    Serial.print(tempInput);
+    Serial.print("°C, Setpoint: ");
+    Serial.print(tempSetpoint);
+    Serial.print("°C, Output: ");
+    Serial.println(tempOutput);
+    
     switch (climateMode) {
         case ClimateMode::HEATING:
             heatingActive = (tempOutput > 0);
