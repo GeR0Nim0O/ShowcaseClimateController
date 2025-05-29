@@ -43,6 +43,10 @@ public:
     bool performIndividualPinTest();
     bool performLoadTest();
     
+    // NEW: Methods to maintain output state
+    void refreshOutputState();
+    void forceOutputMode();
+    
 private:
     uint8_t _address;
     uint8_t _gpioState;
