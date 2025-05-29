@@ -199,7 +199,7 @@ void ClimateController::updateTemperatureControl() {
             break;
             
         case ClimateMode::AUTO:
-            if (tempOutput > 0.1) { // Very small deadband for precise control
+            if (tempOutput > 0.1) // Very small deadband for precise control
                 heatingActive = true;
                 coolingActive = false;
                 heatingPower = map(tempOutput, 0.1, 100, 0, 100);
@@ -401,16 +401,30 @@ void ClimateController::setCoolingPower(float percentage) {
 }
 
 void ClimateController::setFanInterior(bool enable) {
+    Serial.print("ClimateController: Setting interior fan to ");
+    Serial.print(enable ? "ON" : "OFF");
+    Serial.print(" (pin ");
+    Serial.print(pinFanInterior);
+    Serial.print(") - ");
+    
     if (safeWritePin(pinFanInterior, enable)) {
-        Serial.print("Interior fan set to ");
-        Serial.println(enable ? "ON" : "OFF");
+        Serial.println("SUCCESS");
+    } else {
+        Serial.println("FAILED");
     }
 }
 
 void ClimateController::setFanExterior(bool enable) {
+    Serial.print("ClimateController: Setting exterior fan to ");
+    Serial.print(enable ? "ON" : "OFF");
+    Serial.print(" (pin ");
+    Serial.print(pinFanExterior);
+    Serial.print(") - ");
+    
     if (safeWritePin(pinFanExterior, enable)) {
-        Serial.print("Exterior fan set to ");
-        Serial.println(enable ? "ON" : "OFF");
+        Serial.println("SUCCESS");
+    } else {
+        Serial.println("FAILED");
     }
 }
 
@@ -426,12 +440,27 @@ bool ClimateController::checkSafetyLimits() {
 */
 
 void ClimateController::applyTemperatureControl() {
+    // Debug output before applying controls
+    Serial.print("ClimateController: Applying temperature control - Enable: ");
+    Serial.print(tempControlEnabled ? "ON" : "OFF");
+    Serial.print(", Heat: ");
+    Serial.print(heatingActive ? "ON" : "OFF");
+    Serial.print(", Cool: ");
+    Serial.println(coolingActive ? "ON" : "OFF");
+    
     // Update main temperature enable pin
-    safeWritePin(pinTemperatureEnable, tempControlEnabled);
+    bool enableResult = safeWritePin(pinTemperatureEnable, tempControlEnabled);
+    Serial.print("Temperature enable pin result: ");
+    Serial.println(enableResult ? "SUCCESS" : "FAILED");
     
     // Update heating and cooling pins based on currently active mode
-    safeWritePin(pinTemperatureHeat, heatingActive);
-    safeWritePin(pinTemperatureCool, coolingActive);
+    bool heatResult = safeWritePin(pinTemperatureHeat, heatingActive);
+    bool coolResult = safeWritePin(pinTemperatureCool, coolingActive);
+    
+    Serial.print("Heat pin result: ");
+    Serial.print(heatResult ? "SUCCESS" : "FAILED");
+    Serial.print(", Cool pin result: ");
+    Serial.println(coolResult ? "SUCCESS" : "FAILED");
     
     // Debug output
     if (heatingActive) {
@@ -450,9 +479,20 @@ void ClimateController::applyTemperatureControl() {
 }
 
 void ClimateController::applyHumidityControl() {
+    // Debug output before applying controls
+    Serial.print("ClimateController: Applying humidity control - Humidify: ");
+    Serial.print(humidifyingActive ? "ON" : "OFF");
+    Serial.print(", Dehumidify: ");
+    Serial.println(dehumidifyingActive ? "ON" : "OFF");
+    
     // Update humidify and dehumidify pins based on currently active mode
-    safeWritePin(pinHumidify, humidifyingActive);
-    safeWritePin(pinDehumidify, dehumidifyingActive);
+    bool humidifyResult = safeWritePin(pinHumidify, humidifyingActive);
+    bool dehumidifyResult = safeWritePin(pinDehumidify, dehumidifyingActive);
+    
+    Serial.print("Humidify pin result: ");
+    Serial.print(humidifyResult ? "SUCCESS" : "FAILED");
+    Serial.print(", Dehumidify pin result: ");
+    Serial.println(dehumidifyResult ? "SUCCESS" : "FAILED");
     
     // Debug output
     if (humidifyingActive) {
@@ -615,11 +655,40 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
 
 // Add this implementation of the safeWritePin method we previously added to the header
 bool ClimateController::safeWritePin(uint8_t pin, bool value) {
-    if (!gpio) return false;
+    if (!gpio) {
+        Serial.println("ClimateController: GPIO device is null");
+        return false;
+    }
+    
+    if (!gpio->isInitialized()) {
+        Serial.println("ClimateController: GPIO device not initialized");
+        return false;
+    }
     
     try {
+        Serial.print("ClimateController: Writing pin ");
+        Serial.print(pin);
+        Serial.print(" = ");
+        Serial.print(value ? "HIGH" : "LOW");
+        Serial.print(" - ");
+        
         gpio->writePin(pin, value);
-        return true;
+        
+        // Verify the write by reading back the GPIO state
+        uint8_t currentState = gpio->getGPIOState();
+        bool actualState = (currentState & (1 << pin)) != 0;
+        
+        if (actualState == value) {
+            Serial.println("VERIFIED");
+            return true;
+        } else {
+            Serial.print("VERIFICATION FAILED (expected ");
+            Serial.print(value ? "HIGH" : "LOW");
+            Serial.print(", got ");
+            Serial.print(actualState ? "HIGH" : "LOW");
+            Serial.println(")");
+            return false;
+        }
     } catch (...) {
         Serial.print("ClimateController: Exception writing to pin ");
         Serial.println(pin);
