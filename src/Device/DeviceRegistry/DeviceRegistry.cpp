@@ -1,11 +1,11 @@
 #include "DeviceRegistry/DeviceRegistry.h"
 // Hardware-specific includes - contained within DeviceRegistry.cpp
-#include "Sensors/SHTsensor/SHTsensor.h"
-#include "Sensors/BH1705sensor/BH1705sensor.h" 
-#include "Sensors/SCALESsensor/SCALESsensor.h"
-#include "GPIO/PCF8574gpio/PCF8574gpio.h"
-#include "DAC/GP8403dac/GP8403dac.h"
-#include "RTC/DS3231rtc/DS3231rtc.h"
+#include "SHTsensor.h"
+#include "BH1705sensor.h" 
+#include "SCALESsensor.h"
+#include "PCF8574gpio.h"
+#include "GP8403dac.h"
+#include "DS3231rtc.h"
 
 // Initialize the static factory registry
 std::map<std::pair<String, String>, 
