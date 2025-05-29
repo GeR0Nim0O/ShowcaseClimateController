@@ -7,13 +7,13 @@ DeviceRegistry& DeviceRegistry::getInstance() {
 
 bool DeviceRegistry::registerDevice(Device* device) {
     if (!device) {
-        Serial.println("Cannot register null device");
+        Serial.println("DeviceRegistry: Cannot register null device");
         return false;
     }
     
     // Additional safety checks
     if ((uint32_t)device < 0x3F800000 || (uint32_t)device > 0x3FFFFFFF) {
-        Serial.println("Cannot register device - pointer outside valid memory range");
+        Serial.println("DeviceRegistry: Device pointer outside valid memory range");
         return false;
     }
     
@@ -22,42 +22,20 @@ bool DeviceRegistry::registerDevice(Device* device) {
         String testName = device->getDeviceName();
         String testType = device->getType();
         
-        Serial.print("Registering device: ");
+        Serial.print("DeviceRegistry: Registering device: ");
         Serial.print(testName);
         Serial.print(" (");
         Serial.print(testType);
         Serial.println(")");
         
-        // Add to main devices vector
+        // Add to main devices vector - simple and generic
         devices.push_back(device);
         
-        // Add to type-specific vectors for easier access
-        if (testType.equalsIgnoreCase("PCF8574gpio") || testType.equalsIgnoreCase("PCF8574GPIO") || testType.equalsIgnoreCase("GPIO")) {
-            PCF8574gpio* gpio = static_cast<PCF8574gpio*>(device);
-            gpioExpanders.push_back(gpio);
-            Serial.println("Device registered in GPIO expanders vector");
-        }
-        else if (testType.equalsIgnoreCase("SHTSensor") || testType.equalsIgnoreCase("Sensor")) {
-            // Check if it's specifically an SHT sensor by checking the type number
-            String typeNumber = device->getTypeNumber();
-            if (typeNumber.equalsIgnoreCase("SHT") || typeNumber.equalsIgnoreCase("SHT30") || 
-                typeNumber.equalsIgnoreCase("SHT31") || typeNumber.equalsIgnoreCase("SHT35")) {
-                SHTsensor* sensor = static_cast<SHTsensor*>(device);
-                temperatureHumiditySensors.push_back(sensor);
-                Serial.println("Device registered in temperature/humidity sensors vector");
-            }
-        }
-        else if (testType.equalsIgnoreCase("GP8403dac") || testType.equalsIgnoreCase("DAC")) {
-            GP8403dac* dac = static_cast<GP8403dac*>(device);
-            dacDevices.push_back(dac);
-            Serial.println("Device registered in DAC devices vector");
-        }
-        
-        Serial.println("Device successfully registered");
+        Serial.println("DeviceRegistry: Device successfully registered");
         return true;
         
     } catch (...) {
-        Serial.println("Cannot register device - virtual method call failed");
+        Serial.println("DeviceRegistry: Registration failed - virtual method call exception");
         return false;
     }
 }
