@@ -3,13 +3,14 @@
 #include <PubSubClient.h>
 #include <Arduino.h>
 #include "Device.h"
-#include "BH1705Sensor/BH1705sensor.h"
-#include "SHTSensor/SHTsensor.h"
-#include "SCALESSensor/SCALESsensor.h"
-#include "DS3231Rtc/DS3231rtc.h" // Include the DS3231rtc header
-#include "PCF8574gpio.h" // Add PCF8574 GPIO include
-#include "ClimateController.h" // Add climate controller include
-#include "DeviceRegistry/DeviceRegistry.h" // Add DeviceRegistry include
+#include "BH1705sensor.h"
+#include "SHTsensor.h"
+#include "SCALESsensor.h"
+#include "DS3231rtc.h"
+#include "PCF8574gpio.h"
+#include "GP8403dac.h"
+#include "ClimateController.h"
+#include "DeviceRegistry/DeviceRegistry.h"
 
 #include <WiFiClientSecure.h> 
 #include <string>
