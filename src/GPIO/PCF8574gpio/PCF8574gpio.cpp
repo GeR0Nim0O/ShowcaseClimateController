@@ -56,45 +56,101 @@ std::map<String, String> PCF8574gpio::readData() {
 bool PCF8574gpio::writeByte(uint8_t data) {
     // Ensure TCA channel is selected before communication
     selectTCAChannel(tcaChannel);
-    delay(2); // Small delay for TCA switching
+    delay(5); // Increased delay for TCA switching
     
-    wire->beginTransmission(_address);
-    wire->write(data);
-    int result = wire->endTransmission();
-    
-    if (result == 0) {
-        _gpioState = data;
+    // Add multiple verification attempts
+    for (int attempt = 0; attempt < 3; attempt++) {
+        wire->beginTransmission(_address);
+        wire->write(data);
+        int result = wire->endTransmission();
         
-        // Verify the write by reading back (optional debug)
-        uint8_t readBack;
-        if (readByte(readBack)) {
-            if (readBack != data) {
-                Serial.print("GPIO Write verification failed! Expected: 0x");
-                Serial.print(data, HEX);
-                Serial.print(", Read: 0x");
-                Serial.println(readBack, HEX);
+        if (result == 0) {
+            _gpioState = data;
+            
+            // Wait a bit for the hardware to settle
+            delay(10);
+            
+            // Verify the write by reading back
+            uint8_t readBack;
+            if (readByte(readBack)) {
+                if (readBack == data) {
+                    Serial.print("GPIO Write SUCCESS on attempt ");
+                    Serial.print(attempt + 1);
+                    Serial.print(": 0x");
+                    Serial.println(data, HEX);
+                    return true;
+                } else {
+                    Serial.print("GPIO Write verification FAILED on attempt ");
+                    Serial.print(attempt + 1);
+                    Serial.print("! Expected: 0x");
+                    Serial.print(data, HEX);
+                    Serial.print(", Read: 0x");
+                    Serial.print(readBack, HEX);
+                    
+                    // Detailed pin analysis
+                    Serial.print(" | Pin states: ");
+                    for (int pin = 0; pin < 8; pin++) {
+                        bool expected = (data & (1 << pin)) != 0;
+                        bool actual = (readBack & (1 << pin)) != 0;
+                        Serial.print("P");
+                        Serial.print(pin);
+                        Serial.print(":");
+                        Serial.print(expected ? "H" : "L");
+                        Serial.print("/");
+                        Serial.print(actual ? "H" : "L");
+                        Serial.print(" ");
+                    }
+                    Serial.println();
+                    
+                    // Try again with longer delay
+                    delay(50);
+                }
+            } else {
+                Serial.print("GPIO Read failed on attempt ");
+                Serial.println(attempt + 1);
+                delay(20);
             }
+        } else {
+            Serial.print("GPIO Write I2C error on attempt ");
+            Serial.print(attempt + 1);
+            Serial.print(": ");
+            Serial.println(result);
+            delay(20);
         }
-        return true;
-    } else {
-        Serial.print("GPIO Write failed with I2C error: ");
-        Serial.println(result);
-        return false;
     }
+    
+    Serial.println("GPIO Write FAILED after 3 attempts");
+    return false;
 }
 
 bool PCF8574gpio::readByte(uint8_t &data) {
     // Ensure TCA channel is selected before communication
     selectTCAChannel(tcaChannel);
-    delay(2); // Small delay for TCA switching
+    delay(5); // Increased delay for TCA switching
     
-    if (wire->requestFrom(_address, (uint8_t)1) != 1) {
-        Serial.println("GPIO Read failed: No data received");
-        return false;
+    // Try multiple read attempts
+    for (int attempt = 0; attempt < 3; attempt++) {
+        if (wire->requestFrom(_address, (uint8_t)1) == 1) {
+            data = wire->read();
+            _gpioState = data;
+            
+            if (attempt > 0) {
+                Serial.print("GPIO Read SUCCESS on attempt ");
+                Serial.print(attempt + 1);
+                Serial.print(": 0x");
+                Serial.println(data, HEX);
+            }
+            return true;
+        } else {
+            Serial.print("GPIO Read FAILED on attempt ");
+            Serial.print(attempt + 1);
+            Serial.println(" - No data received");
+            delay(10);
+        }
     }
-    data = wire->read();
-    _gpioState = data;
-    return true;
+    
+    Serial.println("GPIO Read FAILED after 3 attempts");
+    return false;
 }
 
 bool PCF8574gpio::readBit(uint8_t pin, bool &state) {
@@ -194,3 +250,43 @@ void PCF8574gpio::initializeOutputs() {
         }
     }
 }
+
+// NEW: Advanced hardware diagnostics method
+bool PCF8574gpio::performHardwareDiagnostics() {
+    Serial.println("\n=== PCF8574 Advanced Hardware Diagnostics ===");
+    
+    // Step 1: Basic connectivity test
+    Serial.println("Step 1: Testing basic I2C connectivity...");
+    selectTCAChannel(tcaChannel);
+    delay(10);
+    
+    wire->beginTransmission(_address);
+    int error = wire->endTransmission();
+    
+    if (error != 0) {
+        Serial.print("CRITICAL: I2C communication failed with error: ");
+        Serial.println(error);
+        return false;
+    }
+    Serial.println("✓ I2C communication OK");
+    
+    // Step 2: Power supply test (check if all pins can go HIGH)
+    Serial.println("\nStep 2: Testing power supply (all pins HIGH)...");
+    bool powerTestResult = performPowerSupplyTest();
+    
+    // Step 3: Ground test (check if all pins can go LOW)
+    Serial.println("\nStep 3: Testing ground connections (all pins LOW)...");
+    bool groundTestResult = performGroundTest();
+    
+    // Step 4: Individual pin test
+    Serial.println("\nStep 4: Testing individual pin control...");
+    bool pinTestResult = performIndividualPinTest();
+    
+    // Step 5: Load test (check current sinking capability)
+    Serial.println("\nStep 5: Testing current sinking capability...");
+    bool loadTestResult = performLoadTest();
+    
+    // Summary
+    Serial.println("\n=== Diagnostic Summary ===");
+    Serial.print("I2C Communication: ");
+    Serial.println("PASS");

@@ -998,7 +998,7 @@ void testDACOutput() {
 
 // NEW: Hardware diagnostic function for GPIO
 void testGPIOHardware() {
-    Serial.println("Starting GPIO hardware diagnostics...");
+    Serial.println("Starting comprehensive GPIO hardware diagnostics...");
     
     // Find the GPIO expander device
     PCF8574gpio* testGpio = nullptr;
@@ -1019,53 +1019,53 @@ void testGPIOHardware() {
     Serial.print(" on TCA port ");
     Serial.println(testGpio->getTCAChannel());
     
-    // Select the TCA channel
-    I2CHandler::selectTCA(testGpio->getTCAChannel());
-    delay(10);
+    // Run comprehensive hardware diagnostics
+    bool diagnosticResult = testGpio->performHardwareDiagnostics();
     
-    // Test 1: Basic I2C communication
-    Serial.println("Test 1: Basic I2C communication");
-    Wire.beginTransmission(testGpio->getI2CAddress());
-    int error = Wire.endTransmission();
-    Serial.print("I2C communication result: ");
-    Serial.println(error == 0 ? "SUCCESS" : "FAILED");
-    
-    if (error != 0) {
-        Serial.print("I2C Error code: ");
-        Serial.println(error);
-        return;
-    }
-    
-    // Test 2: Read current GPIO state
-    Serial.println("Test 2: Reading current GPIO state");
-    Wire.requestFrom(testGpio->getI2CAddress(), (uint8_t)1);
-    if (Wire.available()) {
-        uint8_t currentState = Wire.read();
-        Serial.print("Current GPIO state: 0x");
-        Serial.println(currentState, HEX);
-        for (int i = 0; i < 8; i++) {
-            Serial.print("Pin ");
-            Serial.print(i);
-            Serial.print(": ");
-            Serial.println((currentState & (1 << i)) ? "HIGH" : "LOW");
-        }
+    Serial.println("\n=== FINAL DIAGNOSIS ===");
+    if (diagnosticResult) {
+        Serial.println("✅ GPIO hardware appears to be working correctly");
+        Serial.println("   Issue may be software-related or timing-sensitive");
     } else {
-        Serial.println("Failed to read GPIO state");
-        return;
+        Serial.println("❌ GPIO hardware issues detected");
+        Serial.println("   Check the recommendations above");
+        Serial.println("   Consider replacing the PCF8574 or checking wiring");
     }
     
-    // Test 3: Write test patterns
-    Serial.println("Test 3: Writing test patterns");
-    uint8_t testPatterns[] = {0x00, 0xFF, 0xAA, 0x55, 0x00};
-    int numPatterns = sizeof(testPatterns) / sizeof(testPatterns[0]);
+    // Additional TCA-specific test
+    Serial.println("\n=== TCA MULTIPLEXER TEST ===");
+    testTCAStability(testGpio);
     
-    for (int i = 0; i < numPatterns; i++) {
-        Serial.print("Writing pattern 0x");
-        Serial.print(testPatterns[i], HEX);
-        Serial.print(" - ");
+    Serial.println("=========================");
+}
+
+// NEW: Test TCA multiplexer stability
+void testTCAStability(PCF8574gpio* gpio) {
+    Serial.println("Testing TCA multiplexer stability...");
+    
+    uint8_t tcaPort = gpio->getTCAChannel();
+    uint8_t address = gpio->getI2CAddress();
+    
+    // Test multiple TCA switches
+    for (int test = 0; test < 5; test++) {
+        Serial.print("TCA stability test ");
+        Serial.print(test + 1);
+        Serial.print("/5: ");
         
-        // Select TCA channel before each write
-        I2CHandler::selectTCA(testGpio->getTCAChannel());
+        // Switch to different port and back
+        I2CHandler::selectTCA(7); // Switch away
+        delay(10);
+        I2CHandler::selectTCA(tcaPort); // Switch back
+        delay(10);
+        
+        // Test communication
+        Wire.beginTransmission(address);
+        int error = Wire.endTransmission();
+        
+        if (error == 0) {
+            Serial.println("PASS");
+        } else {
+            Serial.print("FAIL (error ");
         delay(5);
         
         Wire.beginTransmission(testGpio->getI2CAddress());
