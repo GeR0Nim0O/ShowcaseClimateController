@@ -208,10 +208,6 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         if (addressToTcaPort.find(addr) != addressToTcaPort.end()) {
             dacAddress = addr;
             tcaPort = addressToTcaPort[addr];
-            Serial.print("Found GP8403 DAC at address 0x");
-            Serial.print(dacAddress, HEX);
-            Serial.print(" on TCA port ");
-            Serial.println(tcaPort);
             break;
         }
     }
@@ -238,14 +234,8 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         deviceIndex++;
         
         if (createdDevice != nullptr) {
-            Serial.print("GP8403 DAC device created successfully at address 0x");
-            Serial.println(dacAddress, HEX);
             devices.push_back(createdDevice);
-        } else {
-            Serial.println("Failed to create GP8403 device");
         }
-    } else {
-        Serial.println("No GP8403 DAC found at any known address (0x5B, 0x5F)");
     }
     
     // Check for SHT temperature/humidity sensor
