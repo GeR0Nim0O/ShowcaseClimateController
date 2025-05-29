@@ -85,7 +85,8 @@ bool ClimateController::begin() {
     Serial.println("ClimateController: *** ENTERING begin() method ***");
     Serial.flush();
     delay(100);
-      // Initialize DAC if available
+    
+    // Initialize DAC if available
     if (dac != nullptr) {
         Serial.println("ClimateController: Checking DAC device...");
         
@@ -126,6 +127,21 @@ bool ClimateController::begin() {
     // Initialize pin mappings
     initializePinMappings();
     
+    // NEW: Ensure GPIO is in output mode and force refresh
+    if (gpio != nullptr) {
+        Serial.println("ClimateController: Ensuring GPIO is in output mode");
+        gpio->forceOutputMode();
+        
+        // Initialize all control pins to known safe state
+        gpio->writePin(pinTemperatureEnable, false);
+        gpio->writePin(pinTemperatureHeat, false);
+        gpio->writePin(pinTemperatureCool, false);
+        gpio->writePin(pinHumidify, false);
+        gpio->writePin(pinDehumidify, false);
+        
+        Serial.println("ClimateController: GPIO pins initialized to safe state");
+    }
+    
     Serial.println("ClimateController: begin() completed successfully");
     Serial.flush();
     delay(100);
@@ -136,14 +152,50 @@ bool ClimateController::begin() {
 void ClimateController::update() {
     unsigned long currentTime = millis();
     
-    if (currentTime - lastUpdate >= updateInterval) {        updateSensorReadings();
+    if (currentTime - lastUpdate >= updateInterval) {
+        updateSensorReadings();
         
-        // Remove emergency shutdown - always run climate control
+        // Store previous states to avoid unnecessary writes
+        static bool lastTempControlEnabled = false;
+        static bool lastHeatingActive = false;
+        static bool lastCoolingActive = false;
+        static bool lastHumidifyingActive = false;
+        static bool lastDehumidifyingActive = false;
+        
         updateTemperatureControl();
         updateHumidityControl();
-        applyTemperatureControl();
-        applyHumidityControl();
+        
+        // Only apply controls if states actually changed
+        bool tempStateChanged = (tempControlEnabled != lastTempControlEnabled) ||
+                               (heatingActive != lastHeatingActive) ||
+                               (coolingActive != lastCoolingActive);
+                               
+        bool humidityStateChanged = (humidifyingActive != lastHumidifyingActive) ||
+                                  (dehumidifyingActive != lastDehumidifyingActive);
+        
+        if (tempStateChanged) {
+            applyTemperatureControl();
+            lastTempControlEnabled = tempControlEnabled;
+            lastHeatingActive = heatingActive;
+            lastCoolingActive = coolingActive;
+        }
+        
+        if (humidityStateChanged) {
+            applyHumidityControl();
+            lastHumidifyingActive = humidifyingActive;
+            lastDehumidifyingActive = dehumidifyingActive;
+        }
+        
         applyDACControls(); // Apply DAC controls
+        
+        // NEW: Periodically refresh GPIO state to prevent drift
+        static unsigned long lastGpioRefresh = 0;
+        if (currentTime - lastGpioRefresh >= 10000) { // Every 10 seconds
+            if (gpio != nullptr) {
+                gpio->refreshOutputState();
+            }
+            lastGpioRefresh = currentTime;
+        }
         
         lastUpdate = currentTime;
     }
@@ -199,22 +251,12 @@ void ClimateController::updateTemperatureControl() {
             break;
             
         case ClimateMode::AUTO:
-            if (tempOutput > 0.1) { // Very small deadband for precise control
-                heatingActive = true;
-                coolingActive = false;
-                heatingPower = map(tempOutput, 0.1, 100, 0, 100);
-                coolingPower = 0.0;
-            } else if (tempOutput < -0.1) {
-                heatingActive = false;
-                coolingActive = true;
-                heatingPower = 0.0;
-                coolingPower = map(-tempOutput, 0.1, 100, 0, 100);
-            } else {
-                heatingActive = false;
-                coolingActive = false;
-                heatingPower = 0.0;
-                coolingPower = 0.0;
-            }
+            if (tempOutput > 0.1) // Very small deadband for precise control
+                heatingActive = true, coolingActive = false, heatingPower = map(tempOutput, 0.1, 100, 0, 100), coolingPower = 0.0;
+            else if (tempOutput < -0.1)
+                heatingActive = false, coolingActive = true, heatingPower = 0.0, coolingPower = map(-tempOutput, 0.1, 100, 0, 100);
+            else
+                heatingActive = false, coolingActive = false, heatingPower = 0.0, coolingPower = 0.0;
             tempControlEnabled = (heatingActive || coolingActive);
             break;
             
