@@ -245,6 +245,7 @@ bool GP8403dac::isReady() {
 
 bool GP8403dac::writeRegister(uint8_t reg, uint16_t value) {
     I2CHandler::selectTCA(getTCAChannel());
+    delayMicroseconds(200);
     
     wire->beginTransmission(getI2CAddress());
     wire->write(reg);
@@ -255,6 +256,7 @@ bool GP8403dac::writeRegister(uint8_t reg, uint16_t value) {
 
 uint16_t GP8403dac::readRegister(uint8_t reg) {
     I2CHandler::selectTCA(getTCAChannel());
+    delayMicroseconds(200);
     
     wire->beginTransmission(getI2CAddress());
     wire->write(reg);
