@@ -85,46 +85,18 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
 }
 
 bool ClimateController::begin() {
-    Serial.println("ClimateController: *** ENTERING begin() method ***");
-    Serial.flush();
-    delay(100);
-    
     // Initialize DAC if available
     if (dac != nullptr) {
-        Serial.println("ClimateController: Checking DAC device...");
-        
         // Check if DAC is already initialized (to avoid double initialization)
         if (dac->isInitialized()) {
-            Serial.println("ClimateController: DAC already initialized, skipping begin()");
-            
-            // Test DAC connection and functionality
-            if (dac->isConnected()) {
-                Serial.println("ClimateController: DAC connection verified");
-                // Test DAC by setting it to 0V initially
-                if (dac->setChannelVoltage(0, 0.0)) {
-                    Serial.println("ClimateController: DAC test write successful");
-                } else {
-                    Serial.println("ClimateController: WARNING - DAC test write failed");
-                }
-            } else {
-                Serial.println("ClimateController: WARNING - DAC not responding to connection test");
-            }
+            // Test DAC by setting it to 0V initially
+            dac->setChannelVoltage(0, 0.0);
         } else {
-            Serial.println("ClimateController: DAC not initialized, calling begin()...");
             if (dac->begin()) {
-                Serial.println("ClimateController: DAC initialized successfully");
                 // Test DAC by setting it to 0V initially
-                if (dac->setChannelVoltage(0, 0.0)) {
-                    Serial.println("ClimateController: DAC test write successful");
-                } else {
-                    Serial.println("ClimateController: WARNING - DAC test write failed");
-                }
-            } else {
-                Serial.println("ClimateController: WARNING - DAC initialization failed");
+                dac->setChannelVoltage(0, 0.0);
             }
         }
-    } else {
-        Serial.println("ClimateController: No DAC device available");
     }
     
     // Initialize pin mappings
@@ -132,33 +104,16 @@ bool ClimateController::begin() {
     
     // Ensure GPIO is in output mode and all pins start LOW
     if (gpio != nullptr) {
-        Serial.println("ClimateController: Ensuring GPIO is in output mode and all pins LOW");
         gpio->forceOutputMode();
         
-        // Initialize ALL pins to LOW/false state (not just control pins)
-        Serial.println("ClimateController: Setting all GPIO pins to LOW");
+        // Initialize ALL pins to LOW/false state
         for (int pin = 0; pin < 8; pin++) {
             gpio->writePin(pin, false);
         }
         
-        // Verify all pins are LOW
-        uint8_t finalState = gpio->getGPIOState();
-        Serial.print("ClimateController: Final GPIO state: 0x");
-        Serial.print(finalState, HEX);
-        
-        if (finalState == 0x00) {
-            Serial.println(" - All pins confirmed LOW");
-        } else {
-            Serial.println(" - WARNING: Some pins not LOW, forcing 0x00");
-            gpio->writeByte(0x00);
-        }
-    } else {
-        Serial.println("ClimateController: WARNING - No GPIO device available");
+        // Force final state to 0x00
+        gpio->writeByte(0x00);
     }
-    
-    Serial.println("ClimateController: begin() completed successfully");
-    Serial.flush();
-    delay(100);
     
     return true;
 }
@@ -282,14 +237,6 @@ void ClimateController::updateTemperatureControl() {
     
     temperaturePID->Compute();
     
-    // Add debug output to see PID values
-    Serial.print("DEBUG: Temperature PID - Input: ");
-    Serial.print(tempInput);
-    Serial.print("°C, Setpoint: ");
-    Serial.print(tempSetpoint);
-    Serial.print("°C, Output: ");
-    Serial.println(tempOutput);
-    
     switch (climateMode) {
         case ClimateMode::HEATING:
             heatingActive = (tempOutput > 0);
@@ -384,35 +331,14 @@ void ClimateController::updateHumidityControl() {
             dehumidifyingActive = false;
             break;
     }
-    
-    // Log output when state changes for debugging
-    static bool lastHumidifyingActive = false;
-    static bool lastDehumidifyingActive = false;
-    
-    if (humidifyingActive != lastHumidifyingActive || 
-        dehumidifyingActive != lastDehumidifyingActive) {
-        
-        Serial.print("Humidity control update - Current: ");
-        Serial.print(currentHumidity);
-        Serial.print("% Setpoint: ");
-        Serial.print(humiditySetpoint);
-        Serial.print("% Humidifier: ");
-        Serial.print(humidifyingActive ? "ON" : "OFF");
-        Serial.print(" Dehumidifier: ");
-        Serial.println(dehumidifyingActive ? "ON" : "OFF");
-        
-        lastHumidifyingActive = humidifyingActive;
-        lastDehumidifyingActive = dehumidifyingActive;
-    }
 }
 
 void ClimateController::updateFanControl() {
     if (!autoFanControlEnabled) {
-        // If auto fan control is disabled, don't change fan states
         return;
     }
     
-    // Determine if ANY climate control is active (temperature OR humidity control)
+    // Determine if ANY climate control is active
     bool tempControlActive = (climateMode != ClimateMode::OFF) && 
                             (tempControlEnabled || heatingActive || coolingActive);
     
@@ -421,242 +347,25 @@ void ClimateController::updateFanControl() {
     
     bool climateControlActive = tempControlActive || humidityControlActive;
     
-    // SIMPLIFIED FAN LOGIC: Both fans always on when ANY climate control is active
+    // Both fans on when climate control is active
     fanInteriorActive = climateControlActive;
     fanExteriorActive = climateControlActive;  // Both fans on when climate active
-    
-    // Debug output when fan states change
-    static bool lastFanInteriorActive = false;
-    static bool lastFanExteriorActive = false;
-    
-    if (fanInteriorActive != lastFanInteriorActive || fanExteriorActive != lastFanExteriorActive) {
-        Serial.print("Fan control update - Interior: ");
-        Serial.print(fanInteriorActive ? "ON" : "OFF");
-        Serial.print(", Exterior: ");
-        Serial.print(fanExteriorActive ? "ON" : "OFF");
-        Serial.print(" (Climate active: ");
-        Serial.print(climateControlActive ? "YES" : "NO");
-        Serial.print(", Temp control: ");
-        Serial.print(tempControlActive ? "YES" : "NO");
-        Serial.print(", Humidity control: ");
-        Serial.print(humidityControlActive ? "YES" : "NO");
-        Serial.println(")");
-        
-        lastFanInteriorActive = fanInteriorActive;
-        lastFanExteriorActive = fanExteriorActive;
-    }
 }
 
 void ClimateController::applyFanControl() {
-    Serial.print("ClimateController: Applying fan control - Interior: ");
-    Serial.print(fanInteriorActive ? "ON" : "OFF");
-    Serial.print(", Exterior: ");
-    Serial.print(fanExteriorActive ? "ON" : "OFF");
-    Serial.print(" (pins ");
-    Serial.print(pinFanInterior);
-    Serial.print(" and ");
-    Serial.print(pinFanExterior);
-    Serial.println(")");
-    
-    // Apply interior fan state
-    bool interiorResult = safeWritePin(pinFanInterior, fanInteriorActive);
-    Serial.print("Interior fan pin ");
-    Serial.print(pinFanInterior);
-    Serial.print(" result: ");
-    Serial.println(interiorResult ? "SUCCESS" : "FAILED");
-    
-    // Apply exterior fan state
-    bool exteriorResult = safeWritePin(pinFanExterior, fanExteriorActive);
-    Serial.print("Exterior fan pin ");
-    Serial.print(pinFanExterior);
-    Serial.print(" result: ");
-    Serial.println(exteriorResult ? "SUCCESS" : "FAILED");
-    
-    // NEW: Additional debug - show GPIO state after fan control
-    if (gpio != nullptr) {
-        uint8_t gpioState = gpio->getGPIOState();
-        Serial.print("GPIO state after fan control: 0x");
-        Serial.print(gpioState, HEX);
-        Serial.print(" (pin ");
-        Serial.print(pinFanInterior);
-        Serial.print("=");
-        Serial.print((gpioState & (1 << pinFanInterior)) ? "HIGH" : "LOW");
-        Serial.print(", pin ");
-        Serial.print(pinFanExterior);
-        Serial.print("=");
-        Serial.print((gpioState & (1 << pinFanExterior)) ? "HIGH" : "LOW");
-        Serial.println(")");
-    }
+    safeWritePin(pinFanInterior, fanInteriorActive);
+    safeWritePin(pinFanExterior, fanExteriorActive);
 }
-
-void ClimateController::applyDACControls() {
-    // Skip if no DAC device available
-    if (!dac) {
-        return; // Reduce log spam
-    }
-    
-    // Rate limiting: Only update DAC if enough time has passed since last update
-    static unsigned long lastDACUpdate = 0;
-    static float lastDACVoltage = -1.0; // Initialize to invalid value
-    const unsigned long DAC_UPDATE_INTERVAL = 1000; // Update DAC max every 1000ms
-    const float VOLTAGE_THRESHOLD = 0.1; // 100mV threshold
-    
-    unsigned long currentTime = millis();
-    
-    // Calculate desired voltage based on current state
-    float desiredVoltage = 0.0;
-    String operation = "idle";
-    
-    if (heatingActive) {
-        desiredVoltage = (heatingPower / 100.0) * 5.0;
-        operation = "heating";
-    } else if (coolingActive) {
-        desiredVoltage = (coolingPower / 100.0) * 5.0;
-        operation = "cooling";
-    }
-    
-    // Check if we should update (time passed OR significant voltage change)
-    bool timeToUpdate = (currentTime - lastDACUpdate >= DAC_UPDATE_INTERVAL);
-    bool significantChange = (abs(desiredVoltage - lastDACVoltage) >= VOLTAGE_THRESHOLD);
-    bool forceUpdate = (lastDACVoltage < 0); // First time
-    
-    if (!timeToUpdate && !significantChange && !forceUpdate) {
-        return; // Skip this update
-    }
-    
-    // Check if device is still connected before attempting operation
-    if (!dac->isConnected()) {
-        // Only log connection issues every 10 seconds to reduce spam
-        static unsigned long lastConnErrorLog = 0;
-        if (currentTime - lastConnErrorLog > 10000) {
-            Serial.println("DAC: Device not connected");
-            lastConnErrorLog = currentTime;
-        }
-        return;
-    }
-    
-    // Log what we're about to do
-    Serial.print("DAC: Setting ");
-    Serial.print(desiredVoltage, 2);
-    Serial.print("V (");
-    Serial.print(operation);
-    if (heatingActive) {
-        Serial.print(" at ");
-        Serial.print(heatingPower, 1);
-        Serial.print("%");
-    } else if (coolingActive) {
-        Serial.print(" at ");
-        Serial.print(coolingPower, 1);
-        Serial.print("%");
-    }
-    Serial.println(")");
-    
-    // Attempt to set the new voltage
-    bool success = dac->setChannelVoltage(0, desiredVoltage);
-    
-    if (success) {
-        lastDACVoltage = desiredVoltage;
-        lastDACUpdate = currentTime;
-        // Only log success for significant changes to reduce spam
-        if (significantChange || forceUpdate) {
-            Serial.println("DAC: Voltage set successfully");
-        }
-    } else {
-        Serial.println("DAC: Failed to set voltage");
-        // Don't update lastDACUpdate on failure, so we'll try again sooner
-    }
-}
-
-void ClimateController::setHeatingPower(float percentage) {
-    heatingPower = constrain(percentage, 0.0, 100.0);
-    if (dac && heatingActive) {
-        float voltage = (heatingPower / 100.0) * 5.0; // Changed to 5.0V max
-        dac->setChannelVoltage(0, voltage);
-    }
-}
-
-void ClimateController::setCoolingPower(float percentage) {
-    coolingPower = constrain(percentage, 0.0, 100.0);
-    if (dac && coolingActive) {
-        float voltage = (coolingPower / 100.0) * 5.0; // Changed to 5.0V max
-        dac->setChannelVoltage(0, voltage);
-    }
-}
-
-/*
-bool ClimateController::checkSafetyLimits() {
-    // Check if temperature and humidity are within safety limits
-    bool tempSafe = (currentTemperature >= MIN_TEMPERATURE && currentTemperature <= MAX_TEMPERATURE);
-    bool humiditySafe = (currentHumidity >= MIN_HUMIDITY && currentHumidity <= MAX_HUMIDITY);
-    
-    // Return true if both are safe, false if either is unsafe
-    return tempSafe && humiditySafe;
-}
-*/
 
 void ClimateController::applyTemperatureControl() {
-    // Debug output before applying controls
-    Serial.print("ClimateController: Applying temperature control - Enable: ");
-    Serial.print(tempControlEnabled ? "ON" : "OFF");
-    Serial.print(", Heat: ");
-    Serial.print(heatingActive ? "ON" : "OFF");
-    Serial.print(", Cool: ");
-    Serial.println(coolingActive ? "ON" : "OFF");
-    
-    // Update main temperature enable pin
-    bool enableResult = safeWritePin(pinTemperatureEnable, tempControlEnabled);
-    Serial.print("Temperature enable pin result: ");
-    Serial.println(enableResult ? "SUCCESS" : "FAILED");
-    
-    // Update heating and cooling pins based on currently active mode
-    bool heatResult = safeWritePin(pinTemperatureHeat, heatingActive);
-    bool coolResult = safeWritePin(pinTemperatureCool, coolingActive);
-    
-    Serial.print("Heat pin result: ");
-    Serial.print(heatResult ? "SUCCESS" : "FAILED");
-    Serial.print(", Cool pin result: ");
-    Serial.println(coolResult ? "SUCCESS" : "FAILED");
-    
-    // Debug output
-    if (heatingActive) {
-        Serial.print("Temperature control: Heating at ");
-        Serial.print(heatingPower);
-        Serial.println("%");
-    } else if (coolingActive) {
-        Serial.print("Temperature control: Cooling at ");
-        Serial.print(coolingPower);
-        Serial.println("%");
-    } else if (!tempControlEnabled) {
-        Serial.println("Temperature control: Disabled");
-    } else {
-        Serial.println("Temperature control: Idle");
-    }
+    safeWritePin(pinTemperatureEnable, tempControlEnabled);
+    safeWritePin(pinTemperatureHeat, heatingActive);
+    safeWritePin(pinTemperatureCool, coolingActive);
 }
 
 void ClimateController::applyHumidityControl() {
-    // Debug output before applying controls
-    Serial.print("ClimateController: Applying humidity control - Humidify: ");
-    Serial.print(humidifyingActive ? "ON" : "OFF");
-    Serial.print(", Dehumidify: ");
-    Serial.println(dehumidifyingActive ? "ON" : "OFF");
-    
-    // Update humidify and dehumidify pins based on currently active mode
-    bool humidifyResult = safeWritePin(pinHumidify, humidifyingActive);
-    bool dehumidifyResult = safeWritePin(pinDehumidify, dehumidifyingActive);
-    
-    Serial.print("Humidify pin result: ");
-    Serial.print(humidifyResult ? "SUCCESS" : "FAILED");
-    Serial.print(", Dehumidify pin result: ");
-    Serial.println(dehumidifyResult ? "SUCCESS" : "FAILED");
-    
-    // Debug output
-    if (humidifyingActive) {
-        Serial.println("Humidity control: Humidifying");
-    } else if (dehumidifyingActive) {
-        Serial.println("Humidity control: Dehumidifying");
-    } else {
-        Serial.println("Humidity control: Idle");
-    }
+    safeWritePin(pinHumidify, humidifyingActive);
+    safeWritePin(pinDehumidify, dehumidifyingActive);
 }
 
 /*
@@ -810,169 +519,37 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
 
 // Add this implementation of the safeWritePin method we previously added to the header
 bool ClimateController::safeWritePin(uint8_t pin, bool value) {
-    if (!gpio) {
-        Serial.println("ClimateController: GPIO device is null");
-        return false;
-    }
-    
-    if (!gpio->isInitialized()) {
-        Serial.println("ClimateController: GPIO device not initialized");
+    if (!gpio || !gpio->isInitialized()) {
         return false;
     }
     
     try {
-        Serial.print("ClimateController: Writing pin ");
-        Serial.print(pin);
-        Serial.print(" = ");
-        Serial.print(value ? "HIGH" : "LOW");
-        Serial.print(" - ");
-        
         gpio->writePin(pin, value);
         
-        // Verify the write by reading back the GPIO state
+        // Verify the write
         uint8_t currentState = gpio->getGPIOState();
         bool actualState = (currentState & (1 << pin)) != 0;
         
-        if (actualState == value) {
-            Serial.println("VERIFIED");
-            return true;
-        } else {
-            Serial.print("VERIFICATION FAILED (expected ");
-            Serial.print(value ? "HIGH" : "LOW");
-            Serial.print(", got ");
-            Serial.print(actualState ? "HIGH" : "LOW");
-            Serial.println(")");
-            return false;
-        }
+        return (actualState == value);
     } catch (...) {
-        Serial.print("ClimateController: Exception writing to pin ");
-        Serial.println(pin);
         return false;
-    }
-}
-
-// Implementation of the testDAC method declared in the header
-void ClimateController::testDAC() {
-    if (!dac) {
-        Serial.println("ClimateController: No DAC device available for testing");
-        return;
-    }
-    
-    Serial.println("ClimateController: Starting comprehensive DAC test sequence...");
-    
-    // First verify DAC is connected and responding
-    bool isConnected = dac->isConnected();
-    Serial.print("ClimateController: DAC connection test: ");
-    Serial.println(isConnected ? "PASSED" : "FAILED");
-    
-    if (!isConnected) {
-        Serial.println("ClimateController: DAC not responding, aborting test");
-        return;
-    }
-    
-    try {
-        // Test both channels separately with detailed logging
-        Serial.println("=== Testing Channel A ===");
-        float testVoltagesA[] = {0.0f, 1.0f, 2.5f, 5.0f, 0.0f};
-        int numSteps = sizeof(testVoltagesA) / sizeof(testVoltagesA[0]);
-        
-        for (int i = 0; i < numSteps; i++) {
-            float voltage = testVoltagesA[i];
-            Serial.print("Setting Channel A to ");
-            Serial.print(voltage, 2);
-            Serial.println("V");
-            
-            bool success = dac->setChannelVoltage(0, voltage);
-            Serial.print("Result: ");
-            Serial.println(success ? "SUCCESS" : "FAILED");
-            
-            delay(2000); // 2 second hold for measurement
-        }
-        
-        Serial.println("\n=== Testing Channel B ===");
-        float testVoltagesB[] = {0.0f, 1.0f, 2.5f, 5.0f, 0.0f};
-        
-        for (int i = 0; i < numSteps; i++) {
-            float voltage = testVoltagesB[i];
-            Serial.print("Setting Channel B to ");
-            Serial.print(voltage, 2);
-            Serial.println("V");
-            
-            bool success = dac->setChannelVoltage(1, voltage);
-            Serial.print("Result: ");
-            Serial.println(success ? "SUCCESS" : "FAILED");
-            
-            delay(2000); // 2 second hold for measurement
-        }
-        
-        // Test both channels simultaneously
-        Serial.println("\n=== Testing Both Channels Simultaneously ===");
-        Serial.println("Setting both channels to 2.5V");
-        uint16_t dacValue = 2047; // Approximately 2.5V
-        bool success = dac->setBothChannels(dacValue, dacValue);
-        Serial.print("Both channels result: ");
-        Serial.println(success ? "SUCCESS" : "FAILED");
-        
-        delay(3000);
-        
-        // Reset both channels to 0V
-        Serial.println("Resetting both channels to 0V");
-        dac->setBothChannels(0, 0);
-        
-        Serial.println("ClimateController: DAC test completed");
-        
-    } catch (...) {
-        Serial.println("ClimateController: Exception during DAC testing");
-        // Try to reset DAC to 0V on error
-        try {
-            dac->setChannelVoltage(0, 0.0f);
-            dac->setChannelVoltage(1, 0.0f);
-        } catch (...) {
-            Serial.println("ClimateController: Failed to reset DAC after exception");
-        }
     }
 }
 
 void ClimateController::setFanInterior(bool enable) {
-    Serial.print("ClimateController: Manual setting interior fan to ");
-    Serial.print(enable ? "ON" : "OFF");
-    Serial.print(" (pin ");
-    Serial.print(pinFanInterior);
-    Serial.print(") - ");
-    
-    // If auto fan control is enabled, disable it temporarily for manual control
     if (autoFanControlEnabled && !enable) {
-        Serial.println("NOTICE: Disabling auto fan control for manual operation");
         autoFanControlEnabled = false;
     }
     
     fanInteriorActive = enable;
-    
-    if (safeWritePin(pinFanInterior, enable)) {
-        Serial.println("SUCCESS");
-    } else {
-        Serial.println("FAILED");
-    }
+    safeWritePin(pinFanInterior, enable);
 }
 
 void ClimateController::setFanExterior(bool enable) {
-    Serial.print("ClimateController: Manual setting exterior fan to ");
-    Serial.print(enable ? "ON" : "OFF");
-    Serial.print(" (pin ");
-    Serial.print(pinFanExterior);
-    Serial.print(") - ");
-    
-    // If auto fan control is enabled, disable it temporarily for manual control
     if (autoFanControlEnabled && !enable) {
-        Serial.println("NOTICE: Disabling auto fan control for manual operation");
         autoFanControlEnabled = false;
     }
     
     fanExteriorActive = enable;
-    
-    if (safeWritePin(pinFanExterior, enable)) {
-        Serial.println("SUCCESS");
-    } else {
-        Serial.println("FAILED");
-    }
+    safeWritePin(pinFanExterior, enable);
 }
