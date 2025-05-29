@@ -292,212 +292,50 @@ void DeviceRegistry::printDeviceStatus() {
     Serial.println("==================\n");
 }
 
-Device* DeviceRegistry::createDeviceWithThresholds(
-    TwoWire* wire,
-    const String& type, 
-    const String& typeNumber, 
-    uint8_t address, 
-    uint8_t tcaPort, 
-    const std::map<String, float>& channelThresholds, 
-    const std::map<String, String>& channelNames, 
-    int deviceIndex,
-    const String& mode
-) {
-    Device* device = nullptr;
-    
-    // Check available heap memory before creating device
-    size_t freeHeap = ESP.getFreeHeap();
-    size_t minFreeHeap = ESP.getMinFreeHeap();
-    Serial.print("Free heap before device creation: ");
-    Serial.print(freeHeap);
-    Serial.print(" bytes, Min free heap: ");
-    Serial.print(minFreeHeap);
-    Serial.println(" bytes");
-    
-    if (freeHeap < 10000) {  // Less than 10KB free
-        Serial.println("WARNING: Low memory detected before device creation");
-    }
-    
-    // Safety check for null or empty type/typeNumber
-    if (type.isEmpty() || type.equalsIgnoreCase("null") || 
-        typeNumber.isEmpty() || typeNumber.equalsIgnoreCase("null")) {
-        Serial.println("ERROR: Cannot create device with null or empty type/typeNumber");
-        return nullptr;
-    }
-    
-    // Safety check for invalid address
-    if (address == 0) {
-        Serial.println("ERROR: Cannot create device with invalid address 0x00");
-        return nullptr;
-    }
-    
-    // Add debugging for all device creation attempts
-    Serial.print("Creating device with type: ");
-    Serial.print(type);
-    Serial.print(", type number: ");
-    Serial.print(typeNumber);
-    Serial.print(", address: 0x");
-    Serial.print(address, HEX);
-    Serial.print(", TCA port: ");
-    Serial.println(tcaPort);
-    
-    // Convert channelThresholds to a single threshold (use first threshold found)
-    float threshold = 1.0f; // default
-    if (!channelThresholds.empty()) {
-        threshold = channelThresholds.begin()->second;
-    }
-    
-    // Convert channelNames to std::map<String, String>
-    std::map<String, String> channels = channelNames;
-    
-    // Create a meaningful device name based on type, typeNumber, and location
-    String deviceName = typeNumber + "_TCA" + String(tcaPort) + "_" + String(deviceIndex);
-    
-    Serial.print("Creating device: ");
-    Serial.print(type);
-    Serial.print(" ");
-    Serial.println(typeNumber);
-    Serial.print("Device Name: ");
-    Serial.println(deviceName);
-      if (type.equalsIgnoreCase("Sensor")) {        if (typeNumber.equalsIgnoreCase("SHT31")) {
-            device = new SHTsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
-            if (device) {
-                device->deviceName = deviceName; // Set device name
-                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
-            }        } else if (typeNumber.equalsIgnoreCase("BH1705")) {
-            device = new BH1705sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
-            if (device) {
-                device->deviceName = deviceName; // Set device name
-                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
-            }        } else if (typeNumber.equalsIgnoreCase("SCALES")) {
-            device = new SCALESsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
-            if (device) {
-                device->deviceName = deviceName; // Set device name
-                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
-            }
-        }
-    } else if (type.equalsIgnoreCase("GPIO")) {
-        if (typeNumber.equalsIgnoreCase("PCF8574")) {
-            // Parse mode from string
-            PCF8574Mode pcfMode = PCF8574Mode::OUTPUT_MODE; // Default
-            if (mode.equalsIgnoreCase("INPUT") || mode.equalsIgnoreCase("INPUT_MODE")) {
-                pcfMode = PCF8574Mode::INPUT_MODE;
-            } else if (mode.equalsIgnoreCase("OUTPUT") || mode.equalsIgnoreCase("OUTPUT_MODE")) {
-                pcfMode = PCF8574Mode::OUTPUT_MODE;
-            }
-            
-            Serial.print("Creating PCF8574 with mode: ");
-            Serial.println(mode.length() > 0 ? mode : "OUTPUT_MODE (default)");              device = new PCF8574gpio(wire, address, tcaPort, threshold, channels, deviceIndex, pcfMode);
-            if (device) {device->deviceName = deviceName; // Set device name
-                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
-            }
-        }
-    } else if (type.equalsIgnoreCase("RTC")) {
-        if (typeNumber.equalsIgnoreCase("DS3231")) {            device = new DS3231rtc(wire, address, tcaPort, threshold, channels, deviceIndex);
-            if (device) {
-                device->deviceName = deviceName; // Set device name
-                device->setChannelThresholds(channelThresholds); // Set channel-specific thresholds
-            }
-        }    } else if (type.equalsIgnoreCase("DAC")) {
-        Serial.println("Attempting to create DAC device:");
-        Serial.print("  Type: ");
-        Serial.println(type);
-        Serial.print("  TypeNumber: ");
-        Serial.println(typeNumber);
-        Serial.print("  Address: 0x");
-        Serial.println(address, HEX);
-        Serial.print("  TCA Port: ");
-        Serial.println(tcaPort);
-        Serial.print("  Device Index: ");
-        Serial.println(deviceIndex);
-        
-        // Print channel information
-        Serial.println("  Channels:");
-        for (const auto& channel : channelNames) {
-            Serial.print("    ");
-            Serial.print(channel.first);
-            Serial.print(": ");
-            Serial.println(channel.second);
-        }
-          if (typeNumber.equalsIgnoreCase("GP8403") || typeNumber.equalsIgnoreCase("MCP4725")) {
-            Serial.println("Creating GP8403dac...");            device = new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
-            if (device) {
-                device->deviceName = deviceName; // Set device name
-                device->setChannelThresholds(channelThresholds); 
-                Serial.println("DAC device created successfully!");
-            } else {
-                Serial.println("ERROR: Failed to create DAC device - out of memory?");
-            }
-        } else {
-            Serial.print("ERROR: Unknown DAC type: ");
-            Serial.println(typeNumber);        }
-    }
-    
-    // Check heap after device creation attempt
-    size_t freeHeapAfter = ESP.getFreeHeap();
-    Serial.print("Free heap after device creation attempt: ");
-    Serial.print(freeHeapAfter);
-    Serial.println(" bytes");
-    
-    if (device) {
-        Serial.print("Device object created, memory used: ");
-        Serial.print(freeHeap - freeHeapAfter);
-        Serial.println(" bytes");
-    }
-    
-      if (device) {
-        Serial.println("Device created successfully");
-        
-        // Add device validation before registration
-        Serial.println("Validating device object integrity...");
-        
-        // Check if device pointer is in valid memory range
-        if ((uint32_t)device < 0x3F800000 || (uint32_t)device > 0x3FFFFFFF) {
-            Serial.println("ERROR: Device pointer is outside valid ESP32 memory range");
-            delete device;
-            return nullptr;
-        }
-        
-        // Test basic virtual method calls
-        try {
-            String testType = device->getType();
-            uint8_t testAddress = device->getI2CAddress();
-            uint8_t testChannel = device->getTCAChannel();
-            
-            Serial.print("Device validation successful - Type: ");
-            Serial.print(testType);
-            Serial.print(", Address: 0x");
-            Serial.print(testAddress, HEX);
-            Serial.print(", Channel: ");
-            Serial.println(testChannel);
-        } catch (...) {
-            Serial.println("ERROR: Device validation failed - virtual method call exception");
-            delete device;
-            return nullptr;
-        }
-        
-        // Add a small delay to ensure memory is stable
-        delay(10);
-        yield();
-        
-        // Register the device in the registry
-        DeviceRegistry& registry = DeviceRegistry::getInstance();
-        if (registry.registerDevice(device)) {
-            Serial.println("Device registered successfully in registry");
-            
-            // Special debug for DAC device
-            if (type.equalsIgnoreCase("DAC")) {
-                Serial.print("DAC created with index ");
-                Serial.println(deviceIndex);
-            }
-        } else {
-            Serial.println("Failed to register device in registry");
-            delete device;
-            return nullptr;
-        }
-    } else {
-        Serial.println("Failed to create device - unknown type/typeNumber combination");
-    }
-    
-    return device;
+// Hardware-specific device registrations using lambda functions
+// This keeps all hardware-specific code contained within DeviceRegistry.cpp
+namespace {
+    bool registeredSHT31 = DeviceRegistry::registerDeviceType("Sensor", "SHT31", 
+        [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
+           const std::map<String, String>& channels, int deviceIndex) {
+        return new SHTsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+    });
+
+    bool registeredBH1705 = DeviceRegistry::registerDeviceType("Sensor", "BH1705", 
+        [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
+           const std::map<String, String>& channels, int deviceIndex) {
+        return new BH1705sensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+    });
+
+    bool registeredSCALES = DeviceRegistry::registerDeviceType("Sensor", "SCALES", 
+        [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
+           const std::map<String, String>& channels, int deviceIndex) {
+        return new SCALESsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
+    });
+
+    bool registeredPCF8574 = DeviceRegistry::registerDeviceType("GPIO", "PCF8574", 
+        [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
+           const std::map<String, String>& channels, int deviceIndex) {
+        // Note: This basic registration doesn't handle mode parameter
+        // For full mode support, the factory pattern would need extension
+        return new PCF8574gpio(wire, address, tcaPort, threshold, channels, deviceIndex, PCF8574Mode::OUTPUT_MODE);
+    });
+
+    bool registeredGP8403 = DeviceRegistry::registerDeviceType("DAC", "GP8403", 
+        [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
+           const std::map<String, String>& channels, int deviceIndex) {
+        return new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
+    });
+
+    bool registeredMCP4725 = DeviceRegistry::registerDeviceType("DAC", "MCP4725", 
+        [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
+           const std::map<String, String>& channels, int deviceIndex) {
+        return new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
+    });
+
+    bool registeredDS3231 = DeviceRegistry::registerDeviceType("RTC", "DS3231", 
+        [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
+           const std::map<String, String>& channels, int deviceIndex) {
+        return new DS3231rtc(wire, address, tcaPort, threshold, channels, deviceIndex);
+    });
 }
