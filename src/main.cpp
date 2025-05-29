@@ -948,11 +948,9 @@ void initializeClimateController() {
             climateController->setClimateMode(climateMode);
             climateController->setHumidityMode(humidityMode);
             
-            // Turn on interior fan by default
-            if (autoFanControlEnabled) {
-              Serial.println("Turning on interior fan by default");
-              climateController->setFanInterior(true);
-            }
+            // Enable automatic fan control
+            climateController->setAutoFanControl(true);
+            Serial.println("Automatic fan control enabled");
             
             Serial.print("Climate controller setpoints - Temperature: ");
             Serial.print(temperatureSetpoint);
@@ -1214,6 +1212,14 @@ void updateClimateController() {
         Serial.print(climateController->isHumidifying() ? "ON" : "OFF");
         Serial.print(", Dehumidifying: ");
         Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
+        
+        // Print fan status
+        Serial.print("Fan control - Interior: ");
+        Serial.print(climateController->isFanInteriorOn() ? "ON" : "OFF");
+        Serial.print(", Exterior: ");
+        Serial.print(climateController->isFanExteriorOn() ? "ON" : "OFF");
+        Serial.print(", Auto control: ");
+        Serial.println(climateController->isAutoFanControlEnabled() ? "ENABLED" : "DISABLED");
         
         // NEW: Add GPIO state verification
         if (gpioExpander != nullptr) {
