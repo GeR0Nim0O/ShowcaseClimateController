@@ -4,20 +4,23 @@
 #include "Device.h"
 
 // Default I2C address for GP8403
-#define DAC_DEFAULT_ADDRESS 0x58  // Updated to match DFRobot library default (0x58)
+#define DAC_DEFAULT_ADDRESS 0x58
 
 // Register addresses for GP8403 DAC - Based on DFRobot library
-#define GP8302_CONFIG_CURRENT_REG 0x02  // Register for DAC data transmission
-#define OUTPUT_RANGE            0x01    // Output range configuration register
+#define GP8403_STORE_TIMING_HEAD    0x02
+#define GP8403_STORE_TIMING_ADDR    0x10
+#define GP8403_STORE_TIMING_CMD1    0x03
+#define GP8403_STORE_TIMING_CMD2    0x00
 
-// Output range constants
-#define OUTPUT_RANGE_5V         0x00    // 0-5V output range
+// Output range register and values
+#define OUTPUT_RANGE            0x01
+#define OUTPUT_RANGE_5V         0x00    // 0-5V output range  
 #define OUTPUT_RANGE_10V        0x11    // 0-10V output range
 
-// Channel selection
-#define CHANNEL0                0       // Channel A
-#define CHANNEL1                1       // Channel B
-#define CHANNELALL              2       // Both channels
+// Channel addresses
+#define GP8403_CHANNEL_A        0x02
+#define GP8403_CHANNEL_B        0x03
+#define GP8403_BOTH_CHANNELS    0x04
 
 // DAC Configuration bits
 #define DAC_CONFIG_READY        0x80
