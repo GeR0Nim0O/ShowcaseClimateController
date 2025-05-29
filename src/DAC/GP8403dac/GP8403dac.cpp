@@ -52,9 +52,26 @@ bool GP8403dac::begin() {
 }
 
 bool GP8403dac::isConnected() {
-    I2CHandler::selectTCA(getTCAChannel());
-    wire->beginTransmission(getI2CAddress());
-    return (wire->endTransmission() == 0);
+    // Try connection check with retry for better reliability
+    const int maxRetries = 2;
+    
+    for (int attempt = 1; attempt <= maxRetries; attempt++) {
+        I2CHandler::selectTCA(getTCAChannel());
+        delay(1); // Small delay to ensure TCA selection is stable
+        
+        wire->beginTransmission(getI2CAddress());
+        int result = wire->endTransmission();
+        
+        if (result == 0) {
+            return true; // Success on first or retry attempt
+        }
+        
+        if (attempt < maxRetries) {
+            delay(2); // Short delay before retry
+        }
+    }
+    
+    return false; // Failed after all retries
 }
 
 void GP8403dac::update() {
