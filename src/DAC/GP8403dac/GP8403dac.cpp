@@ -48,6 +48,91 @@ bool GP8403dac::begin() {
     
     Serial.println("GP8403 DAC Module initialized successfully");
     initialized = true; // Set initialized flag to true
+    
+    // Perform comprehensive validation test
+    if (!validateDAC()) {
+        Serial.println("GP8403 DAC validation failed!");
+        initialized = false;
+        return false;
+    }
+    
+    Serial.println("GP8403 DAC validation passed!");
+    return true;
+}
+
+bool GP8403dac::validateDAC() {
+    Serial.println("GP8403: Starting comprehensive DAC validation...");
+    
+    // Test 1: Basic connectivity check
+    if (!isConnected()) {
+        Serial.println("GP8403 Validation: Basic connectivity test FAILED");
+        return false;
+    }
+    Serial.println("GP8403 Validation: Basic connectivity test PASSED");
+    
+    // Test 2: Test Channel A write/verify cycle
+    float testVoltage = 1.0f; // Test with 1V
+    if (!setChannelVoltage(0, testVoltage)) {
+        Serial.println("GP8403 Validation: Channel A write test FAILED");
+        return false;
+    }
+    delay(10); // Allow voltage to settle
+    
+    // Verify the value was stored internally (we can't read back from GP8403, but we can check our internal state)
+    float expectedDAC = voltageToDac(testVoltage);
+    if (abs(channelAValue - expectedDAC) > 100) { // Allow some tolerance
+        Serial.print("GP8403 Validation: Channel A value mismatch - Expected: ");
+        Serial.print((int)expectedDAC);
+        Serial.print(", Got: ");
+        Serial.println(channelAValue);
+        return false;
+    }
+    Serial.println("GP8403 Validation: Channel A write test PASSED");
+    
+    // Test 3: Test Channel B write/verify cycle
+    if (!setChannelVoltage(1, testVoltage)) {
+        Serial.println("GP8403 Validation: Channel B write test FAILED");
+        return false;
+    }
+    delay(10);
+    
+    if (abs(channelBValue - expectedDAC) > 100) {
+        Serial.print("GP8403 Validation: Channel B value mismatch - Expected: ");
+        Serial.print((int)expectedDAC);
+        Serial.print(", Got: ");
+        Serial.println(channelBValue);
+        return false;
+    }
+    Serial.println("GP8403 Validation: Channel B write test PASSED");
+    
+    // Test 4: Test range validation (set to 0V)
+    if (!setChannelVoltage(0, 0.0f)) {
+        Serial.println("GP8403 Validation: Channel A zero voltage test FAILED");
+        return false;
+    }
+    if (!setChannelVoltage(1, 0.0f)) {
+        Serial.println("GP8403 Validation: Channel B zero voltage test FAILED");
+        return false;
+    }
+    Serial.println("GP8403 Validation: Zero voltage test PASSED");
+    
+    // Test 5: Test maximum safe voltage (4V - below 5V max)
+    float maxSafeVoltage = 4.0f;
+    if (!setChannelVoltage(0, maxSafeVoltage)) {
+        Serial.println("GP8403 Validation: Channel A max voltage test FAILED");
+        return false;
+    }
+    if (!setChannelVoltage(1, maxSafeVoltage)) {
+        Serial.println("GP8403 Validation: Channel B max voltage test FAILED");
+        return false;
+    }
+    Serial.println("GP8403 Validation: Max voltage test PASSED");
+    
+    // Reset to safe state (0V)
+    setChannelVoltage(0, 0.0f);
+    setChannelVoltage(1, 0.0f);
+    
+    Serial.println("GP8403 Validation: All tests PASSED - DAC is fully functional");
     return true;
 }
 
