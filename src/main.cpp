@@ -129,6 +129,7 @@ void setMqttThrottling(bool enable, unsigned long interval = 60000); // Declare 
 void sendAllChangedSensorData(); // Add this function declaration
 void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
+void printClimateControlStatus(); // Add climate status printing function
 
 void setup()
 {
@@ -1110,21 +1111,7 @@ void initializeClimateController() {
             Serial.print(temperatureSetpoint);
             Serial.print("°C, Humidity: ");
             Serial.print(humiditySetpoint);
-            Serial.println("%");
-          } else {
-            Serial.println("Failed to initialize climate controller");
-            delete climateController;
-            climateController = nullptr;
-          }
-        } else {
-          Serial.println("Failed to allocate climate controller");
-        }
-      }
-      catch (...) {
-        Serial.println("Exception during climate controller initialization");
-        if (climateController != nullptr) {
-          delete climateController;
-          climateController = nullptr;
+             climateController = nullptr;
         }
       }
     } else {
