@@ -15,14 +15,14 @@
 
 GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : Device(wire, i2cAddress, tcaChannel, deviceName, deviceIndex),
-      channelAValue(0), channelBValue(0), vrefValue(32767),
+      channelAValue(0), channelBValue(0), vrefValue(4095),
       gain2xA(false), gain2xB(false) {
     type = "GP8403dac";
 }
 
 GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaPort, float threshold, std::map<String, String> channels, int deviceIndex)
     : Device(wire, threshold, channels, i2cAddress, tcaPort, deviceIndex),
-      channelAValue(0), channelBValue(0), vrefValue(32767),
+      channelAValue(0), channelBValue(0), vrefValue(4095),
       gain2xA(false), gain2xB(false) {
     type = "GP8403dac";
 }
