@@ -196,8 +196,10 @@ void ClimateController::updateTemperatureControl() {
             tempControlEnabled = coolingActive;
             heatingPower = 0.0;
             coolingPower = coolingActive ? map(-tempOutput, 0, 100, 0, 100) : 0.0;
-            break;        case ClimateMode::AUTO:
-            if (tempOutput > 0.1) // Very small deadband for precise control
+            break;
+            
+        case ClimateMode::AUTO:
+            if (tempOutput > 0.1) { // Very small deadband for precise control
                 heatingActive = true;
                 coolingActive = false;
                 heatingPower = map(tempOutput, 0.1, 100, 0, 100);
