@@ -286,19 +286,42 @@ void ClimateController::updateHumidityControl() {
 
 void ClimateController::applyDACControls() {
     // Skip if no DAC device available
-    if (!dac || !dac->isConnected()) return;
+    if (!dac) {
+        Serial.println("DAC: No DAC device available");
+        return;
+    }
+    
+    if (!dac->isConnected()) {
+        Serial.println("DAC: Device not connected");
+        return;
+    }
     
     // Set temperature power using generic DAC methods - use channel 0 (DAC0) for temperature control
     if (heatingActive) {
         // Convert percentage to voltage (0-100% -> 0-5V)
         float voltage = (heatingPower / 100.0) * 5.0;
-        dac->setChannelVoltage(0, voltage);
+        Serial.print("DAC: Setting heating voltage to ");
+        Serial.print(voltage, 2);
+        Serial.println("V");
+        
+        if (!dac->setChannelVoltage(0, voltage)) {
+            Serial.println("DAC: Failed to set heating voltage");
+        }
     } else if (coolingActive) {
         // Convert percentage to voltage (0-100% -> 0-5V)
         float voltage = (coolingPower / 100.0) * 5.0;
-        dac->setChannelVoltage(0, voltage);
+        Serial.print("DAC: Setting cooling voltage to ");
+        Serial.print(voltage, 2);
+        Serial.println("V");
+        
+        if (!dac->setChannelVoltage(0, voltage)) {
+            Serial.println("DAC: Failed to set cooling voltage");
+        }
     } else {
-        dac->setChannelVoltage(0, 0.0);
+        Serial.println("DAC: Setting voltage to 0V (idle)");
+        if (!dac->setChannelVoltage(0, 0.0)) {
+            Serial.println("DAC: Failed to set idle voltage");
+        }
     }
 }
 
