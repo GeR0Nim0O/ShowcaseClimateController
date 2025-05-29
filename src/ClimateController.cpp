@@ -86,6 +86,27 @@ bool ClimateController::begin() {
     Serial.flush();
     delay(100);
     
+    // Initialize DAC if available
+    if (dac != nullptr) {
+        Serial.println("ClimateController: Initializing DAC device...");
+        if (dac->begin()) {
+            Serial.println("ClimateController: DAC initialized successfully");
+            // Test DAC by setting it to 0V initially
+            if (dac->setChannelVoltage(0, 0.0)) {
+                Serial.println("ClimateController: DAC test write successful");
+            } else {
+                Serial.println("ClimateController: WARNING - DAC test write failed");
+            }
+        } else {
+            Serial.println("ClimateController: WARNING - DAC initialization failed");
+        }
+    } else {
+        Serial.println("ClimateController: No DAC device available");
+    }
+    
+    // Initialize pin mappings
+    initializePinMappings();
+    
     Serial.println("ClimateController: begin() completed successfully");
     Serial.flush();
     delay(100);
