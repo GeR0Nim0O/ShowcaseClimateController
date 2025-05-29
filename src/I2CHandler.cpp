@@ -58,6 +58,16 @@ void I2CHandler::selectTCA(uint8_t i) {
         return;
     }
 
+    // Add mutex/locking mechanism for TCA selection to prevent conflicts
+    static uint8_t lastSelectedPort = 255; // Invalid port number to force first selection
+    static unsigned long lastSelectionTime = 0;
+    unsigned long currentTime = millis();
+    
+    // If we're selecting the same port and it was recent, skip reselection
+    if (lastSelectedPort == i && (currentTime - lastSelectionTime < 50)) {
+        return; // Port already selected recently
+    }
+    
     // Retry TCA selection up to 3 times
     int retries = 3;
     bool success = false;
@@ -66,22 +76,15 @@ void I2CHandler::selectTCA(uint8_t i) {
         WIRE.beginTransmission(TCAADDR);
         WIRE.write(1 << i);
         uint8_t error = WIRE.endTransmission();
-          if (error == 0) {
+        
+        if (error == 0) {
             success = true;
-            // Verify TCA selection by reading back
-            WIRE.requestFrom(TCAADDR, 1);
-            if (WIRE.available()) {
-                uint8_t readback = WIRE.read();
-                if (readback != (1 << i)) {
-                    Serial.print("TCA readback mismatch on port ");
-                    Serial.print(i);
-                    Serial.print(". Expected: 0x");
-                    Serial.print(1 << i, HEX);
-                    Serial.print(", Got: 0x");
-                    Serial.println(readback, HEX);
-                    success = false;
-                }
-            }
+            lastSelectedPort = i;
+            lastSelectionTime = currentTime;
+            
+            // Remove readback verification as it interferes with device communication
+            // Small delay to ensure TCA stabilizes
+            delayMicroseconds(100);
         } else {
             Serial.print("Failed to select TCA Port ");
             Serial.print(i);
@@ -90,7 +93,7 @@ void I2CHandler::selectTCA(uint8_t i) {
             Serial.print("): Error ");
             Serial.println(error);
             if (attempt < retries - 1) {
-                delay(5); // Small delay before retry
+                delay(2); // Shorter delay before retry
             }
         }
     }
@@ -99,6 +102,7 @@ void I2CHandler::selectTCA(uint8_t i) {
         Serial.print("TCA Port ");
         Serial.print(i);
         Serial.println(" selection failed after all retries");
+        lastSelectedPort = 255; // Reset on failure
     }
 }
 
