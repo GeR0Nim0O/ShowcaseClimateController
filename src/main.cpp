@@ -132,6 +132,7 @@ void updateClimateController(); // Function to update climate controller
 void testDACOutput(); // Add this new function for testing DAC
 void testGPIOHardware(); // Add this function prototype
 void diagnosticGPIOTest(); // Add this function prototype
+void testTCAStability(PCF8574gpio* gpio); // Add this missing function declaration
 
 void setup()
 {
