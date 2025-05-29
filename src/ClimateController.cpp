@@ -117,18 +117,14 @@ bool ClimateController::begin() {
 void ClimateController::update() {
     unsigned long currentTime = millis();
     
-    if (currentTime - lastUpdate >= updateInterval) {
-        updateSensorReadings();
+    if (currentTime - lastUpdate >= updateInterval) {        updateSensorReadings();
         
-        if (checkSafetyLimits()) {
-            updateTemperatureControl();
-            updateHumidityControl();
-            applyTemperatureControl();
-            applyHumidityControl();
-            applyDACControls(); // Apply DAC controls
-        } else {
-            emergencyShutdown();
-        }
+        // Remove emergency shutdown - always run climate control
+        updateTemperatureControl();
+        updateHumidityControl();
+        applyTemperatureControl();
+        applyHumidityControl();
+        applyDACControls(); // Apply DAC controls
         
         lastUpdate = currentTime;
     }
