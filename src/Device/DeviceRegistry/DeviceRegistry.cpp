@@ -32,7 +32,30 @@ bool DeviceRegistry::registerDevice(Device* device) {
         Serial.print(testType);
         Serial.println(")");
         
+        // Add to main devices vector
         devices.push_back(device);
+        
+        // Add to type-specific vectors for easier access
+        if (testType.equalsIgnoreCase("PCF8574gpio") || testType.equalsIgnoreCase("PCF8574GPIO") || testType.equalsIgnoreCase("GPIO")) {
+            PCF8574gpio* gpio = static_cast<PCF8574gpio*>(device);
+            gpioExpanders.push_back(gpio);
+            Serial.println("Device registered in GPIO expanders vector");
+        }
+        else if (testType.equalsIgnoreCase("SHTSensor") || testType.equalsIgnoreCase("Sensor")) {
+            // Check if it's specifically an SHT sensor by checking the type number
+            String typeNumber = device->getTypeNumber();
+            if (typeNumber.equalsIgnoreCase("SHT") || typeNumber.equalsIgnoreCase("SHT30") || 
+                typeNumber.equalsIgnoreCase("SHT31") || typeNumber.equalsIgnoreCase("SHT35")) {
+                SHTsensor* sensor = static_cast<SHTsensor*>(device);
+                temperatureHumiditySensors.push_back(sensor);
+                Serial.println("Device registered in temperature/humidity sensors vector");
+            }
+        }
+        else if (testType.equalsIgnoreCase("GP8403dac") || testType.equalsIgnoreCase("DAC")) {
+            GP8403dac* dac = static_cast<GP8403dac*>(device);
+            dacDevices.push_back(dac);
+            Serial.println("Device registered in DAC devices vector");
+        }
         
         Serial.println("Device successfully registered");
         return true;
