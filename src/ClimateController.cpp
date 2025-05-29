@@ -409,6 +409,7 @@ void ClimateController::applyHumidityControl() {
     }
 }
 
+/*
 void ClimateController::emergencyShutdown() {
     safeWritePin(pinTemperatureEnable, false);
     safeWritePin(pinTemperatureHeat, false);
@@ -437,6 +438,7 @@ void ClimateController::emergencyShutdown() {
     
     Serial.println("EMERGENCY SHUTDOWN: Safety limits exceeded!");
 }
+*/
 
 // Pin mapping helper methods
 void ClimateController::initializePinMappings() {
