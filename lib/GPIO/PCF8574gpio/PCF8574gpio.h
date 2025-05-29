@@ -36,6 +36,13 @@ public:
     bool isInputMode() const;
     void initializeOutputs(); // Initialize all outputs to LOW
 
+    // NEW: Advanced hardware diagnostics
+    bool performHardwareDiagnostics();
+    bool performPowerSupplyTest();
+    bool performGroundTest();
+    bool performIndividualPinTest();
+    bool performLoadTest();
+    
 private:
     uint8_t _address;
     uint8_t _gpioState;
