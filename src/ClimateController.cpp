@@ -85,20 +85,39 @@ bool ClimateController::begin() {
     Serial.println("ClimateController: *** ENTERING begin() method ***");
     Serial.flush();
     delay(100);
-    
-    // Initialize DAC if available
+      // Initialize DAC if available
     if (dac != nullptr) {
-        Serial.println("ClimateController: Initializing DAC device...");
-        if (dac->begin()) {
-            Serial.println("ClimateController: DAC initialized successfully");
-            // Test DAC by setting it to 0V initially
-            if (dac->setChannelVoltage(0, 0.0)) {
-                Serial.println("ClimateController: DAC test write successful");
+        Serial.println("ClimateController: Checking DAC device...");
+        
+        // Check if DAC is already initialized (to avoid double initialization)
+        if (dac->isInitialized()) {
+            Serial.println("ClimateController: DAC already initialized, skipping begin()");
+            
+            // Test DAC connection and functionality
+            if (dac->isConnected()) {
+                Serial.println("ClimateController: DAC connection verified");
+                // Test DAC by setting it to 0V initially
+                if (dac->setChannelVoltage(0, 0.0)) {
+                    Serial.println("ClimateController: DAC test write successful");
+                } else {
+                    Serial.println("ClimateController: WARNING - DAC test write failed");
+                }
             } else {
-                Serial.println("ClimateController: WARNING - DAC test write failed");
+                Serial.println("ClimateController: WARNING - DAC not responding to connection test");
             }
         } else {
-            Serial.println("ClimateController: WARNING - DAC initialization failed");
+            Serial.println("ClimateController: DAC not initialized, calling begin()...");
+            if (dac->begin()) {
+                Serial.println("ClimateController: DAC initialized successfully");
+                // Test DAC by setting it to 0V initially
+                if (dac->setChannelVoltage(0, 0.0)) {
+                    Serial.println("ClimateController: DAC test write successful");
+                } else {
+                    Serial.println("ClimateController: WARNING - DAC test write failed");
+                }
+            } else {
+                Serial.println("ClimateController: WARNING - DAC initialization failed");
+            }
         }
     } else {
         Serial.println("ClimateController: No DAC device available");
