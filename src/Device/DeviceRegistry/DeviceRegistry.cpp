@@ -91,6 +91,13 @@ SHTsensor* DeviceRegistry::getTemperatureHumiditySensor(int index) {
     return temperatureHumiditySensors[index];
 }
 
+GP8403dac* DeviceRegistry::getDAC(int index) {
+    if (index < 0 || index >= dacDevices.size()) {
+        return nullptr;
+    }
+    return dacDevices[index];
+}
+
 Device* DeviceRegistry::getDevice(const String& deviceName) {
     for (Device* device : devices) {
         if (device->getDeviceName() == deviceName) {
