@@ -359,6 +359,7 @@ void ClimateController::setFanExterior(bool enable) {
     }
 }
 
+/*
 bool ClimateController::checkSafetyLimits() {
     // Check if temperature and humidity are within safety limits
     bool tempSafe = (currentTemperature >= MIN_TEMPERATURE && currentTemperature <= MAX_TEMPERATURE);
@@ -367,6 +368,7 @@ bool ClimateController::checkSafetyLimits() {
     // Return true if both are safe, false if either is unsafe
     return tempSafe && humiditySafe;
 }
+*/
 
 void ClimateController::applyTemperatureControl() {
     // Update main temperature enable pin
