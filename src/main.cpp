@@ -491,6 +491,9 @@ void readAndSendDataFromDevices() {
         Serial.println("\n=== Sensor Readings (60-second update) ===");
     }
     
+    // Track if any threshold was exceeded for climate status printing
+    bool anyThresholdExceeded = false;
+    
     for (size_t i = 0; i < devices.size(); i++) {
         Device* device = devices[i];
         if (device == nullptr) {
@@ -567,6 +570,11 @@ void readAndSendDataFromDevices() {
             bool shouldLog = valueDiff >= threshold;
             bool shouldSendMqtt = shouldPrintData || shouldLog; // Send via MQTT if 60-second cycle OR threshold exceeded
             
+            // Track if any threshold was exceeded
+            if (shouldLog) {
+                anyThresholdExceeded = true;
+            }
+            
             // Store data for MQTT sending if it's either the 60-second cycle OR threshold exceeded
             if (shouldSendMqtt) {
                 SensorData sensorData;
@@ -613,6 +621,267 @@ void readAndSendDataFromDevices() {
             }
             // No else clause needed since we always update changedSensorData on the 60-second cycle
         }
+    }
+    
+    // Print climate controller status when thresholds are exceeded or during 60-second cycle
+    if ((anyThresholdExceeded || shouldPrintData) && climateController != nullptr) {
+        printClimateControlStatus();
+    }
+    
+    // Check if it's time to send all changed data via MQTT
+    if (shouldPrintData) {
+        if (WiFi.status() == WL_CONNECTED && client.connected()) {
+            Serial.println("\nSensor data collected - sending to MQTT...");
+            sendAllChangedSensorData();
+        } else if (WiFi.status() != WL_CONNECTED) {
+            Serial.println("\nSensor data collected - WiFi not connected, data logged to SD only");
+        } else if (!client.connected()) {
+            Serial.println("\nSensor data collected - MQTT not connected, data logged to SD only");
+        }
+    }
+}
+
+// Add new function to print climate control status
+void printClimateControlStatus() {
+    if (climateController == nullptr) {
+        return;
+    }
+    
+    Serial.println("\n=== Climate Control Status ===");
+    
+    // Print current temperature and humidity readings
+    Serial.print("Current Temperature: ");
+    Serial.print(climateController->getCurrentTemperature(), 1);
+    Serial.print("°C (setpoint: ");
+    Serial.print(climateController->getTemperatureSetpoint(), 1);
+    Serial.println("°C)");
+    
+    Serial.print("Current Humidity: ");
+    Serial.print(climateController->getCurrentHumidity(), 1);
+    Serial.print("% (setpoint: ");
+    Serial.print(climateController->getHumiditySetpoint(), 1);
+    Serial.println("%)");
+    
+    // Print temperature control status with percentages
+    Serial.print("Temperature Control: ");
+    if (climateController->isHeating()) {
+        Serial.print("Heating ");
+        Serial.print(climateController->getHeatingPower(), 0);
+        Serial.println("%");
+    } else if (climateController->isCooling()) {
+        Serial.print("Cooling ");
+        Serial.print(climateController->getCoolingPower(), 0);
+        Serial.println("%");
+    } else {
+        Serial.println("OFF");
+    }
+    
+    // Print humidity control status
+    Serial.print("Humidity Control: ");
+    if (climateController->isHumidifying()) {
+        Serial.println("Humidifying");
+    } else if (climateController->isDehumidifying()) {
+        Serial.println("Dehumidifying");
+    } else {
+        Serial.println("OFF");
+    }
+    
+    // Print fan status
+    Serial.print("Fans: Interior ");
+    Serial.print(climateController->isFanInteriorOn() ? "ON" : "OFF");
+    Serial.print(", Exterior ");
+    Serial.println(climateController->isFanExteriorOn() ? "ON" : "OFF");
+    
+    Serial.println("=============================");
+}
+
+void sendSensorDataOverMQTT(const SensorData& data) {
+    if (WiFi.status() != WL_CONNECTED || !client.connected() || stopSendingMQTT) {
+        return;
+    }
+    
+    JsonHandler::sendJsonOverMqtt(
+        client, 
+        data.deviceName.c_str(), 
+        data.projectNr.c_str(), 
+        data.showcaseId.c_str(), 
+        data.sensorType.c_str(), 
+        data.sensorValue, 
+        data.currentTime.c_str(), 
+        data.deviceIndex
+    );
+    
+    Serial.print("Sent to MQTT: ");
+    Serial.print(data.deviceName);
+    Serial.print(" ");
+    Serial.print(data.sensorType);
+    Serial.print(": ");
+    Serial.println(data.sensorValue);
+}
+
+void readAndSendDataFromDevices() {
+    // Flag to determine if we should print data this cycle (only true every 60 seconds)
+    bool shouldPrintData = throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval);
+    
+    // Debug timing information
+    unsigned long currentTime = millis();
+    unsigned long timeSinceLastSend = currentTime - lastMqttSendTime;
+    static unsigned long lastDebugTime = 0;
+    if (currentTime - lastDebugTime >= 10000) { // Show timing info every 10 seconds
+        Serial.print("TIMING DEBUG: millis=");
+        Serial.print(currentTime);
+        Serial.print(", lastMqttSendTime=");
+        Serial.print(lastMqttSendTime);
+        Serial.print(", timeSinceLastSend=");
+        Serial.print(timeSinceLastSend);
+        Serial.print(", throttleInterval=");
+        Serial.print(mqttThrottleInterval);
+        Serial.print(", throttleMqtt=");
+        Serial.print(throttleMqtt);
+        Serial.print(", shouldPrintData=");
+        Serial.println(shouldPrintData);
+        lastDebugTime = currentTime;
+    }
+    
+    if (shouldPrintData) {
+        Serial.println("\n=== Sensor Readings (60-second update) ===");
+    }
+    
+    // Track if any threshold was exceeded for climate status printing
+    bool anyThresholdExceeded = false;
+    
+    for (size_t i = 0; i < devices.size(); i++) {
+        Device* device = devices[i];
+        if (device == nullptr) {
+            Serial.print("Error: Null device pointer at index ");
+            Serial.println(i);
+            continue;
+        }
+        if (!device->isInitialized()) {
+            Serial.print("Error: Uninitialized device at index ");
+            Serial.print(i);
+            Serial.print(", Type: ");
+            Serial.print(device->getType());
+            Serial.print(", Address: 0x");
+            Serial.println(device->getI2CAddress(), HEX);
+            delay(100);
+            continue;
+        }
+        
+        I2CHandler::selectTCA(device->getTCAChannel());
+        auto data = device->readData();        
+        
+        for (const auto& channel : device->getChannels()) {
+            String channelKey = channel.first;
+            String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
+            String deviceSpecificKey = deviceName + "_" + channelKey; // Make key device-specific
+            std::string key = std::string(deviceSpecificKey.c_str()); // Convert to std::string
+            float value = data[channelKey].toFloat(); // Use String key and convert to float
+            String currentTime;
+            // Only fetch time from RTC if RTC is connected and initialized
+            if (rtc && rtc->isInitialized()) {
+                currentTime = TimeHandler::getCurrentTime(*rtc);
+            } else {
+                currentTime = "";
+            }
+            String projectNr = Configuration::getProjectNumber();
+            String showcaseId = Configuration::getShowcaseId();
+            
+            // Get the last value and threshold for this sensor channel
+            float lastValue = lastSensorValues[key];
+            float threshold = device->getThreshold(channelKey);
+            
+            // Debug: Print threshold information (remove this later)
+            if (shouldPrintData && (channelKey == "T" || channelKey == "H")) {
+                Serial.print("DEBUG: Device ");
+                Serial.print(deviceName);
+                Serial.print(" Channel ");
+                Serial.print(channelKey);
+                Serial.print(" (key: ");
+                Serial.print(deviceSpecificKey);
+                Serial.print(") threshold: ");
+                Serial.print(threshold);
+                Serial.print(", lastValue: ");
+                Serial.print(lastValue);
+                Serial.print(", currentValue: ");
+                Serial.print(value);
+                Serial.print(", diff: ");
+                Serial.println(abs(value - lastValue));
+            }
+            
+            // Always print data every 60 seconds, aligned with MQTT sending, even if no change
+            if (shouldPrintData) {
+                Serial.print(deviceName);
+                Serial.print(" - ");
+                Serial.print(channelKey);
+                Serial.print(": ");
+                Serial.print(value);
+                Serial.print(" (");
+                Serial.print(channel.second);
+                Serial.println(")");
+            }
+            
+            // This conditional is used for logging to SD and determining meaningful changes
+            float valueDiff = abs(value - lastValue);
+            bool shouldLog = valueDiff >= threshold;
+            bool shouldSendMqtt = shouldPrintData || shouldLog; // Send via MQTT if 60-second cycle OR threshold exceeded
+            
+            // Track if any threshold was exceeded
+            if (shouldLog) {
+                anyThresholdExceeded = true;
+            }
+            
+            // Store data for MQTT sending if it's either the 60-second cycle OR threshold exceeded
+            if (shouldSendMqtt) {
+                SensorData sensorData;
+                sensorData.deviceName = deviceName;
+                sensorData.projectNr = projectNr;
+                sensorData.showcaseId = showcaseId;
+                sensorData.sensorType = channel.second;
+                sensorData.sensorValue = value;
+                sensorData.currentTime = currentTime;
+                sensorData.deviceIndex = device->getDeviceIndex();
+                sensorData.changed = true;
+                
+                changedSensorData[key] = sensorData;
+                
+                if (shouldLog) {
+                    Serial.print("THRESHOLD EXCEEDED - ");
+                    Serial.print(deviceName);
+                    Serial.print(" ");
+                    Serial.print(channelKey);
+                    Serial.print(": ");
+                    Serial.print(value);
+                    Serial.print(" (diff: ");
+                    Serial.print(valueDiff);
+                    Serial.print(" >= ");
+                    Serial.print(threshold);
+                    Serial.println(")");
+                    
+                    // NEW: Send data to MQTT immediately when threshold exceeded
+                    if (WiFi.status() == WL_CONNECTED && client.connected() && !stopSendingMQTT) {
+                        // Send this specific sensor data immediately via MQTT
+                        sendSensorDataOverMQTT(sensorData);
+                    }
+                }
+            }
+            
+            // Log to SD only when threshold is exceeded
+            if (shouldLog) {
+                lastSensorValues[key] = value;
+
+                if (channel.second != "Time") {
+                    // Log to SD only when the value has changed beyond threshold
+                    logDataToSD(deviceName, currentTime, value, channel.second);
+                }
+            }
+            // No else clause needed since we always update changedSensorData on the 60-second cycle
+        }
+    }
+    
+    // Print climate controller status when thresholds are exceeded or during 60-second cycle
+    if ((anyThresholdExceeded || shouldPrintData) && climateController != nullptr) {
+        printClimateControlStatus();
     }
     
     // Check if it's time to send all changed data via MQTT
