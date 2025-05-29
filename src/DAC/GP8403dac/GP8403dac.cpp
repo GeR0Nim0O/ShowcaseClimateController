@@ -84,7 +84,12 @@ std::map<String, String> GP8403dac::readData() {
 bool GP8403dac::setChannelA(uint16_t value) {
     if (value > DAC_MAX_VALUE) {
         value = DAC_MAX_VALUE;
-    }      // Using register approach like in the official library
+    }
+    
+    Serial.print("GP8403: Setting Channel A to raw value ");
+    Serial.println(value);
+    
+    // Using register approach like in the official library
     I2CHandler::selectTCA(getTCAChannel());
     
     wire->beginTransmission(getI2CAddress());
@@ -92,11 +97,23 @@ bool GP8403dac::setChannelA(uint16_t value) {
     wire->write((value >> 8) & 0xFF); // MSB
     wire->write(value & 0xFF);        // LSB
     
-    bool success = (wire->endTransmission() == 0);
+    int result = wire->endTransmission();
+    bool success = (result == 0);
+    
+    Serial.print("GP8403: I2C transmission result: ");
+    Serial.print(result);
+    Serial.print(" (");
+    Serial.print(success ? "SUCCESS" : "FAILED");
+    Serial.println(")");
     
     if (success) {
         channelAValue = value;
+        Serial.print("GP8403: Channel A updated to ");
+        Serial.println(channelAValue);
+    } else {
+        Serial.println("GP8403: Failed to update Channel A");
     }
+    
     return success;
 }
 
