@@ -106,16 +106,16 @@ bool GP8403dac::setChannelA(uint16_t value) {
     Serial.print("GP8403: Setting Channel A to raw value ");
     Serial.println(value);
     
-    // Retry mechanism for I2C communication
+    // Improved retry mechanism with better timing
     const int maxRetries = 3;
     bool success = false;
     
     for (int attempt = 1; attempt <= maxRetries && !success; attempt++) {
-        // Using register approach like in the official library
+        // Select TCA port before transmission
         I2CHandler::selectTCA(getTCAChannel());
         
-        // Small delay to ensure TCA selection is stable
-        delay(1);
+        // Minimal delay for TCA stabilization
+        delayMicroseconds(200);
         
         wire->beginTransmission(getI2CAddress());
         wire->write(REG_DAC_A);
@@ -125,25 +125,24 @@ bool GP8403dac::setChannelA(uint16_t value) {
         int result = wire->endTransmission();
         success = (result == 0);
         
-        Serial.print("GP8403: I2C transmission attempt ");
-        Serial.print(attempt);
-        Serial.print(" result: ");
-        Serial.print(result);
-        Serial.print(" (");
-        Serial.print(success ? "SUCCESS" : "FAILED");
-        Serial.println(")");
-        
-        if (!success && attempt < maxRetries) {
-            Serial.println("GP8403: Retrying I2C communication...");
-            delay(5); // Short delay before retry
+        if (success) {
+            channelAValue = value;
+            Serial.print("GP8403: Channel A updated to ");
+            Serial.println(channelAValue);
+        } else {
+            Serial.print("GP8403: I2C transmission attempt ");
+            Serial.print(attempt);
+            Serial.print(" failed with error: ");
+            Serial.println(result);
+            
+            if (attempt < maxRetries) {
+                // Progressive delay increase for retries
+                delay(attempt * 2);
+            }
         }
     }
     
-    if (success) {
-        channelAValue = value;
-        Serial.print("GP8403: Channel A updated to ");
-        Serial.println(channelAValue);
-    } else {
+    if (!success) {
         Serial.println("GP8403: Failed to update Channel A after all retries");
     }
     
