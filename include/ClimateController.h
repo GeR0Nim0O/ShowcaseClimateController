@@ -52,8 +52,7 @@ public:
     // Fan control
     void setFanInterior(bool enable);
     void setFanExterior(bool enable);
-    
-    // DAC control
+      // DAC control
     void setDACDevice(GP8403dac* dac) { this->dac = dac; }
     bool hasDACControl() const { return dac != nullptr; }
     void setHeatingPower(float percentage); // 0-100%
@@ -64,6 +63,9 @@ public:
     float getCoolingPower() const { return coolingPower; }
     float getHumidifierPower() const { return humidifierPower; }
     float getDehumidifierPower() const { return dehumidifierPower; }
+    
+    // DAC testing
+    void testDAC();
 
     // Status
     bool isHeating() const { return heatingActive; }
