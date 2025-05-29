@@ -153,6 +153,12 @@ void ClimateController::update() {
     unsigned long currentTime = millis();
     
     if (currentTime - lastUpdate >= updateInterval) {
+        // CRITICAL FIX: Store current GPIO state before any operations
+        uint8_t gpioStateBefore = 0x00;
+        if (gpio != nullptr) {
+            gpioStateBefore = gpio->getGPIOState();
+        }
+        
         updateSensorReadings();
         
         // Store previous states to avoid unnecessary writes
@@ -187,6 +193,24 @@ void ClimateController::update() {
         }
         
         applyDACControls(); // Apply DAC controls
+        
+        // CRITICAL FIX: Verify GPIO state wasn't corrupted during update
+        if (gpio != nullptr) {
+            uint8_t gpioStateAfter = gpio->getGPIOState();
+            if (gpioStateAfter != gpioStateBefore && !tempStateChanged && !humidityStateChanged) {
+                Serial.print("WARNING: Unexpected GPIO state change in ClimateController::update()! Before: 0x");
+                Serial.print(gpioStateBefore, HEX);
+                Serial.print(", After: 0x");
+                Serial.println(gpioStateAfter, HEX);
+                
+                // This suggests an external interference - force refresh our desired state
+                if (tempStateChanged || humidityStateChanged) {
+                    Serial.println("Re-applying climate control due to state corruption");
+                    applyTemperatureControl();
+                    applyHumidityControl();
+                }
+            }
+        }
         
         // NEW: Periodically refresh GPIO state to prevent drift
         static unsigned long lastGpioRefresh = 0;
