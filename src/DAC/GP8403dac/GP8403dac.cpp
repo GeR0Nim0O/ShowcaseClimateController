@@ -7,6 +7,10 @@
 #define GP8403_BOTH_CHANNEL_REG 0x03
 #define GP8403_VREF_REG 0x04
 
+// Add these defines for output range if missing
+#define OUTPUT_RANGE 0x00
+#define OUTPUT_RANGE_5V 0x01
+
 GP8403dac::GP8403dac(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : Device(wire, i2cAddress, tcaChannel, deviceName, deviceIndex),
       channelAValue(0), channelBValue(0), vrefValue(4095),
@@ -61,8 +65,8 @@ bool GP8403dac::begin() {
     Serial.println("GP8403: Setting output range to 5V...");
     I2CHandler::selectTCA(getTCAChannel());
     wire->beginTransmission(getI2CAddress());
-    wire->write(OUTPUT_RANGE);
-    wire->write(OUTPUT_RANGE_5V);
+    wire->write(OUTPUT_RANGE);      // Register address 0x00
+    wire->write(OUTPUT_RANGE_5V);   // Data 0x01 for 0-5V
     if (wire->endTransmission() != 0) {
         Serial.println("GP8403: Failed to set output range");
         return initializeLimitedMode();
@@ -133,8 +137,8 @@ bool GP8403dac::initializeLimitedMode() {
     // Try minimal initialization - just set output range to 5V
     I2CHandler::selectTCA(getTCAChannel());
     wire->beginTransmission(getI2CAddress());
-    wire->write(OUTPUT_RANGE);
-    wire->write(OUTPUT_RANGE_5V);
+    wire->write(OUTPUT_RANGE);      // Register address 0x00
+    wire->write(OUTPUT_RANGE_5V);   // Data 0x01 for 0-5V
     if (wire->endTransmission() == 0) {
         Serial.println("GP8403: Successfully set output range in limited mode");
     }
