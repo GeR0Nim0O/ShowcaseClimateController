@@ -121,7 +121,7 @@ bool PCF8574gpio::writeByte(uint8_t data) {
     return false;
 }
 
-bool ClimateController::readByte(uint8_t &data) {
+bool PCF8574gpio::readByte(uint8_t &data) {
     selectTCAChannel(tcaChannel);
     delay(5);
     
@@ -133,6 +133,20 @@ bool ClimateController::readByte(uint8_t &data) {
         } else {
             delay(10);
         }
+    }
+    
+    return false;
+}
+
+bool PCF8574gpio::readBit(uint8_t pin, bool &state) {
+    if (pin > 7) {
+        return false;
+    }
+    
+    uint8_t data;
+    if (readByte(data)) {
+        state = (data & (1 << pin)) != 0;
+        return true;
     }
     
     return false;
