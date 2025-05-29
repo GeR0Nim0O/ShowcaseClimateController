@@ -798,9 +798,8 @@ void initializeClimateController() {
     } else {
       Serial.println("No temperature/humidity sensor found in DeviceRegistry");
     }
-    
-    // Get DAC from DeviceRegistry - using proper DeviceRegistry access pattern
-    climateDac = registry.getDAC(0);  // Get first DAC
+      // Get DAC from DeviceRegistry - using proper DeviceRegistry access pattern
+    climateDac = (GP8403dac*)registry.getDeviceByType("DAC", 0);  // Get first DAC
     if (climateDac != nullptr) {
       Serial.print("Found DAC device via DeviceRegistry: ");
       Serial.print(climateDac->getType());
