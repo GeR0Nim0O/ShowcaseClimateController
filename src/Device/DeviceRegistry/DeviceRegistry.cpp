@@ -74,25 +74,63 @@ void DeviceRegistry::updateAllDevices() {
     }
 }
 
-PCF8574gpio* DeviceRegistry::getGPIOExpander(int index) {
-    if (index < 0 || index >= gpioExpanders.size()) {
-        return nullptr;
+// Generic device getters - type-agnostic and easily extensible
+std::vector<Device*> DeviceRegistry::getDevicesByType(const String& type) {
+    std::vector<Device*> result;
+    for (Device* device : devices) {
+        if (device && isTypeMatch(device->getType(), type)) {
+            result.push_back(device);
+        }
     }
-    return gpioExpanders[index];
+    return result;
 }
 
-SHTsensor* DeviceRegistry::getTemperatureHumiditySensor(int index) {
-    if (index < 0 || index >= temperatureHumiditySensors.size()) {
-        return nullptr;
+Device* DeviceRegistry::getDeviceByType(const String& type, int index) {
+    int currentIndex = 0;
+    for (Device* device : devices) {
+        if (device && isTypeMatch(device->getType(), type)) {
+            if (currentIndex == index) {
+                return device;
+            }
+            currentIndex++;
+        }
     }
-    return temperatureHumiditySensors[index];
+    return nullptr;
 }
 
-GP8403dac* DeviceRegistry::getDAC(int index) {
-    if (index < 0 || index >= dacDevices.size()) {
-        return nullptr;
+int DeviceRegistry::getDeviceCountByType(const String& type) const {
+    int count = 0;
+    for (Device* device : devices) {
+        if (device && isTypeMatch(device->getType(), type)) {
+            count++;
+        }
     }
-    return dacDevices[index];
+    return count;
+}
+
+bool DeviceRegistry::isTypeMatch(const String& deviceType, const String& searchType) const {
+    // Case-insensitive type matching with common aliases
+    if (deviceType.equalsIgnoreCase(searchType)) {
+        return true;
+    }
+    
+    // Handle common type aliases for backward compatibility
+    if (searchType.equalsIgnoreCase("GPIO") && 
+        (deviceType.equalsIgnoreCase("PCF8574gpio") || deviceType.equalsIgnoreCase("PCF8574GPIO"))) {
+        return true;
+    }
+    
+    if (searchType.equalsIgnoreCase("DAC") && 
+        deviceType.equalsIgnoreCase("GP8403dac")) {
+        return true;
+    }
+    
+    if (searchType.equalsIgnoreCase("TemperatureHumidity") && 
+        deviceType.equalsIgnoreCase("SHTSensor")) {
+        return true;
+    }
+    
+    return false;
 }
 
 Device* DeviceRegistry::getDevice(const String& deviceName) {
