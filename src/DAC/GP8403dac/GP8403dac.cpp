@@ -272,7 +272,8 @@ bool GP8403dac::setChannelA(uint16_t value) {
     Serial.println(value);
     // Save original value for later reference
     uint16_t originalValue = value;
-    // No left shift for GP8403, send as 12-bit value (MSB first)
+    // Shift left by 4 bits as per DFRobot's library
+    value = value << 4;
     const int maxRetries = 3;
     bool success = false;
     for (int attempt = 1; attempt <= maxRetries && !success; attempt++) {
@@ -311,7 +312,8 @@ bool GP8403dac::setChannelB(uint16_t value) {
     Serial.print("GP8403: Setting Channel B to raw value ");
     Serial.println(value);
     uint16_t originalValue = value;
-    // No left shift for GP8403, send as 12-bit value (MSB first)
+    // Shift left by 4 bits as per DFRobot's library
+    value = value << 4;
     const int maxRetries = 3;
     bool success = false;
     for (int attempt = 1; attempt <= maxRetries && !success; attempt++) {
@@ -356,7 +358,7 @@ bool GP8403dac::setBothChannels(uint16_t valueA, uint16_t valueB) {
     uint16_t originalValueA = valueA;
     uint16_t originalValueB = valueB;
     
-    // Shift left by 4 bits as per DFRobot's library format
+    // Shift left by 4 bits as per DFRobot's library
     valueA = valueA << 4;
     valueB = valueB << 4;
     
