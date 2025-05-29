@@ -113,13 +113,12 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
 
     // Safest approach - rebuild our known devices from the scanned addresses
     Serial.println("\nUsing direct I2C scan results for device initialization");
-    
-    // Known device addresses we might encounter
+      // Known device addresses we might encounter
     const uint8_t I2C_ADDR_RTC = 0x68;       // DS3231 RTC
     const uint8_t I2C_ADDR_SHT = 0x44;       // SHT temperature/humidity sensor
     const uint8_t I2C_ADDR_BH1705 = 0x23;    // BH1705 light sensor
     const uint8_t I2C_ADDR_PCF8574 = 0x20;   // PCF8574 GPIO expander
-    const uint8_t I2C_ADDR_GP8403 = 0x5F;    // GP8403 DAC
+    const uint8_t I2C_ADDR_GP8403 = 0x5B;    // GP8403 DAC
 
     // Create a map to find TCA ports for each I2C address
     std::map<uint8_t, uint8_t> addressToTcaPort;
