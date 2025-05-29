@@ -1213,11 +1213,15 @@ void updateClimateController() {
         Serial.print(", Dehumidifying: ");
         Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
         
-        // Print fan status
+        // Print fan status - both should be ON when climate control is active
+        bool climateActive = (climateController->isHeating() || climateController->isCooling() || 
+                             climateController->isHumidifying() || climateController->isDehumidifying());
         Serial.print("Fan control - Interior: ");
         Serial.print(climateController->isFanInteriorOn() ? "ON" : "OFF");
         Serial.print(", Exterior: ");
         Serial.print(climateController->isFanExteriorOn() ? "ON" : "OFF");
+        Serial.print(" (Expected: ");
+        Serial.print(climateActive ? "BOTH ON" : "BOTH OFF");
         Serial.print(", Auto control: ");
         Serial.println(climateController->isAutoFanControlEnabled() ? "ENABLED" : "DISABLED");
         
