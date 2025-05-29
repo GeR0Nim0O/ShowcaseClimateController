@@ -921,3 +921,47 @@ void ClimateController::testDAC() {
         }
     }
 }
+
+void ClimateController::setFanInterior(bool enable) {
+    Serial.print("ClimateController: Manual setting interior fan to ");
+    Serial.print(enable ? "ON" : "OFF");
+    Serial.print(" (pin ");
+    Serial.print(pinFanInterior);
+    Serial.print(") - ");
+    
+    // If auto fan control is enabled, disable it temporarily for manual control
+    if (autoFanControlEnabled && !enable) {
+        Serial.println("NOTICE: Disabling auto fan control for manual operation");
+        autoFanControlEnabled = false;
+    }
+    
+    fanInteriorActive = enable;
+    
+    if (safeWritePin(pinFanInterior, enable)) {
+        Serial.println("SUCCESS");
+    } else {
+        Serial.println("FAILED");
+    }
+}
+
+void ClimateController::setFanExterior(bool enable) {
+    Serial.print("ClimateController: Manual setting exterior fan to ");
+    Serial.print(enable ? "ON" : "OFF");
+    Serial.print(" (pin ");
+    Serial.print(pinFanExterior);
+    Serial.print(") - ");
+    
+    // If auto fan control is enabled, disable it temporarily for manual control
+    if (autoFanControlEnabled && !enable) {
+        Serial.println("NOTICE: Disabling auto fan control for manual operation");
+        autoFanControlEnabled = false;
+    }
+    
+    fanExteriorActive = enable;
+    
+    if (safeWritePin(pinFanExterior, enable)) {
+        Serial.println("SUCCESS");
+    } else {
+        Serial.println("FAILED");
+    }
+}
