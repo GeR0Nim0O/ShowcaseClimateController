@@ -6,6 +6,7 @@
 #include "Device.h"
 #include "PCF8574gpio.h"
 #include "SHTsensor.h"
+#include "GP8403dac.h"
 
 class DeviceRegistry {
 public:
@@ -27,6 +28,7 @@ public:
       // Device getters
     PCF8574gpio* getGPIOExpander(int index = 0);
     SHTsensor* getTemperatureHumiditySensor(int index = 0);
+    GP8403dac* getDAC(int index = 0);
     Device* getDevice(const String& deviceName);
     Device* getDeviceByIndex(int index);
     
@@ -44,6 +46,7 @@ private:
     std::vector<Device*> devices;
     std::vector<PCF8574gpio*> gpioExpanders;
     std::vector<SHTsensor*> temperatureHumiditySensors;
+    std::vector<GP8403dac*> dacDevices;
 };
 
 #endif // DEVICE_REGISTRY_H
