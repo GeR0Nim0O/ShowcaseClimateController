@@ -11,10 +11,12 @@
 class I2CHandler {
 public:
     static void initializeI2C();
-    static void scanI2C();
-    static void selectTCA(uint8_t i);
+    static void scanI2C();    static void selectTCA(uint8_t i);
     static std::map<uint8_t, std::vector<uint8_t>> TCAScanner(); // Combined scan method
     static void printTCAScanResults(const std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults); // Print TCA scan results
+    
+    // Status reporting
+    static void printI2CBusStatus(const std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults);
 };
 
 void tcaSelect(uint8_t i); // Declare tcaSelect function
