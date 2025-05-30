@@ -94,6 +94,141 @@ void Configuration::printConfigValues() {
     Serial.println(getFlespiToken().length() > 0 ? "Set" : "Not set");
 }
 
+std::vector<Device*> Configuration::initializeDevicesFromJSON(std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults, DS3231rtc*& rtc) {
+    std::vector<Device*> devices;
+    
+    // Create a map to find TCA ports for each I2C address
+    std::map<uint8_t, uint8_t> addressToTcaPort;
+    
+    // Build a map of address to TCA port from scan results
+    for (const auto& result : tcaScanResults) {
+        uint8_t tcaPort = result.first;
+        for (const auto& address : result.second) {
+            if (address != 0) {  // Skip the invalid zero address
+                addressToTcaPort[address] = tcaPort;
+            }
+        }
+    }
+    
+    static int deviceIndex = 0;
+    
+    // Iterate through each device configuration in the JSON
+    for (JsonPair devicePair : devicesConfig) {
+        String deviceKey = devicePair.key().c_str();
+        JsonObject deviceConfig = devicePair.value().as<JsonObject>();
+        
+        if (deviceConfig.isNull()) {
+            Serial.print("Skipping invalid device config for: ");
+            Serial.println(deviceKey);
+            continue;
+        }
+        
+        // Extract device configuration
+        String deviceType = deviceConfig["Type"] | "";
+        String deviceTypeNumber = deviceConfig["TypeNumber"] | "";
+        String addressStr = deviceConfig["Address"] | "";
+        String deviceLabel = deviceConfig["Label"] | "";
+        String deviceMode = deviceConfig["Mode"] | "";
+        
+        if (deviceType.isEmpty() || deviceTypeNumber.isEmpty() || addressStr.isEmpty()) {
+            Serial.print("Missing required fields for device: ");
+            Serial.println(deviceKey);
+            continue;
+        }
+        
+        // Parse I2C address
+        uint8_t deviceAddress = 0;
+        if (addressStr.startsWith("0x") || addressStr.startsWith("0X")) {
+            deviceAddress = strtol(addressStr.c_str(), NULL, 16);
+        } else {
+            deviceAddress = addressStr.toInt();
+        }
+        
+        // Check if this address was found in the I2C scan
+        if (addressToTcaPort.find(deviceAddress) == addressToTcaPort.end()) {
+            Serial.print("Device address 0x");
+            Serial.print(deviceAddress, HEX);
+            Serial.print(" not found in I2C scan, skipping ");
+            Serial.println(deviceKey);
+            continue;
+        }
+        
+        uint8_t tcaPort = addressToTcaPort[deviceAddress];
+        
+        Serial.print("Creating device from JSON: ");
+        Serial.print(deviceKey);
+        Serial.print(" (");
+        Serial.print(deviceType);
+        Serial.print("/");
+        Serial.print(deviceTypeNumber);
+        Serial.print(") at address 0x");
+        Serial.print(deviceAddress, HEX);
+        Serial.print(" on TCA port ");
+        Serial.print(tcaPort);
+        if (!deviceLabel.isEmpty()) {
+            Serial.print(" with label: ");
+            Serial.print(deviceLabel);
+        }
+        Serial.println();
+        
+        // Parse channels and thresholds
+        std::map<String, String> channelNames;
+        std::map<String, float> channelThresholds;
+        
+        JsonObject channels = deviceConfig["Channels"];
+        if (!channels.isNull()) {
+            for (JsonPair channelPair : channels) {
+                String channelKey = channelPair.key().c_str();
+                JsonObject channelConfig = channelPair.value().as<JsonObject>();
+                
+                if (!channelConfig.isNull()) {
+                    String channelName = channelConfig["Name"] | channelKey;
+                    float threshold = channelConfig["Threshold"] | 1.0f;
+                    
+                    channelNames[channelKey] = channelName;
+                    channelThresholds[channelKey] = threshold;
+                }
+            }
+        }
+        
+        // Create the device
+        Device* createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
+            &Wire, deviceType, deviceTypeNumber, deviceAddress, tcaPort, 
+            channelThresholds, channelNames, deviceIndex, deviceMode
+        );
+        
+        if (createdDevice != nullptr) {
+            // Apply the label from JSON configuration
+            if (!deviceLabel.isEmpty()) {
+                createdDevice->setDeviceLabel(deviceLabel);
+                Serial.print("Device labeled as: ");
+                Serial.println(deviceLabel);
+            }
+            
+            // Handle special case for RTC
+            if (deviceType.equalsIgnoreCase("RTC") && deviceTypeNumber.equalsIgnoreCase("DS3231")) {
+                rtc = static_cast<DS3231rtc*>(createdDevice);
+                Serial.println("RTC assigned to global reference");
+            }
+            
+            devices.push_back(createdDevice);
+            deviceIndex++;
+            
+            Serial.print("Successfully created device: ");
+            Serial.println(deviceKey);
+        } else {
+            Serial.print("Failed to create device: ");
+            Serial.println(deviceKey);
+        }
+    }
+    
+    Serial.print("Created ");
+    Serial.print(devices.size());
+    Serial.println(" devices from JSON configuration");
+    
+    return devices;
+}
+
 std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults, DS3231rtc*& rtc) {
     std::vector<Device*> devices;
     
