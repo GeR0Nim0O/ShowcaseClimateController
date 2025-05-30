@@ -209,6 +209,25 @@ Device* DeviceRegistry::getDeviceByType(const String& type, int index) {
     return nullptr;
 }
 
+Device* DeviceRegistry::getDeviceByTypeAndLabel(const String& type, const String& label) {
+    for (Device* device : devices) {
+        if (device && isTypeMatch(device->getType(), type) && device->getDeviceLabel().equalsIgnoreCase(label)) {
+            return device;
+        }
+    }
+    return nullptr;
+}
+
+std::vector<Device*> DeviceRegistry::getDevicesByLabel(const String& label) {
+    std::vector<Device*> result;
+    for (Device* device : devices) {
+        if (device && device->getDeviceLabel().equalsIgnoreCase(label)) {
+            result.push_back(device);
+        }
+    }
+    return result;
+}
+
 int DeviceRegistry::getDeviceCountByType(const String& type) const {
     int count = 0;
     for (Device* device : devices) {
