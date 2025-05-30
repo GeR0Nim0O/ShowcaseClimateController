@@ -183,3 +183,28 @@ void TimeHandler::fetchCurrentTimePeriodically(DS3231rtc* rtc, unsigned long& la
         lastTimeFetch = millis();
     }
 }
+
+void TimeHandler::printTimeStatus(DS3231rtc* rtc) {
+    Serial.println("\n=== Time Status ===");
+    
+    if (rtc && rtc->isInitialized()) {
+        String currentTime = getCurrentTime(*rtc);
+        Serial.print("Current Time: ");
+        Serial.println(currentTime);
+        
+        Serial.print("RTC Status: ");
+        Serial.println("Connected and operational");
+        
+        Serial.print("Time Source: ");
+        if (WiFi.status() == WL_CONNECTED) {
+            Serial.println("NTP synchronized");
+        } else {
+            Serial.println("RTC only (offline)");
+        }
+    } else {
+        Serial.println("RTC Status: Not connected or not initialized");
+        Serial.println("Current Time: Unavailable");
+    }
+    
+    Serial.println("===================");
+}
