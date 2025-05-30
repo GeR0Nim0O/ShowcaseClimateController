@@ -53,10 +53,9 @@
           "Threshold": 1.0
         }
       }
-    },
-    "SHT_Exterior": {
+    },    "SHT_Exterior": {
       "Type": "Sensor",
-      "TypeNumber": "SHT31",
+      "TypeNumber": "SHT",
       "Address": "0x44",
       "Label": "Exterior",
       "Channels": {
