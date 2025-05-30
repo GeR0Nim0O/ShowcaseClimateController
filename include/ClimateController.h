@@ -24,6 +24,9 @@ enum class HumidityMode {
 
 class ClimateController {
 public:
+    // Static factory method for automatic device discovery and initialization
+    static ClimateController* createFromDeviceRegistry();
+    
     ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac = nullptr);
     
     bool begin();
