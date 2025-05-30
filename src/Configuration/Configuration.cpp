@@ -122,13 +122,13 @@ std::vector<Device*> Configuration::initializeDevicesFromJSON(std::map<uint8_t, 
             Serial.println(deviceKey);
             continue;
         }
-        
-        // Extract device configuration
+          // Extract device configuration
         String deviceType = deviceConfig["Type"] | "";
         String deviceTypeNumber = deviceConfig["TypeNumber"] | "";
         String addressStr = deviceConfig["Address"] | "";
         String deviceLabel = deviceConfig["Label"] | "";
         String deviceMode = deviceConfig["Mode"] | "";
+        uint8_t jsonTcaPort = deviceConfig["TCAPort"] | 0;  // Get TCA port from JSON
         
         if (deviceType.isEmpty() || deviceTypeNumber.isEmpty() || addressStr.isEmpty()) {
             Serial.print("Missing required fields for device: ");
