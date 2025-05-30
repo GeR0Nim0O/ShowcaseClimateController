@@ -568,8 +568,63 @@ bool SDHandler::readJsonFile(const char* filename, JsonDocument& doc) {
     if (error) {
         Serial.print("Failed to parse JSON file: ");
         Serial.println(error.c_str());
-        return false;
+    return false;
     }
 
     return true;
+}
+
+void SDHandler::printSDCardStatus() {
+    Serial.println("\n=== SD Card Status ===");
+    
+    if (SD.begin()) {
+        Serial.println("SD Card: Connected and operational");
+        
+        // Get card info
+        uint64_t cardSize = SD.cardSize() / (1024 * 1024);
+        uint64_t totalBytes = SD.totalBytes() / (1024 * 1024);
+        uint64_t usedBytes = SD.usedBytes() / (1024 * 1024);
+        
+        Serial.print("Card Size: ");
+        Serial.print(cardSize);
+        Serial.println(" MB");
+        
+        Serial.print("Total Space: ");
+        Serial.print(totalBytes);
+        Serial.println(" MB");
+        
+        Serial.print("Used Space: ");
+        Serial.print(usedBytes);
+        Serial.println(" MB");
+        
+        Serial.print("Free Space: ");
+        Serial.print(totalBytes - usedBytes);
+        Serial.println(" MB");
+        
+        // Check log file
+        if (SD.exists("/sensor_data.json")) {
+            File logFile = SD.open("/sensor_data.json", FILE_READ);
+            if (logFile) {
+                Serial.print("Log File Size: ");
+                Serial.print(logFile.size() / 1024);
+                Serial.println(" KB");
+                logFile.close();
+            } else {
+                Serial.println("Log File: Unable to read");
+            }
+        } else {
+            Serial.println("Log File: Not found");
+        }
+        
+        // Check config file
+        if (SD.exists("/config.json")) {
+            Serial.println("Config File: Present");
+        } else {
+            Serial.println("Config File: Missing");
+        }
+    } else {
+        Serial.println("SD Card: Not connected or initialization failed");
+    }
+    
+    Serial.println("======================");
 }
