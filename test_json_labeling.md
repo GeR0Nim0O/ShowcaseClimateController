@@ -90,11 +90,14 @@ The following devices are now configured with labels in the JSON, including **mu
 
 ### 1. JSON Configuration Structure
 - Added `"Label"` field to each device configuration
+- Added `"TCAPort"` field for explicit port specification
+- **Support for multiple devices of same type**: `SHT_Interior` and `SHT_Exterior`
 - Labels can be any custom string (e.g., "Interior", "Exterior", "Controller", "System")
 - Labels are completely configurable and not tied to hardware ports
 
 ### 2. Code Implementation
 - **`Configuration::initializeDevicesFromJSON()`**: New method that creates devices from JSON config
+- **Enhanced TCA Port Handling**: Uses JSON TCAPort field with I2C scan validation
 - **Label Assignment**: Devices are labeled directly from JSON configuration
 - **Fallback Support**: Original I2C scan method available as fallback (without hardcoded labels)
 
