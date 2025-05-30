@@ -189,11 +189,17 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         } else {
             expectedAddress = addressStr.toInt();
         }
-        
-        // Use positional indexing to find the device
+          // Use positional indexing to find the device
         String typeKey = deviceTypeNumber;
         int typeIndex = deviceTypeCounters[typeKey];
         deviceTypeCounters[typeKey]++;
+        
+        Serial.print("DEBUG: Looking for device type '");
+        Serial.print(typeKey);
+        Serial.print("' at positional index ");
+        Serial.print(typeIndex);
+        Serial.print(" with address 0x");
+        Serial.println(expectedAddress, HEX);
         
         // Find devices of the same type in scan results
         std::vector<std::pair<uint8_t, uint8_t>> matchingDevices;
@@ -201,6 +207,19 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             if (scannedDevice.first == expectedAddress) {
                 matchingDevices.push_back(scannedDevice);
             }
+        }
+        
+        Serial.print("DEBUG: Found ");
+        Serial.print(matchingDevices.size());
+        Serial.println(" matching devices with that address");
+        
+        for (size_t i = 0; i < matchingDevices.size(); i++) {
+            Serial.print("  Device ");
+            Serial.print(i);
+            Serial.print(": address 0x");
+            Serial.print(matchingDevices[i].first, HEX);
+            Serial.print(" on TCA port ");
+            Serial.println(matchingDevices[i].second);
         }
         
         if (matchingDevices.empty()) {
