@@ -131,6 +131,7 @@ void setMqttThrottling(bool enable, unsigned long interval = 60000); // Declare 
 void sendAllChangedSensorData(); // Add this function declaration
 void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
+void showTemperatureAndHumidity(); // Function to show current temperature and humidity
 
 // Global status system functions
 void printAllSystemStatus(); // Print all system status
@@ -812,4 +813,21 @@ void initializeClimateController() {
 // Function to update the climate controller (called every loop)
 void updateClimateController() {
     ClimateController::updateControllerWithTiming(climateController);
+}
+
+// Function to show current temperature and humidity
+void showTemperatureAndHumidity() {
+    if (climateController != nullptr) {
+        float currentTemperature = climateController->getCurrentTemperature();
+        float currentHumidity = climateController->getCurrentHumidity();
+        
+        Serial.print("Current Temperature: ");
+        Serial.print(currentTemperature);
+        Serial.println(" °C");
+        Serial.print("Current Humidity: ");
+        Serial.print(currentHumidity);
+        Serial.println(" %");
+    } else {
+        Serial.println("Climate controller not initialized");
+    }
 }
