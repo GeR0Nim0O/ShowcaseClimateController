@@ -615,60 +615,38 @@ void readAndSendDataFromDevices() {
             Serial.println("\nSensor data collected - MQTT not connected, data logged to SD only");
         }
     }
+    }
 }
 
-// Add new function to print climate control status
-void printClimateControlStatus() {
-    if (climateController == nullptr) {
-        return;
+// Global status system functions
+void printAllSystemStatus() {
+    Serial.println("\n========================================");
+    Serial.println("         SYSTEM STATUS UPDATE");
+    Serial.println("========================================");
+    
+    // Print all status modules
+    TimeHandler::printTimeStatus(rtc);
+    WifiMqttHandler::printConnectionStatus(client);
+    SDHandler::printSDCardStatus();
+    I2CHandler::printI2CBusStatus(tcaScanResults);
+    
+    if (climateController != nullptr) {
+        climateController->printClimateStatus();
     }
     
-    Serial.println("\n=== Climate Control Status ===");
+    Serial.println("========================================");
+    Serial.println("       END STATUS UPDATE");
+    Serial.println("========================================\n");
+}
+
+void updateGlobalStatusSystem() {
+    // Check if it's time for a status update (aligned with MQTT timer)
+    bool timeForStatusUpdate = (millis() - lastStatusUpdateTime >= statusUpdateInterval);
     
-    // Print current temperature and humidity readings
-    Serial.print("Current Temperature: ");
-    Serial.print(climateController->getCurrentTemperature(), 1);
-    Serial.print("°C (setpoint: ");
-    Serial.print(climateController->getTemperatureSetpoint(), 1);
-    Serial.println("°C)");
-    
-    Serial.print("Current Humidity: ");
-    Serial.print(climateController->getCurrentHumidity(), 1);
-    Serial.print("% (setpoint: ");
-    Serial.print(climateController->getHumiditySetpoint(), 1);
-    Serial.println("%)");
-    
-    // Print temperature control status with percentages
-    Serial.print("Temperature Control: ");
-    if (climateController->isHeating()) {
-        Serial.print("Heating ");
-        Serial.print(climateController->getHeatingPower(), 0);
-        Serial.println("%");
-    } else if (climateController->isCooling()) {
-        Serial.print("Cooling ");
-        Serial.print(climateController->getCoolingPower(), 0);
-        Serial.println("%");
-    } else {
-        Serial.println("OFF");
+    if (timeForStatusUpdate) {
+        printAllSystemStatus();
+        lastStatusUpdateTime = millis();
     }
-    
-    // Print humidity control status
-    Serial.print("Humidity Control: ");
-    if (climateController->isHumidifying()) {
-        Serial.println("Humidifying");
-    } else if (climateController->isDehumidifying()) {
-        Serial.println("Dehumidifying");
-    } else {
-        Serial.println("OFF");
-    }
-    
-    // Print fan status
-    Serial.print("Fans: Interior ");
-    Serial.print(climateController->isFanInteriorOn() ? "ON" : "OFF");
-    Serial.print(", Exterior ");
-    Serial.println(climateController->isFanExteriorOn() ? "ON" : "OFF");
-    
-    Serial.println("=============================");
 }
 
 // Update function to include sensor type parameter
