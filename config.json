@@ -26,18 +26,18 @@
     "username": "mqtts_user",
     "password": "mqtts_password"
   },
-  "Devices": {
-    "DS3231": {
+  "Devices": {    "DS3231": {
       "Type": "RTC",
       "TypeNumber": "DS3231",
       "Address": "0x68",
+      "Label": "System",
       "Channels": {
         "Time": {
           "Name": "Time",
           "Threshold": 0.0
         }
       }
-    },    "SHT": {
+    },"SHT": {
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
