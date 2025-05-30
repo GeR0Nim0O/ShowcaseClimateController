@@ -30,6 +30,9 @@ public:
     // Static method for controlled update with timing management
     static void updateControllerWithTiming(ClimateController* controller);
     
+    // Configuration method for setting all parameters at once
+    void configure(float tempSetpoint, float humSetpoint, ClimateMode climateMode, HumidityMode humidityMode);
+    
     ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac = nullptr);
     
     bool begin();
