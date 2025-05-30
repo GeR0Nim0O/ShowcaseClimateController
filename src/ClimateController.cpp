@@ -582,6 +582,87 @@ void ClimateController::setFanExterior(bool enable) {
 }
 
 void ClimateController::printClimateStatus() {
+    Serial.println("\n=== Climate Controller Status ===");
+    
+    if (!sensor || !sensor->isInitialized()) {
+        Serial.println("Climate Controller: Sensor not available");
+        Serial.println("==================================");
+        return;
+    }
+    
+    // Print current readings with external sensor info
+    Serial.print("Interior Temperature: ");
+    Serial.print(getCurrentTemperature(), 1);
+    Serial.print("°C (setpoint: ");
+    Serial.print(getTemperatureSetpoint(), 1);
+    Serial.println("°C)");
+    
+    Serial.print("Interior Humidity: ");
+    Serial.print(getCurrentHumidity(), 1);
+    Serial.print("% (setpoint: ");
+    Serial.print(getHumiditySetpoint(), 1);
+    Serial.println("%)");
+    
+    // Add external temperature/humidity if available
+    // Note: This would need access to external sensors from device registry
+    // For now, we'll note it as a placeholder for future implementation
+    Serial.println("External Conditions: [Available via device registry]");
+    
+    // Print control status
+    Serial.print("Climate Mode: ");
+    switch (climateMode) {
+        case ClimateMode::AUTO: Serial.println("AUTO"); break;
+        case ClimateMode::HEATING: Serial.println("HEATING ONLY"); break;
+        case ClimateMode::COOLING: Serial.println("COOLING ONLY"); break;
+        case ClimateMode::OFF: Serial.println("OFF"); break;
+    }
+    
+    Serial.print("Humidity Mode: ");
+    switch (humidityMode) {
+        case HumidityMode::AUTO: Serial.println("AUTO"); break;
+        case HumidityMode::HUMIDIFYING: Serial.println("HUMIDIFYING ONLY"); break;
+        case HumidityMode::DEHUMIDIFYING: Serial.println("DEHUMIDIFYING ONLY"); break;
+        case HumidityMode::OFF: Serial.println("OFF"); break;
+    }
+    
+    // Print active controls
+    Serial.print("Temperature Control: ");
+    if (isHeating()) {
+        Serial.print("Heating (");
+        Serial.print(getHeatingPower(), 0);
+        Serial.println("%)");
+    } else if (isCooling()) {
+        Serial.print("Cooling (");
+        Serial.print(getCoolingPower(), 0);
+        Serial.println("%)");
+    } else {
+        Serial.println("Standby");
+    }
+    
+    Serial.print("Humidity Control: ");
+    if (isHumidifying()) {
+        Serial.println("Humidifying");
+    } else if (isDehumidifying()) {
+        Serial.println("Dehumidifying");
+    } else {
+        Serial.println("Standby");
+    }
+    
+    // Print fan status
+    Serial.print("Ventilation: Interior ");
+    Serial.print(isFanInteriorOn() ? "ON" : "OFF");
+    Serial.print(", Exterior ");
+    Serial.print(isFanExteriorOn() ? "ON" : "OFF");
+    if (isAutoFanControlEnabled()) {
+        Serial.println(" (Auto)");
+    } else {
+        Serial.println(" (Manual)");
+    }
+    
+    Serial.println("==================================");
+}
+
+void ClimateController::printClimateStatus() {
     if (!sensor || !sensor->isInitialized()) {
         Serial.println("\n=== Climate Control Status ===");
         Serial.println("Climate controller sensor not available");
