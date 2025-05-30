@@ -5,7 +5,7 @@
 // Primary constructor
 Device::Device(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : wire(wire), i2cAddress(i2cAddress), tcaChannel(tcaChannel), 
-      deviceIndex(deviceIndex), initialized(false), deviceName(deviceName), threshold(0.0) {
+      deviceIndex(deviceIndex), initialized(false), deviceName(deviceName), deviceLabel(""), threshold(0.0) {
 }
 
 // Alternative constructor for legacy devices that specify threshold and channels first
