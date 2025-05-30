@@ -26,7 +26,7 @@
     "username": "mqtts_user",
     "password": "mqtts_password"
   }, 
-   "Devices": {
+  "Devices": {
     "DS3231": {
       "Type": "RTC",
       "TypeNumber": "DS3231",
