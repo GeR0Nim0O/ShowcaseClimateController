@@ -137,8 +137,7 @@ void I2CHandler::printTCAScanResults(const std::map<uint8_t, std::vector<uint8_t
     Serial.println("TCA Scan Results:");
     for (const auto& portDevices : tcaScanResults) {
         uint8_t port = portDevices.first;
-        const std::vector<uint8_t>& devices = portDevices.second;
-        Serial.print("Port ");
+        const std::vector<uint8_t>& devices = portDevices.second;        Serial.print("Port ");
         Serial.print(port);
         Serial.println(":");
         for (uint8_t address : devices) {
@@ -146,4 +145,54 @@ void I2CHandler::printTCAScanResults(const std::map<uint8_t, std::vector<uint8_t
             Serial.println(address, HEX);
         }
     }
+}
+
+void I2CHandler::printI2CBusStatus(const std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults) {
+    Serial.println("\n=== I2C Bus Status ===");
+    
+    // Check TCA9548A multiplexer
+    WIRE.beginTransmission(0x70);
+    bool tcaConnected = (WIRE.endTransmission() == 0);
+    
+    Serial.print("TCA9548A Multiplexer: ");
+    Serial.println(tcaConnected ? "Connected (0x70)" : "Not detected");
+    
+    if (tcaConnected) {
+        Serial.print("Active TCA Ports: ");
+        int activePorts = 0;
+        for (const auto& port : tcaScanResults) {
+            if (!port.second.empty()) {
+                activePorts++;
+            }
+        }
+        Serial.println(activePorts);
+        
+        Serial.println("Device Summary:");
+        for (const auto& port : tcaScanResults) {
+            if (!port.second.empty()) {
+                Serial.print("  Port ");
+                Serial.print(port.first);
+                Serial.print(": ");
+                Serial.print(port.second.size());
+                Serial.print(" device(s) [");
+                for (size_t i = 0; i < port.second.size(); i++) {
+                    if (i > 0) Serial.print(", ");
+                    Serial.print("0x");
+                    Serial.print(port.second[i], HEX);
+                }
+                Serial.println("]");
+            }
+        }
+    } else {
+        Serial.println("Direct I2C scan (no multiplexer):");
+        for (uint8_t addr = 0x08; addr <= 0x77; addr++) {
+            WIRE.beginTransmission(addr);
+            if (WIRE.endTransmission() == 0) {
+                Serial.print("  Device found at 0x");
+                Serial.println(addr, HEX);
+            }
+        }
+    }
+    
+    Serial.println("======================");
 }
