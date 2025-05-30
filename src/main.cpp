@@ -133,7 +133,6 @@ void setMqttThrottling(bool enable, unsigned long interval = 60000); // Declare 
 void sendAllChangedSensorData(); // Add this function declaration
 void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
-void printClimateControlStatus(); // Add climate status printing function
 
 // Global status system functions
 void printAllSystemStatus(); // Print all system status
