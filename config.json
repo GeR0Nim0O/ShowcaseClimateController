@@ -52,11 +52,11 @@
           "Threshold": 1.0
         }
       }
-    },
-    "BH1705": {
+    },    "BH1705": {
       "Type": "Sensor",
       "TypeNumber": "BH1705",
       "Address": "0x23",
+      "Label": "Interior",
       "Channels": {
         "L": {
           "Name": "Lux",
