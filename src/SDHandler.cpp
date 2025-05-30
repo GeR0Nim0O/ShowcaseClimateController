@@ -404,21 +404,30 @@ bool SDHandler::copyDefaultConfig() {
                         "Threshold": 1.0
                     }
                 }
-            },
-            "BH1705": {
+            },            "BH1705": {
                 "Type": "Sensor",
                 "TypeNumber": "BH1705",
                 "Address": "0x23",
-                "Threshold": "1",
+                "Label": "Interior",
                 "Channels": {
-                    "Lux": "L"
+                    "L": {
+                        "Name": "Lux",
+                        "Threshold": 1.0
+                    }
                 }
             },
             "SCALE": {
                 "Type": "Sensor",
                 "TypeNumber": "SCALES",
                 "Address": "0x26",
-                "Threshold": "1",
+                "Label": "Interior",
+                "Channels": {
+                    "W": {
+                        "Name": "Weight",
+                        "Threshold": 1.0
+                    }
+                }
+            },
                 "Channels": {
                     "Weight": "W"
                 }
