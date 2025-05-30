@@ -16,6 +16,96 @@
 #define DEFAULT_HUM_KI 0.2
 #define DEFAULT_HUM_KD 0.05
 
+// Static factory method for automatic device discovery and initialization
+ClimateController* ClimateController::createFromDeviceRegistry() {
+    try {
+        Serial.println("Initializing ClimateController from DeviceRegistry...");
+        
+        // Use DeviceRegistry to get devices instead of manual searching
+        DeviceRegistry& registry = DeviceRegistry::getInstance();
+        
+        // Get GPIO expander from DeviceRegistry
+        PCF8574gpio* gpioExpander = (PCF8574gpio*)registry.getDeviceByType("GPIO", 0);
+        if (gpioExpander != nullptr) {
+            Serial.println("Found GPIO expander for climate control via DeviceRegistry");
+        } else {
+            Serial.println("No GPIO expander found in DeviceRegistry");
+            return nullptr;
+        }
+        
+        // Get temperature/humidity sensor from DeviceRegistry - specifically look for Interior labeled sensor
+        SHTsensor* climateTemperatureSensor = (SHTsensor*)registry.getDeviceByTypeAndLabel("TemperatureHumidity", "Interior");
+        if (climateTemperatureSensor != nullptr) {
+            Serial.println("Found INTERIOR temperature/humidity sensor for climate control via DeviceRegistry");
+            Serial.print("Using sensor: ");
+            Serial.print(climateTemperatureSensor->getDeviceName());
+            Serial.print(" with label: ");
+            Serial.println(climateTemperatureSensor->getDeviceLabel());
+        } else {
+            // Fallback to first available sensor if no Interior labeled sensor found
+            Serial.println("No Interior labeled sensor found, using first available temperature/humidity sensor");
+            climateTemperatureSensor = (SHTsensor*)registry.getDeviceByType("TemperatureHumidity", 0);
+            if (climateTemperatureSensor != nullptr) {
+                Serial.println("Found temperature/humidity sensor for climate control via DeviceRegistry (fallback)");
+            } else {
+                Serial.println("No temperature/humidity sensor found in DeviceRegistry");
+                return nullptr;
+            }
+        }
+        
+        // Get DAC from DeviceRegistry - using proper DeviceRegistry access pattern
+        GP8403dac* climateDac = (GP8403dac*)registry.getDeviceByType("DAC", 0);
+        if (climateDac != nullptr) {
+            Serial.print("Found DAC device via DeviceRegistry: ");
+            Serial.print(climateDac->getType());
+            Serial.print(" with name: ");
+            Serial.println(climateDac->getDeviceName());
+        } else {
+            Serial.println("No DAC found in DeviceRegistry");
+        }
+        
+        // Create climate controller if we found the required devices
+        if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
+            Serial.println("Creating climate controller with discovered devices");
+            
+            try {
+                Serial.println("Allocating climate controller...");
+                ClimateController* controller = new ClimateController(gpioExpander, climateTemperatureSensor, climateDac);
+                
+                if (controller != nullptr) {
+                    Serial.println("Climate controller allocated, calling begin()");
+                    
+                    if (controller->begin()) {
+                        Serial.println("Climate controller initialized successfully");
+                        
+                        // Enable automatic fan control by default
+                        controller->setAutoFanControl(true);
+                        Serial.println("Automatic fan control enabled");
+                        
+                        return controller;
+                    } else {
+                        Serial.println("Failed to initialize climate controller");
+                        delete controller;
+                        return nullptr;
+                    }
+                } else {
+                    Serial.println("Failed to allocate climate controller");
+                    return nullptr;
+                }
+            } catch (...) {
+                Serial.println("Exception during climate controller initialization");
+                return nullptr;
+            }
+        } else {
+            Serial.println("Could not find required devices for climate controller");
+            return nullptr;
+        }
+    } catch (...) {
+        Serial.println("Exception during device discovery for climate controller");
+        return nullptr;
+    }
+}
+
 ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac)
     : gpio(nullptr), sensor(nullptr), dac(nullptr),
       temperatureSetpoint(22.0), humiditySetpoint(50.0),
