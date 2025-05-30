@@ -25,8 +25,8 @@
     "port": 8883,
     "username": "mqtts_user",
     "password": "mqtts_password"
-  },
-  "Devices": {    "DS3231": {
+  },  "Devices": {
+    "DS3231": {
       "Type": "RTC",
       "TypeNumber": "DS3231",
       "Address": "0x68",
@@ -37,10 +37,12 @@
           "Threshold": 0.0
         }
       }
-    },"SHT": {
+    },
+    "SHT_Interior": {
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
+      "TCAPort": 1,
       "Label": "Interior",
       "Channels": {
         "T": {
@@ -52,7 +54,24 @@
           "Threshold": 1.0
         }
       }
-    },    "BH1705": {
+    },
+    "SHT_Exterior": {
+      "Type": "Sensor",
+      "TypeNumber": "SHT",
+      "Address": "0x44",
+      "TCAPort": 2,
+      "Label": "Exterior",
+      "Channels": {
+        "T": {
+          "Name": "Temperature",
+          "Threshold": 0.3
+        },
+        "H": {
+          "Name": "Humidity",
+          "Threshold": 1.0
+        }
+      }
+    },"BH1705": {
       "Type": "Sensor",
       "TypeNumber": "BH1705",
       "Address": "0x23",
