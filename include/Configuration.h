@@ -59,9 +59,9 @@ public:
     static JsonObject getDevicesConfig();
     static void initializeEachDevice(std::vector<Device*>& devices);
     static bool validateDeviceObject(Device* device);
-    
-    // Initialize devices based on config and scan results
+      // Initialize devices based on config and scan results
     static std::vector<Device*> initializeDevices(std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults, DS3231rtc*& rtc);
+    static std::vector<Device*> initializeDevicesFromJSON(std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults, DS3231rtc*& rtc);
     
     // Print configuration values
     static void printConfigValues();
