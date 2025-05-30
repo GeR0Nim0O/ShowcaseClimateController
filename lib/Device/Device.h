@@ -29,9 +29,11 @@ public:
     uint8_t getI2CAddress() const { return i2cAddress; }
     uint8_t getTCAChannel() const { return tcaChannel; }
     String getDeviceName() const { return deviceName; }
+    String getDeviceLabel() const { return deviceLabel; }
     int getDeviceIndex() const { return deviceIndex; }    String getType() const { return type; }
     bool isInitialized() const { return initialized; }
     void setTypeNumber(const String& tn) { typeNumber = tn; }
+    void setDeviceLabel(const String& label) { deviceLabel = label; }
     void setChannelThresholds(const std::map<String, float>& thresholds) { channelThresholds = thresholds; }    // Make deviceName public so it can be set from outside
     String deviceName;
     
