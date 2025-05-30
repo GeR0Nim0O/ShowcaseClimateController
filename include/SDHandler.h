@@ -29,12 +29,14 @@ public:
     static void testFileIO(const char* path);
     static bool checkAndCreateLogFile();
     static String getLogFileInfo();
-    static bool copyFile(const char* srcPath, const char* destPath);
-    static bool updateConfig();
+    static bool copyFile(const char* srcPath, const char* destPath);    static bool updateConfig();
     static bool copyDefaultConfig();
     
     // New function to initialize SD card and config
     static bool initializeSDCardAndConfig();
+    
+    // Status reporting
+    static void printSDCardStatus();
 };
 
 #endif
