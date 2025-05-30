@@ -578,11 +578,10 @@ void readAndSendDataFromDevices() {
             if (shouldLog) {
                 anyThresholdExceeded = true;
             }
-            
-            // Store data for MQTT sending if it's either the 60-second cycle OR threshold exceeded
+              // Store data for MQTT sending if it's either the 60-second cycle OR threshold exceeded
             if (shouldSendMqtt) {
                 SensorData sensorData;
-                sensorData.deviceName = deviceName;
+                sensorData.deviceName = displayName;  // Use display name with label
                 sensorData.projectNr = projectNr;
                 sensorData.showcaseId = showcaseId;
                 sensorData.sensorType = channel.second;
@@ -595,7 +594,7 @@ void readAndSendDataFromDevices() {
                 
                 if (shouldLog) {
                     Serial.print("THRESHOLD EXCEEDED - ");
-                    Serial.print(deviceName);
+                    Serial.print(displayName);
                     Serial.print(" ");
                     Serial.print(channelKey);
                     Serial.print(": ");
