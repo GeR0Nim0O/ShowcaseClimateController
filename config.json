@@ -164,6 +164,7 @@
       "Type": "DAC",
       "TypeNumber": "GP8403",
       "Address": "0x5F",
+      "Label": "Controller",
       "Channels": {
         "DAC_A": {
           "Name": "TemperaturePower"
