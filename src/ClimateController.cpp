@@ -194,15 +194,13 @@ void ClimateController::update() {
                 applyFanControl();  // Re-apply fan control
             }
         }
-        
-        // NEW: Periodically refresh GPIO state to prevent drift
+          // NEW: Periodically refresh GPIO state to prevent drift
         static unsigned long lastGpioRefresh = 0;
         if (currentTime - lastGpioRefresh >= 10000) { // Every 10 seconds
             if (gpio != nullptr) {
                 gpio->refreshOutputState();
                 // Force re-apply fan control during refresh
                 if (fanInteriorActive || fanExteriorActive) {
-                    Serial.println("Refreshing fan control during GPIO refresh");
                     applyFanControl();
                 }
             }
