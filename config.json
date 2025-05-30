@@ -39,7 +39,7 @@
       }
     },    "SHT_Interior": {
       "Type": "Sensor",
-      "TypeNumber": "SHT",
+      "TypeNumber": "SHT31",
       "Address": "0x44",
       "Label": "Interior",
       "Channels": {
