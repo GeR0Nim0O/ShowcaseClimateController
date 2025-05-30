@@ -212,8 +212,7 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         // Get the device at the specified positional index
         uint8_t deviceAddress = matchingDevices[typeIndex].first;
         uint8_t tcaPort = matchingDevices[typeIndex].second;
-        
-        Serial.print("Creating device from JSON: ");
+          Serial.print("Creating device from JSON: ");
         Serial.print(deviceKey);
         Serial.print(" (");
         Serial.print(deviceType);
@@ -226,6 +225,8 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         if (!deviceLabel.isEmpty()) {
             Serial.print(" with label: ");
             Serial.print(deviceLabel);
+        } else {
+            Serial.print(" (no label specified)");
         }
         Serial.println();
         
