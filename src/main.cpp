@@ -860,13 +860,23 @@ void initializeClimateController() {
     } else {
       Serial.println("No GPIO expander found in DeviceRegistry");
     }
-    
-    // Get temperature/humidity sensor from DeviceRegistry
-    climateTemperatureSensor = (SHTsensor*)registry.getDeviceByType("TemperatureHumidity", 0);  // Get first SHT sensor
+      // Get temperature/humidity sensor from DeviceRegistry - specifically look for Interior labeled sensor
+    climateTemperatureSensor = (SHTsensor*)registry.getDeviceByTypeAndLabel("TemperatureHumidity", "Interior");
     if (climateTemperatureSensor != nullptr) {
-      Serial.println("Found temperature/humidity sensor for climate control via DeviceRegistry");
+      Serial.println("Found INTERIOR temperature/humidity sensor for climate control via DeviceRegistry");
+      Serial.print("Using sensor: ");
+      Serial.print(climateTemperatureSensor->getDeviceName());
+      Serial.print(" with label: ");
+      Serial.println(climateTemperatureSensor->getDeviceLabel());
     } else {
-      Serial.println("No temperature/humidity sensor found in DeviceRegistry");
+      // Fallback to first available sensor if no Interior labeled sensor found
+      Serial.println("No Interior labeled sensor found, using first available temperature/humidity sensor");
+      climateTemperatureSensor = (SHTsensor*)registry.getDeviceByType("TemperatureHumidity", 0);
+      if (climateTemperatureSensor != nullptr) {
+        Serial.println("Found temperature/humidity sensor for climate control via DeviceRegistry (fallback)");
+      } else {
+        Serial.println("No temperature/humidity sensor found in DeviceRegistry");
+      }
     }
     
     // Get DAC from DeviceRegistry - using proper DeviceRegistry access pattern
