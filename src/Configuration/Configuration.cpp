@@ -255,13 +255,20 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             &Wire, deviceType, deviceTypeNumber, deviceAddress, tcaPort, 
             channelThresholds, channelNames, deviceIndex, deviceMode
         );
-        
-        if (createdDevice != nullptr) {
+          if (createdDevice != nullptr) {
             // Apply the label from JSON configuration
+            Serial.print("Device created successfully, checking label... deviceLabel='");
+            Serial.print(deviceLabel);
+            Serial.println("'");
+            
             if (!deviceLabel.isEmpty()) {
+                Serial.print("Setting device label to: ");
+                Serial.println(deviceLabel);
                 createdDevice->setDeviceLabel(deviceLabel);
                 Serial.print("Device labeled as: ");
-                Serial.println(deviceLabel);
+                Serial.println(createdDevice->getDeviceLabel());
+            } else {
+                Serial.println("No label specified for this device");
             }
             
             // Handle special case for RTC
