@@ -753,4 +753,18 @@ void ClimateController::printClimateStatus() {
     Serial.println("==================================");
 }
 
+// Static method for controlled update with timing management
+void ClimateController::updateControllerWithTiming(ClimateController* controller) {
+    if (controller == nullptr) {
+        return; // Exit if climate controller is not available
+    }
+    
+    // Only update climate controller every few seconds to avoid GPIO conflicts
+    static unsigned long lastClimateUpdate = 0;
+    if (millis() - lastClimateUpdate >= 5000) { // Update every 5 seconds
+        controller->update();
+        lastClimateUpdate = millis();
+    }
+}
+
 
