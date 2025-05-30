@@ -313,8 +313,7 @@ void DeviceRegistry::printDeviceStatus() {
 
 // Hardware-specific device registrations using lambda functions
 // This keeps all hardware-specific code contained within DeviceRegistry.cpp
-namespace {
-    bool registeredSHT31 = DeviceRegistry::registerDeviceType("Sensor", "SHT31", 
+namespace {    bool registeredSHT = DeviceRegistry::registerDeviceType("Sensor", "SHT", 
         [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
            const std::map<String, String>& channels, int deviceIndex) {
         return new SHTsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
