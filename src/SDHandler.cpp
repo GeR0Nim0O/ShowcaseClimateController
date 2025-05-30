@@ -474,21 +474,56 @@ bool SDHandler::copyDefaultConfig() {
                         "Threshold": 1.0
                     }
                 }
-            },
-            "PCF8574": {
+            },            "PCF8574": {
                 "Type": "GPIO",
                 "TypeNumber": "PCF8574",
                 "Address": "0x20",
-                "Threshold": "1",
+                "Label": "Controller",
+                "Mode": "OUTPUT",
                 "Channels": {
-                    "IO0": "IO0",
-                    "IO1": "IO1",
-                    "IO2": "IO2",
-                    "IO3": "IO3",
-                    "IO4": "IO4",
-                    "IO5": "IO5",
-                    "IO6": "IO6",
-                    "IO7": "IO7"
+                    "IO0": {
+                        "Name": "FanExterior",
+                        "Threshold": 1.0
+                    },
+                    "IO1": {
+                        "Name": "FanInterior",
+                        "Threshold": 1.0
+                    },
+                    "IO2": {
+                        "Name": "Humidify",
+                        "Threshold": 1.0
+                    },
+                    "IO3": {
+                        "Name": "Dehumidify",
+                        "Threshold": 1.0
+                    },
+                    "IO4": {
+                        "Name": "TemperatureEnable",
+                        "Threshold": 1.0
+                    },
+                    "IO5": {
+                        "Name": "TemperatureCool",
+                        "Threshold": 1.0
+                    },
+                    "IO6": {
+                        "Name": "TemperatureHeat",
+                        "Threshold": 1.0
+                    },
+                    "IO7": {
+                        "Name": "IO7",
+                        "Threshold": 1.0
+                    }
+                }
+            },
+            "GP8403": {
+                "Type": "DAC",
+                "TypeNumber": "GP8403",
+                "Address": "0x5F",
+                "Label": "Controller",
+                "Channels": {
+                    "DAC_A": {
+                        "Name": "TemperaturePower"
+                    }
                 }
             }
         },
