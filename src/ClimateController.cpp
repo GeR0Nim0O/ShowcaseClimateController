@@ -696,17 +696,16 @@ void ClimateController::printClimateStatus() {
       // Get external temperature/humidity from device registry
     DeviceRegistry& registry = DeviceRegistry::getInstance();
     SHTsensor* externalSensor = (SHTsensor*)registry.getDeviceByTypeAndLabel("TemperatureHumidity", "Exterior");
-    
-    if (externalSensor != nullptr && externalSensor->isInitialized()) {
+      if (externalSensor != nullptr && externalSensor->isInitialized()) {
         // Get the most recent data from the sensor
         auto externalData = externalSensor->readData();
         
         Serial.print("External Temperature: ");
-        Serial.print(externalData["temperature"].toFloat(), 1);
+        Serial.print(externalData["T"].toFloat(), 1);
         Serial.println("°C");
         
         Serial.print("External Humidity: ");
-        Serial.print(externalData["humidity"].toFloat(), 1);
+        Serial.print(externalData["H"].toFloat(), 1);
         Serial.println("%");
     } else {
         Serial.println("External Conditions: [Sensor not available]");
