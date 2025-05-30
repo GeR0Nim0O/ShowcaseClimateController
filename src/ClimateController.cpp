@@ -1,5 +1,5 @@
 #include "ClimateController.h"
-#include "Device.h"
+#include "DeviceRegistry/DeviceRegistry.h"
 
 // Safety limits
 #define MAX_TEMPERATURE 35.0
