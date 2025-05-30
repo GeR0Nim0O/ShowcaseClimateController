@@ -83,10 +83,11 @@
           "Threshold": 1.0
         }
       }
-    },"SCALE": {
+    },    "SCALE": {
       "Type": "Sensor",
       "TypeNumber": "SCALES",
       "Address": "0x26",
+      "TCAPort": 1,
       "Label": "Interior",
       "Channels": {
         "W": {
@@ -94,7 +95,7 @@
           "Threshold": 1.0
         }
       }
-    },    "GMX02B": {
+    },"GMX02B": {
       "Type": "Sensor",
       "TypeNumber": "GMx02B",
       "Address": "0x08",
