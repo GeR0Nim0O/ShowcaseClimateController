@@ -97,18 +97,28 @@ void Configuration::printConfigValues() {
 std::vector<Device*> Configuration::initializeDevicesFromJSON(std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults, DS3231rtc*& rtc) {
     std::vector<Device*> devices;
     
-    // Create a map to find TCA ports for each I2C address
-    std::map<uint8_t, uint8_t> addressToTcaPort;
+    // Create lists of scanned devices by type for positional indexing
+    std::vector<std::pair<uint8_t, uint8_t>> scannedDevices; // (address, tcaPort) pairs
     
-    // Build a map of address to TCA port from scan results
+    // Build a list of all scanned devices with their TCA ports
     for (const auto& result : tcaScanResults) {
         uint8_t tcaPort = result.first;
         for (const auto& address : result.second) {
             if (address != 0) {  // Skip the invalid zero address
-                addressToTcaPort[address] = tcaPort;
+                scannedDevices.push_back(std::make_pair(address, tcaPort));
             }
         }
     }
+    
+    // Sort scanned devices by TCA port first, then by address for consistent ordering
+    std::sort(scannedDevices.begin(), scannedDevices.end(), 
+              [](const std::pair<uint8_t, uint8_t>& a, const std::pair<uint8_t, uint8_t>& b) {
+                  if (a.second != b.second) return a.second < b.second;
+                  return a.first < b.first;
+              });
+    
+    // Create counters for positional indexing by device type
+    std::map<String, int> deviceTypeCounters;
     
     static int deviceIndex = 0;
     
@@ -122,78 +132,64 @@ std::vector<Device*> Configuration::initializeDevicesFromJSON(std::map<uint8_t, 
             Serial.println(deviceKey);
             continue;
         }
-          // Extract device configuration
+        
+        // Extract device configuration
         String deviceType = deviceConfig["Type"] | "";
         String deviceTypeNumber = deviceConfig["TypeNumber"] | "";
         String addressStr = deviceConfig["Address"] | "";
         String deviceLabel = deviceConfig["Label"] | "";
         String deviceMode = deviceConfig["Mode"] | "";
-        uint8_t jsonTcaPort = deviceConfig["TCAPort"] | 0;  // Get TCA port from JSON
         
         if (deviceType.isEmpty() || deviceTypeNumber.isEmpty() || addressStr.isEmpty()) {
             Serial.print("Missing required fields for device: ");
             Serial.println(deviceKey);
             continue;
         }
-          // Parse I2C address
-        uint8_t deviceAddress = 0;
+        
+        // Parse I2C address from JSON (this is the expected address)
+        uint8_t expectedAddress = 0;
         if (addressStr.startsWith("0x") || addressStr.startsWith("0X")) {
-            deviceAddress = strtol(addressStr.c_str(), NULL, 16);
+            expectedAddress = strtol(addressStr.c_str(), NULL, 16);
         } else {
-            deviceAddress = addressStr.toInt();
+            expectedAddress = addressStr.toInt();
         }
         
-        // Use TCA port from JSON if specified, otherwise try to find from I2C scan
-        uint8_t tcaPort = jsonTcaPort;
-        bool deviceFoundInScan = false;
+        // Use positional indexing to find the device
+        String typeKey = deviceTypeNumber;
+        int typeIndex = deviceTypeCounters[typeKey];
+        deviceTypeCounters[typeKey]++;
         
-        if (jsonTcaPort == 0) {
-            // No TCA port specified in JSON, try to find it from I2C scan
-            if (addressToTcaPort.find(deviceAddress) != addressToTcaPort.end()) {
-                tcaPort = addressToTcaPort[deviceAddress];
-                deviceFoundInScan = true;
-            } else {
-                Serial.print("Device address 0x");
-                Serial.print(deviceAddress, HEX);
-                Serial.print(" not found in I2C scan and no TCAPort specified, skipping ");
-                Serial.println(deviceKey);
-                continue;
-            }
-        } else {
-            // TCA port specified in JSON, verify it exists in scan results
-            bool tcaPortExists = false;
-            for (const auto& result : tcaScanResults) {
-                if (result.first == jsonTcaPort) {
-                    // Check if the address exists on this TCA port
-                    for (const auto& address : result.second) {
-                        if (address == deviceAddress) {
-                            deviceFoundInScan = true;
-                            break;
-                        }
-                    }
-                    tcaPortExists = true;
-                    break;
-                }
-            }
-            
-            if (!tcaPortExists) {
-                Serial.print("TCA port ");
-                Serial.print(jsonTcaPort);
-                Serial.print(" not found in scan results, skipping ");
-                Serial.println(deviceKey);
-                continue;
-            }
-            
-            if (!deviceFoundInScan) {
-                Serial.print("Device address 0x");
-                Serial.print(deviceAddress, HEX);
-                Serial.print(" not found on TCA port ");
-                Serial.print(jsonTcaPort);
-                Serial.print(", skipping ");
-                Serial.println(deviceKey);
-                continue;
+        // Find devices of the same type in scan results
+        std::vector<std::pair<uint8_t, uint8_t>> matchingDevices;
+        for (const auto& scannedDevice : scannedDevices) {
+            if (scannedDevice.first == expectedAddress) {
+                matchingDevices.push_back(scannedDevice);
             }
         }
+        
+        if (matchingDevices.empty()) {
+            Serial.print("No scanned device found with address 0x");
+            Serial.print(expectedAddress, HEX);
+            Serial.print(" for device: ");
+            Serial.println(deviceKey);
+            continue;
+        }
+        
+        if (typeIndex >= matchingDevices.size()) {
+            Serial.print("Not enough devices of type ");
+            Serial.print(deviceTypeNumber);
+            Serial.print(" found (need index ");
+            Serial.print(typeIndex);
+            Serial.print(", but only ");
+            Serial.print(matchingDevices.size());
+            Serial.print(" found) for device: ");
+            Serial.println(deviceKey);
+            continue;
+        }
+        
+        // Get the device at the specified positional index
+        uint8_t deviceAddress = matchingDevices[typeIndex].first;
+        uint8_t tcaPort = matchingDevices[typeIndex].second;
         
         Serial.print("Creating device from JSON: ");
         Serial.print(deviceKey);
