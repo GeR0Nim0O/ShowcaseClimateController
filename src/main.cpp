@@ -539,11 +539,10 @@ void readAndSendDataFromDevices() {
             // Get the last value and threshold for this sensor channel
             float lastValue = lastSensorValues[key];
             float threshold = device->getThreshold(channelKey);
-            
-            // Debug: Print threshold information (remove this later)
+              // Debug: Print threshold information (remove this later)
             if (shouldPrintData && (channelKey == "T" || channelKey == "H")) {
                 Serial.print("DEBUG: Device ");
-                Serial.print(deviceName);
+                Serial.print(displayName);
                 Serial.print(" Channel ");
                 Serial.print(channelKey);
                 Serial.print(" (key: ");
