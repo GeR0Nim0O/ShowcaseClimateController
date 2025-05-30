@@ -595,13 +595,7 @@ void readAndSendDataFromDevices() {
                     logDataToSD(displayName, currentTime, value, channel.second);
                 }
             }
-            // No else clause needed since we always update changedSensorData on the 60-second cycle
-        }
-    }
-    
-    // Print climate controller status when thresholds are exceeded or during 60-second cycle
-    if ((anyThresholdExceeded || shouldPrintData) && climateController != nullptr) {
-        printClimateControlStatus();
+            // No else clause needed since we always update changedSensorData on the 60-second cycle        }
     }
     
     // Check if it's time to send all changed data via MQTT
