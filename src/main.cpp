@@ -794,6 +794,8 @@ void printCreatedSensors() {
     Serial.println(device->getType());
     Serial.print("Device Name: ");
     Serial.println(device->getDeviceName());
+    Serial.print("Device Label: ");
+    Serial.println(device->getDeviceLabel().length() > 0 ? device->getDeviceLabel() : "No Label");
     Serial.print("Address: 0x");
     Serial.println(device->getI2CAddress(), HEX);
     Serial.print("TCA Channel: ");
