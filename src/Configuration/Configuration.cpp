@@ -237,62 +237,67 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             devices.push_back(createdDevice);
         }
     }
-    
-    // Check for SHT temperature/humidity sensor
-    if (addressToTcaPort.find(I2C_ADDR_SHT) != addressToTcaPort.end()) {
-        // We found SHT sensors, try different combinations to create one
-        uint8_t tcaPort = addressToTcaPort[I2C_ADDR_SHT];
-        Serial.print("Creating SHT sensor at address 0x");
-        Serial.print(I2C_ADDR_SHT, HEX);
-        Serial.print(" on TCA port ");
-        Serial.println(tcaPort);
-        
-        std::map<String, String> channelNames;
-        std::map<String, float> channelThresholds;
-        
-        channelNames["T"] = "Temperature";
-        channelNames["H"] = "Humidity";
-        channelThresholds["T"] = 0.3f;
-        channelThresholds["H"] = 1.0f;
-        
-        // Try all possible variations of type/typeNumber for SHT sensor
-        const char* possibleTypes[] = {"Sensor", "SHTSensor", "SHT"};
-        const char* possibleTypeNumbers[] = {"SHT", "SHT30", "SHT31", "SHT35"};
-        
-        bool success = false;
-        
-        for (const char* type : possibleTypes) {
-            for (const char* typeNumber : possibleTypeNumbers) {
-                if (success) break;
+      // Check for SHT temperature/humidity sensors (can be multiple)
+    // Scan through all TCA ports to find all instances of SHT sensors
+    for (const auto& result : tcaScanResults) {
+        uint8_t tcaPort = result.first;
+        for (const auto& address : result.second) {
+            if (address == I2C_ADDR_SHT) {
+                Serial.print("Creating SHT sensor at address 0x");
+                Serial.print(I2C_ADDR_SHT, HEX);
+                Serial.print(" on TCA port ");
+                Serial.println(tcaPort);
                 
-                Serial.print("Trying combination - Type: ");
-                Serial.print(type);
-                Serial.print(", TypeNumber: ");
-                Serial.println(typeNumber);
+                std::map<String, String> channelNames;
+                std::map<String, float> channelThresholds;
                 
-                createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
-                    &Wire, type, typeNumber, I2C_ADDR_SHT, tcaPort, 
-                    channelThresholds, channelNames, deviceIndex, ""
-                );
+                channelNames["T"] = "Temperature";
+                channelNames["H"] = "Humidity";
+                channelThresholds["T"] = 0.3f;
+                channelThresholds["H"] = 1.0f;
                 
-                if (createdDevice != nullptr) {
-                    Serial.println("SHT sensor created successfully with combination:");
-                    Serial.print("Type: ");
-                    Serial.print(type);
-                    Serial.print(", TypeNumber: ");
-                    Serial.println(typeNumber);
-                    
-                    devices.push_back(createdDevice);
-                    deviceIndex++;
-                    success = true;
-                    break;
+                // Try all possible variations of type/typeNumber for SHT sensor
+                const char* possibleTypes[] = {"Sensor", "SHTSensor", "SHT"};
+                const char* possibleTypeNumbers[] = {"SHT", "SHT30", "SHT31", "SHT35"};
+                
+                bool success = false;
+                
+                for (const char* type : possibleTypes) {
+                    for (const char* typeNumber : possibleTypeNumbers) {
+                        if (success) break;
+                        
+                        Serial.print("Trying combination - Type: ");
+                        Serial.print(type);
+                        Serial.print(", TypeNumber: ");
+                        Serial.println(typeNumber);
+                        
+                        createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
+                            &Wire, type, typeNumber, I2C_ADDR_SHT, tcaPort, 
+                            channelThresholds, channelNames, deviceIndex, ""
+                        );
+                        
+                        if (createdDevice != nullptr) {
+                            Serial.println("SHT sensor created successfully with combination:");
+                            Serial.print("Type: ");
+                            Serial.print(type);
+                            Serial.print(", TypeNumber: ");
+                            Serial.println(typeNumber);
+                            
+                            devices.push_back(createdDevice);
+                            deviceIndex++;
+                            success = true;
+                            break;
+                        }
+                    }
+                    if (success) break;
+                }
+                
+                if (!success) {
+                    Serial.print("Failed to create SHT sensor on TCA port ");
+                    Serial.print(tcaPort);
+                    Serial.println(" with any combination");
                 }
             }
-            if (success) break;
-        }
-        
-        if (!success) {
-            Serial.println("Failed to create SHT sensor with any combination");
         }
     }
     
