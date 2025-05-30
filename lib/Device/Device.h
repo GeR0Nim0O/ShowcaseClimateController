@@ -32,10 +32,11 @@ public:
     int getDeviceIndex() const { return deviceIndex; }    String getType() const { return type; }
     bool isInitialized() const { return initialized; }
     void setTypeNumber(const String& tn) { typeNumber = tn; }
-    void setChannelThresholds(const std::map<String, float>& thresholds) { channelThresholds = thresholds; }
-
-    // Make deviceName public so it can be set from outside
+    void setChannelThresholds(const std::map<String, float>& thresholds) { channelThresholds = thresholds; }    // Make deviceName public so it can be set from outside
     String deviceName;
+    
+    // Sensor labeling for location identification
+    String deviceLabel;  // e.g., "Interior", "Exterior", "Control", etc.
 
 protected:
     TwoWire* wire;  // Wire instance - first member for proper initialization
