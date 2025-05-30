@@ -38,49 +38,24 @@ bool SHTsensor::begin() {
     uint16_t stat = readStatus();
     Serial.print("SHT status: ");
     Serial.println(stat, HEX);
-    
-    // Set measurement mode (high repeatability)
-    Serial.println("DEBUG: Setting measurement mode...");
+      // Set measurement mode (high repeatability)
     bool success = setMeasurementMode(0x2C06); // High repeatability, clock stretching disabled
-    if (success) {
-        Serial.println("DEBUG: Measurement mode set successfully");
-    } else {
-        Serial.println("DEBUG: Failed to set measurement mode");
+    if (!success) {
+        Serial.println("Failed to set measurement mode");
         return false;
     }
     
     // Disable heater
-    Serial.println("DEBUG: Disabling heater...");
     setHeater(false);
-    Serial.println("DEBUG: Heater disabled successfully");
     
     // Get serial number for debugging
     Serial.print("SHT Serial Number: ");
     Serial.println(getSerialNumber());
     
-    // Do an initial reading (but skip detailed error handling)
-    Serial.println("DEBUG: Attempting initial sensor reading...");
-    Serial.println("DEBUG: Skipping initial sensor reading to avoid potential crash");
-    
     // Set initialized flag
-    Serial.println("DEBUG: Setting initialized flag...");
-    Serial.print("DEBUG: Address of 'this': ");
-    Serial.println((uint32_t)this, HEX);
-    Serial.print("DEBUG: Address of 'initialized' variable: ");
-    Serial.println((uint32_t)&initialized, HEX);
-    Serial.print("DEBUG: initialized value before setting: ");
-    Serial.println(initialized);
-    
     initialized = true;
     
-    Serial.print("DEBUG: SHT initialized flag set to true");
-    Serial.print("DEBUG: SHT initialized flag is now: ");
-    Serial.println(initialized);
-    Serial.print("DEBUG: isInitialized() method returns: ");
-    Serial.println(isInitialized());
-    
     Serial.println("SHT sensor initialized successfully");
-    Serial.println("DEBUG: SHTsensor::begin() returning true");
     
     return true;
 }
