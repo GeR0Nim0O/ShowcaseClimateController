@@ -27,6 +27,9 @@ public:
     // Static factory method for automatic device discovery and initialization
     static ClimateController* createFromDeviceRegistry();
     
+    // Static method for controlled update with timing management
+    static void updateControllerWithTiming(ClimateController* controller);
+    
     ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac = nullptr);
     
     bool begin();
