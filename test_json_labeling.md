@@ -5,7 +5,7 @@ This test demonstrates the new JSON-based device labeling system that replaces t
 
 ## Test Configuration (config.json)
 
-The following devices are now configured with labels in the JSON:
+The following devices are now configured with labels in the JSON, including **multiple SHT sensors**:
 
 ```json
 {
@@ -17,11 +17,23 @@ The following devices are now configured with labels in the JSON:
       "Label": "System",
       "Channels": { "Time": { "Name": "Time", "Threshold": 0.0 } }
     },
-    "SHT": {
+    "SHT_Interior": {
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
+      "TCAPort": 1,
       "Label": "Interior",
+      "Channels": {
+        "T": { "Name": "Temperature", "Threshold": 0.3 },
+        "H": { "Name": "Humidity", "Threshold": 1.0 }
+      }
+    },
+    "SHT_Exterior": {
+      "Type": "Sensor",
+      "TypeNumber": "SHT",
+      "Address": "0x44",
+      "TCAPort": 2,
+      "Label": "Exterior",
       "Channels": {
         "T": { "Name": "Temperature", "Threshold": 0.3 },
         "H": { "Name": "Humidity", "Threshold": 1.0 }
