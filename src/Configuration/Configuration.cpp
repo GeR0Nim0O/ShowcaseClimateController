@@ -154,13 +154,27 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             Serial.println(deviceKey);
             continue;
         }
-        
-        // Extract device configuration
+          // Extract device configuration
         String deviceType = deviceConfig["Type"] | "";
         String deviceTypeNumber = deviceConfig["TypeNumber"] | "";
         String addressStr = deviceConfig["Address"] | "";
         String deviceLabel = deviceConfig["Label"] | "";
         String deviceMode = deviceConfig["Mode"] | "";
+        
+        // Debug extracted values
+        Serial.print("DEBUG: Extracted values for ");
+        Serial.print(deviceKey);
+        Serial.print(" - Type: '");
+        Serial.print(deviceType);
+        Serial.print("', TypeNumber: '");
+        Serial.print(deviceTypeNumber);
+        Serial.print("', Address: '");
+        Serial.print(addressStr);
+        Serial.print("', Label: '");
+        Serial.print(deviceLabel);
+        Serial.print("', Mode: '");
+        Serial.print(deviceMode);
+        Serial.println("'");
         
         if (deviceType.isEmpty() || deviceTypeNumber.isEmpty() || addressStr.isEmpty()) {
             Serial.print("Missing required fields for device: ");
