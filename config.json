@@ -142,7 +142,8 @@
           "Threshold": 1.0
         }
       }
-    },    "PCF8574": {
+    },    
+    "PCF8574": {
       "Type": "GPIO",
       "TypeNumber": "PCF8574",
       "Address": "0x20",
