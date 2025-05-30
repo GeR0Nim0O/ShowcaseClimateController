@@ -153,13 +153,17 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             Serial.print("Skipping invalid device config for: ");
             Serial.println(deviceKey);
             continue;
-        }
-          // Extract device configuration
+        }        // Extract device configuration
         String deviceType = deviceConfig["Type"] | "";
         String deviceTypeNumber = deviceConfig["TypeNumber"] | "";
         String addressStr = deviceConfig["Address"] | "";
-        String deviceLabel = deviceConfig["Label"] | "";
         String deviceMode = deviceConfig["Mode"] | "";
+        
+        // Extract label with explicit null check
+        String deviceLabel = "";
+        if (deviceConfig.containsKey("Label") && !deviceConfig["Label"].isNull()) {
+            deviceLabel = deviceConfig["Label"].as<String>();
+        }
         
         // Debug extracted values
         Serial.print("DEBUG: Extracted values for ");
