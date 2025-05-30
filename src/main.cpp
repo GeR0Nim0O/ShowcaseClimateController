@@ -615,11 +615,9 @@ void readAndSendDataFromDevices() {
             
             // Log to SD only when threshold is exceeded
             if (shouldLog) {
-                lastSensorValues[key] = value;
-
-                if (channel.second != "Time") {
+                lastSensorValues[key] = value;                if (channel.second != "Time") {
                     // Log to SD only when the value has changed beyond threshold
-                    logDataToSD(deviceName, currentTime, value, channel.second);
+                    logDataToSD(displayName, currentTime, value, channel.second);
                 }
             }
             // No else clause needed since we always update changedSensorData on the 60-second cycle
