@@ -70,9 +70,11 @@ public:
     
     // Status
     bool isHeating() const { return heatingActive; }
-    bool isCooling() const { return coolingActive; }
-    bool isHumidifying() const { return humidifyingActive; }
+    bool isCooling() const { return coolingActive; }    bool isHumidifying() const { return humidifyingActive; }
     bool isDehumidifying() const { return dehumidifyingActive; }
+    
+    // Status reporting
+    void printClimateStatus();
 
 private:
     PCF8574gpio* gpio;
