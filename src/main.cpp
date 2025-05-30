@@ -906,35 +906,5 @@ void updateClimateController() {
         lastClimateUpdate = millis();
     }
     
-    // Optional: Print climate controller status periodically
-    static unsigned long lastStatusPrint = 0;
-    if (millis() - lastStatusPrint > 60000) { // Print status every 60 seconds
-        Serial.print("Climate status - Temperature: ");
-        Serial.print(climateController->getCurrentTemperature());
-        Serial.print("°C (setpoint: ");
-        Serial.print(climateController->getTemperatureSetpoint());
-        Serial.print("°C), Humidity: ");
-        Serial.print(climateController->getCurrentHumidity());
-        Serial.print("% (setpoint: ");
-        Serial.print(climateController->getHumiditySetpoint());
-        Serial.println("%)");
-        
-        // Print control status
-        Serial.print("Climate control - Heating: ");
-        Serial.print(climateController->isHeating() ? "ON" : "OFF");
-        Serial.print(", Cooling: ");
-        Serial.print(climateController->isCooling() ? "ON" : "OFF");
-        Serial.print(", Humidifying: ");
-        Serial.print(climateController->isHumidifying() ? "ON" : "OFF");
-        Serial.print(", Dehumidifying: ");
-        Serial.println(climateController->isDehumidifying() ? "ON" : "OFF");
-        
-        // Basic fan status
-        Serial.print("Fan control - Interior: ");
-        Serial.print(climateController->isFanInteriorOn() ? "ON" : "OFF");
-        Serial.print(", Exterior: ");
-        Serial.println(climateController->isFanExteriorOn() ? "ON" : "OFF");
-        
-        lastStatusPrint = millis();
-    }
+    // Note: Climate status is now printed via global status system every 60 seconds
 }
