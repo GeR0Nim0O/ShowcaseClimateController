@@ -37,11 +37,11 @@
           "Threshold": 0.0
         }
       }
-    },
-    "SHT": {
+    },    "SHT": {
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
+      "Label": "Interior",
       "Channels": {
         "T": {
           "Name": "Temperature",
