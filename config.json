@@ -180,7 +180,6 @@
       "Type": "DAC",
       "TypeNumber": "GP8403",
       "Address": "0x5F",
-      "TCAPort": 1,
       "Label": "Controller",
       "Channels": {
         "DAC_A": {
