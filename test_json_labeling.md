@@ -107,20 +107,26 @@ When the system starts, you should see:
 
 ```
 Using JSON configuration for device initialization
-Creating device from JSON: SHT (Sensor/SHT) at address 0x44 on TCA port 1 with label: Interior
+Creating device from JSON: SHT_Interior (Sensor/SHT) at address 0x44 on TCA port 1 with label: Interior
 Device labeled as: Interior
-Successfully created device: SHT
+Successfully created device: SHT_Interior
+
+Creating device from JSON: SHT_Exterior (Sensor/SHT) at address 0x44 on TCA port 2 with label: Exterior
+Device labeled as: Exterior
+Successfully created device: SHT_Exterior
 
 Creating device from JSON: BH1705 (Sensor/BH1705) at address 0x23 on TCA port 1 with label: Interior  
 Device labeled as: Interior
 Successfully created device: BH1705
 
-Creating device from JSON: PCF8574 (GPIO/PCF8574) at address 0x20 on TCA port 0 with label: Controller
+Creating device from JSON: PCF8574 (GPIO/PCF8574) at address 0x20 on TCA port 1 with label: Controller
 Device labeled as: Controller
 Successfully created device: PCF8574
 
-Successfully created 7 devices from JSON configuration
+Successfully created 8 devices from JSON configuration
 ```
+
+**Key improvement**: Now both Interior and Exterior SHT sensors are created with proper labels!
 
 ## Test Cases
 
