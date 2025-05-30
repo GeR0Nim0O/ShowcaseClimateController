@@ -11,7 +11,7 @@ Device::Device(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const Stri
 // Alternative constructor for legacy devices that specify threshold and channels first
 Device::Device(TwoWire* wire, float threshold, std::map<String, String> channels, uint8_t i2cAddress, uint8_t tcaChannel, int deviceIndex)
     : wire(wire), i2cAddress(i2cAddress), tcaChannel(tcaChannel), 
-      deviceIndex(deviceIndex), initialized(false), deviceName(""), 
+      deviceIndex(deviceIndex), initialized(false), deviceName(""), deviceLabel(""),
       channels(channels), threshold(threshold) {
     // Set the threshold for all channels
     for (const auto& channel : channels) {
