@@ -275,13 +275,27 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
                             &Wire, type, typeNumber, I2C_ADDR_SHT, tcaPort, 
                             channelThresholds, channelNames, deviceIndex, ""
                         );
-                        
-                        if (createdDevice != nullptr) {
+                          if (createdDevice != nullptr) {
                             Serial.println("SHT sensor created successfully with combination:");
                             Serial.print("Type: ");
                             Serial.print(type);
                             Serial.print(", TypeNumber: ");
                             Serial.println(typeNumber);
+                            
+                            // Apply location labels based on TCA port
+                            // Assign labels based on TCA port - you may need to adjust these mappings
+                            String sensorLabel = "";
+                            if (tcaPort == 1) {
+                                sensorLabel = "Interior";  // TCA port 1 = Interior sensor
+                            } else if (tcaPort == 2) {
+                                sensorLabel = "Exterior";  // TCA port 2 = Exterior sensor
+                            } else {
+                                sensorLabel = "Unknown";   // Other ports
+                            }
+                            
+                            createdDevice->setDeviceLabel(sensorLabel);
+                            Serial.print("SHT sensor labeled as: ");
+                            Serial.println(sensorLabel);
                             
                             devices.push_back(createdDevice);
                             deviceIndex++;
