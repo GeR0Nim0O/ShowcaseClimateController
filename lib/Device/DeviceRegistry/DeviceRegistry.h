@@ -37,12 +37,13 @@ public:
     bool registerDevice(Device* device);
     bool initializeAllDevices();
     void updateAllDevices();
-    
-    // Generic device getters - no hardware-specific types
+      // Generic device getters - no hardware-specific types
     Device* getDevice(const String& deviceName);
     Device* getDeviceByIndex(int index);
     std::vector<Device*> getDevicesByType(const String& type);
     Device* getDeviceByType(const String& type, int index = 0);
+    Device* getDeviceByTypeAndLabel(const String& type, const String& label);
+    std::vector<Device*> getDevicesByLabel(const String& label);
     
     // Status and utility methods
     int getDeviceCount() const { return devices.size(); }
