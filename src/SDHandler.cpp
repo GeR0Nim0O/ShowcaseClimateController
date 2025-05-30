@@ -426,28 +426,53 @@ bool SDHandler::copyDefaultConfig() {
                         "Name": "Weight",
                         "Threshold": 1.0
                     }
-                }
-            },
-                "Channels": {
-                    "Weight": "W"
-                }
-            },
+                }            },
             "GMX02B": {
                 "Type": "Sensor",
                 "TypeNumber": "GMx02B",
                 "Address": "0x08",
-                "Threshold": "1",
+                "Label": "Interior",
                 "Channels": {
-                    "Ammonia": "NH3",
-                    "CarbonOxide": "CO",
-                    "NitrogenDioxide": "NO2",
-                    "Propane": "C3H8",
-                    "Butane": "C4H10",
-                    "Methane": "CH4",
-                    "Hydrogen": "H2",
-                    "Ethanol": "C2H5OH",
-                    "Ethylene": "C2H4",
-                    "VOC": "VOC"
+                    "NH3": {
+                        "Name": "Ammonia",
+                        "Threshold": 1.0
+                    },
+                    "CO": {
+                        "Name": "CarbonOxide",
+                        "Threshold": 1.0
+                    },
+                    "NO2": {
+                        "Name": "NitrogenDioxide",
+                        "Threshold": 1.0
+                    },
+                    "C3H8": {
+                        "Name": "Propane",
+                        "Threshold": 1.0
+                    },
+                    "C4H10": {
+                        "Name": "Butane",
+                        "Threshold": 1.0
+                    },
+                    "CH4": {
+                        "Name": "Methane",
+                        "Threshold": 1.0
+                    },
+                    "H2": {
+                        "Name": "Hydrogen",
+                        "Threshold": 1.0
+                    },
+                    "C2H5OH": {
+                        "Name": "Ethanol",
+                        "Threshold": 1.0
+                    },
+                    "C2H4": {
+                        "Name": "Ethylene",
+                        "Threshold": 1.0
+                    },
+                    "VOC": {
+                        "Name": "VOC",
+                        "Threshold": 1.0
+                    }
                 }
             },
             "PCF8574": {
