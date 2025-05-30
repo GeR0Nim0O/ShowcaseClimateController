@@ -108,9 +108,7 @@ int apiRetryCount = 0;
 int ntpRetryCount = 0;
 
 // Global variables for climate controller
-PCF8574gpio* gpioExpander = nullptr;
-SHTsensor* climateTemperatureSensor = nullptr;
-GP8403dac* climateDac = nullptr;  // Add DAC pointer
+// Climate controller instance
 ClimateController* climateController = nullptr;
 bool climateControllerEnabled = true;
 
