@@ -133,11 +133,13 @@ Successfully created 8 devices from JSON configuration
 
 ## Test Cases
 
-1. **Device Creation**: All devices should be created from JSON configuration
-2. **Label Assignment**: Each device should have the correct label from JSON
-3. **Climate Controller**: Should find Interior sensor using `getDeviceByTypeAndLabel()`
-4. **Display Output**: Device labels should appear in sensor readings display
-5. **Fallback Mode**: If JSON is invalid, system falls back to I2C scan (without labels)
+1. **Multiple Device Support**: Both Interior and Exterior SHT sensors are created with correct labels
+2. **Device Creation**: All devices should be created from JSON configuration
+3. **Label Assignment**: Each device should have the correct label from JSON
+4. **TCA Port Handling**: Devices use explicit TCAPort from JSON with validation against I2C scan
+5. **Climate Controller**: Should find Interior sensor using `getDeviceByTypeAndLabel()`
+6. **Display Output**: Device labels should appear in sensor readings display
+7. **Fallback Mode**: If JSON is invalid, system falls back to I2C scan (without labels)
 
 ## Benefits
 
