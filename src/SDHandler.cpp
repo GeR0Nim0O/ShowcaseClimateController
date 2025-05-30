@@ -360,23 +360,49 @@ bool SDHandler::copyDefaultConfig() {
             "device": "Casekeeper",
             "number": "18304",
             "showcase_id": "5.A3"
-        },
-        "Devices": {
-            "DS3231:": {
+        },        "Devices": {
+            "DS3231": {
                 "Type": "RTC",
                 "TypeNumber": "DS3231",
                 "Address": "0x68",
+                "Label": "System",
                 "Channels": {
-                    "Time": "Time"
-                }            },
-            "SHT": {
+                    "Time": {
+                        "Name": "Time",
+                        "Threshold": 0.0
+                    }
+                }
+            },
+            "SHT_Interior": {
                 "Type": "Sensor",
-                "TypeNumber": "SHT31",
+                "TypeNumber": "SHT",
                 "Address": "0x44",
-                "Threshold": "0.3",
+                "Label": "Interior",
                 "Channels": {
-                    "Temperature": "T",
-                    "Humidity": "H"
+                    "T": {
+                        "Name": "Temperature",
+                        "Threshold": 0.3
+                    },
+                    "H": {
+                        "Name": "Humidity",
+                        "Threshold": 1.0
+                    }
+                }
+            },
+            "SHT_Exterior": {
+                "Type": "Sensor",
+                "TypeNumber": "SHT",
+                "Address": "0x44",
+                "Label": "Exterior",
+                "Channels": {
+                    "T": {
+                        "Name": "Temperature",
+                        "Threshold": 0.3
+                    },
+                    "H": {
+                        "Name": "Humidity",
+                        "Threshold": 1.0
+                    }
                 }
             },
             "BH1705": {
