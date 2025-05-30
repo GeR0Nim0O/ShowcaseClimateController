@@ -111,7 +111,20 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         Serial.println();
     }
 
-    // Safest approach - rebuild our known devices from the scanned addresses
+    // Try JSON-based device creation first
+    if (!devicesConfig.isNull()) {
+        Serial.println("\nUsing JSON configuration for device initialization");
+        devices = initializeDevicesFromJSON(tcaScanResults, rtc);
+        if (!devices.empty()) {
+            Serial.print("Successfully created ");
+            Serial.print(devices.size());
+            Serial.println(" devices from JSON configuration");
+            return devices;
+        }
+        Serial.println("JSON device creation failed, falling back to I2C scan method");
+    }
+
+    // Fallback: rebuild our known devices from the scanned addresses
     Serial.println("\nUsing direct I2C scan results for device initialization");
       // Known device addresses we might encounter
     const uint8_t I2C_ADDR_RTC = 0x68;       // DS3231 RTC
