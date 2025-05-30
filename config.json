@@ -63,11 +63,11 @@
           "Threshold": 1.0
         }
       }
-    },
-    "SCALE": {
+    },    "SCALE": {
       "Type": "Sensor",
       "TypeNumber": "SCALES",
       "Address": "0x26",
+      "Label": "Interior",
       "Channels": {
         "W": {
           "Name": "Weight",
