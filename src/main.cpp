@@ -517,8 +517,12 @@ void readAndSendDataFromDevices() {
         auto data = device->readData();        
         
         for (const auto& channel : device->getChannels()) {
-            String channelKey = channel.first;
-            String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
+            String channelKey = channel.first;            String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
+            String deviceLabel = device->getDeviceLabel();
+            String displayName = deviceName;
+            if (deviceLabel.length() > 0) {
+                displayName += " (" + deviceLabel + ")";
+            }
             String deviceSpecificKey = deviceName + "_" + channelKey; // Make key device-specific
             std::string key = std::string(deviceSpecificKey.c_str()); // Convert to std::string
             float value = data[channelKey].toFloat(); // Use String key and convert to float
