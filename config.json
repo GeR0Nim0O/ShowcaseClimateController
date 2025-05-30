@@ -95,10 +95,11 @@
           "Threshold": 1.0
         }
       }
-    },"GMX02B": {
+    },    "GMX02B": {
       "Type": "Sensor",
       "TypeNumber": "GMx02B",
       "Address": "0x08",
+      "TCAPort": 1,
       "Label": "Interior",
       "Channels": {
         "NH3": {
