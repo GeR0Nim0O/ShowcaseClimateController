@@ -45,7 +45,7 @@
       "Channels": {
         "T": {
           "Name": "Temperature",
-          "Threshold": 0.1
+          "Threshold": 0.
         },
         "H": {
           "Name": "Humidity",
