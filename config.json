@@ -56,7 +56,7 @@
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
-      "Label": "Exterior",
+      "Label": "Interior",
       "Channels": {
         "T": {
           "Name": "Temperature",
