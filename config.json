@@ -68,11 +68,10 @@
           "Threshold": 1.0
         }
       }
-    },"BH1705": {
+    },    "BH1705": {
       "Type": "Sensor",
       "TypeNumber": "BH1705",
       "Address": "0x23",
-      "TCAPort": 1,
       "Label": "Interior",
       "Channels": {
         "L": {
@@ -80,7 +79,7 @@
           "Threshold": 1.0
         }
       }
-    },    "SCALE": {
+    },"SCALE": {
       "Type": "Sensor",
       "TypeNumber": "SCALES",
       "Address": "0x26",
