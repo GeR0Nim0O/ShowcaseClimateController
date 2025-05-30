@@ -259,10 +259,38 @@ void WifiMqttHandler::keepAlive(PubSubClient &client, WiFiClientSecure &espClien
         Serial.println("MQTT reconnected successfully. Resetting MQTT attempt counter.");
         mqttReconnectAttempts = 0;
         mqttSkipped = false;
-    }
-
-    // Case 4: WLAN UP, MQTT UP
+    }    // Case 4: WLAN UP, MQTT UP
     if (client.connected()) {
         client.loop(); // Ensure the MQTT client loop is called to maintain the connection
     }
+}
+
+void WifiMqttHandler::printConnectionStatus(PubSubClient &client) {
+    Serial.println("\n=== Connection Status ===");
+    
+    // WiFi Status
+    Serial.print("WiFi Status: ");
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.print("Connected to ");
+        Serial.println(WiFi.SSID());
+        Serial.print("IP Address: ");
+        Serial.println(WiFi.localIP());
+        Serial.print("Signal Strength: ");
+        Serial.print(WiFi.RSSI());
+        Serial.println(" dBm");
+    } else {
+        Serial.println("Disconnected");
+    }
+    
+    // MQTT Status
+    Serial.print("MQTT Status: ");
+    if (client.connected()) {
+        Serial.println("Connected");
+    } else {
+        Serial.print("Disconnected (State: ");
+        Serial.print(client.state());
+        Serial.println(")");
+    }
+    
+    Serial.println("===========================");
 }
