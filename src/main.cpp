@@ -135,6 +135,10 @@ void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
 void printClimateControlStatus(); // Add climate status printing function
 
+// Global status system functions
+void printAllSystemStatus(); // Print all system status
+void updateGlobalStatusSystem(); // Update global status system
+
 void setup()
 {
   Serial.begin(115200);
