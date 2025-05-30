@@ -147,6 +147,7 @@
       "Type": "GPIO",
       "TypeNumber": "PCF8574",
       "Address": "0x20",
+      "TCAPort": 1,
       "Mode": "OUTPUT",
       "Label": "Controller",
       "Channels": {
