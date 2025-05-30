@@ -158,11 +158,11 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         String deviceTypeNumber = deviceConfig["TypeNumber"] | "";
         String addressStr = deviceConfig["Address"] | "";
         String deviceMode = deviceConfig["Mode"] | "";
-        
-        // Extract label with explicit null check
+          // Extract label with modern ArduinoJson approach
         String deviceLabel = "";
-        if (deviceConfig.containsKey("Label") && !deviceConfig["Label"].isNull()) {
-            deviceLabel = deviceConfig["Label"].as<String>();
+        JsonVariant labelVariant = deviceConfig["Label"];
+        if (!labelVariant.isNull() && labelVariant.is<const char*>()) {
+            deviceLabel = labelVariant.as<String>();
         }
         
         // Debug extracted values
