@@ -53,6 +53,10 @@ bool throttleMqtt = true; // Enable MQTT throttling to send data only once every
 unsigned long mqttThrottleInterval = 60000; // 1 minute in milliseconds
 unsigned long lastMqttSendTime = 0; // Last time data was sent via MQTT
 
+// Global status timer settings (aligned with MQTT timer)
+unsigned long lastStatusUpdateTime = 0; // Last time status was printed
+const unsigned long statusUpdateInterval = 60000; // 1 minute in milliseconds
+
 // Structure to track changed sensor data
 struct SensorData {
     String deviceName;
