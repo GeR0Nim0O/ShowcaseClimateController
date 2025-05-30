@@ -796,101 +796,28 @@ void setCustomMqttSettings() {
 
 // Function to initialize the climate controller
 void initializeClimateController() {
-  // Add extra safety
-  try {
-    // Use DeviceRegistry to get devices instead of manual searching
-    DeviceRegistry& registry = DeviceRegistry::getInstance();
-    
-    // Get GPIO expander from DeviceRegistry
-    gpioExpander = (PCF8574gpio*)registry.getDeviceByType("GPIO", 0);  // Get first GPIO expander
-    if (gpioExpander != nullptr) {
-      Serial.println("Found GPIO expander for climate control via DeviceRegistry");
-    } else {
-      Serial.println("No GPIO expander found in DeviceRegistry");
-    }
-      // Get temperature/humidity sensor from DeviceRegistry - specifically look for Interior labeled sensor
-    climateTemperatureSensor = (SHTsensor*)registry.getDeviceByTypeAndLabel("TemperatureHumidity", "Interior");
-    if (climateTemperatureSensor != nullptr) {
-      Serial.println("Found INTERIOR temperature/humidity sensor for climate control via DeviceRegistry");
-      Serial.print("Using sensor: ");
-      Serial.print(climateTemperatureSensor->getDeviceName());
-      Serial.print(" with label: ");
-      Serial.println(climateTemperatureSensor->getDeviceLabel());
-    } else {
-      // Fallback to first available sensor if no Interior labeled sensor found
-      Serial.println("No Interior labeled sensor found, using first available temperature/humidity sensor");
-      climateTemperatureSensor = (SHTsensor*)registry.getDeviceByType("TemperatureHumidity", 0);
-      if (climateTemperatureSensor != nullptr) {
-        Serial.println("Found temperature/humidity sensor for climate control via DeviceRegistry (fallback)");
-      } else {
-        Serial.println("No temperature/humidity sensor found in DeviceRegistry");
-      }
-    }
-    
-    // Get DAC from DeviceRegistry - using proper DeviceRegistry access pattern
-    climateDac = (GP8403dac*)registry.getDeviceByType("DAC", 0);  // Get first DAC
-    if (climateDac != nullptr) {
-      Serial.print("Found DAC device via DeviceRegistry: ");
-      Serial.print(climateDac->getType());
-      Serial.print(" with name: ");
-      Serial.println(climateDac->getDeviceName());
-    } else {
-      Serial.println("No DAC found in DeviceRegistry");
-    }
-    
-    // Create climate controller if we found the required devices
-    if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
-      Serial.println("Creating climate controller with devices");
-      
-      // Create with safe checks
-      try {
-        Serial.println("Allocating climate controller...");
-        climateController = new ClimateController(gpioExpander, climateTemperatureSensor, climateDac);
+    if (climateControllerEnabled) {
+        Serial.println("Initializing Climate Controller...");
+        climateController = ClimateController::createFromDeviceRegistry();
         
         if (climateController != nullptr) {
-          Serial.println("Climate controller allocated, calling begin()");
-          
-          if (climateController->begin()) {
-            Serial.println("Climate controller initialized successfully");
-            
-            // Set initial parameters
+            // Set configured parameters from main.cpp variables
             climateController->setTemperatureSetpoint(temperatureSetpoint);
             climateController->setHumiditySetpoint(humiditySetpoint);
             climateController->setClimateMode(climateMode);
             climateController->setHumidityMode(humidityMode);
             
-            // Enable automatic fan control
-            climateController->setAutoFanControl(true);
-            Serial.println("Automatic fan control enabled");
-            
-            Serial.print("Climate controller setpoints - Temperature: ");
+            Serial.print("Climate controller configured - Temperature: ");
             Serial.print(temperatureSetpoint);
             Serial.print("°C, Humidity: ");
             Serial.print(humiditySetpoint);
             Serial.println("%");
-          } else {
-            Serial.println("Failed to initialize climate controller");
-            delete climateController;
-            climateController = nullptr;
-          }
         } else {
-          Serial.println("Failed to allocate climate controller");
+            Serial.println("Failed to initialize climate controller from DeviceRegistry");
         }
-      }
-      catch (...) {
-        Serial.println("Exception during climate controller initialization");
-        if (climateController != nullptr) {
-          delete climateController;
-          climateController = nullptr;
-        }
-      }
     } else {
-      Serial.println("Could not find required devices for climate controller");
+        Serial.println("Climate controller disabled in configuration");
     }
-  }
-  catch (...) {
-    Serial.println("Exception during device discovery for climate controller");
-  }
 }
 
 // Function to update the climate controller (called every loop)
