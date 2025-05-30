@@ -38,11 +38,11 @@ The following devices are now configured with labels in the JSON, including **mu
         "T": { "Name": "Temperature", "Threshold": 0.3 },
         "H": { "Name": "Humidity", "Threshold": 1.0 }
       }
-    },
-    "BH1705": {
+    },    "BH1705": {
       "Type": "Sensor",
       "TypeNumber": "BH1705",
       "Address": "0x23",
+      "TCAPort": 1,
       "Label": "Interior",
       "Channels": { "L": { "Name": "Lux", "Threshold": 1.0 } }
     },
@@ -50,6 +50,7 @@ The following devices are now configured with labels in the JSON, including **mu
       "Type": "Sensor",
       "TypeNumber": "SCALES",
       "Address": "0x26",
+      "TCAPort": 1,
       "Label": "Interior",
       "Channels": { "W": { "Name": "Weight", "Threshold": 1.0 } }
     },
@@ -57,6 +58,7 @@ The following devices are now configured with labels in the JSON, including **mu
       "Type": "Sensor",
       "TypeNumber": "GMx02B",
       "Address": "0x08",
+      "TCAPort": 1,
       "Label": "Interior",
       "Channels": { "NH3": { "Name": "Ammonia", "Threshold": 1.0 } }
     },
@@ -64,6 +66,7 @@ The following devices are now configured with labels in the JSON, including **mu
       "Type": "GPIO",
       "TypeNumber": "PCF8574",
       "Address": "0x20",
+      "TCAPort": 1,
       "Mode": "OUTPUT",
       "Label": "Controller",
       "Channels": {
@@ -75,6 +78,7 @@ The following devices are now configured with labels in the JSON, including **mu
       "Type": "DAC",
       "TypeNumber": "GP8403",
       "Address": "0x5F",
+      "TCAPort": 1,
       "Label": "Controller",
       "Channels": { "DAC_A": { "Name": "TemperaturePower" } }
     }
