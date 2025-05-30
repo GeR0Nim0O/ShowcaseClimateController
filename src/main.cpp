@@ -822,16 +822,5 @@ void initializeClimateController() {
 
 // Function to update the climate controller (called every loop)
 void updateClimateController() {
-    if (climateController == nullptr) {
-        return; // Exit if climate controller is not initialized
-    }
-    
-    // Only update climate controller every few seconds to avoid GPIO conflicts
-    static unsigned long lastClimateUpdate = 0;
-    if (millis() - lastClimateUpdate >= 5000) { // Update every 5 seconds
-        climateController->update();
-        lastClimateUpdate = millis();
-    }
-    
-    // Note: Climate status is now printed via global status system every 60 seconds
+    ClimateController::updateControllerWithTiming(climateController);
 }
