@@ -42,7 +42,7 @@
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
-      "TCAPort": 1,
+      "TCAPort": 1d ,
       "Label": "Interior",
       "Channels": {
         "T": {
