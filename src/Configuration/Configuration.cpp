@@ -301,22 +301,19 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         Device* createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
             &Wire, deviceType, deviceTypeNumber, deviceAddress, tcaPort, 
             channelThresholds, channelNames, deviceIndex, deviceMode
-        );
-          if (createdDevice != nullptr) {
-            // Apply the label from JSON configuration
-            Serial.print("Device created successfully, checking label... deviceLabel='");
+        );        if (createdDevice != nullptr) {
+            Serial.print("Device created successfully. Setting label from JSON: '");
             Serial.print(deviceLabel);
             Serial.println("'");
             
-            if (!deviceLabel.isEmpty()) {
-                Serial.print("Setting device label to: ");
-                Serial.println(deviceLabel);
-                createdDevice->setDeviceLabel(deviceLabel);
-                Serial.print("Device labeled as: ");
-                Serial.println(createdDevice->getDeviceLabel());
-            } else {
-                Serial.println("No label specified for this device");
-            }
+            // Apply the label from JSON configuration
+            createdDevice->setDeviceLabel(deviceLabel);
+            
+            // Verify the label was set correctly
+            String actualLabel = createdDevice->getDeviceLabel();
+            Serial.print("Device label after setting: '");
+            Serial.print(actualLabel);
+            Serial.println("'");
             
             // Handle special case for RTC
             if (deviceType.equalsIgnoreCase("RTC") && deviceTypeNumber.equalsIgnoreCase("DS3231")) {
@@ -328,7 +325,9 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             deviceIndex++;
             
             Serial.print("Successfully created device: ");
-            Serial.println(deviceKey);
+            Serial.print(deviceKey);
+            Serial.print(" with final label: ");
+            Serial.println(actualLabel);
         } else {
             Serial.print("Failed to create device: ");
             Serial.println(deviceKey);
