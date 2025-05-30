@@ -143,8 +143,10 @@ Successfully created 8 devices from JSON configuration
 
 ## Benefits
 
-1. **Flexibility**: Labels can be changed without code modification
-2. **Configuration**: All device settings centralized in JSON
-3. **Scalability**: Easy to add new devices or change existing configurations
-4. **Maintainability**: No hardcoded TCA port mappings in code
-5. **Compatibility**: Existing climate control logic unchanged
+1. **Solves Multiple Sensor Problem**: Can now differentiate between Interior/Exterior SHT sensors
+2. **Flexibility**: Labels can be changed without code modification
+3. **Configuration**: All device settings centralized in JSON
+4. **Explicit Port Assignment**: TCAPort field eliminates ambiguity about device placement
+5. **Scalability**: Easy to add new devices or change existing configurations
+6. **Maintainability**: No hardcoded TCA port mappings in code
+7. **Compatibility**: Existing climate control logic unchanged
