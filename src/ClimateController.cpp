@@ -693,11 +693,24 @@ void ClimateController::printClimateStatus() {
     Serial.print("% (setpoint: ");
     Serial.print(getHumiditySetpoint(), 1);
     Serial.println("%)");
+      // Get external temperature/humidity from device registry
+    DeviceRegistry& registry = DeviceRegistry::getInstance();
+    SHTsensor* externalSensor = (SHTsensor*)registry.getDeviceByTypeAndLabel("TemperatureHumidity", "Exterior");
     
-    // Add external temperature/humidity if available
-    // Note: This would need access to external sensors from device registry
-    // For now, we'll note it as a placeholder for future implementation
-    Serial.println("External Conditions: [Available via device registry]");
+    if (externalSensor != nullptr && externalSensor->isInitialized()) {
+        // Get the most recent data from the sensor
+        auto externalData = externalSensor->readData();
+        
+        Serial.print("External Temperature: ");
+        Serial.print(externalData["temperature"].toFloat(), 1);
+        Serial.println("°C");
+        
+        Serial.print("External Humidity: ");
+        Serial.print(externalData["humidity"].toFloat(), 1);
+        Serial.println("%");
+    } else {
+        Serial.println("External Conditions: [Sensor not available]");
+    }
     
     // Print control status
     Serial.print("Climate Mode: ");
