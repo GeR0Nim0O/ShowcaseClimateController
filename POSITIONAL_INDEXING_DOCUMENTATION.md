@@ -82,13 +82,16 @@ To add support for new device types:
 
 ### Modified Files:
 - `config.json`: Added separate entries for multiple SHT sensors with labels
-- `src/Configuration/Configuration.cpp`: Implemented positional indexing in `initializeDevicesFromJSON()`
+- `src/Configuration/Configuration.cpp`: Streamlined device initialization using single method with positional indexing
+- `include/Configuration.h`: Updated method declaration
 
 ### Key Changes:
-1. **Removed TCA Port Dependencies**: No longer requires `TCAPort` fields in JSON
-2. **Added Type-Based Counting**: Tracks how many devices of each type have been processed
-3. **Consistent Ordering**: Sorts scanned devices for predictable assignment
-4. **Enhanced Logging**: Provides detailed debug information about device assignment
+1. **Consolidated Device Initialization**: Single `initializeDevices()` method handles all device creation
+2. **Removed TCA Port Dependencies**: No longer requires `TCAPort` fields in JSON
+3. **Added Type-Based Counting**: Tracks how many devices of each type have been processed
+4. **Consistent Ordering**: Sorts scanned devices for predictable assignment
+5. **Enhanced Logging**: Provides detailed debug information about device assignment
+6. **Eliminated Redundancy**: Removed fallback I2C scanning method and duplicate code
 
 ## Testing
 
