@@ -37,12 +37,10 @@
           "Threshold": 0.0
         }
       }
-    },
-    "SHT_Interior": {
+    },    "SHT_Interior": {
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
-      "TCAPort": 1,
       "Label": "Interior",
       "Channels": {
         "T": {
@@ -59,7 +57,6 @@
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
-      "TCAPort": 2,
       "Label": "Exterior",
       "Channels": {
         "T": {
@@ -71,7 +68,7 @@
           "Threshold": 1.0
         }
       }
-    },    "BH1705": {
+    },"BH1705": {
       "Type": "Sensor",
       "TypeNumber": "BH1705",
       "Address": "0x23",
