@@ -799,17 +799,8 @@ void initializeClimateController() {
         climateController = ClimateController::createFromDeviceRegistry();
         
         if (climateController != nullptr) {
-            // Set configured parameters from main.cpp variables
-            climateController->setTemperatureSetpoint(temperatureSetpoint);
-            climateController->setHumiditySetpoint(humiditySetpoint);
-            climateController->setClimateMode(climateMode);
-            climateController->setHumidityMode(humidityMode);
-            
-            Serial.print("Climate controller configured - Temperature: ");
-            Serial.print(temperatureSetpoint);
-            Serial.print("°C, Humidity: ");
-            Serial.print(humiditySetpoint);
-            Serial.println("%");
+            // Configure all parameters at once
+            climateController->configure(temperatureSetpoint, humiditySetpoint, climateMode, humidityMode);
         } else {
             Serial.println("Failed to initialize climate controller from DeviceRegistry");
         }
