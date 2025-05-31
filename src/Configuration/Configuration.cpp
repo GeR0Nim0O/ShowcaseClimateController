@@ -307,6 +307,36 @@ bool Configuration::loadConfig(const JsonObject& config) {
     if (!config["project"].isNull()) {
         parseProjectConfig(config["project"]);
     }
+    
+    // Parse custom WiFi configuration
+    if (!config["custom_wifi"].isNull()) {
+        parseCustomWifiConfig(config["custom_wifi"]);
+    }
+    
+    // Parse custom MQTT configuration
+    if (!config["custom_mqtt"].isNull()) {
+        parseCustomMqttConfig(config["custom_mqtt"]);
+    }
+    
+    // Parse MQTT throttling configuration
+    if (!config["mqtt_throttling"].isNull()) {
+        parseMqttThrottlingConfig(config["mqtt_throttling"]);
+    }
+    
+    // Parse climate controller configuration
+    if (!config["climate_controller"].isNull()) {
+        parseClimateControllerConfig(config["climate_controller"]);
+    }
+    
+    // Parse display configuration
+    if (!config["display"].isNull()) {
+        parseDisplayConfig(config["display"]);
+    }
+    
+    // Parse system configuration
+    if (!config["system"].isNull()) {
+        parseSystemConfig(config["system"]);
+    }
       // Store devices configuration for later use
     if (!config["Devices"].isNull()) {
         // Clear the existing document and copy the Devices section to it
