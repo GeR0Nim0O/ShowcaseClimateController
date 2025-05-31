@@ -90,11 +90,9 @@ unsigned long lastDisplayUpdate = 0;
 
 void readAndPrintInitialSensorData(); // Add this function prototype
 void readAndSendDataFromDevices();
-void handleButtonPress();
 void printDebugInfo();
 void printCreatedSensors(); // Declare the function here
 void logDataToSD(const String& deviceName, const String& currentTime, float value, const String& sensorType); // Update function declaration
-void sendDataOverMQTT(const String& deviceName, const String& projectNr, const String& showcaseId, const char* sensorType, float sensorValue, const String& currentTime, int deviceIndex);
 void setMqttThrottling(bool enable, unsigned long interval = 60000); // Declare the function here
 void sendAllChangedSensorData(); // Add this function declaration
 void initializeClimateController(); // Function to initialize climate controller
