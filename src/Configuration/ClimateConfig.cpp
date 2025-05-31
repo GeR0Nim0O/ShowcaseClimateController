@@ -1,6 +1,9 @@
 #include "../../../lib/Config/ClimateConfig/ClimateConfig.h"  // Use relative path to find the header in lib directory
 #include <Arduino.h>
 #include <EEPROM.h>
+#include <ArduinoJson.h>
+#include <FS.h>
+#include <SPIFFS.h>
 #include <SPIFFS.h>
 #include <ArduinoJson.h>
 #include <SPIFFS.h>
