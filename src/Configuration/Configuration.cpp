@@ -854,6 +854,18 @@ void Configuration::parseMqttThrottlingConfig(const JsonObject& config) {
     mqttThrottlingConfig["interval_ms"] = String(config["interval_ms"] | 60000);
 }
 
+void Configuration::parseMainProgramConfig(const JsonObject& config) {
+    std::map<String, String> mainProgramConfig;
+    mainProgramConfig["status_update_interval_ms"] = String(config["status_update_interval_ms"] | 60000);
+    mainProgramConfig["time_fetch_interval_ms"] = String(config["time_fetch_interval_ms"] | 3600000);
+    mainProgramConfig["connection_retry_interval_ms"] = String(config["connection_retry_interval_ms"] | 60000);
+    
+    // Store in systemConfig for compatibility with existing getters
+    systemConfig["status_update_interval_ms"] = mainProgramConfig["status_update_interval_ms"];
+    systemConfig["time_fetch_interval_ms"] = mainProgramConfig["time_fetch_interval_ms"];
+    systemConfig["connection_retry_interval_ms"] = mainProgramConfig["connection_retry_interval_ms"];
+}
+
 void Configuration::parseClimateControllerConfig(const JsonObject& config) {
     climateControllerConfig["enabled"] = config["enabled"] | true;
     climateControllerConfig["temperature_setpoint"] = String(config["temperature_setpoint"] | 22.0);
