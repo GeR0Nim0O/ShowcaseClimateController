@@ -555,16 +555,23 @@ bool SDHandler::copyDefaultConfig() {
 }
 
 bool SDHandler::readJsonFile(const char* filename, JsonDocument& doc) {
+    // Check if SD card is available
+    if (!SD.cardSize()) {
+        Serial.print("WARNING: SD card not available - cannot read file: ");
+        Serial.println(filename);
+        return false;
+    }
+    
     File file = SD.open(filename);
     if (!file) {
-        Serial.print("Failed to open file: ");
+        Serial.print("WARNING: Failed to open file on SD card: ");
         Serial.println(filename);
         return false;
     }
 
     size_t size = file.size();
     if (size > 8192) {
-        Serial.println("Config file size is too large");
+        Serial.println("WARNING: Config file size is too large");
         file.close();
         return false;
     }
@@ -577,7 +584,7 @@ bool SDHandler::readJsonFile(const char* filename, JsonDocument& doc) {
 
     DeserializationError error = deserializeJson(doc, fileContent);
     if (error) {
-        Serial.print("Failed to parse JSON file: ");
+        Serial.print("WARNING: Failed to parse JSON file: ");
         Serial.println(error.c_str());
     return false;
     }
