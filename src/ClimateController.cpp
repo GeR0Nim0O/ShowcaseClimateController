@@ -1,5 +1,6 @@
 #include "ClimateController.h"
 #include "DeviceRegistry/DeviceRegistry.h"
+#include "../lib/Config/ClimateConfig/ClimateConfig.h"
 
 // Static factory method for automatic device discovery and initialization
 ClimateController* ClimateController::createFromDeviceRegistry() {
