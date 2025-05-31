@@ -1168,5 +1168,17 @@ unsigned long Configuration::getTimeFetchInterval() {
 }
 
 unsigned long Configuration::getConnectionRetryInterval() {
-    return systemConfig["connection_retry_interval_ms"].toInt();
+    return systemConfig.connectionRetryInterval;
+}
+
+unsigned long Configuration::getStartupDelay() {
+    return systemConfig.startupDelay;
+}
+
+unsigned long Configuration::getWifiConnectionTimeout() {
+    return systemConfig.wifiConnectionTimeout;
+}
+
+unsigned long Configuration::getButtonPressTimeout() {
+    return systemConfig.buttonPressTimeout;
 }
