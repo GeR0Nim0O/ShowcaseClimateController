@@ -658,44 +658,6 @@ void sendAllChangedSensorData() {
     lastMqttSendTime = millis(); // Update last send time
 }
 
-void handleButtonPress() {
-  int reading = digitalRead(BUTTON_PIN);
-
-  if (reading != buttonPressed) {
-    lastDebounceTime = millis();
-  }
-
-  if ((millis() - lastDebounceTime) > DEBOUNCE_DELAY) {
-    if (reading == LOW && !buttonPressed) {
-      buttonPressed = true;
-      stopSendingMQTT = true;
-      buttonPressTime = millis();
-      Serial.println("Button pressed. Do you want to copy the config file? Press again to confirm.");    } else if (reading == LOW && buttonPressed) {
-      unsigned long buttonTimeout = Configuration::getButtonPressTimeout();
-      if (millis() - buttonPressTime < buttonTimeout) {
-        if (SDHandler::updateConfig()) {
-          Serial.println("Config file copied successfully. Resuming MQTT messaging in 5 seconds...");
-        } else {
-          Serial.println("Failed to copy config file. Resuming MQTT messaging.");
-        }
-        stopSendingMQTT = false;
-        buttonPressed = false; // Reset button state
-      } else {
-        Serial.println("Timeout. No response received. Resuming normal operation.");
-        stopSendingMQTT = false;
-        buttonPressed = false; // Reset button state
-      }
-    } else if (reading == HIGH && buttonPressed) {
-      buttonPressed = false;
-      unsigned long buttonTimeout = Configuration::getButtonPressTimeout();
-      if (stopSendingMQTT && (millis() - buttonPressTime) > buttonTimeout) {
-        Serial.println("Resuming MQTT messaging.");
-        stopSendingMQTT = false;
-      }
-    }
-  }
-}
-
 void printDebugInfo() {
   Serial.print("SSID: ");
   Serial.println(Configuration::getWiFiSSID());
