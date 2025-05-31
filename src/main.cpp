@@ -684,21 +684,6 @@ void printCreatedSensors() {
   }
 }
 
-// Function to control MQTT throttling settings
-void setMqttThrottling(bool enable, unsigned long interval) {
-    throttleMqtt = enable;
-    mqttThrottleInterval = interval;
-    
-    Serial.print("MQTT Throttling ");
-    if (enable) {
-        Serial.print("enabled - sending once every ");
-        Serial.print(interval / 1000);
-        Serial.println(" seconds");
-    } else {
-        Serial.println("disabled - sending all data");
-    }
-}
-
 // Function to initialize the climate controller
 void initializeClimateController() {
     if (Configuration::isClimateControllerEnabled()) {
