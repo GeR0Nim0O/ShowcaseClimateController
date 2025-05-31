@@ -19,13 +19,43 @@
     "port": 1883,
     "username": "mqtt_user",
     "password": "mqtt_password"
-  },
-  "mqtts": {
+  },  "mqtts": {
     "server": "mqtt.flespi.io",
     "port": 8883,
     "username": "mqtts_user",
-    "password": "mqtts_password"
-  }, 
+    "password": "mqtts_password",
+    "token": "ONz40m0iGTFbiFMcp14lLnt1Eb31qnPulPkg5DkJUuGGY6OhJhN1iPqImaRT0qbp"
+  },
+  "custom_wifi": {
+    "enable": true,
+    "ssid": "Ron&Rowie_Gast",
+    "password": "Gast@Ron&Rowie"
+  },
+  "custom_mqtt": {
+    "enable": true,
+    "server": "mqtt.flespi.io",
+    "port": 8883,
+    "token": "ONz40m0iGTFbiFMcp14lLnt1Eb31qnPulPkg5DkJUuGGY6OhJhN1iPqImaRT0qbp"
+  },
+  "mqtt_throttling": {
+    "enabled": true,
+    "interval_ms": 60000
+  },
+  "climate_controller": {
+    "enabled": true,
+    "temperature_setpoint": 22.0,
+    "humidity_setpoint": 50.0,
+    "climate_mode": "AUTO",
+    "humidity_mode": "AUTO",
+    "auto_fan_control": true
+  },
+  "display": {
+    "update_interval_ms": 5000
+  },
+  "system": {
+    "status_update_interval_ms": 60000,
+    "time_fetch_interval_ms": 3600000
+  },
   "Devices": {
     "DS3231": {
       "Type": "RTC",
