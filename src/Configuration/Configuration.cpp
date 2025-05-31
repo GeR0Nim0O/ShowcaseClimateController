@@ -1085,6 +1085,62 @@ bool Configuration::isAutoFanControlEnabled() {
     return climateControllerConfig["auto_fan_control"] == "true" || climateControllerConfig["auto_fan_control"] == "1";
 }
 
+unsigned long Configuration::getClimateUpdateInterval() {
+    return climateControllerConfig["update_interval_ms"].toInt();
+}
+
+// Climate safety limits
+float Configuration::getMaxTemperature() {
+    return climateControllerConfig["max_temperature"].toFloat();
+}
+
+float Configuration::getMinTemperature() {
+    return climateControllerConfig["min_temperature"].toFloat();
+}
+
+float Configuration::getMaxHumidity() {
+    return climateControllerConfig["max_humidity"].toFloat();
+}
+
+float Configuration::getMinHumidity() {
+    return climateControllerConfig["min_humidity"].toFloat();
+}
+
+// Temperature PID parameters
+float Configuration::getTemperatureKp() {
+    return climateControllerConfig["temp_kp"].toFloat();
+}
+
+float Configuration::getTemperatureKi() {
+    return climateControllerConfig["temp_ki"].toFloat();
+}
+
+float Configuration::getTemperatureKd() {
+    return climateControllerConfig["temp_kd"].toFloat();
+}
+
+// Humidity PID parameters
+float Configuration::getHumidityKp() {
+    return climateControllerConfig["hum_kp"].toFloat();
+}
+
+float Configuration::getHumidityKi() {
+    return climateControllerConfig["hum_ki"].toFloat();
+}
+
+float Configuration::getHumidityKd() {
+    return climateControllerConfig["hum_kd"].toFloat();
+}
+
+// Control parameters
+float Configuration::getTemperatureHysteresis() {
+    return climateControllerConfig["temperature_hysteresis"].toFloat();
+}
+
+float Configuration::getHumidityHysteresis() {
+    return climateControllerConfig["humidity_hysteresis"].toFloat();
+}
+
 // Display configuration getters
 unsigned long Configuration::getDisplayUpdateInterval() {
     return displayConfig["update_interval_ms"].toInt();
