@@ -16,7 +16,7 @@ bool SDHandler::initSDCard() {
     pinMode(SD_MISO_PIN, INPUT_PULLUP);
     SPI.begin(SD_SCLK_PIN, SD_MISO_PIN, SD_MOSI_PIN, SD_CS_PIN);
     if (!SD.begin(SD_CS_PIN)) {
-        Serial.println("SD card initialization failed!");
+        Serial.println("WARNING: SD card initialization failed - SD card may not be present");
         return false;
     }
     Serial.println("SD card initialized.");
