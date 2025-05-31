@@ -686,9 +686,9 @@ void handleButtonPress() {
       buttonPressed = true;
       stopSendingMQTT = true;
       buttonPressTime = millis();
-      Serial.println("Button pressed. Do you want to copy the config file? Press again to confirm.");
-    } else if (reading == LOW && buttonPressed) {
-      if (millis() - buttonPressTime < 5000) {
+      Serial.println("Button pressed. Do you want to copy the config file? Press again to confirm.");    } else if (reading == LOW && buttonPressed) {
+      unsigned long buttonTimeout = Configuration::getButtonPressTimeout();
+      if (millis() - buttonPressTime < buttonTimeout) {
         if (SDHandler::updateConfig()) {
           Serial.println("Config file copied successfully. Resuming MQTT messaging in 5 seconds...");
         } else {
@@ -703,7 +703,8 @@ void handleButtonPress() {
       }
     } else if (reading == HIGH && buttonPressed) {
       buttonPressed = false;
-      if (stopSendingMQTT && (millis() - buttonPressTime) > 5000) {
+      unsigned long buttonTimeout = Configuration::getButtonPressTimeout();
+      if (stopSendingMQTT && (millis() - buttonPressTime) > buttonTimeout) {
         Serial.println("Resuming MQTT messaging.");
         stopSendingMQTT = false;
       }
