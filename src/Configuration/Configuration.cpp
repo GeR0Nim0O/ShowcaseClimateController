@@ -727,8 +727,7 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
                 if (error == 0) {
                     success = true;
                 }
-            }
-            else if (device->getType().equalsIgnoreCase("SHTSensor") || 
+            }            else if (device->getType().equalsIgnoreCase("SHTSensor") || 
                      device->getType().equalsIgnoreCase("Sensor")) {
                 Serial.println("Initializing SHT sensor with direct method");
                 I2CHandler::selectTCA(device->getTCAChannel());
@@ -737,6 +736,20 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
                 
                 if (error == 0) {
                     success = true;
+                }
+            }
+            else if (device->getType().equalsIgnoreCase("Display")) {
+                Serial.println("Initializing Display device with direct method");
+                I2CHandler::selectTCA(device->getTCAChannel());
+                Wire.beginTransmission(device->getI2CAddress());
+                int error = Wire.endTransmission();
+                
+                if (error == 0) {
+                    Serial.println("Display device I2C communication test passed");
+                    success = true;
+                } else {
+                    Serial.print("Display device I2C communication failed with error: ");
+                    Serial.println(error);
                 }
             }
             
