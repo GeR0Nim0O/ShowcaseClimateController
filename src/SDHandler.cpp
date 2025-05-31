@@ -38,12 +38,12 @@ bool SDHandler::checkAndCreateLogFile() {
 
 bool SDHandler::initializeSDCardAndConfig() {
     if (!initSDCard()) {
-        Serial.println("SD Card initialization failed");
+        Serial.println("WARNING: SD Card initialization failed - continuing without SD card support");
         return false;
     }
 
     if (!checkAndCreateLogFile()) {
-        Serial.println("Failed to ensure log file exists");
+        Serial.println("WARNING: Failed to ensure log file exists - SD logging will not be available");
         return false;
     } else {
         Serial.println("Log file is present and ready for use.");
@@ -55,7 +55,7 @@ bool SDHandler::initializeSDCardAndConfig() {
         if (copyDefaultConfig()) {
             Serial.println("Default config copied to SD card.");
         } else {
-            Serial.println("Failed to copy default config to SD card.");
+            Serial.println("WARNING: Failed to copy default config to SD card - fallback configuration will be used");
             return false;
         }
     }
