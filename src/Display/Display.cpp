@@ -32,14 +32,15 @@ bool Display::begin() {
     wire->beginTransmission(i2cAddress);
     wire->write(0xFF);
     uint8_t error3 = wire->endTransmission();
-    
-    if (error1 != 0 || error2 != 0 || error3 != 0) {
+      if (error1 != 0 || error2 != 0 || error3 != 0) {
         Serial.print("PCF8574T LCD communication failed. Errors: ");
         Serial.print(error1);
         Serial.print(", ");
         Serial.print(error2);
         Serial.print(", ");
         Serial.println(error3);
+        initialized = false;
+        displayInitialized = false;
         return false;
     }
     
