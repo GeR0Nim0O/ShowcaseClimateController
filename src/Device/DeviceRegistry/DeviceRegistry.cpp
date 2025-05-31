@@ -350,11 +350,16 @@ namespace {    bool registeredSHT = DeviceRegistry::registerDeviceType("Sensor",
         [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
            const std::map<String, String>& channels, int deviceIndex) {
         return new GP8403dac(wire, address, tcaPort, threshold, channels, deviceIndex);
-    });
-
-    bool registeredDS3231 = DeviceRegistry::registerDeviceType("RTC", "DS3231", 
+    });    bool registeredDS3231 = DeviceRegistry::registerDeviceType("RTC", "DS3231", 
         [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
            const std::map<String, String>& channels, int deviceIndex) {
         return new DS3231rtc(wire, address, tcaPort, threshold, channels, deviceIndex);
+    });
+
+    bool registeredDisplay = DeviceRegistry::registerDeviceType("Display", "LCD2x16", 
+        [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
+           const std::map<String, String>& channels, int deviceIndex) {
+        String deviceName = "LCD_Display_" + String(deviceIndex);
+        return new Display(wire, address, tcaPort, deviceName, deviceIndex);
     });
 }
