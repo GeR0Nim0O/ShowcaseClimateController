@@ -22,17 +22,17 @@ bool Configuration::loadConfigFromSD(const char* filename) {
     JsonDocument doc;
     
     if (!SDHandler::readJsonFile(filename, doc)) {
-        Serial.println("Failed to read config file");
-        return false;
+        Serial.println("Failed to read config file from SD card - will use fallback configuration");
+        return loadConfigFromCodebase();
     }
     
     // Load configuration from parsed JSON
     if (!loadConfig(doc.as<JsonObject>())) {
-        Serial.println("Failed to parse config");
-        return false;
+        Serial.println("Failed to parse config from SD card - will use fallback configuration");
+        return loadConfigFromCodebase();
     }
     
-    Serial.println("Configuration loaded successfully");
+    Serial.println("Configuration loaded successfully from SD card");
     return true;
 }
 
