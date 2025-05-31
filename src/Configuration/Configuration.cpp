@@ -53,10 +53,9 @@ bool Configuration::loadConfigFromCodebase() {
             "device": "Casekeeper",
             "number": "24123",
             "showcase_id": "2.4"
-        },
-        "wifi": {
-            "ssid": "Ron",
-            "password": "ikweethet"
+        },        "wifi": {
+            "ssid": "Ron&Rowie_Gast",
+            "password": "Gast@Ron&Rowie"
         },
         "ethernet": {
             "ip": "192.168.1.100",
