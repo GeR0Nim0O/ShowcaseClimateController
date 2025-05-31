@@ -861,6 +861,70 @@ void Configuration::parseClimateControllerConfig(const JsonObject& config) {
     climateControllerConfig["climate_mode"] = config["climate_mode"] | "AUTO";
     climateControllerConfig["humidity_mode"] = config["humidity_mode"] | "AUTO";
     climateControllerConfig["auto_fan_control"] = config["auto_fan_control"] | true;
+    climateControllerConfig["update_interval_ms"] = String(config["update_interval_ms"] | 1000);
+    
+    // Parse safety limits
+    if (config["safety_limits"].is<JsonObject>()) {
+        JsonObject safetyLimits = config["safety_limits"];
+        climateControllerConfig["max_temperature"] = String(safetyLimits["max_temperature"] | 35.0);
+        climateControllerConfig["min_temperature"] = String(safetyLimits["min_temperature"] | 10.0);
+        climateControllerConfig["max_humidity"] = String(safetyLimits["max_humidity"] | 80.0);
+        climateControllerConfig["min_humidity"] = String(safetyLimits["min_humidity"] | 20.0);
+    } else {
+        // Default values if safety_limits section is missing
+        climateControllerConfig["max_temperature"] = String(35.0);
+        climateControllerConfig["min_temperature"] = String(10.0);
+        climateControllerConfig["max_humidity"] = String(80.0);
+        climateControllerConfig["min_humidity"] = String(20.0);
+    }
+    
+    // Parse PID parameters
+    if (config["pid_parameters"].is<JsonObject>()) {
+        JsonObject pidParams = config["pid_parameters"];
+        
+        // Temperature PID
+        if (pidParams["temperature"].is<JsonObject>()) {
+            JsonObject tempPid = pidParams["temperature"];
+            climateControllerConfig["temp_kp"] = String(tempPid["kp"] | 2.0);
+            climateControllerConfig["temp_ki"] = String(tempPid["ki"] | 0.5);
+            climateControllerConfig["temp_kd"] = String(tempPid["kd"] | 0.1);
+        } else {
+            climateControllerConfig["temp_kp"] = String(2.0);
+            climateControllerConfig["temp_ki"] = String(0.5);
+            climateControllerConfig["temp_kd"] = String(0.1);
+        }
+        
+        // Humidity PID
+        if (pidParams["humidity"].is<JsonObject>()) {
+            JsonObject humPid = pidParams["humidity"];
+            climateControllerConfig["hum_kp"] = String(humPid["kp"] | 1.0);
+            climateControllerConfig["hum_ki"] = String(humPid["ki"] | 0.2);
+            climateControllerConfig["hum_kd"] = String(humPid["kd"] | 0.05);
+        } else {
+            climateControllerConfig["hum_kp"] = String(1.0);
+            climateControllerConfig["hum_ki"] = String(0.2);
+            climateControllerConfig["hum_kd"] = String(0.05);
+        }
+    } else {
+        // Default PID values if pid_parameters section is missing
+        climateControllerConfig["temp_kp"] = String(2.0);
+        climateControllerConfig["temp_ki"] = String(0.5);
+        climateControllerConfig["temp_kd"] = String(0.1);
+        climateControllerConfig["hum_kp"] = String(1.0);
+        climateControllerConfig["hum_ki"] = String(0.2);
+        climateControllerConfig["hum_kd"] = String(0.05);
+    }
+    
+    // Parse control parameters
+    if (config["control_parameters"].is<JsonObject>()) {
+        JsonObject controlParams = config["control_parameters"];
+        climateControllerConfig["temperature_hysteresis"] = String(controlParams["temperature_hysteresis"] | 0.1);
+        climateControllerConfig["humidity_hysteresis"] = String(controlParams["humidity_hysteresis"] | 0.5);
+    } else {
+        // Default values if control_parameters section is missing
+        climateControllerConfig["temperature_hysteresis"] = String(0.1);
+        climateControllerConfig["humidity_hysteresis"] = String(0.5);
+    }
 }
 
 void Configuration::parseDisplayConfig(const JsonObject& config) {
