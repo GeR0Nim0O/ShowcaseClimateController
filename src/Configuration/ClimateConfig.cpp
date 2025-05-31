@@ -367,9 +367,8 @@ bool ClimateConfig::saveToJsonFile(const String& filePath) {
     JsonObject control = climate["control_parameters"].to<JsonObject>();
     control["temperature_hysteresis"] = settings.temperatureHysteresis;
     control["humidity_hysteresis"] = settings.humidityHysteresis;
-    
-    // Fan settings
-    JsonObject fans = climate.createNestedObject("fan_settings");
+      // Fan settings
+    JsonObject fans = climate["fan_settings"].to<JsonObject>();
     fans["interior_fan_enabled"] = settings.fanInteriorEnabled;
     fans["exterior_fan_enabled"] = settings.fanExteriorEnabled;
     
