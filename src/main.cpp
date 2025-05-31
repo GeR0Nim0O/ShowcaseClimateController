@@ -633,7 +633,7 @@ void printAllSystemStatus() {
 
 void updateGlobalStatusSystem() {
     // Check if it's time for a status update (aligned with MQTT timer)
-    bool timeForStatusUpdate = (millis() - lastStatusUpdateTime >= statusUpdateInterval);
+    bool timeForStatusUpdate = (millis() - lastStatusUpdateTime >= Configuration::getStatusUpdateInterval());
     
     if (timeForStatusUpdate) {
         printAllSystemStatus();
