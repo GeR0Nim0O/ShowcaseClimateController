@@ -127,10 +127,10 @@ void updateGlobalStatusSystem(); // Update global status system
 void setup()
 {
   Serial.begin(115200);
-  delay(5000); 
+  delay(Configuration::getStartupDelay()); 
 
   // Initialize I2C bus
-  I2CHandler::initializeI2C(); 
+  I2CHandler::initializeI2C();
 
   // Perform I2C scan before connecting to any devices
   I2CHandler::scanI2C(); 
