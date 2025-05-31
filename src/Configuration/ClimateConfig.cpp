@@ -359,7 +359,7 @@ bool ClimateConfig::saveToJsonFile(const String& filePath) {
     tempPid["ki"] = settings.temperatureKi;
     tempPid["kd"] = settings.temperatureKd;
     
-    JsonObject humPid = pid.createNestedObject("humidity");
+    JsonObject humPid = pid["humidity"].to<JsonObject>();
     humPid["kp"] = settings.humidityKp;
     humPid["ki"] = settings.humidityKi;
     humPid["kd"] = settings.humidityKd;
