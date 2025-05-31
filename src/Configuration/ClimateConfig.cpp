@@ -253,12 +253,11 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         Serial.println("Climate config file too large");
         file.close();
         return false;
-    }
-      std::unique_ptr<char[]> buf(new char[size]);
+    }    std::unique_ptr<char[]> buf(new char[size]);
     file.readBytes(buf.get(), size);
     file.close();
     
-    StaticJsonDocument<2048> doc;
+    JsonDocument doc;
     DeserializationError error = deserializeJson(doc, buf.get());
     
     if (error) {
