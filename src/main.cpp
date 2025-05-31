@@ -27,6 +27,7 @@
 #include "SDHandler.h"
 #include "Configuration.h"
 #include "I2CHandler.h"
+#include "SystemSetup.h"
 
 #define BUTTON_PIN 34
 #define DEBOUNCE_DELAY 50 // Debounce delay in milliseconds
