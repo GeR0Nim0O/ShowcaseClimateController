@@ -53,13 +53,42 @@ public:    // Static member variables
     static void setDeviceName(const String& name);
     static void setTimezone(const String& tz);
     static void setLogFileSize(uint32_t size);
-    
-    // Getters for project information
+      // Getters for project information
     static String getProjectNumber();
     static String getShowcaseId();
     static String getDeviceName();
     static String getTimezone();
     static uint32_t getLogFileSize();
+    
+    // Custom WiFi configuration
+    static bool isCustomWifiEnabled();
+    static String getCustomWifiSSID();
+    static String getCustomWifiPassword();
+    
+    // Custom MQTT configuration
+    static bool isCustomMqttEnabled();
+    static String getCustomMqttServer();
+    static int getCustomMqttPort();
+    static String getCustomMqttToken();
+    
+    // MQTT Throttling configuration
+    static bool isMqttThrottlingEnabled();
+    static unsigned long getMqttThrottlingInterval();
+    
+    // Climate Controller configuration
+    static bool isClimateControllerEnabled();
+    static float getClimateTemperatureSetpoint();
+    static float getClimateHumiditySetpoint();
+    static String getClimateMode();
+    static String getHumidityMode();
+    static bool isAutoFanControlEnabled();
+    
+    // Display configuration
+    static unsigned long getDisplayUpdateInterval();
+    
+    // System configuration
+    static unsigned long getStatusUpdateInterval();
+    static unsigned long getTimeFetchInterval();
       // Device configuration
     static JsonObject getDevicesConfig();
     static void initializeEachDevice(std::vector<Device*>& devices);
