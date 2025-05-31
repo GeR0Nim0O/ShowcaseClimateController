@@ -317,10 +317,14 @@ bool Configuration::loadConfig(const JsonObject& config) {
     if (!config["custom_mqtt"].isNull()) {
         parseCustomMqttConfig(config["custom_mqtt"]);
     }
-    
-    // Parse MQTT throttling configuration
+      // Parse MQTT throttling configuration
     if (!config["mqtt_throttling"].isNull()) {
         parseMqttThrottlingConfig(config["mqtt_throttling"]);
+    }
+    
+    // Parse main program configuration
+    if (!config["main_program"].isNull()) {
+        parseMainProgramConfig(config["main_program"]);
     }
     
     // Parse climate controller configuration
