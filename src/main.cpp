@@ -135,47 +135,13 @@ void setup()
 
   // Perform I2C scan before connecting to any devices
   I2CHandler::scanI2C(); 
-  // Initialize SD card and configuration
-  if (!SDHandler::initializeSDCardAndConfig()) {
-    Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
-    // Continue initialization even without SD card
-  }
-  // Load device configurations from config.json
-  if (!Configuration::loadConfigFromSD("/config.json"))
-  {
-    Serial.println("Failed to load config from SD card. Using default or last known values.");
-    // Set default or last known values here
-    Configuration::setWiFiSSID("Ron");
-    Configuration::setWiFiPassword("ikweethet");
-    Configuration::setMqttsServer("mqtt.flespi.io");
-    Configuration::setMqttsPort(8883);
-    Configuration::setFlespiToken("ONz40m0iGTFbiFMcp14lLnt1Eb31qnPulPkg5DkJUuGGY6OhJhN1iPqImaRT0qbp"); // Replace with your actual token
-    Configuration::setProjectNumber("12345");
-    Configuration::setShowcaseId("67");
-    Configuration::setDeviceName("TEST");
-    Configuration::setTimezone("UTC");
-  } else {
-    Serial.println("Config loaded successfully from SD card.");
-    
-    // Load custom settings from config if enabled
-    if (Configuration::isCustomWifiEnabled()) {
-      Configuration::setWiFiSSID(Configuration::getCustomWifiSSID());
-      Configuration::setWiFiPassword(Configuration::getCustomWifiPassword());
-    }
-    
-    if (Configuration::isCustomMqttEnabled()) {
-      Configuration::setMqttsServer(Configuration::getCustomMqttServer());
-      Configuration::setMqttsPort(Configuration::getCustomMqttPort());
-      Configuration::setFlespiToken(Configuration::getCustomMqttToken());
-    }
-    
-    // Load throttling settings
-    throttleMqtt = Configuration::isMqttThrottlingEnabled();
-    mqttThrottleInterval = Configuration::getMqttThrottlingInterval();
-  }
-
-  // Print devices configuration
-  Configuration::printConfigValues();
+  
+  // Setup configuration using SystemSetup
+  SystemSetup::setupConfiguration();
+  
+  // Load throttling settings after configuration is loaded
+  throttleMqtt = Configuration::isMqttThrottlingEnabled();
+  mqttThrottleInterval = Configuration::getMqttThrottlingInterval();
 
   // Get connected I2C devices with their addresses and TCA ports
   tcaScanResults = I2CHandler::TCAScanner();
