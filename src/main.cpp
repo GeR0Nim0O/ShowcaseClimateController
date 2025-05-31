@@ -772,13 +772,34 @@ void setMqttThrottling(bool enable, unsigned long interval) {
 
 // Function to initialize the climate controller
 void initializeClimateController() {
-    if (climateControllerEnabled) {
+    if (Configuration::isClimateControllerEnabled()) {
         Serial.println("Initializing Climate Controller...");
         climateController = ClimateController::createFromDeviceRegistry();
         
         if (climateController != nullptr) {
+            // Get configuration values
+            float temperatureSetpoint = Configuration::getClimateTemperatureSetpoint();
+            float humiditySetpoint = Configuration::getClimateHumiditySetpoint();
+            String climateMode = Configuration::getClimateMode();
+            String humidityMode = Configuration::getHumidityMode();
+            
+            // Convert string modes to enums
+            ClimateMode climateEnum = ClimateMode::AUTO;
+            if (climateMode == "HEATING") {
+                climateEnum = ClimateMode::HEATING;
+            } else if (climateMode == "COOLING") {
+                climateEnum = ClimateMode::COOLING;
+            }
+            
+            HumidityMode humidityEnum = HumidityMode::AUTO;
+            if (humidityMode == "HUMIDIFY") {
+                humidityEnum = HumidityMode::HUMIDIFY;
+            } else if (humidityMode == "DEHUMIDIFY") {
+                humidityEnum = HumidityMode::DEHUMIDIFY;
+            }
+            
             // Configure all parameters at once
-            climateController->configure(temperatureSetpoint, humiditySetpoint, climateMode, humidityMode);
+            climateController->configure(temperatureSetpoint, humiditySetpoint, climateEnum, humidityEnum);
         } else {
             Serial.println("Failed to initialize climate controller from DeviceRegistry");
         }
