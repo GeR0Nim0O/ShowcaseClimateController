@@ -100,7 +100,6 @@ int ntpRetryCount = 0;
 // Global variables for climate controller
 // Climate controller instance
 ClimateController* climateController = nullptr;
-bool climateControllerEnabled = true;
 
 // Global variables for display
 Display* displayDevice = nullptr;
