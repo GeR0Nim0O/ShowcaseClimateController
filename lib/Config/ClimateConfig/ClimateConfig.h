@@ -67,8 +67,7 @@ public:
     bool getAutoFanControl() const { return settings.autoFanControl; }
     float getTemperatureHysteresis() const { return settings.temperatureHysteresis; }
     float getHumidityHysteresis() const { return settings.humidityHysteresis; }
-    
-    // Setters
+      // Setters
     void setTemperatureSetpoint(float value) { settings.temperatureSetpoint = value; }
     void setHumiditySetpoint(float value) { settings.humiditySetpoint = value; }
     void setTemperaturePID(float kp, float ki, float kd) { 
@@ -84,6 +83,11 @@ public:
     void setFanInteriorEnabled(bool enabled) { settings.fanInteriorEnabled = enabled; }
     void setFanExteriorEnabled(bool enabled) { settings.fanExteriorEnabled = enabled; }
     void setUpdateInterval(uint16_t interval) { settings.updateInterval = interval; }
+    void setClimateMode(const String& mode) { settings.climateMode = mode; }
+    void setHumidityMode(const String& mode) { settings.humidityMode = mode; }
+    void setAutoFanControl(bool enabled) { settings.autoFanControl = enabled; }
+    void setTemperatureHysteresis(float value) { settings.temperatureHysteresis = value; }
+    void setHumidityHysteresis(float value) { settings.humidityHysteresis = value; }
     
     // Utility
     void printSettings();
