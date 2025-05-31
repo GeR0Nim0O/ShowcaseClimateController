@@ -157,11 +157,10 @@ void setup()
 
   // Perform I2C scan before connecting to any devices
   I2CHandler::scanI2C(); 
-
   // Initialize SD card and configuration
   if (!SDHandler::initializeSDCardAndConfig()) {
-    Serial.println("Failed to initialize SD card.");
-    return;
+    Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
+    // Continue initialization even without SD card
   }
 
   // Load device configurations from config.json
