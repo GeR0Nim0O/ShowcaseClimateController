@@ -126,6 +126,7 @@ private:
     static void parseCustomWifiConfig(const JsonObject& config);
     static void parseCustomMqttConfig(const JsonObject& config);
     static void parseMqttThrottlingConfig(const JsonObject& config);
+    static void parseMainProgramConfig(const JsonObject& config);
     static void parseClimateControllerConfig(const JsonObject& config);
     static void parseDisplayConfig(const JsonObject& config);
     static void parseSystemConfig(const JsonObject& config);
