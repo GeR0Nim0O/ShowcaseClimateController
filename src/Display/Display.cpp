@@ -54,8 +54,7 @@ bool Display::begin() {
         Serial.print(retryCount + 1);
         Serial.print(" of ");
         Serial.println(maxRetries);
-        
-        try {
+          try {
             initializeDisplay();
             
             // Test if LCD is working by sending a simple command
@@ -81,7 +80,8 @@ bool Display::begin() {
             Serial.print("Exception occurred during LCD initialization attempt ");
             Serial.println(retryCount + 1);
         }
-          retryCount++;
+        
+        retryCount++;
         if (retryCount < maxRetries) {
             Serial.println("Retrying LCD initialization...");
             delay(500); // Wait before retry
