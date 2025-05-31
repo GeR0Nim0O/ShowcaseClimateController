@@ -285,10 +285,9 @@ void loop() {
   static bool mqttRetryDone = false;
   static int wifiReconnectAttempts = 0;
   static int mqttReconnectAttempts = 0;
-  static bool wifiSkipped = false;
-  static bool mqttSkipped = false;
+  static bool wifiSkipped = false;  static bool mqttSkipped = false;
   const int maxReconnectAttempts = 5;
-  const unsigned long connectionRetryInterval = 60000; // 1 minute
+  const unsigned long connectionRetryInterval = Configuration::getConnectionRetryInterval();
 
   // Check if it's time to send MQTT data (every minute)
   bool timeToSendMqtt = throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval);
