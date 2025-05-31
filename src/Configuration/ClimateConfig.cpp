@@ -4,10 +4,6 @@
 #include <ArduinoJson.h>
 #include <FS.h>
 #include <SPIFFS.h>
-#include <SPIFFS.h>
-#include <ArduinoJson.h>
-#include <SPIFFS.h>
-#include <ArduinoJson.h>
 
 // Singleton instance
 ClimateConfig& ClimateConfig::getInstance() {
