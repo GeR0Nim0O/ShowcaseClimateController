@@ -239,9 +239,16 @@ void setup()
   delay(500);
   setupComplete = true; // Indicate that setup is complete
   Serial.println("Setup complete: " + String(setupComplete));
-
   // Configure MQTT throttling from configuration
-  setMqttThrottling(Configuration::isMqttThrottlingEnabled(), Configuration::getMqttThrottlingInterval());
+  Serial.print("MQTT throttling configuration loaded: ");
+  Serial.print(Configuration::isMqttThrottlingEnabled() ? "enabled" : "disabled");
+  if (Configuration::isMqttThrottlingEnabled()) {
+    Serial.print(", interval: ");
+    Serial.print(Configuration::getMqttThrottlingInterval() / 1000);
+    Serial.println(" seconds");
+  } else {
+    Serial.println();
+  }
 }
 
 void loop() {
