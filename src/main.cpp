@@ -107,9 +107,6 @@ void setup()
   Serial.begin(115200);
   delay(5000);
   
-  // Test PSRAM first
-  testPSRAM();
-  
   // Initialize I2C bus
   I2CHandler::initializeI2C();
   // Setup configuration
