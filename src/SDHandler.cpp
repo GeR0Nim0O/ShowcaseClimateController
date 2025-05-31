@@ -27,7 +27,7 @@ bool SDHandler::checkAndCreateLogFile() {
     if (!SD.exists("/log.txt")) {
         logFile = SD.open("/log.txt", FILE_WRITE);
         if (!logFile) {
-            Serial.println("Failed to create log file");
+            Serial.println("WARNING: Failed to create log file on SD card");
             return false;
         }
         logFile.close();
