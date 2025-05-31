@@ -274,12 +274,17 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         Serial.println("No climate_controller section found in JSON");
         return false;
     }
-    
-    // Load basic settings
+      // Load basic settings
     settings.temperatureSetpoint = climate["temperature_setpoint"] | 22.0;
     settings.humiditySetpoint = climate["humidity_setpoint"] | 50.0;
-    settings.climateMode = climate["climate_mode"] | "AUTO";
-    settings.humidityMode = climate["humidity_mode"] | "AUTO";
+    
+    String tempClimateMode = climate["climate_mode"] | "AUTO";
+    String tempHumidityMode = climate["humidity_mode"] | "AUTO";
+    strncpy(settings.climateMode, tempClimateMode.c_str(), 15);
+    settings.climateMode[15] = '\0';
+    strncpy(settings.humidityMode, tempHumidityMode.c_str(), 15);
+    settings.humidityMode[15] = '\0';
+    
     settings.autoFanControl = climate["auto_fan_control"] | true;
     settings.updateInterval = climate["update_interval_ms"] | 1000;
     
