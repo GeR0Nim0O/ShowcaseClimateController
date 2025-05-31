@@ -127,7 +127,7 @@ void updateGlobalStatusSystem(); // Update global status system
 void setup()
 {
   Serial.begin(115200);
-  delay(Configuration::getStartupDelay()); 
+  delay(5000); // Initial delay before loading config
 
   // Initialize I2C bus
   I2CHandler::initializeI2C();
