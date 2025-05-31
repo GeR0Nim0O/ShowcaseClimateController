@@ -47,16 +47,47 @@ bool Configuration::loadConfigFromSD(const char* filename) {
 }
 
 bool Configuration::loadConfigFromCodebase() {
-    Serial.println("Loading fallback configuration from project config.json...");
+    Serial.println("Loading fallback configuration...");
     
-    // Try to read from project config.json file in SPIFFS/LittleFS first
-    if (readProjectConfigJson()) {
-        Serial.println("Fallback configuration loaded successfully from project config.json");
-        return true;
+    // Initialize EEPROM
+    if (!EEPROMConfig::initialize()) {
+        Serial.println("Failed to initialize EEPROM");
+        return false;
     }
     
-    Serial.println("ERROR: Failed to load project config.json file!");
-    Serial.println("ERROR: No configuration available - system cannot continue");
+    // Check if we have valid config in EEPROM
+    if (EEPROMConfig::hasValidConfig()) {
+        Serial.println("Found existing configuration in EEPROM, loading...");
+        JsonDocument doc;
+        if (EEPROMConfig::readConfigFromEEPROM(doc)) {
+            if (loadConfig(doc.as<JsonObject>())) {
+                Serial.println("Configuration loaded successfully from EEPROM");
+                EEPROMConfig::printEEPROMStatus();
+                return true;
+            } else {
+                Serial.println("Failed to parse EEPROM configuration");
+            }
+        } else {
+            Serial.println("Failed to read EEPROM configuration");
+        }
+    }
+    
+    // No valid config in EEPROM, try to write project config to EEPROM
+    Serial.println("No valid EEPROM config found, attempting to store project config in EEPROM...");
+    if (EEPROMConfig::writeProjectConfigToEEPROM()) {
+        // Now try to read it back
+        JsonDocument doc;
+        if (EEPROMConfig::readConfigFromEEPROM(doc)) {
+            if (loadConfig(doc.as<JsonObject>())) {
+                Serial.println("Project configuration stored and loaded successfully from EEPROM");
+                EEPROMConfig::printEEPROMStatus();
+                return true;
+            }
+        }
+    }
+    
+    Serial.println("ERROR: Unable to load any configuration!");
+    Serial.println("Please ensure project config.json is available or SD card is inserted");
     return false;
 }
 
