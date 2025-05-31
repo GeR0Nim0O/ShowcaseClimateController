@@ -630,7 +630,7 @@ void logDataToSD(const String& deviceName, const String& currentTime, float valu
 }
 
 void sendAllChangedSensorData() {
-    if (WiFi.status() != WL_CONNECTED || !client.connected() || stopSendingMQTT) {
+    if (WiFi.status() != WL_CONNECTED || !client.connected()) {
         return;
     }
     
