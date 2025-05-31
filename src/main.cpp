@@ -93,7 +93,6 @@ void logDataToSD(const String& deviceName, const String& currentTime, float valu
 void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
 void showTemperatureAndHumidity(); // Function to show current temperature and humidity
-void testClimateConfig(); // Function to test ClimateConfig system
 
 // Display functions
 void initializeDisplayDevice(); // Function to initialize display device
