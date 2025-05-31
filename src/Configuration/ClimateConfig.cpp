@@ -258,8 +258,7 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
     std::unique_ptr<char[]> buf(new char[size]);
     file.readBytes(buf.get(), size);
     file.close();
-    
-    DynamicJsonDocument doc(2048);
+      JsonDocument doc(2048);
     DeserializationError error = deserializeJson(doc, buf.get());
     
     if (error) {
