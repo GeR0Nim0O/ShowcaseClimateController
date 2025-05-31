@@ -717,42 +717,33 @@ void updateDisplayWithClimateStatus() {
 
 // Function to test ClimateConfig system
 void testClimateConfig() {
-    Serial.println("Testing ClimateConfig system...");
+    Serial.println("\n=== Testing ClimateConfig System ===");
     
-    // Access ClimateConfig instance
     ClimateConfig& climateConfig = ClimateConfig::getInstance();
     
-    // Print current settings
+    // Test reading current settings
     Serial.println("Current ClimateConfig settings:");
-    Serial.print("  Temperature Setpoint: ");
-    Serial.print(climateConfig.getTemperatureSetpoint());
-    Serial.println("°C");
-    Serial.print("  Humidity Setpoint: ");
-    Serial.print(climateConfig.getHumiditySetpoint());
-    Serial.println("%");
-    Serial.print("  Climate Mode: ");
-    Serial.println(climateConfig.getClimateMode());
-    Serial.print("  Humidity Mode: ");
-    Serial.println(climateConfig.getHumidityMode());
+    climateConfig.printSettings();
     
-    // Modify settings for testing
-    climateConfig.setTemperatureSetpoint(22.0);
-    climateConfig.setHumiditySetpoint(45.0);
-    climateConfig.setClimateMode("COOLING");
-    climateConfig.setHumidityMode("DEHUMIDIFYING");
+    // Test updating a setting
+    Serial.println("\nTesting setpoint update...");
+    float originalTemp = climateConfig.getTemperatureSetpoint();
+    climateConfig.setTemperatureSetpoint(25.0);
+    Serial.print("Temperature setpoint changed from ");
+    Serial.print(originalTemp);
+    Serial.println("°C to 25.0°C");
     
-    // Save settings to EEPROM and file
-    climateConfig.saveSettings();
+    // Test saving to JSON file
+    Serial.println("Testing JSON file save...");
+    if (climateConfig.updateJsonFile("/data/ClimateConfig.json")) {
+        Serial.println("Successfully saved to ClimateConfig.json");
+    } else {
+        Serial.println("Failed to save to ClimateConfig.json");
+    }
     
-    Serial.println("Modified and saved new settings:");
-    Serial.print("  Temperature Setpoint: ");
-    Serial.print(climateConfig.getTemperatureSetpoint());
-    Serial.println("°C");
-    Serial.print("  Humidity Setpoint: ");
-    Serial.print(climateConfig.getHumiditySetpoint());
-    Serial.println("%");
-    Serial.print("  Climate Mode: ");
-    Serial.println(climateConfig.getClimateMode());
-    Serial.print("  Humidity Mode: ");
-    Serial.println(climateConfig.getHumidityMode());
+    // Restore original value
+    climateConfig.setTemperatureSetpoint(originalTemp);
+    Serial.println("Restored original temperature setpoint");
+    
+    Serial.println("=== ClimateConfig Test Complete ===\n");
 }
