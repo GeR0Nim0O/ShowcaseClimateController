@@ -254,9 +254,6 @@ void setup()
     Serial.println("WiFi and MQTT connections will be retried in main loop");
     offlineMode = true;
   }
-
-  pinMode(BUTTON_PIN, INPUT_PULLUP); // Initialize button pin
-
   delay(500);
   setupComplete = true; // Indicate that setup is complete
   Serial.println("Setup complete: " + String(setupComplete));
