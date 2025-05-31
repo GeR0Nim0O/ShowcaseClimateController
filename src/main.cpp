@@ -27,14 +27,7 @@
 #include "SDHandler.h"
 #include "Configuration.h"
 #include "I2CHandler.h"
-#include "SystemSetup.h"
 
-#define BUTTON_PIN 34
-#define DEBOUNCE_DELAY 50 // Debounce delay in milliseconds
-bool buttonPressed = false;
-unsigned long lastDebounceTime = 0; // Last time the button state was toggled
-bool stopSendingMQTT = false;
-unsigned long buttonPressTime = 0;
 
 WiFiClientSecure espClient; // Use WiFiClientSecure instead of WiFiClient
 PubSubClient client(espClient);
