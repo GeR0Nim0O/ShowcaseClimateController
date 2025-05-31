@@ -28,9 +28,7 @@ bool Configuration::loadConfigFromSD(const char* filename) {
     JsonDocument doc;
     
     if (!SDHandler::readJsonFile(filename, doc)) {
-        Serial.println("ERROR: Failed to read config file from SD card!");
-        Serial.println("ERROR: No fallback configuration available - system requires config.json");
-        Serial.println("ERROR: Please ensure SD card is properly inserted and config.json exists");
+        // Silent failure - let the calling code handle fallback
         return false;
     }
     
@@ -40,7 +38,8 @@ bool Configuration::loadConfigFromSD(const char* filename) {
         Serial.println("ERROR: config.json may be corrupted or invalid");
         return false;
     }
-      Serial.println("Configuration loaded successfully from SD card");
+    
+    Serial.println("Configuration loaded successfully from SD card");
     return true;
 }
 
