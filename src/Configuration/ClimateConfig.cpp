@@ -143,6 +143,26 @@ bool ClimateConfig::validateSettings() {
         return false;
     }
     
+    // Check hysteresis values are reasonable
+    if (settings.temperatureHysteresis < 0.1 || settings.temperatureHysteresis > 5.0) {
+        return false;
+    }
+    
+    if (settings.humidityHysteresis < 0.5 || settings.humidityHysteresis > 10.0) {
+        return false;
+    }
+    
+    // Check that climate and humidity modes are valid
+    if (settings.climateMode != "AUTO" && settings.climateMode != "MANUAL" && 
+        settings.climateMode != "HEAT" && settings.climateMode != "COOL") {
+        return false;
+    }
+    
+    if (settings.humidityMode != "AUTO" && settings.humidityMode != "MANUAL" && 
+        settings.humidityMode != "HUMIDIFY" && settings.humidityMode != "DEHUMIDIFY") {
+        return false;
+    }
+    
     return true;
 }
 
