@@ -153,15 +153,17 @@ bool ClimateConfig::validateSettings() {
     if (settings.humidityHysteresis < 0.5 || settings.humidityHysteresis > 10.0) {
         return false;
     }
+      // Check that climate and humidity modes are valid
+    String climateMode = String(settings.climateMode);
+    String humidityMode = String(settings.humidityMode);
     
-    // Check that climate and humidity modes are valid
-    if (settings.climateMode != "AUTO" && settings.climateMode != "MANUAL" && 
-        settings.climateMode != "HEAT" && settings.climateMode != "COOL") {
+    if (climateMode != "AUTO" && climateMode != "MANUAL" && 
+        climateMode != "HEAT" && climateMode != "COOL") {
         return false;
     }
     
-    if (settings.humidityMode != "AUTO" && settings.humidityMode != "MANUAL" && 
-        settings.humidityMode != "HUMIDIFY" && settings.humidityMode != "DEHUMIDIFY") {
+    if (humidityMode != "AUTO" && humidityMode != "MANUAL" && 
+        humidityMode != "HUMIDIFY" && humidityMode != "DEHUMIDIFY") {
         return false;
     }
     
