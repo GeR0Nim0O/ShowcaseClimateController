@@ -91,7 +91,6 @@ void readAndSendDataFromDevices();
 void printDebugInfo();
 void printCreatedSensors(); // Declare the function here
 void logDataToSD(const String& deviceName, const String& currentTime, float value, const String& sensorType); // Update function declaration
-void setMqttThrottling(bool enable, unsigned long interval = 60000); // Declare the function here
 void sendAllChangedSensorData(); // Add this function declaration
 void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
