@@ -150,7 +150,6 @@ void setup()
     Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
     // Continue initialization even without SD card
   }
-
   // Load device configurations from config.json
   if (!Configuration::loadConfigFromSD("/config.json"))
   {
@@ -167,6 +166,22 @@ void setup()
     Configuration::setTimezone("UTC");
   } else {
     Serial.println("Config loaded successfully from SD card.");
+    
+    // Load custom settings from config if enabled
+    if (Configuration::isCustomWifiEnabled()) {
+      Configuration::setWiFiSSID(Configuration::getCustomWifiSSID());
+      Configuration::setWiFiPassword(Configuration::getCustomWifiPassword());
+    }
+    
+    if (Configuration::isCustomMqttEnabled()) {
+      Configuration::setMqttsServer(Configuration::getCustomMqttServer());
+      Configuration::setMqttsPort(Configuration::getCustomMqttPort());
+      Configuration::setFlespiToken(Configuration::getCustomMqttToken());
+    }
+    
+    // Load throttling settings
+    throttleMqtt = Configuration::isMqttThrottlingEnabled();
+    mqttThrottleInterval = Configuration::getMqttThrottlingInterval();
   }
 
   // Print devices configuration
