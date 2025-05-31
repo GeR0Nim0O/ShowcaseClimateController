@@ -714,4 +714,39 @@ void updateDisplayWithClimateStatus() {
     displayDevice->displayClimateStatus(currentTemp, currentHum, tempSetpoint, humSetpoint);
 }
 
+// Function to test PSRAM
+void testPSRAM() {
+    Serial.println("\n=== PSRAM Test ===");
+    
+    // Check if PSRAM is available
+    if (psramFound()) {
+        Serial.println("✅ PSRAM detected!");
+        
+        // Get PSRAM size
+        size_t psramSize = ESP.getPsramSize();
+        size_t freePsram = ESP.getFreePsram();
+        
+        Serial.print("PSRAM Total Size: ");
+        Serial.print(psramSize / 1024 / 1024);
+        Serial.println(" MB");
+        
+        Serial.print("PSRAM Free Size: ");
+        Serial.print(freePsram / 1024 / 1024);
+        Serial.println(" MB");
+        
+        // Test PSRAM allocation
+        void* testPtr = ps_malloc(1024 * 1024); // Allocate 1MB in PSRAM
+        if (testPtr != nullptr) {
+            Serial.println("✅ PSRAM allocation test successful");
+            free(testPtr);
+        } else {
+            Serial.println("❌ PSRAM allocation test failed");
+        }
+    } else {
+        Serial.println("❌ PSRAM not detected!");
+        Serial.println("Check hardware connections and configuration");
+    }
+    Serial.println("==================\n");
+}
+
 
