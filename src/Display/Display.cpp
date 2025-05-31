@@ -75,11 +75,16 @@ bool Display::begin() {
             delay(2000);
             
             return true;
-            
-        } catch (...) {
+              } catch (...) {
             Serial.print("Exception occurred during LCD initialization attempt ");
             Serial.println(retryCount + 1);
+            // Continue to retry logic
         }
+        
+        // If we get here without returning true, the initialization failed
+        Serial.print("LCD initialization attempt ");
+        Serial.print(retryCount + 1);
+        Serial.println(" failed - no exception but initialization unsuccessful");
         
         retryCount++;
         if (retryCount < maxRetries) {
