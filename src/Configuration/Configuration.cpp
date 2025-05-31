@@ -859,11 +859,17 @@ void Configuration::parseMainProgramConfig(const JsonObject& config) {
     mainProgramConfig["status_update_interval_ms"] = String(config["status_update_interval_ms"] | 60000);
     mainProgramConfig["time_fetch_interval_ms"] = String(config["time_fetch_interval_ms"] | 3600000);
     mainProgramConfig["connection_retry_interval_ms"] = String(config["connection_retry_interval_ms"] | 60000);
+    mainProgramConfig["startup_delay_ms"] = String(config["startup_delay_ms"] | 5000);
+    mainProgramConfig["wifi_connection_timeout_ms"] = String(config["wifi_connection_timeout_ms"] | 15000);
+    mainProgramConfig["button_press_timeout_ms"] = String(config["button_press_timeout_ms"] | 5000);
     
     // Store in systemConfig for compatibility with existing getters
     systemConfig["status_update_interval_ms"] = mainProgramConfig["status_update_interval_ms"];
     systemConfig["time_fetch_interval_ms"] = mainProgramConfig["time_fetch_interval_ms"];
     systemConfig["connection_retry_interval_ms"] = mainProgramConfig["connection_retry_interval_ms"];
+    systemConfig["startup_delay_ms"] = mainProgramConfig["startup_delay_ms"];
+    systemConfig["wifi_connection_timeout_ms"] = mainProgramConfig["wifi_connection_timeout_ms"];
+    systemConfig["button_press_timeout_ms"] = mainProgramConfig["button_press_timeout_ms"];
 }
 
 void Configuration::parseClimateControllerConfig(const JsonObject& config) {
