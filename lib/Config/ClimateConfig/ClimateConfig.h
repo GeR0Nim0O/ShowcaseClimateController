@@ -81,9 +81,8 @@ public:
     }
     void setFanInteriorEnabled(bool enabled) { settings.fanInteriorEnabled = enabled; }
     void setFanExteriorEnabled(bool enabled) { settings.fanExteriorEnabled = enabled; }
-    void setUpdateInterval(uint16_t interval) { settings.updateInterval = interval; }
-    void setClimateMode(const String& mode) { settings.climateMode = mode; }
-    void setHumidityMode(const String& mode) { settings.humidityMode = mode; }
+    void setUpdateInterval(uint16_t interval) { settings.updateInterval = interval; }    void setClimateMode(const String& mode) { strncpy(settings.climateMode, mode.c_str(), 15); settings.climateMode[15] = '\0'; }
+    void setHumidityMode(const String& mode) { strncpy(settings.humidityMode, mode.c_str(), 15); settings.humidityMode[15] = '\0'; }
     void setAutoFanControl(bool enabled) { settings.autoFanControl = enabled; }
     void setTemperatureHysteresis(float value) { settings.temperatureHysteresis = value; }
     void setHumidityHysteresis(float value) { settings.humidityHysteresis = value; }
