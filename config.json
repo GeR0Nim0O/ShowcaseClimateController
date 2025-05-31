@@ -32,7 +32,10 @@
   "main_program": {
     "status_update_interval_ms": 60000,
     "time_fetch_interval_ms": 3600000,
-    "connection_retry_interval_ms": 60000
+    "connection_retry_interval_ms": 60000,
+    "startup_delay_ms": 5000,
+    "wifi_connection_timeout_ms": 15000,
+    "button_press_timeout_ms": 5000
   },
   "climate_controller": {
     "enabled": true,
