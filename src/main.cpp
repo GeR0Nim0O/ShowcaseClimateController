@@ -715,35 +715,4 @@ void updateDisplayWithClimateStatus() {
     displayDevice->displayClimateStatus(currentTemp, currentHum, tempSetpoint, humSetpoint);
 }
 
-// Function to test ClimateConfig system
-void testClimateConfig() {
-    Serial.println("\n=== Testing ClimateConfig System ===");
-    
-    ClimateConfig& climateConfig = ClimateConfig::getInstance();
-    
-    // Test reading current settings
-    Serial.println("Current ClimateConfig settings:");
-    climateConfig.printSettings();
-    
-    // Test updating a setting
-    Serial.println("\nTesting setpoint update...");
-    float originalTemp = climateConfig.getTemperatureSetpoint();
-    climateConfig.setTemperatureSetpoint(25.0);
-    Serial.print("Temperature setpoint changed from ");
-    Serial.print(originalTemp);
-    Serial.println("°C to 25.0°C");
-    
-    // Test saving to JSON file
-    Serial.println("Testing JSON file save...");
-    if (climateConfig.updateJsonFile("/data/ClimateConfig.json")) {
-        Serial.println("Successfully saved to ClimateConfig.json");
-    } else {
-        Serial.println("Failed to save to ClimateConfig.json");
-    }
-    
-    // Restore original value
-    climateConfig.setTemperatureSetpoint(originalTemp);
-    Serial.println("Restored original temperature setpoint");
-    
-    Serial.println("=== ClimateConfig Test Complete ===\n");
-}
+
