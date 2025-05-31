@@ -19,9 +19,9 @@ public:
     static std::map<String, String> projectConfig;
     static JsonDocument devicesConfigDoc;  // Changed to JsonDocument to persist the data
     static JsonObject devicesConfig;
-    
-    // Config loading functions
+      // Config loading functions
     static bool loadConfigFromSD(const char* filename);
+    static bool loadConfigFromCodebase();
     static bool loadConfig(const JsonObject& config);
     
     // Setters for WiFi configuration
