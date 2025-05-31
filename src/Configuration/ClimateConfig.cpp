@@ -371,9 +371,8 @@ bool ClimateConfig::saveToJsonFile(const String& filePath) {
     JsonObject fans = climate["fan_settings"].to<JsonObject>();
     fans["interior_fan_enabled"] = settings.fanInteriorEnabled;
     fans["exterior_fan_enabled"] = settings.fanExteriorEnabled;
-    
-    // Metadata
-    JsonObject metadata = doc.createNestedObject("metadata");
+      // Metadata
+    JsonObject metadata = doc["metadata"].to<JsonObject>();
     metadata["version"] = "1.0";
     metadata["last_updated"] = "2025-05-31T00:00:00Z";
     metadata["created_by"] = "ClimateConfig";
