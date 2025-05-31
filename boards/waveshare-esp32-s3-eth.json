@@ -8,13 +8,17 @@
       "-DARDUINO_ESP32S3_DEV",
       "-DARDUINO_ARCH_ESP32",
       "-DARDUINO_BOARD=\"ESP32S3_DEV\"",
-      "-DARDUINO_VARIANT=\"esp32s3\""
+      "-DARDUINO_VARIANT=\"esp32s3\"",
+      "-DARDUINO_USB_CDC_ON_BOOT=1",
+      "-DARDUINO_RUNNING_CORE=1",
+      "-DARDUINO_EVENT_RUNNING_CORE=1",
+      "-DBOARD_HAS_PSRAM"
     ],
     "f_cpu": "240000000L",
     "f_flash": "80000000L",
     "flash_mode": "qio",
-    "psram_type": "qio_qspi",
-    "memory_type": "qio_qspi",
+    "psram_type": "opi",
+    "memory_type": "qio_opi",
     "mcu": "esp32s3",
     "variant": "esp32s3"
   },
