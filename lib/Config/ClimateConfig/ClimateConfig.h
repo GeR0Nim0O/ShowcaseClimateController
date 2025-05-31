@@ -23,8 +23,8 @@ struct ClimateSettings {
     float minTemperature;
     float maxHumidity;
     float minHumidity;
-    String climateMode;
-    String humidityMode;
+    char climateMode[16];     // Changed to char array for EEPROM compatibility
+    char humidityMode[16];    // Changed to char array for EEPROM compatibility
     bool autoFanControl;
     float temperatureHysteresis;
     float humidityHysteresis;
