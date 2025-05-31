@@ -178,8 +178,12 @@ String TimeHandler::getCurrentTime(DS3231rtc& rtc) {
 
 void TimeHandler::fetchCurrentTimePeriodically(DS3231rtc* rtc, unsigned long& lastTimeFetch, const unsigned long timeFetchInterval) {
     if (millis() - lastTimeFetch > timeFetchInterval) {
-        String currentTime = getCurrentTime(*rtc);
-        Serial.println("Updated Time: " + currentTime);
+        if (rtc != nullptr) {
+            String currentTime = getCurrentTime(*rtc);
+            Serial.println("Updated Time: " + currentTime);
+        } else {
+            Serial.println("RTC not available - time update skipped");
+        }
         lastTimeFetch = millis();
     }
 }
