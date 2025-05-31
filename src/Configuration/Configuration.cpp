@@ -1166,3 +1166,7 @@ unsigned long Configuration::getStatusUpdateInterval() {
 unsigned long Configuration::getTimeFetchInterval() {
     return systemConfig["time_fetch_interval_ms"].toInt();
 }
+
+unsigned long Configuration::getConnectionRetryInterval() {
+    return systemConfig["connection_retry_interval_ms"].toInt();
+}
