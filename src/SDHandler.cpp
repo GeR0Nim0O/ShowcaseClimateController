@@ -514,8 +514,7 @@ bool SDHandler::copyDefaultConfig() {
                         "Threshold": 1.0
                     }
                 }
-            },
-            "GP8403": {
+            },            "GP8403": {
                 "Type": "DAC",
                 "TypeNumber": "GP8403",
                 "Address": "0x5F",
@@ -523,6 +522,18 @@ bool SDHandler::copyDefaultConfig() {
                 "Channels": {
                     "DAC_A": {
                         "Name": "TemperaturePower"
+                    }
+                }
+            },
+            "LCD_Display": {
+                "Type": "Display",
+                "TypeNumber": "LCD2x16",
+                "Address": "0x27",
+                "Label": "Controller",
+                "Channels": {
+                    "Display": {
+                        "Name": "ClimateDisplay",
+                        "Threshold": 0.0
                     }
                 }
             }
