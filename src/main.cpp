@@ -130,22 +130,9 @@ void setup()
     Configuration::setProjectNumber("12345");
     Configuration::setShowcaseId("67");
     Configuration::setDeviceName("TEST");
-    Configuration::setTimezone("UTC");
-  } else {
+    Configuration::setTimezone("UTC");  } else {
     Serial.println("Config loaded successfully from SD card.");
-    
-    // Load custom settings from config if enabled
-    if (Configuration::isCustomWifiEnabled()) {
-      Configuration::setWiFiSSID(Configuration::getCustomWifiSSID());
-      Configuration::setWiFiPassword(Configuration::getCustomWifiPassword());
-    }
-    
-    if (Configuration::isCustomMqttEnabled()) {
-      Configuration::setMqttsServer(Configuration::getCustomMqttServer());
-      Configuration::setMqttsPort(Configuration::getCustomMqttPort());
-      Configuration::setFlespiToken(Configuration::getCustomMqttToken());
-    }
-  }  
+  }
   Configuration::printConfigValues();
 
   // Get connected I2C devices with their addresses and TCA ports
