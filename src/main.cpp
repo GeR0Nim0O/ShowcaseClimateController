@@ -93,6 +93,7 @@ void logDataToSD(const String& deviceName, const String& currentTime, float valu
 void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
 void showTemperatureAndHumidity(); // Function to show current temperature and humidity
+void testClimateConfig(); // Function to test ClimateConfig system
 
 // Display functions
 void initializeDisplayDevice(); // Function to initialize display device
@@ -712,4 +713,46 @@ void updateDisplayWithClimateStatus() {
     
     // Update display with climate status
     displayDevice->displayClimateStatus(currentTemp, currentHum, tempSetpoint, humSetpoint);
+}
+
+// Function to test ClimateConfig system
+void testClimateConfig() {
+    Serial.println("Testing ClimateConfig system...");
+    
+    // Access ClimateConfig instance
+    ClimateConfig& climateConfig = ClimateConfig::getInstance();
+    
+    // Print current settings
+    Serial.println("Current ClimateConfig settings:");
+    Serial.print("  Temperature Setpoint: ");
+    Serial.print(climateConfig.getTemperatureSetpoint());
+    Serial.println("°C");
+    Serial.print("  Humidity Setpoint: ");
+    Serial.print(climateConfig.getHumiditySetpoint());
+    Serial.println("%");
+    Serial.print("  Climate Mode: ");
+    Serial.println(climateConfig.getClimateMode());
+    Serial.print("  Humidity Mode: ");
+    Serial.println(climateConfig.getHumidityMode());
+    
+    // Modify settings for testing
+    climateConfig.setTemperatureSetpoint(22.0);
+    climateConfig.setHumiditySetpoint(45.0);
+    climateConfig.setClimateMode("COOLING");
+    climateConfig.setHumidityMode("DEHUMIDIFYING");
+    
+    // Save settings to EEPROM and file
+    climateConfig.saveSettings();
+    
+    Serial.println("Modified and saved new settings:");
+    Serial.print("  Temperature Setpoint: ");
+    Serial.print(climateConfig.getTemperatureSetpoint());
+    Serial.println("°C");
+    Serial.print("  Humidity Setpoint: ");
+    Serial.print(climateConfig.getHumiditySetpoint());
+    Serial.println("%");
+    Serial.print("  Climate Mode: ");
+    Serial.println(climateConfig.getClimateMode());
+    Serial.print("  Humidity Mode: ");
+    Serial.println(climateConfig.getHumidityMode());
 }
