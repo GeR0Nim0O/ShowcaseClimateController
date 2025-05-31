@@ -432,7 +432,7 @@ void readAndPrintInitialSensorData() {
 }
 
 void sendSensorDataOverMQTT(const SensorData& data) {
-    if (WiFi.status() != WL_CONNECTED || !client.connected() || stopSendingMQTT) {
+    if (WiFi.status() != WL_CONNECTED || !client.connected()) {
         return;
     }
     
