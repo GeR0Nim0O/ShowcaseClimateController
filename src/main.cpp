@@ -139,6 +139,10 @@ void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
 void showTemperatureAndHumidity(); // Function to show current temperature and humidity
 
+// Display functions
+void initializeDisplayDevice(); // Function to initialize display device
+void updateDisplayWithClimateStatus(); // Function to update display with climate status
+
 // Global status system functions
 void printAllSystemStatus(); // Print all system status
 void updateGlobalStatusSystem(); // Update global status system
