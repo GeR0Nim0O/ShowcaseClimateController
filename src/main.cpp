@@ -237,17 +237,7 @@ void setup()
       Serial.println(device->isInitialized() ? "Yes" : "No");
     }
   }
-
   Serial.println("I2C scan done");
-
-  // Set custom WiFi settings
-  if (useCustomWiFi) {
-    Configuration::setWiFiSSID(customSSID);
-    Configuration::setWiFiPassword(customPassword);
-  }
-
-  // Set custom MQTT settings
-  setCustomMqttSettings();
 
   clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
   topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
