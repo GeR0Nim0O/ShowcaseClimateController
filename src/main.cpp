@@ -11,6 +11,7 @@
 #include "GP8403dac.h"
 #include "ClimateController.h"
 #include "DeviceRegistry/DeviceRegistry.h"
+#include "Display.h"  // Add Display include
 
 #include <WiFiClientSecure.h> 
 #include <string>
@@ -111,6 +112,11 @@ int ntpRetryCount = 0;
 // Climate controller instance
 ClimateController* climateController = nullptr;
 bool climateControllerEnabled = true;
+
+// Global variables for display
+Display* displayDevice = nullptr;
+unsigned long lastDisplayUpdate = 0;
+const unsigned long displayUpdateInterval = 5000; // Update display every 5 seconds
 
 // Climate control parameters
 float temperatureSetpoint = 22.0;
