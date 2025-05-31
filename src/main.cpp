@@ -837,3 +837,49 @@ void showTemperatureAndHumidity() {
         Serial.println("Climate controller not initialized");
     }
 }
+
+// Function to initialize the display device
+void initializeDisplayDevice() {
+    Serial.println("Initializing Display Device...");
+    
+    // Get Display device from DeviceRegistry
+    DeviceRegistry& registry = DeviceRegistry::getInstance();
+    displayDevice = (Display*)registry.getDeviceByType("Display", 0);
+    
+    if (displayDevice != nullptr && displayDevice->isInitialized()) {
+        Serial.println("Display device found and initialized successfully");
+        
+        // Show initial startup message
+        displayDevice->clear();
+        displayDevice->setCursor(0, 0);
+        displayDevice->print("Climate Control");
+        displayDevice->setCursor(0, 1);
+        displayDevice->print("Initializing...");
+        delay(2000);
+    } else {
+        Serial.println("Display device not found or not initialized");
+        displayDevice = nullptr;
+    }
+}
+
+// Function to update the display with current climate status
+void updateDisplayWithClimateStatus() {
+    if (displayDevice == nullptr || !displayDevice->isInitialized()) {
+        return; // No display available
+    }
+    
+    if (climateController == nullptr) {
+        // Show error message if climate controller is not available
+        displayDevice->displayError("No Climate Ctrl");
+        return;
+    }
+    
+    // Get current climate data
+    float currentTemp = climateController->getCurrentTemperature();
+    float currentHum = climateController->getCurrentHumidity();
+    float tempSetpoint = climateController->getTemperatureSetpoint();
+    float humSetpoint = climateController->getHumiditySetpoint();
+    
+    // Update display with climate status
+    displayDevice->displayClimateStatus(currentTemp, currentHum, tempSetpoint, humSetpoint);
+}
