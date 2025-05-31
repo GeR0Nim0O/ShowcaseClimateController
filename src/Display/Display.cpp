@@ -7,28 +7,49 @@ Display::Display(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const St
 }
 
 bool Display::begin() {
+    Serial.println("Starting Display initialization...");
     selectTCAChannel(tcaChannel);
     
-    if (!testI2CConnection()) {
-        Serial.println("LCD Display not found!");
+    // Test I2C connection to the PCF8574 backpack
+    Serial.print("Testing I2C connection to LCD at address 0x");
+    Serial.print(i2cAddress, HEX);
+    Serial.print(" on TCA channel ");
+    Serial.println(tcaChannel);
+    
+    // Try to communicate with PCF8574 - be more lenient than basic testI2CConnection
+    wire->beginTransmission(i2cAddress);
+    uint8_t error = wire->endTransmission();
+    
+    if (error != 0) {
+        Serial.print("LCD Display I2C communication failed with error: ");
+        Serial.println(error);
         return false;
     }
     
-    initializeDisplay();
+    Serial.println("I2C communication with LCD successful");
     
-    initialized = true;
-    displayInitialized = true;
-    Serial.println("LCD Display initialized successfully");
-    
-    // Show startup message
-    clear();
-    setCursor(0, 0);
-    print("Climate Control");
-    setCursor(0, 1);
-    print("Starting...");
-    delay(2000);
-    
-    return true;
+    try {
+        initializeDisplay();
+        
+        initialized = true;
+        displayInitialized = true;
+        Serial.println("LCD Display initialized successfully");
+        
+        // Show startup message
+        clear();
+        setCursor(0, 0);
+        print("Climate Control");
+        setCursor(0, 1);
+        print("Starting...");
+        delay(2000);
+        
+        return true;
+    } catch (...) {
+        Serial.println("Exception occurred during LCD initialization");
+        initialized = false;
+        displayInitialized = false;
+        return false;
+    }
 }
 
 bool Display::isConnected() {
