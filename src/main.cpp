@@ -89,7 +89,6 @@ void readAndSendDataFromDevices();
 void printDebugInfo();
 void printCreatedSensors(); // Declare the function here
 void logDataToSD(const String& deviceName, const String& currentTime, float value, const String& sensorType); // Update function declaration
-void sendAllChangedSensorData(); // Add this function declaration
 void initializeClimateController(); // Function to initialize climate controller
 void updateClimateController(); // Function to update climate controller
 void showTemperatureAndHumidity(); // Function to show current temperature and humidity
