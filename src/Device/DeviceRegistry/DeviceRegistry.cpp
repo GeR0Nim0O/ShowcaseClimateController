@@ -6,6 +6,7 @@
 #include "PCF8574gpio.h"
 #include "GP8403dac.h"
 #include "DS3231rtc.h"
+#include "Display.h"
 
 // Initialize the static factory registry
 std::map<std::pair<String, String>, 
