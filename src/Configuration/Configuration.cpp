@@ -62,34 +62,52 @@ bool Configuration::loadConfigFromCodebase() {
 bool Configuration::readProjectConfigJson() {
     // Initialize LittleFS if not already initialized
     if (!LittleFS.begin()) {
-        Serial.println("Failed to initialize LittleFS");
-        return false;
+        Serial.println("LittleFS initialization failed, trying to format...");
+        
+        // Try to format LittleFS and initialize again
+        if (!LittleFS.begin(true)) { // true = format if mount fails
+            Serial.println("LittleFS format and initialization failed");
+            Serial.println("Falling back to minimal hardcoded configuration");
+            return loadMinimalHardcodedConfig();
+        }
+        Serial.println("LittleFS formatted and initialized successfully");
     }
     
-    // Try to open the config.json file from the project
+    // Check if config.json exists, if not copy from project folder
+    if (!LittleFS.exists("/config.json")) {
+        Serial.println("config.json not found in LittleFS, need to copy from project");
+        return copyConfigFromProjectToLittleFS();
+    }
+    
+    // Try to open the config.json file from LittleFS
     File configFile = LittleFS.open("/config.json", "r");
     if (!configFile) {
-        Serial.println("Failed to open project config.json file");
-        return false;
+        Serial.println("Failed to open config.json from LittleFS");
+        return loadMinimalHardcodedConfig();
     }
     
     // Read the file content
     String configContent = configFile.readString();
     configFile.close();
     
+    if (configContent.length() == 0) {
+        Serial.println("Config file is empty");
+        return loadMinimalHardcodedConfig();
+    }
+    
     // Parse the JSON
     JsonDocument doc;
     DeserializationError error = deserializeJson(doc, configContent);
     if (error) {
-        Serial.print("Failed to parse project config.json: ");
+        Serial.print("Failed to parse config.json from LittleFS: ");
         Serial.println(error.c_str());
-        return false;
+        return loadMinimalHardcodedConfig();
     }
     
     // Load configuration from parsed JSON
     if (!loadConfig(doc.as<JsonObject>())) {
-        Serial.println("Failed to load project configuration");
-        return false;
+        Serial.println("Failed to load configuration from LittleFS");
+        return loadMinimalHardcodedConfig();
     }
     
     return true;
