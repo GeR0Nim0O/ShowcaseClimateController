@@ -73,8 +73,6 @@ std::map<std::string, float> lastSensorValues; // Changed from String to std::st
 String clientId;
 String topic;
 
-int wifiRetryCount = 0;
-int mqttRetryCount = 0;
 int apiRetryCount = 0;
 int ntpRetryCount = 0;
 
