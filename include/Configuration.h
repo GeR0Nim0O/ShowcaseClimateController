@@ -74,14 +74,34 @@ public:    // Static member variables
     // MQTT Throttling configuration
     static bool isMqttThrottlingEnabled();
     static unsigned long getMqttThrottlingInterval();
-    
-    // Climate Controller configuration
+      // Climate Controller configuration
     static bool isClimateControllerEnabled();
     static float getClimateTemperatureSetpoint();
     static float getClimateHumiditySetpoint();
     static String getClimateMode();
     static String getHumidityMode();
     static bool isAutoFanControlEnabled();
+    static unsigned long getClimateUpdateInterval();
+    
+    // Climate safety limits
+    static float getMaxTemperature();
+    static float getMinTemperature();
+    static float getMaxHumidity();
+    static float getMinHumidity();
+    
+    // Temperature PID parameters
+    static float getTemperatureKp();
+    static float getTemperatureKi();
+    static float getTemperatureKd();
+    
+    // Humidity PID parameters
+    static float getHumidityKp();
+    static float getHumidityKi();
+    static float getHumidityKd();
+    
+    // Control parameters
+    static float getTemperatureHysteresis();
+    static float getHumidityHysteresis();
     
     // Display configuration
     static unsigned long getDisplayUpdateInterval();
