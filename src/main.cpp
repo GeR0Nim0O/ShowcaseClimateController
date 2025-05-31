@@ -149,9 +149,13 @@ void setup()
   
   // Print created sensors for debugging (moved after initialization)
   printCreatedSensors();
-  
-  // Initialize climate controller
+    // Initialize climate controller
   initializeClimateController();
+  
+  // Test ClimateConfig system (can be removed after testing)
+  if (Configuration::isClimateControllerEnabled()) {
+    testClimateConfig();
+  }
   
   // Initialize display device
   initializeDisplayDevice();
