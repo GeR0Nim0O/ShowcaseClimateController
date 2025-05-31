@@ -176,6 +176,15 @@ void ClimateConfig::printSettings() {
     Serial.print(settings.humiditySetpoint);
     Serial.println("%");
     
+    Serial.print("Climate Mode: ");
+    Serial.println(settings.climateMode);
+    
+    Serial.print("Humidity Mode: ");
+    Serial.println(settings.humidityMode);
+    
+    Serial.print("Auto Fan Control: ");
+    Serial.println(settings.autoFanControl ? "ON" : "OFF");
+    
     Serial.println("Temperature PID:");
     Serial.print("  Kp: ");
     Serial.println(settings.temperatureKp);
@@ -191,6 +200,14 @@ void ClimateConfig::printSettings() {
     Serial.println(settings.humidityKi);
     Serial.print("  Kd: ");
     Serial.println(settings.humidityKd);
+    
+    Serial.print("Temperature Hysteresis: ");
+    Serial.print(settings.temperatureHysteresis);
+    Serial.println("°C");
+    
+    Serial.print("Humidity Hysteresis: ");
+    Serial.print(settings.humidityHysteresis);
+    Serial.println("%");
     
     Serial.print("Interior Fan: ");
     Serial.println(settings.fanInteriorEnabled ? "ON" : "OFF");
