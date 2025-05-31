@@ -62,41 +62,60 @@ void Display::update() {
 }
 
 void Display::initializeDisplay() {
+    Serial.println("Initializing LCD display sequence...");
     selectTCAChannel(tcaChannel);
     
-    // Initialize LCD in 4-bit mode
-    delay(50); // Wait for LCD to power up
+    // Initialize LCD in 4-bit mode following HD44780 specification
+    delay(100); // Wait for LCD to power up (increase from 50ms)
     
-    // Set backlight on
+    // Set backlight on first
+    Serial.println("Setting backlight on...");
     expanderWrite(LCD_BACKLIGHT);
-    delay(1000);
+    delay(500); // Give more time for backlight to stabilize
     
-    // Start in 8-bit mode, then switch to 4-bit
-    write4bits(0x03 << 4);
-    delayMicroseconds(4500);
+    // HD44780 initialization sequence for 4-bit mode
+    Serial.println("Starting HD44780 initialization sequence...");
     
-    write4bits(0x03 << 4);
-    delayMicroseconds(4500);
+    // Start in 8-bit mode, send 0x30 three times
+    Serial.println("Sending initial 0x30 commands...");
+    write4bits(0x30);
+    delay(5); // Wait more than 4.1ms
     
-    write4bits(0x03 << 4);
-    delayMicroseconds(150);
+    write4bits(0x30);
+    delay(1); // Wait more than 100us
+    
+    write4bits(0x30);
+    delay(1);
     
     // Set to 4-bit mode
-    write4bits(0x02 << 4);
+    Serial.println("Setting 4-bit mode...");
+    write4bits(0x20);
+    delay(1);
     
     // Function set: 4-bit mode, 2 lines, 5x8 dots
+    Serial.println("Configuring function set...");
     command(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_2LINE | LCD_5x8DOTS);
+    delay(1);
     
     // Display control: display on, cursor off, blink off
+    Serial.println("Setting display control...");
     command(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
+    delay(1);
     
     // Clear display
+    Serial.println("Clearing display...");
     clear();
     
-    // Entry mode: left to right
+    // Entry mode: left to right, no shift
+    Serial.println("Setting entry mode...");
     command(LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT);
+    delay(1);
     
+    // Return home
+    Serial.println("Returning home...");
     home();
+    
+    Serial.println("LCD initialization sequence complete");
 }
 
 void Display::clear() {
