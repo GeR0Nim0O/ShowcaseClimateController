@@ -40,6 +40,12 @@ public:
     bool saveSettings();
     bool loadSettings();
     
+    // JSON file operations
+    bool loadFromJsonFile(const String& filePath = "/data/ClimateConfig.json");
+    bool saveToJsonFile(const String& filePath = "/data/ClimateConfig.json");
+    bool updateJsonFile(const String& filePath = "/data/ClimateConfig.json");
+    bool createDefaultJsonFile(const String& filePath = "/data/ClimateConfig.json");
+    
     // Getters
     float getTemperatureSetpoint() const { return settings.temperatureSetpoint; }
     float getHumiditySetpoint() const { return settings.humiditySetpoint; }
@@ -56,6 +62,11 @@ public:
     float getMinTemperature() const { return settings.minTemperature; }
     float getMaxHumidity() const { return settings.maxHumidity; }
     float getMinHumidity() const { return settings.minHumidity; }
+    String getClimateMode() const { return settings.climateMode; }
+    String getHumidityMode() const { return settings.humidityMode; }
+    bool getAutoFanControl() const { return settings.autoFanControl; }
+    float getTemperatureHysteresis() const { return settings.temperatureHysteresis; }
+    float getHumidityHysteresis() const { return settings.humidityHysteresis; }
     
     // Setters
     void setTemperatureSetpoint(float value) { settings.temperatureSetpoint = value; }
