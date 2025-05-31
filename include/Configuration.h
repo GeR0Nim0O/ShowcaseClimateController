@@ -12,11 +12,16 @@
 class DS3231rtc;
 
 class Configuration {
-public:
-    // Static member variables
+public:    // Static member variables
     static std::map<String, String> wifiConfig;
     static std::map<String, String> mqttConfig;
     static std::map<String, String> projectConfig;
+    static std::map<String, String> customWifiConfig;
+    static std::map<String, String> customMqttConfig;
+    static std::map<String, String> mqttThrottlingConfig;
+    static std::map<String, String> climateControllerConfig;
+    static std::map<String, String> displayConfig;
+    static std::map<String, String> systemConfig;
     static JsonDocument devicesConfigDoc;  // Changed to JsonDocument to persist the data
     static JsonObject devicesConfig;
       // Config loading functions
