@@ -53,10 +53,11 @@ void ClimateConfig::loadDefaults() {
     settings.maxTemperature = 35.0;
     settings.minTemperature = 10.0;
     settings.maxHumidity = 80.0;
-    settings.minHumidity = 20.0;
-    // New settings
-    settings.climateMode = "AUTO";
-    settings.humidityMode = "AUTO";
+    settings.minHumidity = 20.0;    // New settings
+    strncpy(settings.climateMode, "AUTO", 15);
+    settings.climateMode[15] = '\0';
+    strncpy(settings.humidityMode, "AUTO", 15);
+    settings.humidityMode[15] = '\0';
     settings.autoFanControl = true;
     settings.temperatureHysteresis = 0.5;
     settings.humidityHysteresis = 2.0;
