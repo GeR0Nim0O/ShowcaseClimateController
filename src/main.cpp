@@ -249,20 +249,11 @@ void loop() {
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
     updateClimateController();
   }
-  
-  // Update display with climate status periodically
+    // Update display with climate status periodically
   unsigned long displayUpdateInterval = Configuration::getDisplayUpdateInterval();
   if (millis() - lastDisplayUpdate >= displayUpdateInterval) {
     updateDisplayWithClimateStatus();
     lastDisplayUpdate = millis();
-  }
-  
-  // Send all changed sensor data via MQTT when throttling interval is reached
-  if (Configuration::isMqttThrottlingEnabled() && 
-      (millis() - lastMqttSendTime >= Configuration::getMqttThrottlingInterval())) {
-    if (WiFi.status() == WL_CONNECTED && client.connected()) {
-      sendAllChangedSensorData();
-    }
   }
 }
 
