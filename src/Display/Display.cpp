@@ -3,7 +3,7 @@
 Display::Display(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
     : Device(wire, i2cAddress, tcaChannel, deviceName, deviceIndex),
       currentCol(0), currentRow(0), displayInitialized(false), backlightState(true) {
-    type = "LCD_Display";
+    type = "Display";
 }
 
 bool Display::begin() {
