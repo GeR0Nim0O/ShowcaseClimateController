@@ -779,31 +779,6 @@ void setMqttThrottling(bool enable, unsigned long interval) {
     }
 }
 
-void setCustomMqttSettings() {
-    if (useCustomMqtt) {
-        Serial.println("Using custom MQTT settings");
-        Configuration::setMqttsServer(customMqttServer);
-        Configuration::setMqttsPort(customMqttPort);
-        Configuration::setFlespiToken(customFlespiToken);
-        
-        // Update client ID and topic with new settings
-        clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
-        topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
-        
-        Serial.println("Custom MQTT settings applied:");
-        Serial.print("MQTT Server: ");
-        Serial.println(customMqttServer);
-        Serial.print("MQTT Port: ");
-        Serial.println(customMqttPort);
-        Serial.print("Flespi Token: ");
-        Serial.println(customFlespiToken.substring(0, 4) + "..." + customFlespiToken.substring(customFlespiToken.length() - 4));
-
-        // Also set throttling information
-        Serial.print("MQTT Throttling: ");
-        Serial.println(throttleMqtt ? "Enabled (sending once every minute)" : "Disabled");
-    }
-}
-
 // Function to initialize the climate controller
 void initializeClimateController() {
     if (climateControllerEnabled) {
