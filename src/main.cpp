@@ -107,13 +107,20 @@ void setup()
   delay(5000); // Initial delay before loading config
   // Initialize I2C bus
   I2CHandler::initializeI2C();
-
   // Setup configuration
   if (!SDHandler::initializeSDCardAndConfig()) {
     Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
   }
-    // Load configuration from SD card (fallback handled automatically by Configuration class)
-  Configuration::loadConfigFromSD("/config.json");
+  
+  // Try to load configuration from SD card first, then fallback to project config.json
+  if (!Configuration::loadConfigFromSD("/config.json")) {
+    Serial.println("SD card config failed, trying project config.json fallback...");
+    if (!Configuration::loadConfigFromCodebase()) {
+      Serial.println("ERROR: Both SD card and project config.json failed!");
+      Serial.println("System cannot continue without configuration.");
+      while(1) { delay(1000); } // Halt system
+    }
+  }
   Configuration::printConfigValues();
 
   // Get connected I2C devices with their addresses and TCA ports
