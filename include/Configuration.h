@@ -110,6 +110,9 @@ public:    // Static member variables
     static unsigned long getStatusUpdateInterval();
     static unsigned long getTimeFetchInterval();
     static unsigned long getConnectionRetryInterval();
+    static unsigned long getStartupDelay();
+    static unsigned long getWifiConnectionTimeout();
+    static unsigned long getButtonPressTimeout();
       // Device configuration
     static JsonObject getDevicesConfig();
     static void initializeEachDevice(std::vector<Device*>& devices);
