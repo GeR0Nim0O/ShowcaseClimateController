@@ -146,13 +146,8 @@ void setup()
       Configuration::setMqttsPort(Configuration::getCustomMqttPort());
       Configuration::setFlespiToken(Configuration::getCustomMqttToken());
     }
-  }
-  
+  }  
   Configuration::printConfigValues();
-  
-  // Load throttling settings after configuration is loaded
-  throttleMqtt = Configuration::isMqttThrottlingEnabled();
-  mqttThrottleInterval = Configuration::getMqttThrottlingInterval();
 
   // Get connected I2C devices with their addresses and TCA ports
   tcaScanResults = I2CHandler::TCAScanner();
