@@ -9,25 +9,41 @@ Display::Display(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const St
 bool Display::begin() {
     Serial.println("Starting Display initialization...");
     selectTCAChannel(tcaChannel);
-    
-    // Test I2C connection to the PCF8574 backpack
-    Serial.print("Testing I2C connection to LCD at address 0x");
+      // Test I2C connection to the PCF8574T backpack
+    Serial.print("Testing I2C connection to PCF8574T LCD at address 0x");
     Serial.print(i2cAddress, HEX);
     Serial.print(" on TCA channel ");
     Serial.println(tcaChannel);
     
-    // Try to communicate with PCF8574 - test with a simple write
-    wire->beginTransmission(i2cAddress);
-    wire->write(0x00); // Send zero to test communication
-    uint8_t error = wire->endTransmission();
+    // PCF8574T specific testing - test multiple values
+    Serial.println("Testing PCF8574T communication patterns...");
     
-    if (error != 0) {
-        Serial.print("LCD Display I2C communication failed with error: ");
-        Serial.println(error);
+    // Test pattern 1: All zeros
+    wire->beginTransmission(i2cAddress);
+    wire->write(0x00);
+    uint8_t error1 = wire->endTransmission();
+    
+    // Test pattern 2: Backlight only
+    wire->beginTransmission(i2cAddress);
+    wire->write(LCD_BACKLIGHT);
+    uint8_t error2 = wire->endTransmission();
+    
+    // Test pattern 3: All high
+    wire->beginTransmission(i2cAddress);
+    wire->write(0xFF);
+    uint8_t error3 = wire->endTransmission();
+    
+    if (error1 != 0 || error2 != 0 || error3 != 0) {
+        Serial.print("PCF8574T LCD communication failed. Errors: ");
+        Serial.print(error1);
+        Serial.print(", ");
+        Serial.print(error2);
+        Serial.print(", ");
+        Serial.println(error3);
         return false;
     }
     
-    Serial.println("I2C communication with LCD successful");
+    Serial.println("PCF8574T communication tests successful");
     
     // Try initialization with retry mechanism
     int retryCount = 0;
