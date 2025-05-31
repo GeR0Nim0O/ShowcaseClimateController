@@ -108,32 +108,7 @@ bool Configuration::readProjectConfigJson() {
         Serial.println("Failed to load configuration from SPIFFS");
         return false;
     }
-    
-    return true;
-}
-    configFile.close();
-    
-    if (configContent.length() == 0) {
-        Serial.println("Config file is empty");
-        return loadMinimalHardcodedConfig();
-    }
-    
-    // Parse the JSON
-    JsonDocument doc;
-    DeserializationError error = deserializeJson(doc, configContent);
-    if (error) {
-        Serial.print("Failed to parse config.json from LittleFS: ");
-        Serial.println(error.c_str());
-        return loadMinimalHardcodedConfig();
-    }
-    
-    // Load configuration from parsed JSON
-    if (!loadConfig(doc.as<JsonObject>())) {
-        Serial.println("Failed to load configuration from LittleFS");
-        return loadMinimalHardcodedConfig();
-    }
-    
-    return true;
+      return true;
 }
 
 // Removed hardcoded configuration functions - now uses SPIFFS fallback only
