@@ -722,12 +722,11 @@ void initializeClimateController() {
             } else if (climateMode == "COOLING") {
                 climateEnum = ClimateMode::COOLING;
             }
-            
-            HumidityMode humidityEnum = HumidityMode::AUTO;
+              HumidityMode humidityEnum = HumidityMode::AUTO;
             if (humidityMode == "HUMIDIFY") {
-                humidityEnum = HumidityMode::HUMIDIFY;
+                humidityEnum = HumidityMode::HUMIDIFYING;
             } else if (humidityMode == "DEHUMIDIFY") {
-                humidityEnum = HumidityMode::DEHUMIDIFY;
+                humidityEnum = HumidityMode::DEHUMIDIFYING;
             }
             
             // Configure all parameters at once
