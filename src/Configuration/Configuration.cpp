@@ -123,15 +123,12 @@ bool Configuration::loadConfig(const JsonObject& config) {
     if (!config["wifi"].isNull()) {
         parseWiFiConfig(config["wifi"]);
     }
-    
-    // Parse MQTT configuration
-    if (!config["mqtt"].isNull()) {
-        parseMQTTConfig(config["mqtt"]);
-    }
-    
-    // Parse MQTTS configuration (SSL)
+      // Parse MQTTS configuration (SSL) - prioritize secure MQTT over regular MQTT
     if (!config["mqtts"].isNull()) {
         parseMQTTConfig(config["mqtts"]);
+    } else if (!config["mqtt"].isNull()) {
+        // Fallback to regular MQTT if MQTTS is not available
+        parseMQTTConfig(config["mqtt"]);
     }
     
     // Parse project configuration
