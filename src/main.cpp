@@ -32,9 +32,7 @@
 WiFiClientSecure espClient; // Use WiFiClientSecure instead of WiFiClient
 PubSubClient client(espClient);
 
-// MQTT throttling settings - loaded from config
-bool throttleMqtt = true; // Will be loaded from config
-unsigned long mqttThrottleInterval = 60000; // Will be loaded from config
+// MQTT throttling - using Configuration class directly
 unsigned long lastMqttSendTime = 0; // Last time data was sent via MQTT
 
 // Global status timer settings - now loaded from config
