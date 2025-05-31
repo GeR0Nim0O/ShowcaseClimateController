@@ -102,13 +102,13 @@ bool Configuration::readProjectConfigJson() {
         Serial.println(error.c_str());
         return false;
     }
-    
-    // Load configuration from parsed JSON
+      // Load configuration from parsed JSON
     if (!loadConfig(doc.as<JsonObject>())) {
         Serial.println("Failed to load configuration from SPIFFS");
         return false;
     }
-      return true;
+    
+    return true;
 }
 
 // Removed hardcoded configuration functions - now uses SPIFFS fallback only
