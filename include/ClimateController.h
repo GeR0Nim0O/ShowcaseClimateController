@@ -57,9 +57,11 @@ public:
     // PID parameters
     void setTemperaturePID(double kp, double ki, double kd);
     void setHumidityPID(double kp, double ki, double kd);
-    
-    // Configuration reload
+      // Configuration reload
     void reloadConfiguration();
+    
+    // Dynamic configuration update
+    void updateClimateConfigFile();
     
     // Fan control
     void setFanInterior(bool enable);
