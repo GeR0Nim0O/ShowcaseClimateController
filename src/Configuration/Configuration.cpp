@@ -64,34 +64,53 @@ bool Configuration::loadConfigFromCodebase() {
 }
 
 bool Configuration::readProjectConfigJson() {
-    // Initialize LittleFS if not already initialized
-    if (!LittleFS.begin()) {
-        Serial.println("LittleFS initialization failed, trying to format...");
+    // Initialize SPIFFS if not already initialized
+    if (!SPIFFS.begin()) {
+        Serial.println("SPIFFS initialization failed, trying to format...");
         
-        // Try to format LittleFS and initialize again
-        if (!LittleFS.begin(true)) { // true = format if mount fails
-            Serial.println("LittleFS format and initialization failed");
-            Serial.println("Falling back to minimal hardcoded configuration");
-            return loadMinimalHardcodedConfig();
+        // Try to format SPIFFS and initialize again
+        if (!SPIFFS.begin(true)) { // true = format if mount fails
+            Serial.println("SPIFFS format and initialization failed");
+            return false;
         }
-        Serial.println("LittleFS formatted and initialized successfully");
+        Serial.println("SPIFFS formatted and initialized successfully");
     }
     
-    // Check if config.json exists, if not copy from project folder
-    if (!LittleFS.exists("/config.json")) {
-        Serial.println("config.json not found in LittleFS, need to copy from project");
-        return copyConfigFromProjectToLittleFS();
-    }
-    
-    // Try to open the config.json file from LittleFS
-    File configFile = LittleFS.open("/config.json", "r");
+    // Try to open the config.json file from SPIFFS
+    File configFile = SPIFFS.open("/config.json", "r");
     if (!configFile) {
-        Serial.println("Failed to open config.json from LittleFS");
-        return loadMinimalHardcodedConfig();
+        Serial.println("Failed to open config.json from SPIFFS");
+        Serial.println("Please upload the project's config.json to SPIFFS using:");
+        Serial.println("python -m platformio run --target uploadfs");
+        return false;
     }
     
     // Read the file content
     String configContent = configFile.readString();
+    configFile.close();
+    
+    if (configContent.length() == 0) {
+        Serial.println("Config file is empty");
+        return false;
+    }
+    
+    // Parse the JSON
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, configContent);
+    if (error) {
+        Serial.print("Failed to parse config.json from SPIFFS: ");
+        Serial.println(error.c_str());
+        return false;
+    }
+    
+    // Load configuration from parsed JSON
+    if (!loadConfig(doc.as<JsonObject>())) {
+        Serial.println("Failed to load configuration from SPIFFS");
+        return false;
+    }
+    
+    return true;
+}
     configFile.close();
     
     if (configContent.length() == 0) {
