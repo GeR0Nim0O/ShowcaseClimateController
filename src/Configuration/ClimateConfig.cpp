@@ -336,11 +336,11 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
 }
 
 bool ClimateConfig::saveToJsonFile(const String& filePath) {
-    DynamicJsonDocument doc(2048);
+    JsonDocument doc(2048);
     
     // Create climate controller section
-    JsonObject climate = doc.createNestedObject("climate_controller");
-    climate["enabled"] = true;    climate["temperature_setpoint"] = settings.temperatureSetpoint;
+    JsonObject climate = doc["climate_controller"].to<JsonObject>();
+    climate["enabled"] = true;climate["temperature_setpoint"] = settings.temperatureSetpoint;
     climate["humidity_setpoint"] = settings.humiditySetpoint;
     climate["climate_mode"] = String(settings.climateMode);
     climate["humidity_mode"] = String(settings.humidityMode);
