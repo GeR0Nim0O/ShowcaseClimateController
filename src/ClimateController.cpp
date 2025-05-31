@@ -358,9 +358,8 @@ void ClimateController::updateHumidityControl() {
         dehumidifyingActive = false;
         return;
     }
-    
-    // Use a simple hysteresis control for humidity (on/off control)
-    const float hysteresis = 0.5; // Small hysteresis for precise humidity control
+      // Use a simple hysteresis control for humidity (on/off control)
+    const float hysteresis = Configuration::getHumidityHysteresis(); // Get hysteresis from configuration
     
     switch (humidityMode) {
         case HumidityMode::HUMIDIFYING:
