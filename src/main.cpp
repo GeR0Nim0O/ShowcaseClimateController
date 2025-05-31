@@ -60,7 +60,7 @@ bool offlineMode = false; // Flag to indicate if running in offline mode
 
 std::vector<Device*> devices; // Vector to hold device pointers
 std::map<uint8_t, std::vector<uint8_t>> tcaScanResults; // Map to store TCA scan results
-DS3231rtc* rtc; // Pointer to hold RTC device
+DS3231rtc* rtc = nullptr; // Pointer to hold RTC device - initialize to nullptr
 
 struct StringComparator {
     bool operator()(const String& a, const String& b) const {
