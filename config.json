@@ -40,7 +40,13 @@
   "mqtt_throttling": {
     "enabled": true,
     "interval_ms": 60000
-  },  "climate_controller": {
+  },
+  "main_program": {
+    "status_update_interval_ms": 60000,
+    "time_fetch_interval_ms": 3600000,
+    "connection_retry_interval_ms": 60000
+  },
+  "climate_controller": {
     "enabled": true,
     "temperature_setpoint": 22.0,
     "humidity_setpoint": 50.0,
