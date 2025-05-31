@@ -1,21 +1,6 @@
 #include "ClimateController.h"
 #include "DeviceRegistry/DeviceRegistry.h"
 
-// Safety limits
-#define MAX_TEMPERATURE 35.0
-#define MIN_TEMPERATURE 10.0
-#define MAX_HUMIDITY 80.0
-#define MIN_HUMIDITY 20.0
-
-// Default PID parameters
-#define DEFAULT_TEMP_KP 2.0
-#define DEFAULT_TEMP_KI 0.5
-#define DEFAULT_TEMP_KD 0.1
-
-#define DEFAULT_HUM_KP 1.0
-#define DEFAULT_HUM_KI 0.2
-#define DEFAULT_HUM_KD 0.05
-
 // Static factory method for automatic device discovery and initialization
 ClimateController* ClimateController::createFromDeviceRegistry() {
     try {
