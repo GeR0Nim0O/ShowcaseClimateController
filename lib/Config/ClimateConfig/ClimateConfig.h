@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 #include <ArduinoJson.h>
+#include <FS.h>
+#include <SPIFFS.h>
 
 struct ClimateSettings {
     float temperatureSetpoint;
@@ -21,6 +23,11 @@ struct ClimateSettings {
     float minTemperature;
     float maxHumidity;
     float minHumidity;
+    String climateMode;
+    String humidityMode;
+    bool autoFanControl;
+    float temperatureHysteresis;
+    float humidityHysteresis;
     uint32_t checksum;
 };
 
