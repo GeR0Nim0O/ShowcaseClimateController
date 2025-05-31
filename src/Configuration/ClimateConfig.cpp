@@ -179,8 +179,7 @@ void ClimateConfig::printSettings() {
     Serial.print("Humidity Setpoint: ");
     Serial.print(settings.humiditySetpoint);
     Serial.println("%");
-    
-    Serial.print("Climate Mode: ");
+      Serial.print("Climate Mode: ");
     Serial.println(settings.climateMode);
     
     Serial.print("Humidity Mode: ");
