@@ -226,112 +226,25 @@ void loop() {
     return; // Exit loop if setup is not complete
   }
 
-  static unsigned long lastSendTime = 0;
-  static unsigned long lastConnectionRetry = 0;
-  static bool mqttRetryDone = false;
-  static int wifiReconnectAttempts = 0;
-  static int mqttReconnectAttempts = 0;
-  static bool wifiSkipped = false;  static bool mqttSkipped = false;
-  const int maxReconnectAttempts = 5;
-  const unsigned long connectionRetryInterval = Configuration::getConnectionRetryInterval();
-  // Check if it's time to send MQTT data (every minute)
-  bool timeToSendMqtt = Configuration::isMqttThrottlingEnabled() && (millis() - lastMqttSendTime >= Configuration::getMqttThrottlingInterval());
-    // Only attempt reconnections every minute, aligned with MQTT sending schedule
-  if (timeToSendMqtt || (millis() - lastConnectionRetry >= connectionRetryInterval)) {
-    
-    // Print connection status for debugging every minute
-    Serial.print("Connection Status - WiFi: ");
-    Serial.print(WiFi.status() == WL_CONNECTED ? "Connected" : "Disconnected");
-    Serial.print(", MQTT: ");
-    Serial.println(client.connected() ? "Connected" : "Disconnected");
-    
-    // Try to reconnect WiFi if disconnected and not skipped
-    if (WiFi.status() != WL_CONNECTED && !wifiSkipped) {
-      wifiReconnectAttempts++;
-      Serial.print("Reconnecting to WiFi... Attempt ");
-      Serial.print(wifiReconnectAttempts);
-      Serial.print("/");
-      Serial.println(maxReconnectAttempts);
-      
-      if (wifiReconnectAttempts <= maxReconnectAttempts) {
-        WiFi.disconnect();
-        WiFi.begin(Configuration::getWiFiSSID().c_str(), Configuration::getWiFiPassword().c_str());
-        mqttReconnectAttempts = 0; // Reset MQTT attempts when WiFi reconnects
-        mqttSkipped = false; // Reset MQTT skip flag when WiFi reconnects
-          // Wait for WiFi connection with timeout
-        unsigned long wifiStartTime = millis();
-        unsigned long wifiTimeout = Configuration::getWifiConnectionTimeout();
-        while (WiFi.status() != WL_CONNECTED && (millis() - wifiStartTime < wifiTimeout)) {
-          delay(500);
-          Serial.print(".");
-        }
-        
-        if (WiFi.status() == WL_CONNECTED) {
-          Serial.println("\nWiFi connected successfully!");
-        } else {
-          Serial.println("\nWiFi connection timeout");
-        }
-      } else {
-        Serial.println("Max WiFi reconnection attempts reached. Skipping WiFi reconnection.");
-        wifiSkipped = true;
-      }
-    }
-
-    // Try to reconnect MQTT if disconnected and not skipped and WiFi is connected
-    if (WiFi.status() == WL_CONNECTED && !client.connected() && !mqttSkipped) {
-      mqttReconnectAttempts++;
-      Serial.print("Reconnecting to MQTT broker... Attempt ");
-      Serial.print(mqttReconnectAttempts);
-      Serial.print("/");
-      Serial.println(maxReconnectAttempts);
-        if (mqttReconnectAttempts <= maxReconnectAttempts) {
-        WifiMqttHandler::connectToMqttBroker(client, espClient, 
-                                         Configuration::getMqttsServer().c_str(), 
-                                         rootCACertificate, 
-                                         Configuration::getMqttsPort(), 
-                                         clientId.c_str(), topic.c_str(),
-                                         Configuration::getFlespiToken().c_str());
-        
-        if (client.connected()) {
-          Serial.println("MQTT connected successfully!");
-        } else {
-          Serial.println("MQTT connection failed");
-        }
-      } else {
-        Serial.println("Max MQTT reconnection attempts reached. Skipping MQTT reconnection.");
-        mqttSkipped = true;
-      }
-    }
-    
-    lastConnectionRetry = millis();
-  }
-  // Reset reconnection attempts when WiFi reconnects successfully
-  if (WiFi.status() == WL_CONNECTED && wifiSkipped) {
-    Serial.println("WiFi reconnected successfully. Resetting WiFi attempt counter.");
-    wifiReconnectAttempts = 0;
-    wifiSkipped = false;
-    mqttReconnectAttempts = 0;
-    mqttSkipped = false;
-    offlineMode = false;
-  }
-
-  // Reset MQTT reconnection attempts when MQTT reconnects successfully
-  if (client.connected() && mqttSkipped) {
-    Serial.println("MQTT reconnected successfully. Resetting MQTT attempt counter.");
-    mqttReconnectAttempts = 0;
-    mqttSkipped = false;
-  }
+  // Use existing WifiMqttHandler::keepAlive for connection management
+  WifiMqttHandler::keepAlive(client, espClient, 
+                            Configuration::getWiFiSSID().c_str(), 
+                            Configuration::getWiFiPassword().c_str(),
+                            Configuration::getMqttsServer().c_str(), 
+                            rootCACertificate, 
+                            Configuration::getMqttsPort(), 
+                            clientId.c_str(), 
+                            topic.c_str());
 
   // Update offline mode status
   offlineMode = (WiFi.status() != WL_CONNECTED);
 
-  if (client.connected()) {
-    client.loop(); // Ensure the MQTT client loop is called to maintain the connection
-  }
+  // Periodic time synchronization
   TimeHandler::fetchCurrentTimePeriodically(rtc, lastTimeFetch, Configuration::getTimeFetchInterval());
 
   // Update global status system (aligned with MQTT timer)
   updateGlobalStatusSystem();
+  
   // Read and send data from each device
   readAndSendDataFromDevices();
   
@@ -339,17 +252,20 @@ void loop() {
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
     updateClimateController();
   }
+  
   // Update display with climate status periodically
   unsigned long displayUpdateInterval = Configuration::getDisplayUpdateInterval();
   if (millis() - lastDisplayUpdate >= displayUpdateInterval) {
     updateDisplayWithClimateStatus();
     lastDisplayUpdate = millis();
   }
-  // Add a direct check here to periodically send data
-  if (Configuration::isMqttThrottlingEnabled() && (millis() - lastMqttSendTime >= Configuration::getMqttThrottlingInterval())) {
-      if (WiFi.status() == WL_CONNECTED && client.connected()) {
-          sendAllChangedSensorData();
-      }
+  
+  // Send all changed sensor data via MQTT when throttling interval is reached
+  if (Configuration::isMqttThrottlingEnabled() && 
+      (millis() - lastMqttSendTime >= Configuration::getMqttThrottlingInterval())) {
+    if (WiFi.status() == WL_CONNECTED && client.connected()) {
+      sendAllChangedSensorData();
+    }
   }
 }
 
