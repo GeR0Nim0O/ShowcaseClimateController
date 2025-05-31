@@ -267,12 +267,11 @@ void setup()
   pinMode(BUTTON_PIN, INPUT_PULLUP); // Initialize button pin
 
   delay(500);
-
   setupComplete = true; // Indicate that setup is complete
   Serial.println("Setup complete: " + String(setupComplete));
 
-  // Configure MQTT throttling - set to true to only send once per minute
-  setMqttThrottling(true, 60000); // Enable throttling, every 60 seconds
+  // Configure MQTT throttling from configuration
+  setMqttThrottling(Configuration::isMqttThrottlingEnabled(), Configuration::getMqttThrottlingInterval());
 }
 
 void loop() {
