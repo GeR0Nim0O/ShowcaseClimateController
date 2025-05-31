@@ -41,10 +41,9 @@ bool Display::begin() {
         Serial.println(error3);
         initialized = false;
         displayInitialized = false;
-        return false;
-    }
+        return false;    }
     
-    Serial.println("PCF8574T communication tests successful");
+    Serial.println("PCF8574T communication tests successful - proceeding with LCD initialization");
     
     // Try initialization with retry mechanism
     int retryCount = 0;
