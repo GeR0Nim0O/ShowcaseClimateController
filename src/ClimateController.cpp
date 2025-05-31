@@ -796,4 +796,67 @@ void ClimateController::configure(float tempSetpoint, float humSetpoint, Climate
     }
 }
 
+// Reload configuration from Configuration class
+void ClimateController::reloadConfiguration() {
+    Serial.println("Reloading climate controller configuration...");
+    
+    // Update update interval
+    updateInterval = Configuration::getClimateUpdateInterval();
+    Serial.print("Update interval set to: ");
+    Serial.print(updateInterval);
+    Serial.println(" ms");
+    
+    // Update PID parameters for temperature controller
+    if (temperaturePID != nullptr) {
+        temperaturePID->SetTunings(
+            Configuration::getTemperatureKp(),
+            Configuration::getTemperatureKi(),
+            Configuration::getTemperatureKd()
+        );
+        Serial.println("Temperature PID parameters updated");
+    }
+    
+    // Update PID parameters for humidity controller
+    if (humidityPID != nullptr) {
+        humidityPID->SetTunings(
+            Configuration::getHumidityKp(),
+            Configuration::getHumidityKi(),
+            Configuration::getHumidityKd()
+        );
+        Serial.println("Humidity PID parameters updated");
+    }
+    
+    Serial.println("Configuration reload completed");
+}
+
+// Set temperature PID parameters
+void ClimateController::setTemperaturePID(double kp, double ki, double kd) {
+    if (temperaturePID != nullptr) {
+        temperaturePID->SetTunings(kp, ki, kd);
+        Serial.print("Temperature PID updated - Kp: ");
+        Serial.print(kp);
+        Serial.print(", Ki: ");
+        Serial.print(ki);
+        Serial.print(", Kd: ");
+        Serial.println(kd);
+    } else {
+        Serial.println("Error: Temperature PID controller not initialized");
+    }
+}
+
+// Set humidity PID parameters
+void ClimateController::setHumidityPID(double kp, double ki, double kd) {
+    if (humidityPID != nullptr) {
+        humidityPID->SetTunings(kp, ki, kd);
+        Serial.print("Humidity PID updated - Kp: ");
+        Serial.print(kp);
+        Serial.print(", Ki: ");
+        Serial.print(ki);
+        Serial.print(", Kd: ");
+        Serial.println(kd);
+    } else {
+        Serial.println("Error: Humidity PID controller not initialized");
+    }
+}
+
 
