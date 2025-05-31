@@ -507,34 +507,6 @@ void logDataToSD(const String& deviceName, const String& currentTime, float valu
     SDHandler::logJson(json.c_str());
 }
 
-void sendAllChangedSensorData() {
-    if (WiFi.status() != WL_CONNECTED || !client.connected()) {
-        return;
-    }
-    
-    bool dataWasSent = false;
-    
-    for (auto& item : changedSensorData) {
-        SensorData& data = item.second;
-        
-        if (data.changed) {
-            // Use the new helper function
-            sendSensorDataOverMQTT(data);
-            
-            data.changed = false; // Reset changed flag
-            dataWasSent = true;
-        }
-    }
-    
-    if (dataWasSent) {
-        Serial.println("Sent all changed sensor data via MQTT");
-    } else {
-        Serial.println("No changed sensor data to send");
-    }
-    
-    lastMqttSendTime = millis(); // Update last send time
-}
-
 void printDebugInfo() {
   Serial.print("SSID: ");
   Serial.println(Configuration::getWiFiSSID());
