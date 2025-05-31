@@ -12,6 +12,7 @@
 #include "ClimateController.h"
 #include "DeviceRegistry/DeviceRegistry.h"
 #include "Display.h"  // Add Display include
+#include "../lib/Config/ClimateConfig/ClimateConfig.h"  // Add ClimateConfig include
 
 #include <WiFiClientSecure.h> 
 #include <string>
