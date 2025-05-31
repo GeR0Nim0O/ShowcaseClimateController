@@ -313,10 +313,10 @@ void loop() {
         WiFi.begin(Configuration::getWiFiSSID().c_str(), Configuration::getWiFiPassword().c_str());
         mqttReconnectAttempts = 0; // Reset MQTT attempts when WiFi reconnects
         mqttSkipped = false; // Reset MQTT skip flag when WiFi reconnects
-        
-        // Wait for WiFi connection with timeout
+          // Wait for WiFi connection with timeout
         unsigned long wifiStartTime = millis();
-        while (WiFi.status() != WL_CONNECTED && (millis() - wifiStartTime < 15000)) {
+        unsigned long wifiTimeout = Configuration::getWifiConnectionTimeout();
+        while (WiFi.status() != WL_CONNECTED && (millis() - wifiStartTime < wifiTimeout)) {
           delay(500);
           Serial.print(".");
         }
