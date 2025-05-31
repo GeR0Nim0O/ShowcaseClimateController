@@ -390,16 +390,16 @@ void loop() {
 
   // Update global status system (aligned with MQTT timer)
   updateGlobalStatusSystem();
-
   // Read and send data from each device
   readAndSendDataFromDevices();
   
   // Update climate controller
-  if (climateControllerEnabled && climateController != nullptr) {
+  if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
     updateClimateController();
   }
 
   // Update display with climate status periodically
+  unsigned long displayUpdateInterval = Configuration::getDisplayUpdateInterval();
   if (millis() - lastDisplayUpdate >= displayUpdateInterval) {
     updateDisplayWithClimateStatus();
     lastDisplayUpdate = millis();
