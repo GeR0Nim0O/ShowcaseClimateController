@@ -14,6 +14,12 @@
 std::map<String, String> Configuration::wifiConfig;
 std::map<String, String> Configuration::mqttConfig;
 std::map<String, String> Configuration::projectConfig;
+std::map<String, String> Configuration::customWifiConfig;
+std::map<String, String> Configuration::customMqttConfig;
+std::map<String, String> Configuration::mqttThrottlingConfig;
+std::map<String, String> Configuration::climateControllerConfig;
+std::map<String, String> Configuration::displayConfig;
+std::map<String, String> Configuration::systemConfig;
 JsonDocument Configuration::devicesConfigDoc;
 JsonObject Configuration::devicesConfig = JsonObject();
 
