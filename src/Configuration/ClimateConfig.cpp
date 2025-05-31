@@ -346,9 +346,8 @@ bool ClimateConfig::saveToJsonFile(const String& filePath) {
     climate["humidity_mode"] = String(settings.humidityMode);
     climate["auto_fan_control"] = settings.autoFanControl;
     climate["update_interval_ms"] = settings.updateInterval;
-    
-    // Safety limits
-    JsonObject safety = climate.createNestedObject("safety_limits");
+      // Safety limits
+    JsonObject safety = climate["safety_limits"].to<JsonObject>();
     safety["max_temperature"] = settings.maxTemperature;
     safety["min_temperature"] = settings.minTemperature;
     safety["max_humidity"] = settings.maxHumidity;
