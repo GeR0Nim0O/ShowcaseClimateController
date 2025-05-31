@@ -27,6 +27,8 @@ public:    // Static member variables
     static bool loadConfigFromSD(const char* filename);
     static bool loadConfigFromCodebase();
     static bool readProjectConfigJson();
+    static bool copyConfigFromProjectToLittleFS();
+    static bool loadMinimalHardcodedConfig();
     static bool loadConfig(const JsonObject& config);
     
     // Setters for WiFi configuration
