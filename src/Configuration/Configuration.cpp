@@ -956,3 +956,81 @@ uint32_t Configuration::getLogFileSize() {
 JsonObject Configuration::getDevicesConfig() {
     return devicesConfig;
 }
+
+// Custom WiFi configuration getters
+bool Configuration::isCustomWifiEnabled() {
+    return customWifiConfig["enable"] == "true" || customWifiConfig["enable"] == "1";
+}
+
+String Configuration::getCustomWifiSSID() {
+    return customWifiConfig["ssid"];
+}
+
+String Configuration::getCustomWifiPassword() {
+    return customWifiConfig["password"];
+}
+
+// Custom MQTT configuration getters
+bool Configuration::isCustomMqttEnabled() {
+    return customMqttConfig["enable"] == "true" || customMqttConfig["enable"] == "1";
+}
+
+String Configuration::getCustomMqttServer() {
+    return customMqttConfig["server"];
+}
+
+int Configuration::getCustomMqttPort() {
+    return customMqttConfig["port"].toInt();
+}
+
+String Configuration::getCustomMqttToken() {
+    return customMqttConfig["token"];
+}
+
+// MQTT Throttling configuration getters
+bool Configuration::isMqttThrottlingEnabled() {
+    return mqttThrottlingConfig["enabled"] == "true" || mqttThrottlingConfig["enabled"] == "1";
+}
+
+unsigned long Configuration::getMqttThrottlingInterval() {
+    return mqttThrottlingConfig["interval_ms"].toInt();
+}
+
+// Climate Controller configuration getters
+bool Configuration::isClimateControllerEnabled() {
+    return climateControllerConfig["enabled"] == "true" || climateControllerConfig["enabled"] == "1";
+}
+
+float Configuration::getClimateTemperatureSetpoint() {
+    return climateControllerConfig["temperature_setpoint"].toFloat();
+}
+
+float Configuration::getClimateHumiditySetpoint() {
+    return climateControllerConfig["humidity_setpoint"].toFloat();
+}
+
+String Configuration::getClimateMode() {
+    return climateControllerConfig["climate_mode"];
+}
+
+String Configuration::getHumidityMode() {
+    return climateControllerConfig["humidity_mode"];
+}
+
+bool Configuration::isAutoFanControlEnabled() {
+    return climateControllerConfig["auto_fan_control"] == "true" || climateControllerConfig["auto_fan_control"] == "1";
+}
+
+// Display configuration getters
+unsigned long Configuration::getDisplayUpdateInterval() {
+    return displayConfig["update_interval_ms"].toInt();
+}
+
+// System configuration getters
+unsigned long Configuration::getStatusUpdateInterval() {
+    return systemConfig["status_update_interval_ms"].toInt();
+}
+
+unsigned long Configuration::getTimeFetchInterval() {
+    return systemConfig["time_fetch_interval_ms"].toInt();
+}
