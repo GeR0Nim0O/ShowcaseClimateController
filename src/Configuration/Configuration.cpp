@@ -114,12 +114,7 @@ bool Configuration::readProjectConfigJson() {
 }
 
 bool Configuration::copyConfigFromProjectToLittleFS() {
-    Serial.println("Attempting to copy config.json to LittleFS...");
-    
-    // Note: In a real deployment, you would need to have the config.json 
-    // embedded in the firmware or available through other means.
-    // For now, we'll fall back to minimal hardcoded config.
-    Serial.println("Config copy not implemented - using minimal hardcoded config");
+    Serial.println("Config not found in LittleFS, falling back to embedded configuration...");
     return loadMinimalHardcodedConfig();
 }
 
