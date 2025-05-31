@@ -16,8 +16,9 @@ bool Display::begin() {
     Serial.print(" on TCA channel ");
     Serial.println(tcaChannel);
     
-    // Try to communicate with PCF8574 - be more lenient than basic testI2CConnection
+    // Try to communicate with PCF8574 - test with a simple write
     wire->beginTransmission(i2cAddress);
+    wire->write(0x00); // Send zero to test communication
     uint8_t error = wire->endTransmission();
     
     if (error != 0) {
@@ -28,27 +29,54 @@ bool Display::begin() {
     
     Serial.println("I2C communication with LCD successful");
     
-    try {
-        initializeDisplay();
+    // Try initialization with retry mechanism
+    int retryCount = 0;
+    const int maxRetries = 3;
+    
+    while (retryCount < maxRetries) {
+        Serial.print("LCD initialization attempt ");
+        Serial.print(retryCount + 1);
+        Serial.print(" of ");
+        Serial.println(maxRetries);
         
-        initialized = true;
-        displayInitialized = true;
-        Serial.println("LCD Display initialized successfully");
+        try {
+            initializeDisplay();
+            
+            // Test if LCD is working by sending a simple command
+            delay(10);
+            command(LCD_CLEARDISPLAY);
+            delay(5);
+            
+            initialized = true;
+            displayInitialized = true;
+            Serial.println("LCD Display initialized successfully");
+            
+            // Show startup message
+            clear();
+            setCursor(0, 0);
+            print("Climate Control");
+            setCursor(0, 1);
+            print("Starting...");
+            delay(2000);
+            
+            return true;
+            
+        } catch (...) {
+            Serial.print("Exception occurred during LCD initialization attempt ");
+            Serial.println(retryCount + 1);
+        }
         
-        // Show startup message
-        clear();
-        setCursor(0, 0);
-        print("Climate Control");
-        setCursor(0, 1);
-        print("Starting...");
-        delay(2000);
-        
-        return true;
-    } catch (...) {
-        Serial.println("Exception occurred during LCD initialization");
-        initialized = false;
-        displayInitialized = false;
-        return false;
+        retryCount++;
+        if (retryCount < maxRetries) {
+            Serial.println("Retrying LCD initialization...");
+            delay(500); // Wait before retry
+        }
+    }
+    
+    Serial.println("LCD Display initialization failed after all attempts");
+    initialized = false;
+    displayInitialized = false;
+    return false;
     }
 }
 
