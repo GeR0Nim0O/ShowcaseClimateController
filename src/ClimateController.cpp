@@ -921,4 +921,28 @@ void ClimateController::setHumidityPID(double kp, double ki, double kd) {
     }
 }
 
-
+// Update ClimateConfig JSON file with current controller settings
+void ClimateController::updateClimateConfigFile() {
+    Serial.println("Updating ClimateConfig JSON file with current settings...");
+    
+    ClimateConfig& climateConfig = ClimateConfig::getInstance();
+    
+    // Update ClimateConfig with current controller settings
+    climateConfig.setTemperatureSetpoint(temperatureSetpoint);
+    climateConfig.setHumiditySetpoint(humiditySetpoint);
+    climateConfig.setAutoFanControl(autoFanControlEnabled);
+    climateConfig.setUpdateInterval(updateInterval);
+    
+    // Convert enums to strings and set modes
+    String climateMode;
+    switch (this->climateMode) {
+        case ClimateMode::HEATING: climateMode = "HEATING"; break;
+        case ClimateMode::COOLING: climateMode = "COOLING"; break;
+        case ClimateMode::OFF: climateMode = "OFF"; break;
+        default: climateMode = "AUTO"; break;
+    }
+    climateConfig.setClimateMode(climateMode);
+    
+    String humidityMode;
+    switch (this->humidityMode) {
+        case HumidityMode::HUMIDIFYING: humidityMode = "HUMIDIFY"; break;
