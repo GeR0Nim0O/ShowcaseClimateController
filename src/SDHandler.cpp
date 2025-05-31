@@ -541,11 +541,9 @@ bool SDHandler::copyDefaultConfig() {
         "timezone": "Europe/Amsterdam",
         "sd_logfile_size": 1048576
     }
-    )";
-
-    File configFile = SD.open("/config.json", FILE_WRITE);
+    )";    File configFile = SD.open("/config.json", FILE_WRITE);
     if (!configFile) {
-        Serial.println("Failed to open config file for writing");
+        Serial.println("WARNING: Failed to open config file for writing on SD card");
         return false;
     }
 
