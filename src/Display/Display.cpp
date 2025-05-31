@@ -90,76 +90,77 @@ void Display::update() {
 }
 
 void Display::initializeDisplay() {
-    Serial.println("Initializing LCD display sequence...");
+    Serial.println("Initializing LCD display sequence for PCF8574T...");
     selectTCAChannel(tcaChannel);
     
-    // Power-on delay - HD44780 needs at least 40ms after power on
-    delay(150); // Increased delay for stability
+    // PCF8574T specific initialization - longer delays for stability
+    delay(250); // Extended power-up delay for PCF8574T
     
-    // Set backlight on first and ensure PCF8574 is in known state
-    Serial.println("Setting backlight and initializing PCF8574...");
+    // First, ensure all pins are in known state
+    Serial.println("Resetting PCF8574T pins...");
+    expanderWrite(0x00); // All pins low
+    delay(50);
+    
+    // Set backlight on and establish baseline
+    Serial.println("Setting backlight on...");
     expanderWrite(LCD_BACKLIGHT);
-    delay(100);
+    delay(150); // Allow backlight to stabilize
     
-    // Reset sequence - put all pins low except backlight
-    expanderWrite(LCD_BACKLIGHT);
-    delay(10);
+    // PCF8574T requires more careful timing for HD44780 initialization
+    Serial.println("Starting HD44780 initialization sequence for PCF8574T...");
     
-    // HD44780 initialization sequence for 4-bit mode (more robust)
-    Serial.println("Starting HD44780 initialization sequence...");
+    // Initial reset sequence - send 0x30 three times with proper timing
+    Serial.println("Sending initial reset commands...");
     
-    // First initialization - send 0x30 (8-bit mode command)
-    Serial.println("First 0x30 command...");
-    write4bits(0x30 | LCD_BACKLIGHT);
+    // First 0x30 command - must wait >15ms after power on
+    write4bits(0x30);
+    delay(20); // Wait more than 15ms
+    
+    // Second 0x30 command - must wait >4.1ms
+    write4bits(0x30);
     delay(10); // Wait more than 4.1ms
     
-    // Second initialization - send 0x30 again
-    Serial.println("Second 0x30 command...");
-    write4bits(0x30 | LCD_BACKLIGHT);
-    delayMicroseconds(200); // Wait more than 100us
+    // Third 0x30 command - must wait >100us
+    write4bits(0x30);
+    delay(2); // Wait more than 100us
     
-    // Third initialization - send 0x30 again
-    Serial.println("Third 0x30 command...");
-    write4bits(0x30 | LCD_BACKLIGHT);
-    delayMicroseconds(200);
-    
-    // Set to 4-bit mode
+    // Now switch to 4-bit mode
     Serial.println("Setting 4-bit mode...");
-    write4bits(0x20 | LCD_BACKLIGHT);
-    delayMicroseconds(200);
+    write4bits(0x20);
+    delay(2); // Allow mode switch to complete
     
-    // Now we can use command() function for remaining setup
+    // From here on, use normal 4-bit commands
     // Function set: 4-bit mode, 2 lines, 5x8 dots
     Serial.println("Configuring function set...");
     command(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_2LINE | LCD_5x8DOTS);
-    delayMicroseconds(50);
+    delay(2);
     
     // Display control: display off initially
-    Serial.println("Setting display off...");
-    command(LCD_DISPLAYCONTROL | LCD_DISPLAYOFF);
-    delayMicroseconds(50);
+    Serial.println("Setting display control off...");
+    command(LCD_DISPLAYCONTROL | LCD_DISPLAYOFF | LCD_CURSOROFF | LCD_BLINKOFF);
+    delay(2);
     
     // Clear display
     Serial.println("Clearing display...");
     command(LCD_CLEARDISPLAY);
-    delay(3); // Clear command takes longer
+    delay(5); // Clear command needs more time
     
     // Entry mode: left to right, no shift
     Serial.println("Setting entry mode...");
     command(LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT);
-    delayMicroseconds(50);
+    delay(2);
     
-    // Display control: display on, cursor off, blink off
+    // Finally turn display on
     Serial.println("Turning display on...");
     command(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
-    delayMicroseconds(50);
+    delay(2);
     
     // Return home
     Serial.println("Returning home...");
     command(LCD_RETURNHOME);
-    delay(3); // Home command takes longer
+    delay(5); // Home command needs more time
     
-    Serial.println("LCD initialization sequence complete");
+    Serial.println("PCF8574T LCD initialization sequence complete");
 }
 
 void Display::clear() {
