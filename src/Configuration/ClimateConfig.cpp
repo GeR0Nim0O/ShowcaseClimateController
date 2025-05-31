@@ -335,7 +335,7 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
 }
 
 bool ClimateConfig::saveToJsonFile(const String& filePath) {
-    StaticJsonDocument<2048> doc;
+    JsonDocument doc;
     
     // Create climate controller section
     JsonObject climate = doc["climate_controller"].to<JsonObject>();
