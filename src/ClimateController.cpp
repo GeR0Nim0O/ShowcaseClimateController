@@ -946,3 +946,16 @@ void ClimateController::updateClimateConfigFile() {
     String humidityMode;
     switch (this->humidityMode) {
         case HumidityMode::HUMIDIFYING: humidityMode = "HUMIDIFY"; break;
+        case HumidityMode::DEHUMIDIFYING: humidityMode = "DEHUMIDIFY"; break;
+        case HumidityMode::OFF: humidityMode = "OFF"; break;
+        default: humidityMode = "AUTO"; break;
+    }
+    climateConfig.setHumidityMode(humidityMode);
+    
+    // Save to JSON file
+    if (climateConfig.updateJsonFile("/data/ClimateConfig.json")) {
+        Serial.println("ClimateConfig JSON file updated successfully");
+    } else {
+        Serial.println("Failed to update ClimateConfig JSON file");
+    }
+}
