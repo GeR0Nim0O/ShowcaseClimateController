@@ -444,7 +444,7 @@ void sendSensorDataOverMQTT(const SensorData& data) {
 
 void readAndSendDataFromDevices() {
     // Flag to determine if we should print data this cycle (only true every 60 seconds)
-    bool shouldPrintData = throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval);
+    bool shouldPrintData = Configuration::isMqttThrottlingEnabled() && (millis() - lastMqttSendTime >= Configuration::getMqttThrottlingInterval());
       // Track timing for MQTT throttling
     unsigned long currentTime = millis();
     unsigned long timeSinceLastSend = currentTime - lastMqttSendTime;
