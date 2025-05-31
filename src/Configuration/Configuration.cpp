@@ -68,12 +68,12 @@ bool Configuration::loadConfigFromCodebase() {
             "port": 1883,
             "username": "mqtt_user",
             "password": "mqtt_password"
-        },
-        "mqtts": {
+        },        "mqtts": {
             "server": "mqtt.flespi.io",
             "port": 8883,
             "username": "mqtts_user",
-            "password": "mqtts_password"
+            "password": "mqtts_password",
+            "token": "ONz40m0iGTFbiFMcp14lLnt1Eb31qnPulPkg5DkJUuGGY6OhJhN1iPqImaRT0qbp"
         },
         "Devices": {
             "DS3231": {
