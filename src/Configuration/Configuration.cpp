@@ -330,25 +330,24 @@ bool Configuration::loadMinimalHardcodedConfig() {
         },
         "timezone": "Europe/Amsterdam",
         "sd_logfile_size": 1048576
-    })";
-    
-    // Parse the minimal JSON
+    })";    
+    // Parse the embedded JSON
     JsonDocument doc;
-    DeserializationError error = deserializeJson(doc, minimalConfig);
+    DeserializationError error = deserializeJson(doc, embeddedConfig);
     if (error) {
-        Serial.print("Failed to parse minimal config: ");
+        Serial.print("Failed to parse embedded config: ");
         Serial.println(error.c_str());
         return false;
     }
     
     // Load configuration from parsed JSON
     if (!loadConfig(doc.as<JsonObject>())) {
-        Serial.println("Failed to load minimal configuration");
+        Serial.println("Failed to load embedded configuration");
         return false;
     }
     
-    Serial.println("Minimal hardcoded configuration loaded successfully");
-    Serial.println("WARNING: Using minimal config - please configure SD card or fix LittleFS");
+    Serial.println("Embedded project configuration loaded successfully");
+    Serial.println("NOTE: Using embedded config - SD card config.json will override if available");
     return true;
 }
 
