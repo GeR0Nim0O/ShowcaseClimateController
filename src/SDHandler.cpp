@@ -64,12 +64,12 @@ bool SDHandler::initializeSDCardAndConfig() {
 
 void SDHandler::logJson(const char* json) {
     if (!SD.cardSize()) {
-        Serial.println("SD card not present.");
+        Serial.println("WARNING: SD card not present - data logging skipped");
         return;
     }
     logFile = SD.open("/log.txt", FILE_APPEND);
     if (!logFile) {
-        Serial.println("Error opening log file");
+        Serial.println("WARNING: Error opening log file on SD card - data logging skipped");
         return;
     }
     if (logFile.size() > MAX_FILE_SIZE) {
