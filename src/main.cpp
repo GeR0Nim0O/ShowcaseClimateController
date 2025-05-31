@@ -384,7 +384,7 @@ void loop() {
   if (client.connected()) {
     client.loop(); // Ensure the MQTT client loop is called to maintain the connection
   }
-  TimeHandler::fetchCurrentTimePeriodically(rtc, lastTimeFetch, timeFetchInterval);
+  TimeHandler::fetchCurrentTimePeriodically(rtc, lastTimeFetch, Configuration::getTimeFetchInterval());
 
   // Update global status system (aligned with MQTT timer)
   updateGlobalStatusSystem();
