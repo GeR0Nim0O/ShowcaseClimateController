@@ -108,13 +108,10 @@ void setup()
 {
   Serial.begin(115200);
   delay(5000); // Initial delay before loading config
-
   // Initialize I2C bus
   I2CHandler::initializeI2C();
 
-  // Perform I2C scan before connecting to any devices
-  I2CHandler::scanI2C(); 
-    // Setup configuration
+  // Setup configuration
   if (!SDHandler::initializeSDCardAndConfig()) {
     Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
   }
