@@ -121,12 +121,13 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
     pinTemperatureEnable = 4;
     pinTemperatureCool = 5;
     pinTemperatureHeat = 6;
-    
-    // Initialize PID controllers - with safety checks
+      // Initialize PID controllers - with safety checks
     try {
         Serial.println("Initializing Temperature PID controller");
         temperaturePID = new PID(&tempInput, &tempOutput, &tempSetpoint, 
-                                DEFAULT_TEMP_KP, DEFAULT_TEMP_KI, DEFAULT_TEMP_KD, DIRECT);
+                                Configuration::getTemperatureKp(), 
+                                Configuration::getTemperatureKi(), 
+                                Configuration::getTemperatureKd(), DIRECT);
         
         if (temperaturePID != nullptr) {
             temperaturePID->SetMode(AUTOMATIC);
@@ -136,7 +137,9 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
         
         Serial.println("Initializing Humidity PID controller");
         humidityPID = new PID(&humInput, &humOutput, &humSetpoint,
-                             DEFAULT_HUM_KP, DEFAULT_HUM_KI, DEFAULT_HUM_KD, DIRECT);
+                             Configuration::getHumidityKp(), 
+                             Configuration::getHumidityKi(), 
+                             Configuration::getHumidityKd(), DIRECT);
         
         if (humidityPID != nullptr) {
             humidityPID->SetMode(AUTOMATIC);
