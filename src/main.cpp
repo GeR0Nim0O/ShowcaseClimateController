@@ -209,6 +209,9 @@ void setup()
   // Initialize climate controller
   initializeClimateController();
   
+  // Initialize display device
+  initializeDisplayDevice();
+  
   // NEW: Read and print initial sensor values after initialization
   Serial.println("\n=== Initial Sensor Readings ===");
   readAndPrintInitialSensorData();
