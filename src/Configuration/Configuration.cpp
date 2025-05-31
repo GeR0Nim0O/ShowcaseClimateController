@@ -113,6 +113,78 @@ bool Configuration::readProjectConfigJson() {
     return true;
 }
 
+bool Configuration::copyConfigFromProjectToLittleFS() {
+    Serial.println("Attempting to copy config.json to LittleFS...");
+    
+    // Note: In a real deployment, you would need to have the config.json 
+    // embedded in the firmware or available through other means.
+    // For now, we'll fall back to minimal hardcoded config.
+    Serial.println("Config copy not implemented - using minimal hardcoded config");
+    return loadMinimalHardcodedConfig();
+}
+
+bool Configuration::loadMinimalHardcodedConfig() {
+    Serial.println("Loading minimal hardcoded configuration...");
+    
+    // Create a minimal JSON configuration that should work for basic operation
+    const char* minimalConfig = R"({
+        "wifi": {
+            "ssid": "YourWiFiNetwork",
+            "password": "YourPassword"
+        },
+        "mqtts": {
+            "server": "mqtt.flespi.io",
+            "port": 8883,
+            "token": "YourFlespiToken"
+        },
+        "project": {
+            "projectNumber": "TEST",
+            "showcaseId": "01",
+            "deviceName": "ShowcaseClimateController",
+            "timezone": "Europe/Amsterdam",
+            "logFileSize": 1048576
+        },
+        "mqttThrottling": {
+            "enabled": true,
+            "interval": 60000
+        },
+        "climateController": {
+            "enabled": false
+        },
+        "display": {
+            "updateInterval": 5000
+        },
+        "system": {
+            "statusUpdateInterval": 60000,
+            "timeFetchInterval": 3600000,
+            "connectionRetryInterval": 30000,
+            "startupDelay": 5000,
+            "wifiConnectionTimeout": 30000,
+            "buttonPressTimeout": 3000
+        },
+        "devices": {}
+    })";
+    
+    // Parse the minimal JSON
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, minimalConfig);
+    if (error) {
+        Serial.print("Failed to parse minimal config: ");
+        Serial.println(error.c_str());
+        return false;
+    }
+    
+    // Load configuration from parsed JSON
+    if (!loadConfig(doc.as<JsonObject>())) {
+        Serial.println("Failed to load minimal configuration");
+        return false;
+    }
+    
+    Serial.println("Minimal hardcoded configuration loaded successfully");
+    Serial.println("WARNING: Using minimal config - please configure SD card or fix LittleFS");
+    return true;
+}
+
 bool Configuration::loadConfig(const JsonObject& config) {
     if (config.isNull()) {
         Serial.println("Config is null");
