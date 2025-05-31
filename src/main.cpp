@@ -38,20 +38,9 @@ unsigned long buttonPressTime = 0;
 WiFiClientSecure espClient; // Use WiFiClientSecure instead of WiFiClient
 PubSubClient client(espClient);
 
-// Custom WiFi settings
-String customSSID = "Ron&Rowie_Gast";
-String customPassword = "Gast@Ron&Rowie";
-bool useCustomWiFi = true; // Set to true to use custom WiFi settings
-
-// Custom MQTT settings
-String customMqttServer = "mqtt.flespi.io";
-int customMqttPort = 8883;
-String customFlespiToken = "ONz40m0iGTFbiFMcp14lLnt1Eb31qnPulPkg5DkJUuGGY6OhJhN1iPqImaRT0qbp";
-bool useCustomMqtt = true; // Set to true to use custom MQTT settings
-
-// MQTT throttling settings
-bool throttleMqtt = true; // Enable MQTT throttling to send data only once every minute
-unsigned long mqttThrottleInterval = 60000; // 1 minute in milliseconds
+// MQTT throttling settings - loaded from config
+bool throttleMqtt = true; // Will be loaded from config
+unsigned long mqttThrottleInterval = 60000; // Will be loaded from config
 unsigned long lastMqttSendTime = 0; // Last time data was sent via MQTT
 
 // Global status timer settings (aligned with MQTT timer)
