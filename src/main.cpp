@@ -412,6 +412,12 @@ void loop() {
     updateClimateController();
   }
 
+  // Update display with climate status periodically
+  if (millis() - lastDisplayUpdate >= displayUpdateInterval) {
+    updateDisplayWithClimateStatus();
+    lastDisplayUpdate = millis();
+  }
+
   handleButtonPress();
 
   // Add a direct check here to periodically send data
