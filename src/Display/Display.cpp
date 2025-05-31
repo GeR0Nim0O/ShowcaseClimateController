@@ -325,6 +325,10 @@ void Display::send(uint8_t value, uint8_t mode) {
 }
 
 void Display::write4bits(uint8_t value) {
+    // Ensure backlight state is preserved
+    if (backlightState) {
+        value |= LCD_BACKLIGHT;
+    }
     expanderWrite(value);
     pulseEnable(value);
 }
@@ -332,20 +336,27 @@ void Display::write4bits(uint8_t value) {
 void Display::expanderWrite(uint8_t data) {
     selectTCAChannel(tcaChannel);
     
+    // Ensure backlight state is always preserved
     if (backlightState) {
         data |= LCD_BACKLIGHT;
     }
     
     wire->beginTransmission(i2cAddress);
     wire->write(data);
-    wire->endTransmission();
+    uint8_t error = wire->endTransmission();
+    
+    if (error != 0) {
+        Serial.print("Warning: I2C transmission error during LCD write: ");
+        Serial.println(error);
+    }
 }
 
 void Display::pulseEnable(uint8_t data) {
+    // Enable pulse must be at least 450ns wide for HD44780
     expanderWrite(data | LCD_EN);
-    delayMicroseconds(1);
+    delayMicroseconds(2); // Increased from 1us for better reliability
     expanderWrite(data & ~LCD_EN);
-    delayMicroseconds(50);
+    delayMicroseconds(100); // Increased from 50us for better reliability
 }
 
 void Display::command(uint8_t value) {
