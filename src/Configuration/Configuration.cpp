@@ -836,6 +836,42 @@ void Configuration::parseProjectConfig(const JsonObject& config) {
     projectConfig["timezone"] = config["timezone"] | "UTC";
 }
 
+void Configuration::parseCustomWifiConfig(const JsonObject& config) {
+    customWifiConfig["enable"] = config["enable"] | false;
+    customWifiConfig["ssid"] = config["ssid"] | "";
+    customWifiConfig["password"] = config["password"] | "";
+}
+
+void Configuration::parseCustomMqttConfig(const JsonObject& config) {
+    customMqttConfig["enable"] = config["enable"] | false;
+    customMqttConfig["server"] = config["server"] | "";
+    customMqttConfig["port"] = String(config["port"] | 8883);
+    customMqttConfig["token"] = config["token"] | "";
+}
+
+void Configuration::parseMqttThrottlingConfig(const JsonObject& config) {
+    mqttThrottlingConfig["enabled"] = config["enabled"] | true;
+    mqttThrottlingConfig["interval_ms"] = String(config["interval_ms"] | 60000);
+}
+
+void Configuration::parseClimateControllerConfig(const JsonObject& config) {
+    climateControllerConfig["enabled"] = config["enabled"] | true;
+    climateControllerConfig["temperature_setpoint"] = String(config["temperature_setpoint"] | 22.0);
+    climateControllerConfig["humidity_setpoint"] = String(config["humidity_setpoint"] | 50.0);
+    climateControllerConfig["climate_mode"] = config["climate_mode"] | "AUTO";
+    climateControllerConfig["humidity_mode"] = config["humidity_mode"] | "AUTO";
+    climateControllerConfig["auto_fan_control"] = config["auto_fan_control"] | true;
+}
+
+void Configuration::parseDisplayConfig(const JsonObject& config) {
+    displayConfig["update_interval_ms"] = String(config["update_interval_ms"] | 5000);
+}
+
+void Configuration::parseSystemConfig(const JsonObject& config) {
+    systemConfig["status_update_interval_ms"] = String(config["status_update_interval_ms"] | 60000);
+    systemConfig["time_fetch_interval_ms"] = String(config["time_fetch_interval_ms"] | 3600000);
+}
+
 // Getter and setter implementations
 void Configuration::setWiFiSSID(const String& ssid) {
     wifiConfig["ssid"] = ssid;
