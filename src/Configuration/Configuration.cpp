@@ -9,6 +9,8 @@
 #include "SDHandler.h"
 #include <Wire.h>
 #include <algorithm> // For std::remove_if and std::distance
+#include <FS.h>
+#include <LittleFS.h>
 
 // Initialize static member variables
 std::map<String, String> Configuration::wifiConfig;
