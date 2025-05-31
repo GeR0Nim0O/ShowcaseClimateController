@@ -381,15 +381,12 @@ void loop() {
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
     updateClimateController();
   }
-
   // Update display with climate status periodically
   unsigned long displayUpdateInterval = Configuration::getDisplayUpdateInterval();
   if (millis() - lastDisplayUpdate >= displayUpdateInterval) {
     updateDisplayWithClimateStatus();
     lastDisplayUpdate = millis();
   }
-
-  handleButtonPress();
 
   // Add a direct check here to periodically send data
   if (throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval)) {
