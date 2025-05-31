@@ -560,9 +560,8 @@ void readAndSendDataFromDevices() {
                     Serial.print(" >= ");
                     Serial.print(threshold);
                     Serial.println(")");
-                    
-                    // NEW: Send data to MQTT immediately when threshold exceeded
-                    if (WiFi.status() == WL_CONNECTED && client.connected() && !stopSendingMQTT) {
+                      // NEW: Send data to MQTT immediately when threshold exceeded
+                    if (WiFi.status() == WL_CONNECTED && client.connected()) {
                         // Send this specific sensor data immediately via MQTT
                         sendSensorDataOverMQTT(sensorData);
                     }
