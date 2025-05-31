@@ -6,6 +6,7 @@
 #include <ArduinoJson.h>
 #include <FS.h>
 #include <SPIFFS.h>
+#include <cstring>  // For strncpy
 
 struct ClimateSettings {
     float temperatureSetpoint;
