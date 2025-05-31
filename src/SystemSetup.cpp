@@ -44,10 +44,9 @@ bool SystemSetup::setupConfiguration() {
     // Load device configurations from config.json
     if (!Configuration::loadConfigFromSD("/config.json")) {
         Serial.println("Failed to load config from SD card. Using default values.");
-        
-        // Set default values
-        Configuration::setWiFiSSID("Ron");
-        Configuration::setWiFiPassword("ikweethet");
+          // Set default values
+        Configuration::setWiFiSSID("Ron&Rowie_Gast");
+        Configuration::setWiFiPassword("Gast@Ron&Rowie");
         Configuration::setMqttsServer("mqtt.flespi.io");
         Configuration::setMqttsPort(8883);
         Configuration::setFlespiToken("ONz40m0iGTFbiFMcp14lLnt1Eb31qnPulPkg5DkJUuGGY6OhJhN1iPqImaRT0qbp");
