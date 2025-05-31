@@ -797,35 +797,96 @@ void ClimateController::configure(float tempSetpoint, float humSetpoint, Climate
     }
 }
 
-// Reload configuration from Configuration class
+// Reload configuration from Configuration class and ClimateConfig
 void ClimateController::reloadConfiguration() {
     Serial.println("Reloading climate controller configuration...");
     
-    // Update update interval
-    updateInterval = Configuration::getClimateUpdateInterval();
+    // Try to load from ClimateConfig JSON file first
+    ClimateConfig& climateConfig = ClimateConfig::getInstance();
+    if (climateConfig.loadFromJsonFile()) {
+        Serial.println("Loaded settings from ClimateConfig JSON file");
+        
+        // Update setpoints from ClimateConfig
+        setTemperatureSetpoint(climateConfig.getTemperatureSetpoint());
+        setHumiditySetpoint(climateConfig.getHumiditySetpoint());
+        
+        // Update control modes
+        String climateMode = climateConfig.getClimateMode();
+        if (climateMode == "HEATING") {
+            setClimateMode(ClimateMode::HEATING);
+        } else if (climateMode == "COOLING") {
+            setClimateMode(ClimateMode::COOLING);
+        } else if (climateMode == "OFF") {
+            setClimateMode(ClimateMode::OFF);
+        } else {
+            setClimateMode(ClimateMode::AUTO);
+        }
+        
+        String humidityMode = climateConfig.getHumidityMode();
+        if (humidityMode == "HUMIDIFY") {
+            setHumidityMode(HumidityMode::HUMIDIFYING);
+        } else if (humidityMode == "DEHUMIDIFY") {
+            setHumidityMode(HumidityMode::DEHUMIDIFYING);
+        } else if (humidityMode == "OFF") {
+            setHumidityMode(HumidityMode::OFF);
+        } else {
+            setHumidityMode(HumidityMode::AUTO);
+        }
+        
+        // Update auto fan control
+        setAutoFanControl(climateConfig.getAutoFanControl());
+        
+        // Update update interval from ClimateConfig
+        updateInterval = climateConfig.getUpdateInterval();
+        
+        // Update PID parameters from ClimateConfig
+        if (temperaturePID != nullptr) {
+            temperaturePID->SetTunings(
+                climateConfig.getTemperatureKp(),
+                climateConfig.getTemperatureKi(),
+                climateConfig.getTemperatureKd()
+            );
+            Serial.println("Temperature PID parameters updated from ClimateConfig");
+        }
+        
+        if (humidityPID != nullptr) {
+            humidityPID->SetTunings(
+                climateConfig.getHumidityKp(),
+                climateConfig.getHumidityKi(),
+                climateConfig.getHumidityKd()
+            );
+            Serial.println("Humidity PID parameters updated from ClimateConfig");
+        }
+    } else {
+        Serial.println("Failed to load from ClimateConfig, falling back to Configuration class");
+        
+        // Fallback to original Configuration class
+        updateInterval = Configuration::getClimateUpdateInterval();
+        
+        // Update PID parameters for temperature controller
+        if (temperaturePID != nullptr) {
+            temperaturePID->SetTunings(
+                Configuration::getTemperatureKp(),
+                Configuration::getTemperatureKi(),
+                Configuration::getTemperatureKd()
+            );
+            Serial.println("Temperature PID parameters updated from Configuration");
+        }
+        
+        // Update PID parameters for humidity controller
+        if (humidityPID != nullptr) {
+            humidityPID->SetTunings(
+                Configuration::getHumidityKp(),
+                Configuration::getHumidityKi(),
+                Configuration::getHumidityKd()
+            );
+            Serial.println("Humidity PID parameters updated from Configuration");
+        }
+    }
+    
     Serial.print("Update interval set to: ");
     Serial.print(updateInterval);
     Serial.println(" ms");
-    
-    // Update PID parameters for temperature controller
-    if (temperaturePID != nullptr) {
-        temperaturePID->SetTunings(
-            Configuration::getTemperatureKp(),
-            Configuration::getTemperatureKi(),
-            Configuration::getTemperatureKd()
-        );
-        Serial.println("Temperature PID parameters updated");
-    }
-    
-    // Update PID parameters for humidity controller
-    if (humidityPID != nullptr) {
-        humidityPID->SetTunings(
-            Configuration::getHumidityKp(),
-            Configuration::getHumidityKi(),
-            Configuration::getHumidityKd()
-        );
-        Serial.println("Humidity PID parameters updated");
-    }
     
     Serial.println("Configuration reload completed");
 }
