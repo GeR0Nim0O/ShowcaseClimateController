@@ -81,8 +81,7 @@ bool Display::begin() {
             Serial.print("Exception occurred during LCD initialization attempt ");
             Serial.println(retryCount + 1);
         }
-        
-        retryCount++;
+          retryCount++;
         if (retryCount < maxRetries) {
             Serial.println("Retrying LCD initialization...");
             delay(500); // Wait before retry
@@ -93,7 +92,6 @@ bool Display::begin() {
     initialized = false;
     displayInitialized = false;
     return false;
-    }
 }
 
 bool Display::isConnected() {
