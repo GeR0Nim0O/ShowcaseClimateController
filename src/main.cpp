@@ -128,9 +128,40 @@ void setup()
 
   // Perform I2C scan before connecting to any devices
   I2CHandler::scanI2C(); 
+    // Setup configuration
+  if (!SDHandler::initializeSDCardAndConfig()) {
+    Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
+  }
   
-  // Setup configuration using SystemSetup
-  SystemSetup::setupConfiguration();
+  if (!Configuration::loadConfigFromSD("/config.json")) {
+    Serial.println("Failed to load config from SD card. Using default values.");
+    // Set fallback configuration values
+    Configuration::setWiFiSSID("Ron");
+    Configuration::setWiFiPassword("ikweethet");
+    Configuration::setMqttsServer("mqtt.flespi.io");
+    Configuration::setMqttsPort(8883);
+    Configuration::setFlespiToken("ONz40m0iGTFbiFMcp14lLnt1Eb31qnPulPkg5DkJUuGGY6OhJhN1iPqImaRT0qbp");
+    Configuration::setProjectNumber("12345");
+    Configuration::setShowcaseId("67");
+    Configuration::setDeviceName("TEST");
+    Configuration::setTimezone("UTC");
+  } else {
+    Serial.println("Config loaded successfully from SD card.");
+    
+    // Load custom settings from config if enabled
+    if (Configuration::isCustomWifiEnabled()) {
+      Configuration::setWiFiSSID(Configuration::getCustomWifiSSID());
+      Configuration::setWiFiPassword(Configuration::getCustomWifiPassword());
+    }
+    
+    if (Configuration::isCustomMqttEnabled()) {
+      Configuration::setMqttsServer(Configuration::getCustomMqttServer());
+      Configuration::setMqttsPort(Configuration::getCustomMqttPort());
+      Configuration::setFlespiToken(Configuration::getCustomMqttToken());
+    }
+  }
+  
+  Configuration::printConfigValues();
   
   // Load throttling settings after configuration is loaded
   throttleMqtt = Configuration::isMqttThrottlingEnabled();
