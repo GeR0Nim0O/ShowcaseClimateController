@@ -1178,17 +1178,17 @@ unsigned long Configuration::getTimeFetchInterval() {
 }
 
 unsigned long Configuration::getConnectionRetryInterval() {
-    return systemConfig.connectionRetryInterval;
+    return systemConfig["connection_retry_interval_ms"].toInt();
 }
 
 unsigned long Configuration::getStartupDelay() {
-    return systemConfig.startupDelay;
+    return systemConfig["startup_delay_ms"].toInt();
 }
 
 unsigned long Configuration::getWifiConnectionTimeout() {
-    return systemConfig.wifiConnectionTimeout;
+    return systemConfig["wifi_connection_timeout_ms"].toInt();
 }
 
 unsigned long Configuration::getButtonPressTimeout() {
-    return systemConfig.buttonPressTimeout;
+    return systemConfig["button_press_timeout_ms"].toInt();
 }
