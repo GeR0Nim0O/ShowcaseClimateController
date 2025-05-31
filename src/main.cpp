@@ -375,9 +375,8 @@ void loop() {
     updateDisplayWithClimateStatus();
     lastDisplayUpdate = millis();
   }
-
   // Add a direct check here to periodically send data
-  if (throttleMqtt && (millis() - lastMqttSendTime >= mqttThrottleInterval)) {
+  if (Configuration::isMqttThrottlingEnabled() && (millis() - lastMqttSendTime >= Configuration::getMqttThrottlingInterval())) {
       if (WiFi.status() == WL_CONNECTED && client.connected()) {
           sendAllChangedSensorData();
       }
