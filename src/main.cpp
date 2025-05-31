@@ -72,15 +72,6 @@ struct StringComparator {
 
 std::map<std::string, float> lastSensorValues; // Changed from String to std::string
 
-String ssid;
-String password;
-String mqtt_server;
-int mqtt_port;
-String projectNr;
-String showcaseId;
-String deviceName;
-String utc;
-
 String clientId;
 String topic;
 
