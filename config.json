@@ -40,14 +40,36 @@
   "mqtt_throttling": {
     "enabled": true,
     "interval_ms": 60000
-  },
-  "climate_controller": {
+  },  "climate_controller": {
     "enabled": true,
     "temperature_setpoint": 22.0,
     "humidity_setpoint": 50.0,
     "climate_mode": "AUTO",
     "humidity_mode": "AUTO",
-    "auto_fan_control": true
+    "auto_fan_control": true,
+    "update_interval_ms": 1000,
+    "safety_limits": {
+      "max_temperature": 35.0,
+      "min_temperature": 10.0,
+      "max_humidity": 80.0,
+      "min_humidity": 20.0
+    },
+    "pid_parameters": {
+      "temperature": {
+        "kp": 2.0,
+        "ki": 0.5,
+        "kd": 0.1
+      },
+      "humidity": {
+        "kp": 1.0,
+        "ki": 0.2,
+        "kd": 0.05
+      }
+    },
+    "control_parameters": {
+      "temperature_hysteresis": 0.1,
+      "humidity_hysteresis": 0.5
+    }
   },
   "display": {
     "update_interval_ms": 5000
