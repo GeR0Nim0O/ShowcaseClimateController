@@ -28,10 +28,9 @@
     "control_parameters": {
       "temperature_hysteresis": 0.1,
       "humidity_hysteresis": 0.5
-    },
-    "fan_settings": {
-      "interior_enabled": true,
-      "exterior_enabled": false
+    },    "fan_settings": {
+      "interior_fan_enabled": true,
+      "exterior_fan_enabled": false
     }
   },
   "metadata": {
