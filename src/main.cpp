@@ -43,9 +43,8 @@ bool throttleMqtt = true; // Will be loaded from config
 unsigned long mqttThrottleInterval = 60000; // Will be loaded from config
 unsigned long lastMqttSendTime = 0; // Last time data was sent via MQTT
 
-// Global status timer settings (aligned with MQTT timer)
+// Global status timer settings - now loaded from config
 unsigned long lastStatusUpdateTime = 0; // Last time status was printed
-const unsigned long statusUpdateInterval = 60000; // 1 minute in milliseconds
 
 // Structure to track changed sensor data
 struct SensorData {
