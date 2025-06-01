@@ -14,4 +14,4 @@ Een functioneel klimaatcontrolesysteem dat automatisch temperatuur en luchtvocht
 
 ## Validatie
 
-Het systeem is gevalideerd door middel van testing van alle hardware componenten en verificatie van de PID-controle algorithmes met de mobiele testopstelling van het prototype. Debugging via de seriële monitor werd gebruikt om real-time systeemgedrag te monitoren en problemen op te sporen tijdens ontwikkeling en testing. De modulariteit is bevestigd door succesvolle integratie van de Casekeeper projectstructuur. Het systeem beschikt over automatische device discovery, EEPROM-gebaseerde (Electrically Erasable Programmable Read-Only Memory - niet-vluchtig geheugen) configuratieopslag, en MQTT communicatie (Message Queuing Telemetry Transport - lichtgewicht berichtenprotocol) voor remote monitoring.
+Het systeem is gevalideerd door hardware testing en PID-verificatie met de mobiele testopstelling. Debugging via seriële monitor werd gebruikt voor real-time monitoring tijdens ontwikkeling. De modulariteit is bevestigd door succesvolle Casekeeper integratie. Het systeem beschikt over automatische device discovery, EEPROM configuratieopslag en MQTT remote monitoring.
