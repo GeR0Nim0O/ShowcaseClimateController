@@ -2,7 +2,7 @@
 
 ## Introductie
 
-De Showcase Climate Controller is een software prototype voor automatische vitrineklimaatregeling dat voortbouwt op het Casekeeper project uit semester 3 als basis architectuur. c
+De Showcase Climate Controller is een software prototype voor automatische vitrineklimaatregeling dat voortbouwt op het Casekeeper project uit semester 3 als basis architectuur. Het systeem monitort continu temperatuur en luchtvochtigheid via sensoren binnenin en buitenaf de vitrine, en past deze bij via verwarmings-, koelings-, bevochtigings- en ontvochtigingssystemen. De software implementeert PID-algoritmes voor stabiele temperatuurcontrole en hysterese-logica voor luchtvochtigheidsregeling om fluctuaties te minimaliseren. Ventilatoren zorgen voor luchtcirculatie door interne en externe radiatoren, terwijl het systeem via GPIO-uitbreidingen alle actuatoren digitaal aanstuurt. Configuratie gebeurt via JSON-bestanden op SD-kaart voor eenvoudige aanpassingen zonder herprogrammering, en MQTT-communicatie maakt remote monitoring en controle mogelijk van het vitrineklimaat.
 
 ## Vraag
 
