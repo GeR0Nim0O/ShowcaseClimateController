@@ -12,11 +12,7 @@ De ClimateController werkt met een cyclische update-methode die elke 5 seconden 
 
 ## Resultaat
 
-Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch temperatuur en vochtigheid in een vitrine kan regelen binnen instelbare grenzen. Het systeem beschikt over een modulaire library organisatie met Device, GPIO, Sensors, Display, DAC en ClimateController libraries. De hardware configuratie maakt gebruik van I2C device mapping via PCA9548A multiplexer en PCF8574 GPIO expander voor actuator controle binnen de vitrine.
-
-De PCF8574 GPIO expander fungeert als het centrale aansturingspunt voor alle klimaatsystemen in de vitrine. Via de 8 digitale uitgangen worden verschillende actuatoren aangestuurd: een temperatuurcontroller, twee membranen voor luchtvochtigheidsregeling, en ventilatoren. De GPIO expander ontvangt commands van de ClimateController en zet deze om naar fysieke schakelingen die de gewenste klimaatomstandigheden realiseren binnen de vitrine.
-
-Het aansturingssysteem werkt via verschillende uitgangen: interior en exterior ventilatoren worden automatisch geactiveerd bij klimaatcontrole voor luchtcirculatie, twee omgekeerd gemonteerde membranen regelen samen de luchtvochtigheid, en de temperatuurcontroller heeft een enable functie met separate koeling en verwarming van hetzelfde temperatuurregelingsapparaat. De GP8403 DAC biedt aanvullende analoge controle voor variabele vermogensregeling van verwarmings- en koelelementen, waarbij het voltage (0-5V) proportioneel is aan het gewenste vermogen (0-100%).
+Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch temperatuur en vochtigheid in een vitrine kan regelen. De PCF8574 GPIO expander stuurt via digitale uitgangen een temperatuurcontroller, twee omgekeerd gemonteerde membranen voor luchtvochtigheidsregeling, en interior/exterior ventilatoren aan. De GP8403 DAC biedt analoge vermogensregeling (0-5V = 0-100% vermogen) voor verwarmings- en koelelementen.
 
 ## Validatie
 
