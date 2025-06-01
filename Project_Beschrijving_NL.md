@@ -6,11 +6,9 @@ Voor dit project was de opgave om een geavanceerd klimaatcontrolesysteem te ontw
 
 ## Aanpak
 
-Het project is ontwikkeld met een object-georiënteerde aanpak die zorgt voor hergebruik van bestaande componenten. De software architectuur gebruikt een Device base class met DeviceRegistry singleton patroon voor het beheren van alle I2C-apparaten via een PCA9548A multiplexer. De configuratie wordt beheerd via JSON-bestanden op SD-kaart met fallback naar SPIFFS, en device discovery gebeurt automatisch via I2C scanning.
+Het project is ontwikkeld met een object-georiënteerde aanpak die zorgt voor hergebruik van bestaande componenten. De software architectuur gebruikt een Device base class met DeviceRegistry singleton patroon voor het beheren van alle I2C-apparaten via een PCA9548A multiplexer. De configuratie wordt beheerd via JSON-bestanden op SD-kaart met fallback naar SPIFFS.
 
-De ClimateController implementeert onafhankelijke PID-controllers voor temperatuur en vochtigheid met configureerbare parameters, safety monitoring met automatische noodstop functionaliteit, en fan control voor luchtcirculatie. Het systeem ondersteunt zowel digitale als analoge uitgangen voor actuators, waarbij de DAC wordt gebruikt voor variabele vermogensregeling (0-100%). Een rotary encoder met display zorgt voor gebruikersinteractie en real-time status updates.
-
-De ClimateController werkt met een cyclische update-methode die elke 5 seconden de sensorwaarden inleest van de SHT sensor, deze doorgeeft aan de PID-controllers, en op basis van de PID-output de juiste actuatoren aanstuurt. Voor temperatuurcontrole bepaalt de PID-controller de benodigde actie en activeert via digitale uitgangen ofwel de verwarmings- ofwel de koelingsfunctie van de temperatuurcontroller, terwijl vochtigheidscontrole werkt met hysterese-logica voor stabiele aan/uit-schakeling van de membranen.
+De ClimateController werkt met een cyclische update-methode die elke 5 seconden de sensorwaarden inleest van de SHT sensor en op basis van PID-output de juiste actuatoren aanstuurt. Voor temperatuurcontrole activeert de PID-controller via digitale uitgangen de verwarmings- of koelingsfunctie, terwijl vochtigheidscontrole werkt met hysterese-logica voor de membranen.
 
 ## Resultaat
 
