@@ -12,11 +12,7 @@ De ClimateController implementeert onafhankelijke PID-controllers voor temperatu
 
 ## Resultaat
 
-Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch temperatuur en vochtigheid in een vitrine kan regelen binnen instelbare grenzen. Het systeem beschikt over een uitgebreide device hiërarchie met Device base class, PCF8574_GPIO voor GPIO expansion, SHT31_Sensor voor temperatuur/vochtigheid meting, Display voor weergave, GP8403dac voor digital-to-analog conversie, en RotaryEncoder voor gebruikersinvoer.
-
-De library organisatie is gestructureerd in modulaire componenten: Device library voor de base class en DeviceRegistry, GPIO library voor PCF8574 GPIO expander, Sensors library voor verschillende sensortypes (SHT31, BH1705, SCALES), Display library voor display management, DAC library voor GP8403 power control, en ClimateController library voor de hoofdregellogica met PID-controle. Een Config library beheert de ClimateConfig met EEPROM-gebaseerde settings opslag.
-
-Het hardware configuratie maakt gebruik van I2C device mapping via PCA9548A multiplexer met verschillende kanalen voor elk apparaat type, GPIO pin assignments voor rotary encoder en I2C communicatie, en PCF8574 GPIO expander pin mapping voor actuator controle binnen de vitrine. De software features omvatten I2C bus scanning, automatische device discovery, PID-gebaseerde klimaatregeling voor vitrine omstandigheden, persistente configuratie opslag, en veiligheidsmonitoring met noodstop functionaliteit.
+Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch temperatuur en vochtigheid in een vitrine kan regelen binnen instelbare grenzen. Het systeem beschikt over een modulaire library organisatie met Device, GPIO, Sensors, Display, DAC en ClimateController libraries. De hardware configuratie maakt gebruik van I2C device mapping via PCA9548A multiplexer en PCF8574 GPIO expander voor actuator controle binnen de vitrine.PCA9548A multiplexer met verschillende kanalen voor elk apparaat type, GPIO pin assignments voor rotary encoder en I2C communicatie, en PCF8574 GPIO expander pin mapping voor actuator controle binnen de vitrine. De software features omvatten I2C bus scanning, automatische device discovery, PID-gebaseerde klimaatregeling voor vitrine omstandigheden, persistente configuratie opslag, en veiligheidsmonitoring met noodstop functionaliteit.
 
 ## Validatie
 
