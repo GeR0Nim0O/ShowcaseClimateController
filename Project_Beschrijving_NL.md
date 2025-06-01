@@ -12,7 +12,9 @@ De ClimateController implementeert onafhankelijke PID-controllers voor temperatu
 
 ## Resultaat
 
-Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch temperatuur en vochtigheid in een vitrine kan regelen binnen instelbare grenzen. Het systeem beschikt over een modulaire library organisatie met Device, GPIO, Sensors, Display, DAC en ClimateController libraries. De hardware configuratie maakt gebruik van I2C device mapping via PCA9548A multiplexer en PCF8574 GPIO expander voor actuator controle binnen de vitrine.PCA9548A multiplexer met verschillende kanalen voor elk apparaat type, GPIO pin assignments voor rotary encoder en I2C communicatie, en PCF8574 GPIO expander pin mapping voor actuator controle binnen de vitrine. De software features omvatten I2C bus scanning, automatische device discovery, PID-gebaseerde klimaatregeling voor vitrine omstandigheden, persistente configuratie opslag, en veiligheidsmonitoring met noodstop functionaliteit.
+Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch temperatuur en vochtigheid in een vitrine kan regelen binnen instelbare grenzen. Het systeem beschikt over een modulaire library organisatie met Device, GPIO, Sensors, Display, DAC en ClimateController libraries. De hardware configuratie maakt gebruik van I2C device mapping via PCA9548A multiplexer en PCF8574 GPIO expander voor actuator controle binnen de vitrine.
+
+De PCF8574 GPIO expander fungeert als het centrale aansturingspunt voor alle klimaatsystemen in de vitrine. Via de 8 digitale uitgangen worden verschillende actuatoren aangestuurd: verwarmingselementen, koelelementen, ventilatoren en luchtontvochtiger. De GPIO expander ontvangt commands van de ClimateController en zet deze om naar fysieke schakelingen die de gewenste klimaatomstandigheden realiseren binnen de vitrine.
 
 ## Validatie
 
