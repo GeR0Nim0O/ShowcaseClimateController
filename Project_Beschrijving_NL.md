@@ -10,7 +10,7 @@ Het project is ontwikkeld met een object-georiënteerde aanpak die zorgt voor he
 
 De ClimateController implementeert onafhankelijke PID-controllers voor temperatuur en vochtigheid met configureerbare parameters, safety monitoring met automatische noodstop functionaliteit, en fan control voor luchtcirculatie. Het systeem ondersteunt zowel digitale als analoge uitgangen voor actuators, waarbij de DAC wordt gebruikt voor variabele vermogensregeling (0-100%). Een rotary encoder met display zorgt voor gebruikersinteractie en real-time status updates.
 
-De ClimateController werkt met een cyclische update-methode die elke 5 seconden de sensorwaarden inleest van de SHT31 sensor, deze doorgeeft aan de PID-controllers, en op basis van de PID-output de juiste actuatoren aanstuurt. Voor temperatuurcontrole wordt een bidirectionele PID-controller gebruikt met output van -100 (volledige koeling) tot +100 (volledige verwarming), terwijl vochtigheidscontrole werkt met hysterese-logica voor stabiele aan/uit-schakeling van luchtbevochtiger en ontvochtiger.
+De ClimateController werkt met een cyclische update-methode die elke 5 seconden de sensorwaarden inleest van de SHT31 sensor, deze doorgeeft aan de PID-controllers, en op basis van de PID-output de juiste actuatoren aanstuurt. Voor temperatuurcontrole bepaalt de PID-controller de benodigde actie en activeert via digitale uitgangen ofwel de verwarmings- ofwel de koelingsfunctie van de temperatuurcontroller, terwijl vochtigheidscontrole werkt met hysterese-logica voor stabiele aan/uit-schakeling van de membranen.
 
 ## Resultaat
 
