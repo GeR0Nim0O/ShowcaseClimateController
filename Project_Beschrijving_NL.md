@@ -20,7 +20,7 @@ De vochtigheidsregeling gebeurt door middel van twee omgekeerd gemonteerde membr
 
 Daarnaast regelt het systeem de luchtstroom via interior en exterior ventilatoren die eveneens door de GPIO expander worden aangestuurd. Deze ventilatoren zorgen voor luchtcirculatie binnen de vitrine en kunnen indien nodig externe lucht aanzuigen voor temperatuur- en vochtregeling.
 
-Voor meer geavanceerde regeling biedt de GP8403 DAC analoge vermogensregeling (0-5V = 0-100% vermogen) voor extra verwarmings- en koelelementen, waardoor het systeem zeer nauwkeurig kan reageren op klimaatverschillen. De SHT sensor levert continu nauwkeurige temperatuur- en vochtigheidsmeting, terwijl het PCA9548A multiplexer systeem zorgt voor betrouwbare I2C-communicatie tussen alle componenten.
+Voor meer geavanceerde regeling biedt de DAC analoge vermogensregeling (0-5V = 0-100% vermogen) voor extra verwarmings- en koelelementen, waardoor het systeem zeer nauwkeurig kan reageren op klimaatverschillen. De temperatuur/vochtigheids sensor levert continu nauwkeurige temperatuur- en vochtigheidsmeting, terwijl het multiplexer systeem zorgt voor betrouwbare I2C-communicatie tussen alle componenten.
 
 ## Validatie
 
