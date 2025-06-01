@@ -14,4 +14,4 @@ Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch
 
 ## Validatie
 
-Het systeem is gevalideerd door middel van testing van alle hardware componenten en verificatie van de PID-controle algorithmes met de mobiele testopstelling van het prototype. De modulariteit is bevestigd door succesvolle integratie van de Casekeeper projectstructuur. Het systeem toont robuuste prestaties met automatische device discovery, EEPROM-gebaseerde configuratieopslag, en MQTT communicatie voor remote monitoring.
+Het systeem is gevalideerd door middel van testing van alle hardware componenten en verificatie van de PID-controle algorithmes met de mobiele testopstelling van het prototype. De modulariteit is bevestigd door succesvolle integratie van de Casekeeper projectstructuur. Het systeem toont robuuste prestaties met automatische device discovery, EEPROM-gebaseerde (Electrically Erasable Programmable Read-Only Memory - niet-vluchtig geheugen) configuratieopslag, en MQTT communicatie (Message Queuing Telemetry Transport - lichtgewicht berichtenprotocol) voor remote monitoring.
