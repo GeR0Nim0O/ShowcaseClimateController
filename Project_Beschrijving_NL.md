@@ -18,7 +18,7 @@ Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch
 
 De PCF8574 GPIO expander fungeert als het centrale aansturingspunt voor alle klimaatsystemen in de vitrine. Via de 8 digitale uitgangen worden verschillende actuatoren aangestuurd: verwarmingselementen, koelelementen, ventilatoren en luchtontvochtiger. De GPIO expander ontvangt commands van de ClimateController en zet deze om naar fysieke schakelingen die de gewenste klimaatomstandigheden realiseren binnen de vitrine.
 
-Het aansturingssysteem werkt via specifieke pin-toewijzingen: pin 0 en 1 voor interior/exterior ventilatoren (automatisch geactiveerd bij klimaatcontrole), pin 2 en 3 voor luchtbevochtiger en ontvochtiger (hysterese-gecontroleerd), pin 4 voor temperatuurmodule enable, en pin 5 en 6 voor koeling en verwarming (PID-gecontroleerd). De GP8403 DAC biedt aanvullende analoge controle voor variabele vermogensregeling van verwarmings- en koelelementen, waarbij het voltage (0-5V) proportioneel is aan het gewenste vermogen (0-100%).
+Het aansturingssysteem werkt via specifieke pin-toewijzingen: pin 0 en 1 voor interior/exterior ventilatoren (automatisch geactiveerd bij klimaatcontrole), pin 2 en 3 voor twee omgekeerd gemonteerde membranen die samen de luchtvochtigheid regelen, en pin 4, 5 en 6 voor de temperatuurcontroller waarbij pin 4 de enable functie verzorgt en pin 5 en 6 respectievelijk koeling en verwarming aansturen van hetzelfde temperatuurregelingsapparaat. De GP8403 DAC biedt aanvullende analoge controle voor variabele vermogensregeling van verwarmings- en koelelementen, waarbij het voltage (0-5V) proportioneel is aan het gewenste vermogen (0-100%).
 
 ## Validatie
 
