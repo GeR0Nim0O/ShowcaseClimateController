@@ -14,7 +14,7 @@ De ClimateController implementeert onafhankelijke PID-controllers voor temperatu
 
 ## Resultaat
 
-Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch temperatuur en vochtigheid in een vitrine kan regelen binnen instelbare grenzen. Het systeem beschikt over een uitgebreide device hiërarchie met Device base class, PCF8574_GPIO voor GPIO expansion, SHT31_Sensor voor temperatuur/vochtigheid meting, Display voor OLED weergave, GP8403dac voor digital-to-analog conversie, en RotaryEncoder voor gebruikersinvoer.
+Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch temperatuur en vochtigheid in een vitrine kan regelen binnen instelbare grenzen. Het systeem beschikt over een uitgebreide device hiërarchie met Device base class, PCF8574_GPIO voor GPIO expansion, SHT31_Sensor voor temperatuur/vochtigheid meting, Display voor weergave, GP8403dac voor digital-to-analog conversie, en RotaryEncoder voor gebruikersinvoer.
 
 De library organisatie is gestructureerd in modulaire componenten: Device library voor de base class en DeviceRegistry, GPIO library voor PCF8574 GPIO expander, Sensors library voor verschillende sensortypes (SHT31, BH1705, SCALES), Display library voor OLED display management, DAC library voor GP8403 power control, en ClimateController library voor de hoofdregellogica met PID-controle. Een Config library beheert de ClimateConfig met EEPROM-gebaseerde settings opslag.
 
