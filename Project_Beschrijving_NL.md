@@ -18,7 +18,7 @@ Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch
 
 De library organisatie is gestructureerd in modulaire componenten: Device library voor de base class en DeviceRegistry, GPIO library voor PCF8574 GPIO expander, Sensors library voor verschillende sensortypes (SHT31, BH1705, SCALES), Display library voor OLED display management, DAC library voor GP8403 power control, en ClimateController library voor de hoofdregellogica met PID-controle. Een Config library beheert de ClimateConfig met EEPROM-gebaseerde settings opslag.
 
-Het hardware configuratie maakt gebruik van I2C device mapping via PCA9548A multiplexer met verschillende kanalen voor elk apparaat type, GPIO pin assignments voor rotary encoder en I2C communicatie, en PCF8574 GPIO expander pin mapping voor actuator controle. De software features omvatten I2C bus scanning, automatische device discovery, PID-gebaseerde klimaatregeling, persistente configuratie opslag, en veiligheidsmonitoring met noodstop functionaliteit.
+Het hardware configuratie maakt gebruik van I2C device mapping via PCA9548A multiplexer met verschillende kanalen voor elk apparaat type, GPIO pin assignments voor rotary encoder en I2C communicatie, en PCF8574 GPIO expander pin mapping voor actuator controle binnen de vitrine. De software features omvatten I2C bus scanning, automatische device discovery, PID-gebaseerde klimaatregeling voor vitrine omstandigheden, persistente configuratie opslag, en veiligheidsmonitoring met noodstop functionaliteit.
 
 ## Validatie
 
