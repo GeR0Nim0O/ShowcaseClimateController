@@ -1,4 +1,4 @@
-# Showcase Climate Controller - Nederlandse Projectbeschrijving
+# Showcase CDe ClimateController implementeert onafhankelijke PID-controllers voor temperatuur en vochtigheid met configureerbare parameters, safety monitoring met automatische noodstop functionaliteit, en fan control voor luchtcirculatie. Het systeem ondersteunt zowel digitale als analoge uitgangen voor actuators, waarbij de DAC wordt gebruikt voor variabele vermogensregeling (0-100%). Een rotary encoder met display zorgt voor gebruikersinteractie en real-time status updates.imate Controller - Nederlandse Projectbeschrijving
 
 ## Vraag
 
