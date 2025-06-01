@@ -8,7 +8,7 @@ Voor dit project was de opgave om een geavanceerd klimaatcontrolesysteem te ontw
 
 Het project is ontwikkeld met een object-georiënteerde aanpak die zorgt voor hergebruik van bestaande componenten. De software architectuur gebruikt een Device base class met DeviceRegistry singleton patroon (één centrale instantie voor apparaatbeheer) voor het beheren van alle I2C-apparaten via een I2C multiplexer. De configuratie wordt beheerd via JSON-bestanden op SD-kaart met fallback naar SPIFFS.
 
-De ClimateController werkt met een cyclische update-methode die elke 5 seconden de sensorwaarden inleest van de SHT sensor en op basis van PID-output de juiste actuatoren aanstuurt. Voor temperatuurcontrole activeert de PID-controller via digitale uitgangen de verwarmings- of koelingsfunctie, terwijl vochtigheidscontrole werkt met hysterese-logica voor de membranen.
+De ClimateController werkt met een cyclische update-methode die elke 5 seconden de sensorwaarden inleest van de temperatuur/vochtigheids sensor en op basis van PID-output de juiste actuatoren aanstuurt. Voor temperatuurcontrole activeert de PID-controller via digitale uitgangen de verwarmings- of koelingsfunctie, terwijl vochtigheidscontrole werkt met hysterese-logica voor de membranen.
 
 ## Resultaat
 
