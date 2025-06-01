@@ -12,7 +12,15 @@ De ClimateController werkt met een cyclische update-methode die elke 5 seconden 
 
 ## Resultaat
 
-Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch temperatuur en vochtigheid in een vitrine kan regelen. De PCF8574 GPIO expander stuurt via digitale uitgangen een temperatuurcontroller, twee omgekeerd gemonteerde membranen voor luchtvochtigheidsregeling, en interior/exterior ventilatoren aan. De GP8403 DAC biedt analoge vermogensregeling (0-5V = 0-100% vermogen) voor verwarmings- en koelelementen.
+Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch temperatuur en vochtigheid in een vitrine kan regelen. De ClimateController vormt het hart van het systeem en werkt volgens een geavanceerde regelstrategie die verschillende actuatoren intelligent aanstuurt.
+
+Voor temperatuurregeling gebruikt het systeem een geïntegreerde temperatuurcontroller die via drie digitale uitgangen van de PCF8574 GPIO expander wordt aangestuurd. Deze controller kan zowel verwarmen als koelen, waarbij de digitale signalen de verwarmings- of koelingsfunctie activeren zonder dat negatieve waarden verzonden hoeven te worden. De PID-algoritme berekent de benodigde output en bepaalt via de digitale uitgangen welke modus actief moet zijn.
+
+De vochtigheidsregeling gebeurt door middel van twee omgekeerd gemonteerde membranen die door de PCF8574 worden aangestuurd. Deze membranen werken volgens hysterese-logica: wanneer de luchtvochtigheid te hoog wordt, activeren de membranen om vocht af te voeren, en wanneer deze te laag wordt, kunnen ze vocht toevoegen aan de lucht in de vitrine. Deze aanpak zorgt voor stabiele vochtigheidscontrole zonder constante aan/uit-schakeling.
+
+Daarnaast regelt het systeem de luchtstroom via interior en exterior ventilatoren die eveneens door de GPIO expander worden aangestuurd. Deze ventilatoren zorgen voor luchtcirculatie binnen de vitrine en kunnen indien nodig externe lucht aanzuigen voor temperatuur- en vochtregeling.
+
+Voor meer geavanceerde regeling biedt de GP8403 DAC analoge vermogensregeling (0-5V = 0-100% vermogen) voor extra verwarmings- en koelelementen, waardoor het systeem zeer nauwkeurig kan reageren op klimaatverschillen. De SHT sensor levert continu nauwkeurige temperatuur- en vochtigheidsmeting, terwijl het PCA9548A multiplexer systeem zorgt voor betrouwbare I2C-communicatie tussen alle componenten.
 
 ## Validatie
 
