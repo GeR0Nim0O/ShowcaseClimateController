@@ -2,7 +2,7 @@
 
 ## Introductie
 
-De Showcase Climate Controller is een geavanceerd automatisch klimaatcontrolesysteem dat speciaal is ontwikkeld voor vitrines in musea, galeries of andere tentoonstellingsruimtes. Het systeem regelt nauwkeurig zowel temperatuur als luchtvochtigheid om optimale conserveringsomstandigheden te waarborgen voor waardevolle objecten. Gebouwd op de ESP32-S3 microcontroller en gebruikmakend van PID-regelalgoritmes, biedt het systeem intelligente controle over verwarmings-, koelings-, vochtigheids- en ventilatiesystemen. De modulaire architectuur, gebaseerd op het Casekeeper project, zorgt voor herbruikbaarheid en uitbreidbaarheid, terwijl configuratie via SD-kaart flexibele aanpassingen mogelijk maakt zonder firmware-updates.
+De Showcase Climate Controller is een geavanceerd softwaresysteem dat automatisch klimaatregeling realiseert via intelligente algoritmes en modulaire componenten. Het systeem implementeert PID-controle voor nauwkeurige temperatuurregeling, hysterese-logica voor stabiele luchtvochtigheidscontrole, en real-time sensormonitoring via I2C-communicatie. De software beschikt over een object-georiënteerde architectuur met Device base classes, singleton patroon voor apparaatbeheer, en automatische device discovery. Configuratiebeheer gebeurt via JSON-bestanden met dubbele opslag (SD-kaart/SPIFFS), terwijl MQTT-communicatie remote monitoring en controle mogelijk maakt. Het systeem integreert GPIO-expansion voor actuatoraansturing, DAC-outputs voor analoge vermogensregeling, en debugging via seriële communicatie.
 
 ## Vraag
 
