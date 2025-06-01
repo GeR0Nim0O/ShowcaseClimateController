@@ -10,6 +10,8 @@ Het project is ontwikkeld met een object-georiënteerde aanpak die zorgt voor he
 
 De ClimateController implementeert onafhankelijke PID-controllers voor temperatuur en vochtigheid met configureerbare parameters, safety monitoring met automatische noodstop functionaliteit, en fan control voor luchtcirculatie. Het systeem ondersteunt zowel digitale als analoge uitgangen voor actuators, waarbij de DAC wordt gebruikt voor variabele vermogensregeling (0-100%). Een rotary encoder met display zorgt voor gebruikersinteractie en real-time status updates.
 
+De ClimateController werkt met een cyclische update-methode die elke 5 seconden de sensorwaarden inleest van de SHT31 sensor, deze doorgeeft aan de PID-controllers, en op basis van de PID-output de juiste actuatoren aanstuurt. Voor temperatuurcontrole wordt een bidirectionele PID-controller gebruikt met output van -100 (volledige koeling) tot +100 (volledige verwarming), terwijl vochtigheidscontrole werkt met hysterese-logica voor stabiele aan/uit-schakeling van luchtbevochtiger en ontvochtiger.
+
 ## Resultaat
 
 Het resultaat is een volledig functioneel klimaatcontrolesysteem dat automatisch temperatuur en vochtigheid in een vitrine kan regelen binnen instelbare grenzen. Het systeem beschikt over een modulaire library organisatie met Device, GPIO, Sensors, Display, DAC en ClimateController libraries. De hardware configuratie maakt gebruik van I2C device mapping via PCA9548A multiplexer en PCF8574 GPIO expander voor actuator controle binnen de vitrine.
