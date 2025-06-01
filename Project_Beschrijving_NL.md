@@ -2,7 +2,7 @@
 
 ## Vraag
 
-Voor semester 4 was de opgave om een geavanceerd klimaatcontrolesysteem te ontwikkelen dat gebaseerd is op een ESP32-S3 microcontroller. Het systeem moet in staat zijn om temperatuur en vochtigheid automatisch te regelen met behulp van PID-controle, sensoren en actuatoren, terwijl het gebruik maakt van een herbruikbare en uitbreidbare softwarearchitectuur. De vraag was om dit systeem te ontwikkelen als een uitbreiding van het bestaande "Casekeeper" project uit semester 3, waarbij de functionaliteit wordt uitgebreid met specifieke klimaatbeheersing en de projectstructuur wordt geoptimaliseerd voor toekomstige integratie.
+Voor semester 4 was de opgave om een geavanceerd klimaatcontrolesysteem te ontwikkelen dat in staat is om temperatuur en vochtigheid automatisch te regelen met behulp van PID-controle, sensoren en actuatoren, terwijl het gebruik maakt van een herbruikbare en uitbreidbare softwarearchitectuur. Het systeem moest worden ontwikkeld met als doel dit in de toekomst te kunnen combineren met het bestaande "Casekeeper" project uit semester 3. De keuze is gemaakt om de ESP32-S3 microcontroller te gebruiken omdat deze reeds bepaald was in het Casekeeper project en er veel raakvlakken waren tussen beide projecten, waardoor efficiënte hergebruik van bestaande componenten en kennis mogelijk werd.
 
 ## Aanpak
 
