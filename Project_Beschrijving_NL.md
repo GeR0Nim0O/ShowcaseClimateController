@@ -6,7 +6,7 @@ Voor semester 4 was de opgave om een geavanceerd klimaatcontrolesysteem te ontwi
 
 ## Aanpak
 
-Het project is ontwikkeld met een object-georiënteerde aanpak waarbij de bestaande Casekeeper projectstructuur uit semester 3 als basis is gebruikt en aangepast voor de klimaatcontroller. De belangrijkste wijzigingen ten opzichte van het Casekeeper project zijn de toevoeging van de `ClimateController` klasse voor PID-gebaseerde klimaatregeling, de `ClimateConfig` klasse voor persistente configuratieopslag in EEPROM, en uitgebreide DAC-ondersteuning voor analoge vermogensregeling.
+Het project is ontwikkeld met een object-georiënteerde aanpak waarbij de bestaande Casekeeper projectstructuur uit semester 3 als basis is gebruikt vanwege de vele raakvlakken tussen beide projecten. Deze keuze maakte hergebruik van bestaande componenten mogelijk en zorgde voor een efficiënte ontwikkelingscyclus. De belangrijkste wijzigingen ten opzichte van het Casekeeper project zijn de toevoeging van de `ClimateController` klasse voor PID-gebaseerde klimaatregeling, de `ClimateConfig` klasse voor persistente configuratieopslag in EEPROM, en uitgebreide DAC-ondersteuning voor analoge vermogensregeling.
 
 De software architectuur gebruikt een Device base class met een DeviceRegistry singleton patroon voor het beheren van alle I2C-apparaten via een PCA9548A multiplexer. Alle apparaten (PCF8574 GPIO expander, SHT31 temperatuur/vochtigheid sensoren, GP8403 DAC, DS3231 RTC, en Display) zijn geïmplementeerd als afgeleide klassen van de Device base class. De configuratie wordt beheerd via JSON-bestanden op SD-kaart met fallback naar SPIFFS, en device discovery gebeurt automatisch via I2C scanning met positionele indexering.
 
