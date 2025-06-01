@@ -10,7 +10,7 @@ Het project is ontwikkeld met een object-georiënteerde aanpak die zorgt voor he
 
 De software architectuur gebruikt een Device base class met een DeviceRegistry singleton patroon voor het beheren van alle I2C-apparaten via een PCA9548A multiplexer. Alle apparaten (PCF8574 GPIO expander, SHT31 temperatuur/vochtigheid sensoren, GP8403 DAC, DS3231 RTC, en Display) zijn geïmplementeerd als afgeleide klassen van de Device base class. De configuratie wordt beheerd via JSON-bestanden op SD-kaart met fallback naar SPIFFS, en device discovery gebeurt automatisch via I2C scanning met positionele indexering.
 
-De ClimateController implementeert onafhankelijke PID-controllers voor temperatuur en vochtigheid met configureerbare parameters, safety monitoring met automatische noodstop functionaliteit, en fan control voor luchtcirculatie. Het systeem ondersteunt zowel digitale als analoge uitgangen voor actuators, waarbij de DAC wordt gebruikt voor variabele vermogensregeling (0-100%). Een rotary encoder met OLED display zorgt voor gebruikersinteractie en real-time status updates.
+De ClimateController implementeert onafhankelijke PID-controllers voor temperatuur en vochtigheid met configureerbare parameters, safety monitoring met automatische noodstop functionaliteit, en fan control voor luchtcirculatie. Het systeem ondersteunt zowel digitale als analoge uitgangen voor actuators, waarbij de DAC wordt gebruikt voor variabele vermogensregeling (0-100%). Een rotary encoder met display zorgt voor gebruikersinteractie en real-time status updates.
 
 ## Resultaat
 
