@@ -2,7 +2,7 @@
 
 ## Introductie
 
-De Showcase Climate Controller is een geavanceerd softwaresysteem dat automatisch klimaatregeling realiseert via intelligente algoritmes en modulaire componenten. Het systeem implementeert PID-controle voor nauwkeurige temperatuurregeling, hysterese-logica voor stabiele luchtvochtigheidscontrole, en real-time sensormonitoring via I2C-communicatie. De software beschikt over een object-georiënteerde architectuur met Device base classes, singleton patroon voor apparaatbeheer, en automatische device discovery. Configuratiebeheer gebeurt via JSON-bestanden met dubbele opslag (SD-kaart/SPIFFS), terwijl MQTT-communicatie remote monitoring en controle mogelijk maakt. Het systeem integreert GPIO-expansion voor actuatoraansturing, DAC-outputs voor analoge vermogensregeling, en debugging via seriële communicatie.
+De Showcase Climate Controller software stuurt een prototype vitrinekast aan dat automatisch het binnenklimaat regelt voor optimale bewaaromstandigheden. Het systeem monitort continu temperatuur en luchtvochtigheid via sensoren binnenin en buitenaf de vitrine, en past deze bij via verwarmings-, koelings-, bevochtigings- en ontvochtigingssystemen. De software implementeert PID-algoritmes voor stabiele temperatuurcontrole en hysterese-logica voor luchtvochtigheidsregeling om fluctuaties te minimaliseren. Ventilatoren zorgen voor luchtcirculatie door interne en externe radiatoren, terwijl het systeem via GPIO-uitbreidingen alle actuatoren digitaal aanstuurt. Configuratie gebeurt via JSON-bestanden op SD-kaart voor eenvoudige aanpassingen zonder herprogrammering, en MQTT-communicatie maakt remote monitoring en controle mogelijk van het vitrineklimaat.
 
 ## Vraag
 
