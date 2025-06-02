@@ -285,99 +285,46 @@ void setup()
       Serial.print(device->getType());
       Serial.print(", Initialized: ");
       Serial.println(device->isInitialized() ? "Yes" : "No");
-    }
-  }
-  Serial.println("I2C scan done");
-
+    }  
+  Serial.println("9. Setting up MQTT client ID and topic...");
   clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
   topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
+  
   // Print debugging information
   printDebugInfo();
-  // Try to connect to WiFi (don't stop if it fails)
-  Serial.println("Attempting WiFi connection...");
+  
+  Serial.println("10. Attempting WiFi connection...");
   bool wifiConnected = WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword());
-    if (!wifiConnected) {
+  
+  if (!wifiConnected) {
     Serial.println();
-    Serial.println("==== WiFi Connection Failed - Troubleshooting Help ====");
-    Serial.println("WiFi connection failed. Here are some troubleshooting steps:");
+    Serial.println("========================================");
+    Serial.println("        WiFi Connection Failed");
+    Serial.println("========================================");
+    Serial.println("WiFi connection failed. Troubleshooting information:");
     Serial.println();
-    Serial.println("1. DETAILED NETWORK ANALYSIS:");
+    Serial.println("1. NETWORK ANALYSIS:");
     WifiMqttHandler::scanAndAnalyzeNetworks();
     Serial.println();
-    Serial.println("2. CONFIGURATION CHECK:");
-    Serial.print("   Current SSID: '");
+    Serial.println("2. CURRENT CONFIG:");
+    Serial.print("   SSID: '");
     Serial.print(Configuration::getWiFiSSID());
     Serial.println("'");
     Serial.print("   Password length: ");
     Serial.println(Configuration::getWiFiPassword().length());
     Serial.println();
-    Serial.println("3. COMMON SOLUTIONS:");
-    Serial.println("   - Verify network name is exactly correct (case-sensitive)");
-    Serial.println("   - Check WiFi password");
-    Serial.println("   - Ensure router is powered on and broadcasting");
-    Serial.println("   - Move ESP32 closer to router");
-    Serial.println("   - Restart router if needed");
-    Serial.println("   - Check for MAC address filtering on router");
-    Serial.println();    Serial.println("4. TO UPDATE WIFI SETTINGS:");
-    Serial.println("   - Edit data/config.json file");
-    Serial.println("   - Upload to ESP32 via PlatformIO");
-    Serial.println("   - Or use SD card with updated config.json");
-    Serial.println();    Serial.println("5. SD CARD CONFIG UPDATE OPTION:");
-    Serial.println("   The SD card contains different WiFi settings than the project config.json");
-    Serial.print("   SD Card WiFi: '");
-    Serial.print(Configuration::getWiFiSSID());
-    Serial.println("'");
-    Serial.println("   Project config.json WiFi: 'Ron-Rowie' (stronger signal)");
+    Serial.println("3. TROUBLESHOOTING TIPS:");
+    Serial.println("   • Verify network name (case-sensitive)");
+    Serial.println("   • Check WiFi password");
+    Serial.println("   • Ensure router is powered and broadcasting");
+    Serial.println("   • Move ESP32 closer to router");
+    Serial.println("   • Check for MAC filtering on router");
     Serial.println();
-    Serial.println("   Would you like to update the SD card with project config.json settings?");
-    Serial.println("   This will overwrite the SD card config.json with data/config.json");
+    Serial.println("→ Continuing in OFFLINE mode...");
+    Serial.println("========================================");
     Serial.println();
-    Serial.println("   Send 'Y' or 'y' within 10 seconds to update SD card config");
-    Serial.println("   Send any other key or wait 10 seconds to keep current SD card config");
-    Serial.print("   Waiting for input: ");
-    
-    // Wait for user input for 10 seconds
-    unsigned long startWait = millis();
-    bool updateRequested = false;
-    String userInput = "";
-    
-    while (millis() - startWait < 10000) { // 10 second timeout
-        if (Serial.available()) {
-            userInput = Serial.readString();
-            userInput.trim();
-            Serial.println(userInput);
-            break;
-        }
-        delay(100);
-    }
-    
-    if (userInput.length() == 0) {
-        Serial.println("(timeout)");
-        Serial.println("   → No input received - keeping current SD card configuration");
-    } else if (userInput.equalsIgnoreCase("y")) {
-        Serial.println("   → User confirmed - updating SD card configuration...");
-        if (SDHandler::forceUpdateSDConfig()) {
-            Serial.println("   ✓ SD card config updated successfully!");
-            Serial.println("   → Please restart the ESP32 to use the updated configuration");
-            Serial.println("   → The system will now use 'Ron-Rowie' network instead of 'Ron&Rowie_Gast'");
-            Serial.println("   → Restart recommended: Press EN button or power cycle");
-        } else {
-            Serial.println("   ✗ Failed to update SD card configuration");
-            Serial.println("   → Please manually update the SD card config.json file");
-        }
-    } else {
-        Serial.print("   → User declined ('");
-        Serial.print(userInput);
-        Serial.println("') - keeping current SD card configuration");
-    }
-    Serial.println();
-    Serial.println("Continuing in offline mode...");
-    Serial.println("======================================================");
-    Serial.println();
-  }
-  
-  if (wifiConnected) {
-    Serial.println("WiFi connected successfully in setup.");
+  } else {
+    Serial.println("✓ WiFi connected successfully!");
     offlineMode = false;
     
     // Connect to TimeAPI and NTP only if WiFi is connected
