@@ -1195,7 +1195,7 @@ if (Wire.endTransmission() != 0) {
 }
 ```
 
-### **🔍 Code Kwaliteit Vergelijking**
+### **Code Kwaliteit Vergelijking**
 | Aspect | Showcase | Casekeeper | Verbetering |
 |--------|----------|------------|-------------|
 | **SOLID Principles** | ✅ Volledig geïmplementeerd | ❌ Niet toegepast | +∞ maintainability |
