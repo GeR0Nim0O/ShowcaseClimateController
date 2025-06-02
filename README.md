@@ -360,74 +360,67 @@ The system uses a **4-tier configuration** system (highest to lowest priority):
 3. **EEPROM Settings** (Runtime user adjustments)
 4. **Compiled Defaults** (Safe fallback values)
 
-#### 5.2 Creating Configuration Files
+#### 5.2 Configuration Files (Pre-configured)
 
-**Main System Configuration** (`config.json`):
+**Note: Configuration files are already included in the project and pre-configured with default values.**
+
+The project includes ready-to-use configuration files located in the `data/` directory:
+
+**Existing Configuration Files:**
+```
+data/
+├── config.json           # Main system configuration (pre-configured)
+└── ClimateConfig.json    # Climate-specific settings (pre-configured)
+```
+
+**Modifying System Configuration** (`data/config.json`):
+The main system configuration file contains:
+- System identification and timing parameters
+- WiFi network credentials (update with your network)
+- MQTT broker settings (configure for your setup)
+- Climate control enable/disable flags
+
+**Key settings to customize:**
 ```json
 {
-  "system": {
-    "device_name": "ClimateController_01",
-    "update_interval_ms": 5000,
-    "debug_level": 3
-  },
   "wifi": {
-    "ssid": "YourWiFiNetwork",
-    "password": "YourWiFiPassword",
-    "timeout_ms": 10000
+    "ssid": "YourWiFiNetwork",        // ← Update with your WiFi name
+    "password": "YourWiFiPassword"    // ← Update with your WiFi password
   },
   "mqtt": {
-    "server": "your.mqtt.broker.com",
-    "port": 1883,
-    "username": "mqtt_user",
-    "password": "mqtt_pass",
-    "topic_prefix": "climate/controller"
-  },
-  "climate": {
-    "enabled": true,
-    "temperature_setpoint": 22.0,
-    "humidity_setpoint": 50.0,
-    "update_interval_ms": 3000
+    "server": "your.mqtt.broker.com", // ← Update with your MQTT broker
+    "username": "mqtt_user",          // ← Update with your MQTT credentials
+    "password": "mqtt_pass"           // ← Update with your MQTT password
   }
 }
 ```
 
-**Climate-Specific Configuration** (`ClimateConfig.json`):
+**Modifying Climate Configuration** (`data/ClimateConfig.json`):
+The climate-specific configuration contains:
+- Default temperature and humidity setpoints
+- PID controller parameters (factory tuned)
+- Operating limits and safety parameters
+- Control mode settings
+
+**Common adjustments:**
 ```json
 {
   "setpoints": {
-    "temperature": 22.0,
-    "humidity": 50.0,
-    "temperature_hysteresis": 0.5,
-    "humidity_hysteresis": 2.0
-  },
-  "modes": {
-    "climate_mode": "AUTO",
-    "humidity_mode": "AUTO"
+    "temperature": 22.0,              // ← Adjust target temperature
+    "humidity": 50.0                  // ← Adjust target humidity
   },
   "pid_parameters": {
     "temperature": {
-      "kp": 2.0,
-      "ki": 0.5,
-      "kd": 0.1,
-      "output_min": 0.0,
-      "output_max": 100.0
-    },
-    "humidity": {
-      "kp": 1.0,
-      "ki": 0.2,
-      "kd": 0.05,
-      "output_min": 0.0,
-      "output_max": 100.0
+      "kp": 2.0, "ki": 0.5, "kd": 0.1 // ← Fine-tune if needed
     }
-  },
-  "limits": {
-    "temperature_min": 10.0,
-    "temperature_max": 35.0,
-    "humidity_min": 20.0,
-    "humidity_max": 80.0
   }
 }
 ```
+
+**Configuration File Deployment:**
+1. **SPIFFS Deployment**: Files are automatically uploaded to ESP32 flash
+2. **SD Card Deployment**: Copy files to SD card root for external configuration
+3. **Runtime Modification**: Use rotary encoder to adjust setpoints (saved to EEPROM)
 
 ### Phase 6: Initial Calibration & Testing
 
