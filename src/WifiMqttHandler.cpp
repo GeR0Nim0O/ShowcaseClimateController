@@ -463,15 +463,40 @@ void WifiMqttHandler::scanAndAnalyzeNetworks() {
     Serial.println("║                 WiFi Network Analysis                    ║");
     Serial.println("╚══════════════════════════════════════════════════════════╝");
     
+    // Ensure WiFi is in station mode and properly initialized
+    WiFi.mode(WIFI_STA);
+    delay(1000); // Give WiFi time to initialize
+    
     Serial.println("Scanning for WiFi networks...");
     int networkCount = WiFi.scanNetworks(false, true); // Show hidden networks
+    
+    if (networkCount < 0) {
+        Serial.println("❌ Network scan failed!");
+        Serial.print("   Error code: ");
+        Serial.println(networkCount);
+        Serial.println("   Possible causes:");
+        Serial.println("   • WiFi radio is off or malfunctioning");
+        Serial.println("   • ESP32 antenna issue");
+        Serial.println("   • WiFi driver error");
+        Serial.println("   Retrying scan...");
+        
+        // Try again with a different approach
+        delay(2000);
+        networkCount = WiFi.scanNetworks(false, false); // Try without hidden networks
+        
+        if (networkCount < 0) {
+            Serial.println("❌ Second scan also failed!");
+            Serial.println("   WiFi hardware may be faulty or interference present");
+            return;
+        }
+    }
     
     if (networkCount == 0) {
         Serial.println("❌ No networks found!");
         Serial.println("   Possible causes:");
-        Serial.println("   • WiFi radio is off or malfunctioning");
         Serial.println("   • No access points in range");
-        Serial.println("   • ESP32 antenna issue");
+        Serial.println("   • All networks may be hidden");
+        Serial.println("   • Move closer to router");
         return;
     }
     
