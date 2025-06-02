@@ -112,8 +112,7 @@ void setup()
   testPSRAM();
   
   // Initialize I2C bus
-  I2CHandler::initializeI2C();
-  // Setup configuration
+  I2CHandler::initializeI2C();  // Setup configuration
   if (!SDHandler::initializeSDCardAndConfig()) {
     Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
   }
@@ -125,6 +124,69 @@ void setup()
       Serial.println("ERROR: Both SD card and project config.json failed!");
       Serial.println("System cannot continue without configuration.");
       while(1) { delay(1000); } // Halt system
+    }
+  } else {
+    // SD card config loaded successfully - check if it differs from project config
+    String sdWifiSSID = Configuration::getWiFiSSID();
+    
+    // Temporarily load project config to compare
+    JsonDocument tempProjectConfig;
+    if (Configuration::loadJsonFromCodebase(tempProjectConfig)) {
+      String projectWifiSSID = tempProjectConfig["wifi"]["ssid"].as<String>();
+      
+      if (sdWifiSSID != projectWifiSSID) {
+        Serial.println();
+        Serial.println("=== CONFIG MISMATCH DETECTED ===");
+        Serial.print("SD Card WiFi SSID: '");
+        Serial.print(sdWifiSSID);
+        Serial.println("'");
+        Serial.print("Project WiFi SSID: '");
+        Serial.print(projectWifiSSID);
+        Serial.println("'");
+        Serial.println();
+        Serial.println("The SD card configuration differs from your project config.json");
+        Serial.println("Would you like to update the SD card with the project configuration?");
+        Serial.println();
+        Serial.println("Send 'Y' or 'y' within 15 seconds to update SD card");
+        Serial.println("Send any other key or wait to keep current SD card config");
+        Serial.print("Waiting for input: ");
+        
+        // Wait for user input for 15 seconds
+        unsigned long startWait = millis();
+        String userInput = "";
+        
+        while (millis() - startWait < 15000) { // 15 second timeout
+          if (Serial.available()) {
+            userInput = Serial.readString();
+            userInput.trim();
+            Serial.println(userInput);
+            break;
+          }
+          delay(100);
+        }
+        
+        if (userInput.length() == 0) {
+          Serial.println("(timeout)");
+          Serial.println("→ Keeping current SD card configuration");
+        } else if (userInput.equalsIgnoreCase("y")) {
+          Serial.println("→ Updating SD card with project configuration...");
+          if (SDHandler::forceUpdateSDConfig()) {
+            Serial.println("✓ SD card updated successfully!");
+            Serial.println("→ Restarting ESP32 to use new configuration...");
+            delay(2000);
+            ESP.restart();
+          } else {
+            Serial.println("✗ Failed to update SD card");
+            Serial.println("→ Continuing with current SD card configuration");
+          }
+        } else {
+          Serial.print("→ User declined ('");
+          Serial.print(userInput);
+          Serial.println("') - keeping SD card configuration");
+        }
+        Serial.println("================================");
+        Serial.println();
+      }
     }
   }
   Configuration::printConfigValues();
