@@ -334,8 +334,8 @@ bool SDHandler::updateConfig() {
 bool SDHandler::copyDefaultConfig() {
     const char* defaultConfig = R"(
     {        "wifi": {
-            "ssid": "Ron&Rowie_Gast",
-            "password": "Gast@Ron&Rowie"
+            "ssid": "Ron-Rowie",
+            "password": "Nekaf1993!"
         },
         "ethernet": {
             "ip": "192.168.1.100",
