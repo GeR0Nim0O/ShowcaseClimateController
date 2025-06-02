@@ -121,47 +121,74 @@ void setup()
   if (!SDHandler::initializeSDCardAndConfig()) {
     Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
   }
-  
-  // Handle configuration loading and mismatch checking FIRST before other initialization
+    // Handle configuration loading with priority for project config
   bool configLoaded = false;
-  bool sdConfigMismatch = false;
   String sdWifiSSID = "";
   String projectWifiSSID = "";
   
-  // Try to load configuration from SD card first
-  if (Configuration::loadConfigFromSD("/config.json")) {
-    Serial.println("✓ SD card configuration loaded successfully");
+  // First, always try to load the project configuration from SPIFFS (uploaded data folder)
+  Serial.println("→ Loading project configuration from SPIFFS...");
+  if (Configuration::loadConfigFromCodebase()) {
+    Serial.println("✓ Project configuration loaded successfully");
+    projectWifiSSID = Configuration::getWiFiSSID();
     configLoaded = true;
-    sdWifiSSID = Configuration::getWiFiSSID();
     
-    // Check if SD card config differs from project config
-    JsonDocument tempProjectConfig;
-    if (SPIFFS.begin()) {
-      File configFile = SPIFFS.open("/config.json", "r");
-      if (configFile) {
-        String configContent = configFile.readString();
-        configFile.close();
+    // Now check if SD card has different config
+    Serial.println("→ Checking SD card configuration...");
+    JsonDocument sdConfig;
+    File sdFile = SD.open("/config.json", FILE_READ);
+    if (sdFile) {
+      String sdConfigContent = sdFile.readString();
+      sdFile.close();
+      
+      DeserializationError error = deserializeJson(sdConfig, sdConfigContent);
+      if (!error && !sdConfig["wifi"]["ssid"].isNull()) {
+        sdWifiSSID = sdConfig["wifi"]["ssid"].as<String>();
+        Serial.print("SD WiFi SSID: '");
+        Serial.print(sdWifiSSID);
+        Serial.println("'");
+        Serial.print("Project WiFi SSID: '");
+        Serial.print(projectWifiSSID);
+        Serial.println("'");
         
-        DeserializationError error = deserializeJson(tempProjectConfig, configContent);
-        if (!error && !tempProjectConfig["wifi"]["ssid"].isNull()) {
-          projectWifiSSID = tempProjectConfig["wifi"]["ssid"].as<String>();
-          
-          if (sdWifiSSID != projectWifiSSID) {
-            sdConfigMismatch = true;
+        if (sdWifiSSID != projectWifiSSID) {
+          Serial.println();
+          Serial.println("========================================");
+          Serial.println("   CONFIGURATION MISMATCH DETECTED");
+          Serial.println("========================================");
+          Serial.println("The SD card has different WiFi settings than your project.");
+          Serial.println("The system will use PROJECT settings and update SD card.");
+          Serial.println();
+          Serial.print("→ Updating SD card configuration... ");
+          if (SDHandler::forceUpdateSDConfig()) {
+            Serial.println("SUCCESS!");
+            Serial.println("✓ SD card now matches project configuration");
+          } else {
+            Serial.println("FAILED!");
+            Serial.println("⚠️  Continuing with project configuration anyway");
           }
+          Serial.println("========================================");
+          Serial.println();
+        } else {
+          Serial.println("✓ SD card and project configurations match");
         }
+      } else {
+        Serial.println("⚠️  SD card config invalid or missing WiFi settings");
       }
+    } else {
+      Serial.println("⚠️  No SD card configuration found");
     }
   } else {
-    Serial.println("SD card config failed, trying project config.json fallback...");
-    if (Configuration::loadConfigFromCodebase()) {
-      Serial.println("✓ Project configuration loaded successfully");
+    // Fallback to SD card config if project config fails
+    Serial.println("⚠️  Project config failed, trying SD card fallback...");
+    if (Configuration::loadConfigFromSD("/config.json")) {
+      Serial.println("✓ SD card configuration loaded successfully");
       configLoaded = true;
     }
   }
   
   if (!configLoaded) {
-    Serial.println("ERROR: Both SD card and project config.json failed!");
+    Serial.println("ERROR: Both project and SD card config.json failed!");
     Serial.println("System cannot continue without configuration.");
     while(1) { delay(1000); } // Halt system
   }
