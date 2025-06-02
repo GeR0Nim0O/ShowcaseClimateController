@@ -29,7 +29,7 @@ De **Showcase Climate Controller** toont de evolutie van de **Casekeeper** code 
 
 ---
 
-## 🏗️ Hardware & Platform Verbeteringen
+## Hardware & Platform Verbeteringen
 
 ### **Showcase Climate Controller**
 | Component | Specificatie | Voordelen |
@@ -48,7 +48,7 @@ De **Showcase Climate Controller** toont de evolutie van de **Casekeeper** code 
 | **Memory** | Standaard RAM | Geen PSRAM ondersteuning |
 | **Debug** | Basis niveau | Beperkte debug mogelijkheden |
 
-### **🔍 Impact van Hardware Verbeteringen**
+### **Impact van Hardware Verbeteringen**
 - **16MB Flash**: Ruimte voor uitgebreide firmware en data storage
 - **PSRAM**: Mogelijkheid voor complexere applicaties en buffering
 - **QIO Mode**: 40% snellere data overdracht tussen flash en processor
