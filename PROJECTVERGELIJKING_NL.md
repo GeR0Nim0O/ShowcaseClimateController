@@ -401,7 +401,7 @@ void handleUserInput() {
 
 ---
 
-## 📡 Connectiviteit & Communicatie
+## Connectiviteit & Communicatie
 
 ### **🌐 Showcase Climate Controller - Advanced Connectivity**
 
