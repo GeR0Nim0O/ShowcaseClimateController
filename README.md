@@ -804,9 +804,8 @@ class MLPredictor {
 - **Voice Control**: Amazon Alexa/Google Assistant integration
 
 #### Professional Features
-- **Data Analytics**: Historical performance analysis and reporting
+- **Data Analytics**: Historical performance analysis and remote data collection
 - **Maintenance Alerts**: Predictive maintenance notifications
-- **Energy Monitoring**: Real-time power consumption tracking
 - **Backup & Restore**: Configuration backup to cloud storage
 - **Multi-user Support**: User accounts with different permission levels
 
