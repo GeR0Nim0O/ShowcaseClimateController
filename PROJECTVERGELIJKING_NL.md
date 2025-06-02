@@ -528,7 +528,7 @@ public:
 - Basis WiFi connection handling
 - Geen tijd synchronisatie
 
-### **🔍 Connectiviteit Voordelen**
+### **Connectiviteit Voordelen**
 | Feature | Showcase | Casekeeper | Verbetering |
 |---------|----------|------------|-------------|
 | **MQTT Efficiency** | ✅ Throttling + retry | ❌ Basis | +200% efficiency |
