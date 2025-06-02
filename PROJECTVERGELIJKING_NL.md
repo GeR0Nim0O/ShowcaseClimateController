@@ -1282,7 +1282,7 @@ temperaturePID->Compute();  // -100 to +100% output
 humidityPID->Compute();     // -100 to +100% output
 ```
 
-### **🎯 Project Impact Summary**
+### **Project Impact Summary**
 
 #### **Educational Value**
 - **Casekeeper**: Basis IoT concepten en I2C communicatie
