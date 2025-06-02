@@ -1208,7 +1208,7 @@ if (Wire.endTransmission() != 0) {
 
 ## Conclusie
 
-### **📊 Kwantitatieve Verbeteringen**
+### **Kwantitatieve Verbeteringen**
 
 | Categorie | Metric | Showcase | Casekeeper | Verbetering |
 |-----------|--------|----------|------------|-------------|
