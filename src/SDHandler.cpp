@@ -345,57 +345,9 @@ bool SDHandler::forceUpdateSDConfig() {
         Serial.println("Successfully updated SD card config.json with project configuration");
         return true;
     } else {
-        Serial.println("Failed to update SD card config.json");    }
-}
-
-bool SDHandler::copyProjectConfigToSD() {
-    Serial.println("Copying project config.json to SD card...");
-    
-    // Initialize SPIFFS if not already done
-    if (!SPIFFS.begin()) {
-        Serial.println("ERROR: Failed to initialize SPIFFS");
+        Serial.println("Failed to update SD card config.json");
         return false;
     }
-    
-    // Open project config file from SPIFFS
-    File projectConfig = SPIFFS.open("/config.json", "r");
-    if (!projectConfig) {
-        Serial.println("ERROR: Failed to open project config.json from SPIFFS");
-        return false;
-    }
-    
-    // Open SD card config file for writing
-    File sdConfig = SD.open("/config.json", FILE_WRITE);
-    if (!sdConfig) {
-        Serial.println("ERROR: Failed to open SD card config.json for writing");
-        projectConfig.close();
-        return false;
-    }
-    
-    // Copy content from project config to SD card
-    size_t bytesWritten = 0;
-    uint8_t buffer[1024];
-    while (projectConfig.available()) {
-        size_t bytesRead = projectConfig.read(buffer, sizeof(buffer));
-        size_t written = sdConfig.write(buffer, bytesRead);
-        bytesWritten += written;
-        
-        if (written != bytesRead) {
-            Serial.println("ERROR: Failed to write all data to SD card");
-            projectConfig.close();
-            sdConfig.close();
-            return false;
-        }
-    }
-    
-    projectConfig.close();
-    sdConfig.close();
-    
-    Serial.print("Successfully copied ");
-    Serial.print(bytesWritten);
-    Serial.println(" bytes from project config to SD card");
-    
-    return true;
 }
 
 bool SDHandler::copyDefaultConfig() {
