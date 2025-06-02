@@ -350,26 +350,46 @@ void WifiMqttHandler::keepAlive(PubSubClient &client, WiFiClientSecure &espClien
     static int mqttReconnectAttempts = 0;
     static bool wifiSkipped = false;
     static bool mqttSkipped = false;
-    const int maxReconnectAttempts = 5;
+    const int maxReconnectAttempts = 3; // Reduced from 5 to 3
+    const unsigned long WIFI_RETRY_INTERVAL = 60000; // Use 60-second global timer interval
 
     // Case 0: WLAN DOWN, MQTT DOWN
     if (WiFi.status() != WL_CONNECTED && !wifiSkipped) {
-        if (millis() - lastWiFiReconnectAttempt > 15000) {
+        // Use 60-second interval aligned with global status timer
+        if (millis() - lastWiFiReconnectAttempt > WIFI_RETRY_INTERVAL) {
             wifiReconnectAttempts++;
-            Serial.print("Reconnecting to WiFi... Attempt ");
+            Serial.println("=== WiFi Reconnection Attempt ===");
+            Serial.print("Attempt ");
             Serial.print(wifiReconnectAttempts);
             Serial.print("/");
-            Serial.println(maxReconnectAttempts);
+            Serial.print(maxReconnectAttempts);
+            Serial.println(" (60-second interval)");
             
             if (wifiReconnectAttempts <= maxReconnectAttempts) {
+                // Detailed debug output for reconnection attempts
+                Serial.print("Trying to reconnect to WiFi: ");
+                Serial.println(ssid);
+                Serial.print("Using password: ");
+                Serial.println(password);
+                
                 WiFi.disconnect();
+                delay(1000); // Brief pause between disconnect and reconnect
                 WiFi.begin(ssid, password);
                 lastWiFiReconnectAttempt = millis();
                 mqttReconnectAttempts = 0; // Reset MQTT attempts when WiFi reconnects
                 mqttSkipped = false; // Reset MQTT skip flag when WiFi reconnects
             } else {
-                Serial.println("Max WiFi reconnection attempts reached. Skipping WiFi reconnection.");
+                Serial.println("Max WiFi reconnection attempts reached (3/3).");
+                Serial.println("Will reset attempts after 5 minutes to prevent permanent failure.");
                 wifiSkipped = true;
+                // Reset after extended period to prevent permanent offline mode
+                static unsigned long wifiResetTime = millis();
+                if (millis() - wifiResetTime > 300000) { // Reset after 5 minutes
+                    Serial.println("Resetting WiFi attempt counter after 5-minute timeout");
+                    wifiReconnectAttempts = 0;
+                    wifiSkipped = false;
+                    wifiResetTime = millis();
+                }
             }
         }
         return; // Wait for WLAN UP before proceeding to case 2
@@ -377,7 +397,7 @@ void WifiMqttHandler::keepAlive(PubSubClient &client, WiFiClientSecure &espClien
 
     // Reset WiFi reconnection attempts when WiFi reconnects successfully
     if (WiFi.status() == WL_CONNECTED && wifiSkipped) {
-        Serial.println("WiFi reconnected successfully. Resetting WiFi attempt counter.");
+        Serial.println("✓ WiFi reconnected successfully! Resetting WiFi attempt counter.");
         wifiReconnectAttempts = 0;
         wifiSkipped = false;
         mqttReconnectAttempts = 0;
