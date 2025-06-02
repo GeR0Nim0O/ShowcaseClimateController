@@ -161,6 +161,48 @@ lib_deps =
 
 ## Project Structure
 
+### Source Code Organization
+
+**Note: CPP files moved from lib/ to src/ due to PlatformIO synchronization issues**
+
+PlatformIO has synchronization problems when multiple CPP files are located in library directories under `lib/`. To resolve compilation and linking issues, all implementation files have been moved to the `src/` directory while header files remain in their respective library folders for proper organization.
+
+```
+src/                               # Main source files (moved from lib/)
+├── main.cpp                      # Application entry point
+├── ClimateController.cpp         # Main climate control logic
+├── Device.cpp                    # Base device implementation
+├── DeviceRegistry.cpp            # Device factory and registry
+├── Display.cpp                   # OLED display implementation
+├── GP8403dac.cpp                 # DAC controller implementation
+├── PCF8574_GPIO.cpp              # GPIO expander implementation
+├── RotaryEncoder.cpp             # Rotary encoder implementation
+├── SHT31_Sensor.cpp              # Temperature/humidity sensor
+├── ClimateConfig.cpp             # Configuration management
+└── [other implementation files]
+
+lib/                              # Library headers and configurations
+├── Device/                       # Base device class and registry
+│   ├── Device.h                 # Abstract base class for all devices
+│   └── DeviceRegistry/          # Manages all devices
+├── GPIO/                        # GPIO expansion devices
+│   └── PCF8574_GPIO/           # PCF8574 I2C GPIO expander
+├── Sensors/                     # Environmental sensors
+│   ├── SHTsensor/              # Temperature/humidity
+│   ├── BH1705sensor/           # Light measurement
+│   └── SCALESsensor/           # Weight measurement
+├── Display/                     # Display devices
+│   └── Display.h               # OLED display management
+├── DAC/                        # Digital-to-analog converters
+│   └── GP8403dac/             # GP8403 DAC for power control
+├── Input/                      # User input devices
+│   └── RotaryEncoder/          # Rotary encoder with button
+├── ClimateController/          # Main control logic
+│   └── ClimateController.h     # PID-based climate control
+└── Config/                     # Configuration management
+    └── ClimateConfig/          # EEPROM-based settings storage
+```
+
 ### Device Hierarchy
 ```
 Device (Base Class)
@@ -170,87 +212,6 @@ Device (Base Class)
 ├── GP8403dac (Digital-to-Analog Converter)
 └── RotaryEncoder (User Input)
 ```
-
-### Library Organization
-```
-lib/
-├── Device/                     # Base device class and registry
-│   ├── Device.h/.cpp          # Abstract base class for all devices
-│   └── DeviceRegistry/        # Manages all devices
-├── GPIO/                      # GPIO expansion devices
-│   └── PCF8574_GPIO/         # PCF8574 I2C GPIO expander
-├── Sensors/                   # Environmental sensors
-│   └── SHT31_Sensor/         # Temperature/Humidity sensor
-├── Display/                   # Display devices
-│   └── Display.h/.cpp        # OLED display management
-├── DAC/                      # Digital-to-analog converters
-│   └── GP8403dac/           # GP8403 DAC for power control
-├── Input/                    # User input devices
-│   └── RotaryEncoder/        # Rotary encoder with button
-├── ClimateController/        # Main control logic
-│   └── ClimateController.h/.cpp # PID-based climate control
-└── Config/                   # Configuration management
-    └── ClimateConfig/        # EEPROM-based settings storage
-```
-
-## Hardware Configuration
-
-### I2C Device Mapping (via PCA9548A Multiplexer)
-- **Channel 0**: PCF8574 GPIO Expander (0x20)
-- **Channel 1**: SHT31 Temperature/Humidity Sensor (0x44)
-- **Channel 2**: SSD1306 OLED Display (0x3C)
-- **Channel 3**: MCP4725 DAC Module (0x62)
-
-### GPIO Pin Assignments
-- **Pin 4**: Rotary Encoder A
-- **Pin 5**: Rotary Encoder B
-- **Pin 6**: Rotary Encoder Button
-- **Pin 17**: I2C SDA
-- **Pin 16**: I2C SCL
-
-### PCF8574 GPIO Expander Pin Mapping
-- **Pin 0**: Interior Fan Control
-- **Pin 1**: Exterior Fan Control
-- **Pin 2**: Humidify Control
-- **Pin 3**: Dehumidify Control
-- **Pin 4**: Temperature Control Enable
-- **Pin 5**: Cooling Control
-- **Pin 6**: Heating Control
-- **Pin 7**: Spare Output
-
-## Control System Features
-
-### Temperature Control
-- **Enable/Disable**: Digital output for temperature module power
-- **Heating**: Digital output for heating element
-- **Cooling**: Digital output for cooling element
-- **Power Control**: Analog output (0-100%) via DAC for temperature control power
-
-### Humidity Control
-- **Humidify**: Digital output for humidification
-- **Dehumidify**: Digital output for dehumidification
-
-### PID Control
-- Independent PID controllers for temperature and humidity
-- Configurable PID parameters stored in EEPROM
-- Safety limits and emergency shutdown capabilities
-
-### User Interface
-- Rotary encoder for setpoint adjustment
-- Button press for saving settings
-- OLED display showing current values and setpoints
-- Real-time status updates
-
-## Software Architecture
-
-### Device Management
-- **DeviceRegistry**: Singleton pattern for managing all devices
-- **Device Base Class**: Common interface for all I2C devices
-- **Automatic Initialization**: Sequential device initialization with error handling
-
-### Configuration Management
-- **ClimateConfig**: Singleton configuration manager
-- **EEPROM Storage**: Persistent settings with checksum validation
 - **Default Values**: Automatic fallback to safe defaults
 
 ### Control Logic
