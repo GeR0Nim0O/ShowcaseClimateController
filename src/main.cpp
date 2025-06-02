@@ -127,11 +127,19 @@ void setup()
     }
   } else {
     // SD card config loaded successfully - check if it differs from project config
-    String sdWifiSSID = Configuration::getWiFiSSID();
-      // Temporarily load project config to compare
+    String sdWifiSSID = Configuration::getWiFiSSID();    // Temporarily load project config to compare
     JsonDocument tempProjectConfig;
-    if (Configuration::readProjectConfigJson()) {
-      String projectWifiSSID = Configuration::getWiFiSSID();
+    
+    // Read project config.json directly from SPIFFS without affecting current Configuration
+    if (SPIFFS.begin()) {
+      File configFile = SPIFFS.open("/config.json", "r");
+      if (configFile) {
+        String configContent = configFile.readString();
+        configFile.close();
+        
+        DeserializationError error = deserializeJson(tempProjectConfig, configContent);
+        if (!error && !tempProjectConfig["wifi"]["ssid"].isNull()) {
+          String projectWifiSSID = tempProjectConfig["wifi"]["ssid"].as<String>();
       
       if (sdWifiSSID != projectWifiSSID) {
         Serial.println();
