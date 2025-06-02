@@ -49,16 +49,11 @@ bool SDHandler::initializeSDCardAndConfig() {
     } else {
         Serial.println("Log file is present and ready for use.");
         Serial.println(getLogFileInfo());
-    }
-
-    if (!SD.exists("/config.json")) {
-        Serial.println("Config file does not exist. Copying default config to SD card.");
-        if (copyDefaultConfig()) {
-            Serial.println("Default config copied to SD card.");
-        } else {
-            Serial.println("WARNING: Failed to copy default config to SD card - fallback configuration will be used");
-            return false;
-        }
+    }    if (!SD.exists("/config.json")) {
+        Serial.println("ERROR: Config file does not exist on SD card!");
+        Serial.println("No hardcoded fallback configuration available.");
+        Serial.println("Please place a valid config.json file on the SD card or upload it to SPIFFS.");
+        return false;
     }
     return true;
 }
