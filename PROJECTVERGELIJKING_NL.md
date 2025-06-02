@@ -56,9 +56,9 @@ De **Showcase Climate Controller** toont de evolutie van de **Casekeeper** code 
 
 ---
 
-## 🎛️ Klimaatregeling - Nieuwe Functionaliteit
+## Klimaatregeling - Nieuwe Functionaliteit
 
-### **🆕 Showcase Climate Controller - Volledig Nieuwe Capabilities**
+### **Showcase Climate Controller - Nieuwe Capabilities**
 
 #### **PID-gebaseerde Regeling**
 ```cpp
@@ -72,10 +72,10 @@ humidityPID = new PID(&humInput, &humOutput, &humSetpoint,
 #### **Multi-Mode Operatie**
 | Mode | Temperatuur | Vochtigheid | Beschrijving |
 |------|-------------|-------------|--------------|
-| **AUTO** | ✅ Heat/Cool | ✅ Humidify/Dehumidify | Volledig automatisch |
-| **HEATING** | 🔥 Heat Only | ⚙️ Configureerbaar | Alleen verwarming |
-| **COOLING** | ❄️ Cool Only | ⚙️ Configureerbaar | Alleen koeling |
-| **OFF** | ❌ Disabled | ❌ Disabled | Systeem uit |
+| **AUTO** | Heat/Cool | Humidify/Dehumidify | Volledig automatisch |
+| **HEATING** | Heat Only | Configureerbaar | Alleen verwarming |
+| **COOLING** | Cool Only | Configureerbaar | Alleen koeling |
+| **OFF** | Disabled | Disabled | Systeem uit |
 
 #### **Analoge Vermogensregeling**
 ```cpp
@@ -92,26 +92,13 @@ void ClimateController::applyDACControls() {
 }
 ```
 
-#### **Safety & Monitoring Systems**
-```cpp
-// Automatische veiligheidslimiet controle
-bool ClimateController::checkSafetyLimits() {
-    if (currentTemperature > maxTemperature || 
-        currentHumidity > maxHumidity) {
-        emergencyShutdown();
-        return false;
-    }
-    return true;
-}
-```
-
-### **❌ Casekeeper - Geen Klimaatregeling**
+### **Casekeeper - Geen Klimaatregeling**
 - Geen temperatuurregeling functionaliteit
 - Geen vochtigheidscontrole
 - Geen PID controllers
 - Alleen basis sensor uitlezing
 
-### **🔍 Revolutionaire Toevoeging**
+### **Belangrijke Toevoeging**
 De klimaatregeling vormt een **volledig nieuwe functionaliteit** die de Showcase Climate Controller transformeert van een passief monitoring systeem naar een actief regelsysteem.
 
 ---
