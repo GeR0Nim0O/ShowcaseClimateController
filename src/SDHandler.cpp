@@ -341,13 +341,34 @@ bool SDHandler::forceUpdateSDConfig() {
     }
     
     // Copy project config.json from SPIFFS to SD card
-    if (copyProjectConfigToSD()) {
-        Serial.println("Successfully updated SD card config.json with project configuration");
-        return true;
-    } else {
-        Serial.println("Failed to update SD card config.json");
+    if (!SPIFFS.begin()) {
+        Serial.println("Failed to mount SPIFFS");
         return false;
     }
+    
+    File spiffsFile = SPIFFS.open("/config.json", "r");
+    if (!spiffsFile) {
+        Serial.println("Failed to open project config.json from SPIFFS");
+        return false;
+    }
+    
+    File sdFile = SD.open("/config.json", FILE_WRITE);
+    if (!sdFile) {
+        Serial.println("Failed to create config.json on SD card");
+        spiffsFile.close();
+        return false;
+    }
+    
+    // Copy content from SPIFFS to SD card
+    while (spiffsFile.available()) {
+        sdFile.write(spiffsFile.read());
+    }
+    
+    spiffsFile.close();
+    sdFile.close();
+    
+    Serial.println("Successfully updated SD card config.json with project configuration");
+    return true;
 }
 
 bool SDHandler::copyDefaultConfig() {
