@@ -1296,7 +1296,7 @@ humidityPID->Compute();     // -100 to +100% output
 - **Casekeeper**: ESP32 en basic sensors
 - **Showcase**: ESP32-S3, PID control, enterprise architecture patterns
 
-### **🚀 Future Roadmap**
+### **Future Roadmap**
 
 De Showcase Climate Controller biedt een solide foundation voor verdere uitbreiding:
 
