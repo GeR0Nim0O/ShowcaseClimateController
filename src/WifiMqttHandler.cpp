@@ -6,10 +6,67 @@ void WifiMqttHandler::connectToWiFi(const char* ssid, const char* password) {
         Serial.println("Error: SSID or password is null");
         return;
     }
-    Serial.print("Connecting to WiFi SSID: ");
+    
+    Serial.println("=== WiFi Connection Debug ===");
+    Serial.print("Target SSID: ");
     Serial.println(ssid);
-    Serial.print("Using password: ");
-    Serial.println(password);
+    Serial.print("Password length: ");
+    Serial.println(strlen(password));
+    
+    // Scan for available networks first
+    Serial.println("Scanning for available WiFi networks...");
+    int networkCount = WiFi.scanNetworks();
+    Serial.print("Found ");
+    Serial.print(networkCount);
+    Serial.println(" networks:");
+    
+    bool targetNetworkFound = false;
+    for (int i = 0; i < networkCount; i++) {
+        String networkSSID = WiFi.SSID(i);
+        int32_t networkRSSI = WiFi.RSSI(i);
+        wifi_auth_mode_t encryptionType = WiFi.encryptionType(i);
+        
+        Serial.print("  ");
+        Serial.print(i + 1);
+        Serial.print(": ");
+        Serial.print(networkSSID);
+        Serial.print(" (");
+        Serial.print(networkRSSI);
+        Serial.print(" dBm) ");
+        
+        switch(encryptionType) {
+            case WIFI_AUTH_OPEN: Serial.print("[OPEN]"); break;
+            case WIFI_AUTH_WEP: Serial.print("[WEP]"); break;
+            case WIFI_AUTH_WPA_PSK: Serial.print("[WPA_PSK]"); break;
+            case WIFI_AUTH_WPA2_PSK: Serial.print("[WPA2_PSK]"); break;
+            case WIFI_AUTH_WPA_WPA2_PSK: Serial.print("[WPA_WPA2_PSK]"); break;
+            case WIFI_AUTH_WPA2_ENTERPRISE: Serial.print("[WPA2_ENTERPRISE]"); break;
+            case WIFI_AUTH_WPA3_PSK: Serial.print("[WPA3_PSK]"); break;
+            case WIFI_AUTH_WPA2_WPA3_PSK: Serial.print("[WPA2_WPA3_PSK]"); break;
+            default: Serial.print("[UNKNOWN]"); break;
+        }
+        
+        if (networkSSID.equals(ssid)) {
+            targetNetworkFound = true;
+            Serial.print(" *** TARGET NETWORK ***");
+        }
+        Serial.println();
+    }
+    
+    if (!targetNetworkFound) {
+        Serial.println("WARNING: Target network not found in scan!");
+        Serial.println("Please check:");
+        Serial.println("1. Network name (SSID) is correct");
+        Serial.println("2. Router is powered on and broadcasting");
+        Serial.println("3. ESP32 is within range of the router");
+    }
+    
+    Serial.println("============================");
+    
+    // Clean up any existing connection
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_STA);
+    delay(1000);
     
     int attempts = 0;
     const int maxAttempts = 5;
@@ -21,17 +78,47 @@ void WifiMqttHandler::connectToWiFi(const char* ssid, const char* password) {
         Serial.print("/");
         Serial.println(maxAttempts);
         
+        // More robust connection attempt
         WiFi.begin(ssid, password);
         
         unsigned long startAttemptTime = millis();
-        while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 10000) {
+        const unsigned long attemptTimeout = 15000; // Increased timeout to 15 seconds
+        
+        while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < attemptTimeout) {
             delay(500);
+            Serial.print(".");
+            
+            // Check for specific error conditions
+            if (WiFi.status() == WL_CONNECT_FAILED) {
+                Serial.println();
+                Serial.println("Connection failed - likely wrong password");
+                break;
+            } else if (WiFi.status() == WL_NO_SSID_AVAIL) {
+                Serial.println();
+                Serial.println("SSID not available - network not found");
+                break;
+            }
+        }
+        Serial.println();
+        
+        // Print detailed status information
+        wl_status_t status = WiFi.status();
+        Serial.print("WiFi Status: ");
+        switch(status) {
+            case WL_IDLE_STATUS: Serial.println("WL_IDLE_STATUS"); break;
+            case WL_NO_SSID_AVAIL: Serial.println("WL_NO_SSID_AVAIL (Network not found)"); break;
+            case WL_SCAN_COMPLETED: Serial.println("WL_SCAN_COMPLETED"); break;
+            case WL_CONNECTED: Serial.println("WL_CONNECTED"); break;
+            case WL_CONNECT_FAILED: Serial.println("WL_CONNECT_FAILED (Wrong password?)"); break;
+            case WL_CONNECTION_LOST: Serial.println("WL_CONNECTION_LOST"); break;
+            case WL_DISCONNECTED: Serial.println("WL_DISCONNECTED"); break;
+            default: Serial.println("Unknown status: " + String(status)); break;
         }
         
         if (WiFi.status() != WL_CONNECTED && attempts < maxAttempts) {
             Serial.println("Connection failed, trying again...");
             WiFi.disconnect();
-            delay(2000); // Wait before next attempt
+            delay(3000); // Increased delay between attempts
         }
     }
     
