@@ -17,8 +17,10 @@ public:
 
     static void setupSecureClient(WiFiClientSecure &espClient, const char* rootCACertificate);
     
-    // Status reporting functions
+    // Status reporting and debugging functions
     static void printConnectionStatus(PubSubClient &client);
+    static void scanAndDisplayNetworks();
+    static bool isNetworkAvailable(const String& ssid);
 };
 
 #endif // WIFIMQTTHANDLER_H
