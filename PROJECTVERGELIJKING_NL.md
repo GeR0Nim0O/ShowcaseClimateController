@@ -1233,7 +1233,7 @@ if (Wire.endTransmission() != 0) {
 - **Casekeeper**: Alles-in-één benadering
 - **Showcase**: Modulaire, service-georiënteerde architectuur
 
-### **🎖️ Technische Excellence Indicatoren**
+### **Technische Indicatoren**
 
 #### **Design Patterns Implementation**
 - ✅ **Factory Pattern**: Voor device instantiation
