@@ -371,10 +371,7 @@ void setup()
   {
     Serial.println("========================================");
     Serial.println();
-  }
-  void loop() {
-  if (!setupComplete) {
-    return; // Exit loop if setup is not complete
+  p if setup is not complete
   }
 
   // Use existing WifiMqttHandler::keepAlive for connection management
