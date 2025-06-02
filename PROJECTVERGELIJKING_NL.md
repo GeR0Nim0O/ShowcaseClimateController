@@ -103,9 +103,9 @@ De klimaatregeling vormt een **volledig nieuwe functionaliteit** die de Showcase
 
 ---
 
-## 🏛️ Architectuur & Design Patterns
+## Architectuur & Design Patterns
 
-### **🏭 Showcase Climate Controller - Enterprise Architecture**
+### **Showcase Climate Controller - Geavanceerde Architectuur**
 
 #### **Factory Pattern Implementation**
 ```cpp
@@ -169,7 +169,7 @@ private:
 };
 ```
 
-### **🔨 Casekeeper - Basis Architectuur**
+### **Casekeeper - Basis Architectuur**
 
 #### **Eenvoudige Vector-based Device Management**
 ```cpp
@@ -186,13 +186,13 @@ devices.push_back(new PCF8574gpio(...));
 - Geen fallback mechanismen
 - Eenvoudige error logging
 
-### **🔍 Architecturale Voordelen**
+### **Architecturale Voordelen**
 | Aspect | Showcase | Casekeeper | Verbetering |
 |--------|----------|------------|-------------|
 | **Schaalbaarheid** | Factory Pattern | Directe instantiatie | +300% flexibiliteit |
 | **Maintainability** | Modulair | Monolithisch | +250% onderhoudsvriendelijkheid |
 | **Error Recovery** | Multi-level fallback | Basis logging | +400% betrouwbaarheid |
-| **Configuration** | 4 bronnen + validatie | 1 bron | +500% robuustheid |
+| **Configuration** | 4 bronnen + validatie | 1 bron | +500% stabiliteit |
 
 ---
 
