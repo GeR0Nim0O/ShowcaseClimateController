@@ -736,7 +736,7 @@ private:
 
 ---
 
-## 🔧 Development & Debugging
+## Development & Debugging
 
 ### **⚙️ Showcase Climate Controller - Professional Development Environment**
 
