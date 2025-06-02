@@ -198,7 +198,7 @@ devices.push_back(new PCF8574gpio(...));
 
 ## Sensor & Device Management
 
-### **Showcase Climate Controller - Geavanceerd Device Ecosystem**
+### **Showcase Climate Controller - Device Ecosystem**
 
 #### **Automatische Device Discovery**
 ```cpp
