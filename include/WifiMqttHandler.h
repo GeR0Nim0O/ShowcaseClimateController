@@ -20,6 +20,10 @@ public:
     // Status reporting and debugging functions
     static void printConnectionStatus(PubSubClient &client);
     static void scanAndDisplayNetworks();
+    static void scanAndAnalyzeNetworks();
+    static void displayNetworkDetails(int networkIndex);
+    static String getSignalQuality(int rssi);
+    static String getSecurityRecommendation(wifi_auth_mode_t encType);
     static bool isNetworkAvailable(const String& ssid);
 };
 
