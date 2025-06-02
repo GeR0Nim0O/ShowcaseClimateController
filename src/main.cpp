@@ -347,7 +347,7 @@ void setup()
       Serial.println("✓ MQTT connected successfully!");
     }
   }
-  
+
   
   Serial.println();
   Serial.println("========================================");
@@ -369,7 +369,7 @@ void setup()
     Serial.println();
   }
 }
-
+8
 void loop() {
   if (!setupComplete) {
     return; // Exit loop if setup is not complete
