@@ -805,7 +805,6 @@ class MLPredictor {
 ### Medium-Priority Features
 
 #### Advanced Connectivity
-- **Home Assistant Integration**: Native MQTT discovery and entity creation
 - **Web Dashboard**: Real-time monitoring and control interface
 - **Mobile App**: iOS/Android companion application
 - **Cloud Logging**: Remote data collection and analysis
