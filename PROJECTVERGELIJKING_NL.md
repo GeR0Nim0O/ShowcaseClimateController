@@ -803,7 +803,7 @@ lib/
 │   └── PCF8574gpio/         # 8-bit I2C GPIO expander
 ├── DAC/                      # Analog output
 │   └── GP8403dac/           # 12-bit dual-channel DAC
-├── Display/                  # 🖥️ User interface
+├── Display/                  # User interface
 │   ├── Display.h
 │   └── Display.cpp
 ├── RTC/                      # ⏰ Real-time clock
