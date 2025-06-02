@@ -256,8 +256,7 @@ void setup()
   topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
   
   // Print debugging information
-  printDebugInfo();
-    Serial.println("10. Attempting WiFi connection ONCE during setup...");
+  printDebugInfo();  Serial.println("10. Attempting WiFi connection ONCE during setup...");
   Serial.println("=== SINGLE SETUP WiFi CONNECTION ATTEMPT ===");
   Serial.print("WiFi SSID: '");
   Serial.print(Configuration::getWiFiSSID());
@@ -267,6 +266,8 @@ void setup()
   Serial.println("'");
   Serial.print("WiFi Password Length: ");
   Serial.println(Configuration::getWiFiPassword().length());
+  Serial.println("NOTE: After flash erase, password should now be read correctly from config.json");
+  Serial.println("Expected password: 'Nek@F1993!' (10 characters with @ symbol)");
   
   bool wifiConnected = WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword());
   
