@@ -174,16 +174,45 @@ bool WifiMqttHandler::connectToWiFiWithCheck(const String& ssid, const String& p
         return false;
     }
 
+    Serial.println("=== WiFi Connection Check ===");
+    Serial.print("Attempting to connect to: ");
+    Serial.println(ssid);
+    
     // Connect to WiFi
-    Serial.println("Connecting to WiFi...");
     connectToWiFi(ssid.c_str(), password.c_str());
 
-    if (WiFi.status() != WL_CONNECTED) {
-        Serial.println("Failed to connect to WiFi");
-        return false;
+    // The connectToWiFi function handles its own connection logic and timing
+    // Just check the final status after it completes
+    bool isConnected = (WiFi.status() == WL_CONNECTED);
+    
+    if (isConnected) {
+        Serial.println("✓ WiFi connection check: SUCCESS");
+        Serial.print("Connected to: ");
+        Serial.println(WiFi.SSID());
+        Serial.print("IP Address: ");
+        Serial.println(WiFi.localIP());
+        Serial.print("Signal: ");
+        Serial.print(WiFi.RSSI());
+        Serial.println(" dBm");
+    } else {
+        Serial.println("✗ WiFi connection check: FAILED");
+        Serial.print("Final status: ");
+        
+        wl_status_t status = WiFi.status();
+        switch(status) {
+            case WL_IDLE_STATUS: Serial.println("IDLE"); break;
+            case WL_NO_SSID_AVAIL: Serial.println("NETWORK NOT FOUND"); break;
+            case WL_SCAN_COMPLETED: Serial.println("SCAN COMPLETED"); break;
+            case WL_CONNECTED: Serial.println("CONNECTED (should not see this)"); break;
+            case WL_CONNECT_FAILED: Serial.println("CONNECTION FAILED (wrong password?)"); break;
+            case WL_CONNECTION_LOST: Serial.println("CONNECTION LOST"); break;
+            case WL_DISCONNECTED: Serial.println("DISCONNECTED"); break;
+            default: Serial.println("UNKNOWN STATUS: " + String(status)); break;
+        }
     }
-
-    return true;
+    
+    Serial.println("===============================");
+    return isConnected;
 }
 
 void WifiMqttHandler::setupSecureClient(WiFiClientSecure &espClient, const char* rootCACertificate) {
