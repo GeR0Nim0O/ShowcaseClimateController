@@ -119,17 +119,38 @@ void WifiMqttHandler::connectToWiFi(const char* ssid, const char* password) {
             Serial.println("Connection failed, trying again...");
             WiFi.disconnect();
             delay(3000); // Increased delay between attempts
-        }
-    }
+        }    }
     
+    // Final connection status
     if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("Connected to WiFi");
-        Serial.print("WiFi status: ");
-        Serial.println(WiFi.status());
+        Serial.println("=== WiFi Connection Successful ===");
+        Serial.print("Connected to: ");
+        Serial.println(WiFi.SSID());
+        Serial.print("IP Address: ");
+        Serial.println(WiFi.localIP());
+        Serial.print("Signal Strength (RSSI): ");
+        Serial.print(WiFi.RSSI());
+        Serial.println(" dBm");
+        Serial.print("Gateway: ");
+        Serial.println(WiFi.gatewayIP());
+        Serial.print("DNS: ");
+        Serial.println(WiFi.dnsIP());
+        Serial.print("MAC Address: ");
+        Serial.println(WiFi.macAddress());
+        Serial.println("==================================");
     } else {
+        Serial.println("=== WiFi Connection Failed ===");
         Serial.print("Failed to connect to WiFi after ");
         Serial.print(maxAttempts);
-        Serial.println(" attempts. Skipping WiFi connection.");
+        Serial.println(" attempts.");
+        Serial.println("Troubleshooting steps:");
+        Serial.println("1. Verify the WiFi network is active and broadcasting");
+        Serial.println("2. Check the SSID spelling (case-sensitive)");
+        Serial.println("3. Verify the WiFi password is correct");
+        Serial.println("4. Ensure the ESP32 is within range of the router");
+        Serial.println("5. Try restarting the router if needed");
+        Serial.println("6. Consider checking for MAC address filtering");
+        Serial.println("==============================");
     }
 }
 
