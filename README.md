@@ -787,7 +787,6 @@ class MLPredictor {
 - **Predictive Control**: Anticipate temperature changes before they occur
 - **Adaptive Learning**: Improve performance based on usage patterns
 - **Seasonal Optimization**: Adjust control strategy based on time of year
-- **Energy Efficiency**: Minimize power consumption through intelligent control
 
 ### Medium-Priority Features
 
