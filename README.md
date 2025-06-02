@@ -212,105 +212,71 @@ Device (Base Class)
 ├── GP8403dac (Digital-to-Analog Converter)
 └── RotaryEncoder (User Input)
 ```
-- **Default Values**: Automatic fallback to safe defaults
-
-### Control Logic
-- **ClimateController**: Main control class with PID loops
-- **Safety Monitoring**: Continuous monitoring of sensor limits
-- **Emergency Shutdown**: Automatic shutdown on safety violations
-
-### Features
-- Real-time climate monitoring and control
-- Configurable PID parameters
-- Fan control for air circulation
-- User-friendly interface with rotary encoder
-- Persistent configuration storage
-- Automatic git commits for version tracking
-
-## Usage
-
-1. **Setup**: The system automatically initializes all devices on startup
-2. **Monitor**: View current temperature and humidity on the display
-3. **Adjust**: Use the rotary encoder to change setpoints
-4. **Save**: Press the encoder button to save settings to EEPROM
-5. **Control**: The system automatically maintains target conditions using PID control
-
-## Dependencies
-
-- PID Library for control algorithms
-- Adafruit libraries for display support
-- Standard Arduino libraries for I2C and EEPROM
-
-## Safety Features
-
-- Temperature and humidity limit monitoring
-- Automatic emergency shutdown on sensor failures
-- Configurable safety limits
-- Checksum validation for stored settings
-
-This project is an ESP32S3-based climate controller designed for demonstration and educational purposes. It features I2C device scanning, GPIO expansion, and basic climate control logic.
-
-## Features
-
-- I2C bus scanning (direct and via PCA9548A multiplexer)
-- PCF8574 GPIO expander control
-- Basic climate actuator control (fans, humidify, dehumidify, heat, cool)
-- Designed for ESP32S3 with PlatformIO and Arduino framework
-- Automatic Git commit and push on file save (with VSCode "Run on Save" extension)
-
-## Hardware
-
-- ESP32S3 DevKitC-1
-- PCA9548A I2C multiplexer
-- PCF8574 I2C GPIO expander
-- Various actuators (fans, humidifier, dehumidifier, heater, cooler)
-
 ## Getting Started
 
 ### Prerequisites
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [PlatformIO IDE Extension](https://platformio.org/platformio-ide)
+- [Git](https://git-scm.com/) (for version control)
+- ESP32-S3 development board
+- Required hardware components (see Hardware Requirements)
 
-- [PlatformIO](https://platformio.org/) extension for VSCode
-- [VSCode](https://code.visualstudio.com/)
-- "Run on Save" VSCode extension (optional, for auto Git commit/push)
-- Git installed and configured
+### Installation
 
-### Setup
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/your-username/showcase-climate-controller.git
+   cd showcase-climate-controller
+   ```
 
-1. Clone this repository:
-    ```sh
-    git clone <your-repo-url>
-    ```
-2. Open the project folder in VSCode.
-3. Install PlatformIO and required libraries (see `platformio.ini`).
-4. Connect your ESP32S3 board.
-5. Build and upload the firmware using PlatformIO.
+2. **Open in VS Code**
+   ```bash
+   code .
+   ```
 
-### Auto Git Commit/Push (Optional)
+3. **Install Dependencies**
+   - PlatformIO will automatically install dependencies from `platformio.ini`
+   - Or manually via PlatformIO CLI:
+   ```bash
+   pio lib install
+   ```
 
-To automatically commit and push changes on every file save:
-- Install the "Run on Save" extension in VSCode.
-- Ensure `.vscode/settings.json` contains:
-    ```jsonc
-    "emeraldwalk.runonsave": {
-        "commands": [
-            {
-                "match": ".*",
-                "cmd": "git add . && git commit -m \"Auto-commit on save\" && git push"
-            }
-        ]
-    }
-    ```
+4. **Configure Hardware**
+   - Connect I2C devices according to the hardware mapping
+   - Verify I2C addresses match configuration
+   - Check power supply requirements (3.3V/5V)
 
-## Usage
+5. **Build and Upload**
+   ```bash
+   pio run --target upload
+   ```
 
-- On boot, the ESP32S3 scans for I2C devices and initializes the PCF8574 GPIO expander.
-- Actuators can be controlled via the PCF8574 outputs.
-- Serial output provides I2C scan results and status messages.
+6. **Monitor Serial Output**
+   ```bash
+   pio device monitor --baud 115200
+   ```
 
-## License
+### First Run Setup
 
-This project is for educational use. See LICENSE file for details (if present).
+1. **Device Discovery**
+   - System automatically scans I2C bus
+   - Initializes all detected devices
+   - Creates default configuration if none exists
 
-## Author
+2. **Configuration Files**
+   ```
+   SD Card (preferred):
+   ├── config.json           # Main system configuration
+   ├── ClimateConfig.json    # Climate-specific settings
+   └── devices.json          # Device definitions
+   
+   SPIFFS (fallback):
+   └── data/
+       ├── config.json
+       └── ClimateConfig.json
+   ```
 
-Ron Groenen
+3. **Initial Calibration**
+   - Set temperature and humidity setpoints
+   - Adjust PID parameters if needed
+   - Test emergency shutdown functionality
