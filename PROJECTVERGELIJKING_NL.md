@@ -1206,7 +1206,7 @@ if (Wire.endTransmission() != 0) {
 
 ---
 
-## 🎯 Conclusie
+## Conclusie
 
 ### **📊 Kwantitatieve Verbeteringen**
 
