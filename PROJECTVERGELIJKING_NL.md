@@ -196,9 +196,9 @@ devices.push_back(new PCF8574gpio(...));
 
 ---
 
-## 📊 Sensor & Device Management
+## Sensor & Device Management
 
-### **🔧 Showcase Climate Controller - Advanced Device Ecosystem**
+### **Showcase Climate Controller - Geavanceerd Device Ecosystem**
 
 #### **Automatische Device Discovery**
 ```cpp
@@ -272,7 +272,7 @@ public:
 };
 ```
 
-### **📡 Casekeeper - Basis Sensor Support**
+### **Casekeeper - Basis Sensor Support**
 
 #### **Eenvoudige Device Initialisatie**
 ```cpp
@@ -287,13 +287,13 @@ devices.push_back(new PCF8574gpio(wire, 0x20, 0, "GPIO", 0));
 - Geen fallback modes
 - Basis I2C communication
 
-### **🔍 Device Management Voordelen**
+### **Device Management Voordelen**
 | Feature | Showcase | Casekeeper | Verbetering |
 |---------|----------|------------|-------------|
 | **Device Types** | 5+ sensor types | 3 basis types | +67% sensor diversiteit |
-| **Auto Discovery** | ✅ Met labeling | ❌ Handmatig | +100% automatisering |
-| **Error Recovery** | ✅ Multi-level | ❌ Basis | +300% betrouwbaarheid |
-| **Validation** | ✅ Connection tests | ❌ Geen | +∞ robuustheid |
+| **Auto Discovery** | Met labeling | Handmatig | +100% automatisering |
+| **Error Recovery** | Multi-level | Basis | +300% betrouwbaarheid |
+| **Validation** | Connection tests | Geen | Nieuwe functionaliteit |
 
 ---
 
