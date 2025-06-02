@@ -214,16 +214,53 @@ void setup()
     Serial.println("   - Edit data/config.json file");
     Serial.println("   - Upload to ESP32 via PlatformIO");
     Serial.println("   - Or use SD card with updated config.json");
+    Serial.println();    Serial.println("5. SD CARD CONFIG UPDATE OPTION:");
+    Serial.println("   The SD card contains different WiFi settings than the project config.json");
+    Serial.print("   SD Card WiFi: '");
+    Serial.print(Configuration::getWiFiSSID());
+    Serial.println("'");
+    Serial.println("   Project config.json WiFi: 'Ron-Rowie' (stronger signal)");
     Serial.println();
-    Serial.println("5. AUTOMATIC SD CARD CONFIG UPDATE:");
-    Serial.println("   Attempting to update SD card configuration with current project settings...");
-    if (SDHandler::forceUpdateSDConfig()) {
-        Serial.println("   ✓ SD card config updated successfully!");
-        Serial.println("   → Please restart the ESP32 to use the updated configuration");
-        Serial.println("   → The system will now use 'Ron-Rowie' network instead of 'Ron&Rowie_Gast'");
+    Serial.println("   Would you like to update the SD card with project config.json settings?");
+    Serial.println("   This will overwrite the SD card config.json with data/config.json");
+    Serial.println();
+    Serial.println("   Send 'Y' or 'y' within 10 seconds to update SD card config");
+    Serial.println("   Send any other key or wait 10 seconds to keep current SD card config");
+    Serial.print("   Waiting for input: ");
+    
+    // Wait for user input for 10 seconds
+    unsigned long startWait = millis();
+    bool updateRequested = false;
+    String userInput = "";
+    
+    while (millis() - startWait < 10000) { // 10 second timeout
+        if (Serial.available()) {
+            userInput = Serial.readString();
+            userInput.trim();
+            Serial.println(userInput);
+            break;
+        }
+        delay(100);
+    }
+    
+    if (userInput.length() == 0) {
+        Serial.println("(timeout)");
+        Serial.println("   → No input received - keeping current SD card configuration");
+    } else if (userInput.equalsIgnoreCase("y")) {
+        Serial.println("   → User confirmed - updating SD card configuration...");
+        if (SDHandler::forceUpdateSDConfig()) {
+            Serial.println("   ✓ SD card config updated successfully!");
+            Serial.println("   → Please restart the ESP32 to use the updated configuration");
+            Serial.println("   → The system will now use 'Ron-Rowie' network instead of 'Ron&Rowie_Gast'");
+            Serial.println("   → Restart recommended: Press EN button or power cycle");
+        } else {
+            Serial.println("   ✗ Failed to update SD card configuration");
+            Serial.println("   → Please manually update the SD card config.json file");
+        }
     } else {
-        Serial.println("   ✗ Failed to update SD card configuration");
-        Serial.println("   → Please manually update the SD card config.json file");
+        Serial.print("   → User declined ('");
+        Serial.print(userInput);
+        Serial.println("') - keeping current SD card configuration");
     }
     Serial.println();
     Serial.println("Continuing in offline mode...");
