@@ -538,7 +538,7 @@ public:
 
 ---
 
-## 💾 Data Management & Persistentie
+## Data Management & Persistentie
 
 ### **🗄️ Showcase Climate Controller - Multi-Level Data Strategy**
 
