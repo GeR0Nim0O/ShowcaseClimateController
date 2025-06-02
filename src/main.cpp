@@ -270,8 +270,7 @@ void setup()
   Serial.println("Expected password: 'Nek@F1993!' (10 characters with @ symbol)");
   
   bool wifiConnected = WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword());
-  
-  if (!wifiConnected) {
+    if (!wifiConnected) {
     Serial.println();
     Serial.println("========================================");
     Serial.println("        WiFi Connection Failed");
@@ -298,7 +297,8 @@ void setup()
     Serial.println("   • Move ESP32 closer to router");
     Serial.println("   • Check for MAC filtering on router");
     Serial.println();
-    Serial.println("→ Will retry after 60-second timer in main loop...");
+    Serial.println("→ System will retry WiFi connection every 60 seconds in main loop");
+    Serial.println("→ This aligns with the global status timer for efficient operation");
     Serial.println("========================================");
     Serial.println();
     offlineMode = true;
