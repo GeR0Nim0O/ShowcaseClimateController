@@ -95,17 +95,36 @@ graph TB
 | **Display** | SSD1306 OLED | User interface | 0x3C |
 | **User Input** | Rotary Encoder | Setting adjustment | GPIO 4,5,6 |
 
-### I2C Device Mapping
+### I2C Device Mapping (Automatically Discovered)
+
+The system automatically scans all PCA9548A multiplexer channels (0-7) during startup to detect connected devices. Channel assignments are determined by the physical connections, not hardcoded in software.
+
+**Device Detection Process:**
+1. System scans each multiplexer channel sequentially
+2. Identifies devices by their I2C addresses
+3. Creates device instances through the DeviceRegistry factory pattern
+4. Devices can be connected to any available channel
+
+**Example Configuration (devices detected by I2C address):**
 ```
-PCA9548A Multiplexer Channels:
-├── Channel 0: PCF8574 GPIO Expander (0x20)
-├── Channel 1: SHT31 Temperature/Humidity (0x44)
-├── Channel 2: SSD1306 OLED Display (0x3C)
-├── Channel 3: GP8403 DAC Controller (0x5F)
-├── Channel 4: BH1705 Light Sensor (0x23)
-├── Channel 5: Weight/Scale Sensor
-├── Channel 6: [Available]
-└── Channel 7: [Available]
+Supported Device Types:
+├── PCF8574 GPIO Expander (I2C: 0x20) - Any available channel
+├── SHT31 Temperature/Humidity (I2C: 0x44) - Any available channel
+├── SSD1306 OLED Display (I2C: 0x3C) - Any available channel
+├── GP8403 DAC Controller (I2C: 0x5F) - Any available channel
+├── BH1705 Light Sensor (I2C: 0x23) - Any available channel
+├── Weight/Scale Sensor (custom I2C) - Any available channel
+├── [Channel X]: Automatically assigned based on detection
+└── [Channel Y]: Automatically assigned based on detection
+```
+
+**Runtime Discovery Output Example:**
+```
+[INFO] Scanning PCA9548A Channel 0... Found: PCF8574 (0x20)
+[INFO] Scanning PCA9548A Channel 1... Found: SHT31 (0x44)
+[INFO] Scanning PCA9548A Channel 2... Found: SSD1306 (0x3C)
+[INFO] Scanning PCA9548A Channel 3... Found: GP8403 (0x5F)
+[INFO] Device Registry: 4 devices initialized
 ```
 
 ### GPIO Pin Configuration
