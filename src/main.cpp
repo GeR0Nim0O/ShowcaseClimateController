@@ -365,7 +365,8 @@ void setup()
     Serial.print(" (");
     Serial.print(Configuration::getMqttThrottlingInterval() / 1000);
     Serial.println(" second intervals)");
-  } else {
+  } 8
+  else {
     Serial.println();
   }
 }
