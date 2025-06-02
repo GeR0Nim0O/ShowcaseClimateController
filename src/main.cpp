@@ -368,7 +368,8 @@ void setup()
   } else {
     Serial.println();
   }
-  {void loop() {
+  {8
+  void loop() {
   if (!setupComplete) {
     return; // Exit loop if setup is not complete
   }
