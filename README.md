@@ -280,3 +280,185 @@ Device (Base Class)
    - Set temperature and humidity setpoints
    - Adjust PID parameters if needed
    - Test emergency shutdown functionality
+
+## Usage Guide
+
+### Basic Operation
+
+1. **System Startup**
+   ```
+   [INFO] Starting Showcase Climate Controller...
+   [INFO] Scanning I2C bus...
+   [INFO] Found 5 devices
+   [INFO] Initializing Climate Controller...
+   [INFO] PID controllers ready
+   [INFO] System operational
+   ```
+
+2. **Setting Adjustment**
+   - **Rotate encoder**: Change temperature/humidity setpoints (0.1°C / 1% increments)
+   - **Press button**: Save settings to EEPROM
+   - **Hold button**: Enter configuration mode
+
+3. **Mode Selection**
+   - **AUTO**: Automatic heating/cooling based on setpoint
+   - **HEATING**: Heating only mode
+   - **COOLING**: Cooling only mode
+   - **OFF**: Climate control disabled
+
+### Advanced Features
+
+#### PID Tuning
+```cpp
+// Access via serial commands or configuration file
+climateController->setTemperaturePID(2.0, 0.5, 0.1);  // Kp, Ki, Kd
+climateController->setHumidityPID(1.0, 0.2, 0.05);
+```
+
+#### Power Control
+```cpp
+// DAC provides 0-5V output for variable power
+// 0V = 0% power, 5V = 100% power
+setHeatingPower(75.0);  // 75% heating power = 3.75V output
+```
+
+## Configuration
+
+### Configuration Hierarchy
+1. **SD Card** (`/config.json`) - Highest priority
+2. **SPIFFS** (`/data/config.json`) - Fallback
+3. **EEPROM** (ClimateConfig) - Persistent settings
+4. **Compiled Defaults** - Last resort
+
+### Main Configuration (`config.json`)
+```json
+{
+  "system": {
+    "device_name": "ClimateController_01",
+    "update_interval_ms": 5000,
+    "debug_level": 3
+  },
+  "wifi": {
+    "ssid": "YourNetwork",
+    "password": "YourPassword",
+    "timeout_ms": 10000
+  },
+  "mqtt": {
+    "server": "mqtt.broker.com",
+    "port": 1883,
+    "topic_prefix": "climate/controller"
+  },
+  "climate": {
+    "enabled": true,
+    "temperature_setpoint": 22.0,
+    "humidity_setpoint": 50.0,
+    "update_interval_ms": 3000
+  }
+}
+```
+
+### Climate Configuration (`ClimateConfig.json`)
+```json
+{
+  "setpoints": {
+    "temperature": 22.0,
+    "humidity": 50.0
+  },
+  "modes": {
+    "climate_mode": "AUTO",
+    "humidity_mode": "AUTO"
+  },
+  "pid_parameters": {
+    "temperature": {
+      "kp": 2.0,
+      "ki": 0.5,
+      "kd": 0.1
+    },
+    "humidity": {
+      "kp": 1.0,
+      "ki": 0.2,
+      "kd": 0.05
+    }
+  }
+}
+```
+
+## System Architecture
+
+### Device Management
+- **DeviceRegistry**: Singleton pattern for managing all devices
+- **Device Base Class**: Common interface for all I2C devices
+- **Automatic Initialization**: Sequential device initialization with error handling
+
+### Configuration Management
+- **ClimateConfig**: Singleton configuration manager
+- **EEPROM Storage**: Persistent settings with checksum validation
+- **Default Values**: Automatic fallback to safe defaults
+
+### Control Logic
+- **ClimateController**: Main control class with PID loops
+- **Safety Monitoring**: Continuous monitoring of sensor limits
+- **Emergency Shutdown**: Automatic shutdown on safety violations
+
+## Safety Features
+
+- Temperature and humidity limit monitoring
+- Automatic emergency shutdown on sensor failures
+- Checksum validation for stored settings
+- Hysteresis control for stable operation
+- Error recovery and fallback mechanisms
+
+## Development Notes
+
+### PlatformIO File Organization
+Due to synchronization issues with PlatformIO when using multiple CPP files in library directories, all implementation files have been moved to the `src/` directory. This resolves compilation and linking problems while maintaining logical organization through header files in the `lib/` directory structure.
+
+### Auto Git Integration
+To automatically commit and push changes on every file save:
+- Install the "Run on Save" extension in VSCode
+- Ensure `.vscode/settings.json` contains:
+  ```json
+  {
+    "emeraldwalk.runonsave": {
+      "commands": [
+        {
+          "match": ".*",
+          "cmd": "git add . && git commit -m \"Auto-commit on save\" && git push"
+        }
+      ]
+    }
+  }
+  ```
+
+## Testing
+
+### Unit Testing
+- Individual device functionality tests
+- PID controller response testing
+- Configuration persistence validation
+
+### Integration Testing
+- Full system startup sequence
+- Device communication verification
+- Safety system activation tests
+
+### Performance Testing
+- Response time measurements
+- Memory usage optimization
+- Power consumption analysis
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+Ron Groenen - Educational project for Fontys University of Applied Sciences
