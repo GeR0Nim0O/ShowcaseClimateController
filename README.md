@@ -723,9 +723,9 @@ To automatically commit and push changes on every file save:
 
 ## Testing
 
-- Device functionality and communication verification
-- PID controller response validation
-- Safety system and emergency shutdown testing
+- Climate control performance validation
+- PID controller tuning and response testing
+- Temperature and humidity setpoint accuracy verification
 
 ## Pending Tasks
 
