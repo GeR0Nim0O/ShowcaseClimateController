@@ -317,16 +317,17 @@ void setup()
     Serial.println("   • Verify network name (case-sensitive)");
     Serial.println("   • Check WiFi password");
     Serial.println("   • Ensure router is powered and broadcasting");
-    Serial.println("   • Move ESP32 closer to router");
-    Serial.println("   • Check for MAC filtering on router");
+    Serial.println("   • Move ESP32 closer to router");    Serial.println("   • Check for MAC filtering on router");
     Serial.println();
     Serial.println("→ Continuing in OFFLINE mode...");
     Serial.println("========================================");
     Serial.println();
+    offlineMode = true;
   } else {
     Serial.println("✓ WiFi connected successfully!");
     offlineMode = false;
     
+    Serial.println("11. Initializing time synchronization...");
     // Connect to TimeAPI and NTP only if WiFi is connected
     // Only fetch time from RTC if RTC is connected and initialized
     if (rtc && rtc->isInitialized()) {
@@ -335,31 +336,34 @@ void setup()
       Serial.println("RTC not connected or not initialized. Skipping RTC time fetch.");
     }
 
+    Serial.println("12. Attempting MQTT connection...");
     // Try to connect to MQTT broker only if WiFi is connected
-    Serial.println("Attempting MQTT connection...");
     if (!WifiMqttHandler::connectToMqttBrokerWithCheck(client, espClient, 
         Configuration::getMqttsServer(), rootCACertificate, 
         Configuration::getMqttsPort(), clientId, topic,
         Configuration::getFlespiToken())) {
       Serial.println("Failed to connect to MQTT broker - will retry in main loop");
     } else {
-      Serial.println("MQTT connected successfully in setup.");
+      Serial.println("✓ MQTT connected successfully!");
     }
-  } else {
-    Serial.println("WiFi connection failed in setup - program will continue offline");
-    Serial.println("WiFi and MQTT connections will be retried in main loop");
-    offlineMode = true;
   }
+  
+  Serial.println();
+  Serial.println("========================================");
+  Serial.println("      SETUP COMPLETE");
+  Serial.println("========================================");
+  
   delay(500);
   setupComplete = true; // Indicate that setup is complete
-  Serial.println("Setup complete: " + String(setupComplete));
+  Serial.println("System ready! Setup complete: " + String(setupComplete ? "YES" : "NO"));
+  
   // Configure MQTT throttling from configuration
-  Serial.print("MQTT throttling configuration loaded: ");
+  Serial.print("MQTT throttling: ");
   Serial.print(Configuration::isMqttThrottlingEnabled() ? "enabled" : "disabled");
   if (Configuration::isMqttThrottlingEnabled()) {
-    Serial.print(", interval: ");
+    Serial.print(" (");
     Serial.print(Configuration::getMqttThrottlingInterval() / 1000);
-    Serial.println(" seconds");
+    Serial.println(" second intervals)");
   } else {
     Serial.println();
   }
