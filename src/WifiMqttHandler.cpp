@@ -12,13 +12,26 @@ void WifiMqttHandler::connectToWiFi(const char* ssid, const char* password) {
     Serial.println(ssid);
     Serial.print("Password length: ");
     Serial.println(strlen(password));
-    
-    // Scan for available networks first
+      // Scan for available networks first
     Serial.println("Scanning for available WiFi networks...");
     int networkCount = WiFi.scanNetworks();
+    
+    if (networkCount < 0) {
+        Serial.print("Network scan failed with error code: ");
+        Serial.println(networkCount);
+        Serial.println("Retrying scan...");
+        delay(2000);
+        networkCount = WiFi.scanNetworks(false, false); // Try without hidden networks
+    }
+    
     Serial.print("Found ");
     Serial.print(networkCount);
     Serial.println(" networks:");
+    
+    if (networkCount <= 0) {
+        Serial.println("WARNING: No networks detected or scan failed!");
+        Serial.println("Proceeding with connection attempt anyway...");
+    }
     
     bool targetNetworkFound = false;
     for (int i = 0; i < networkCount; i++) {
