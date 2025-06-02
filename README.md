@@ -102,28 +102,31 @@ PCA9548A Multiplexer Channels:
 ├── Channel 1: SHT31 Temperature/Humidity (0x44)
 ├── Channel 2: SSD1306 OLED Display (0x3C)
 ├── Channel 3: GP8403 DAC Controller (0x5F)
-├── Channel 4: Available for expansion
-├── Channel 5: Available for expansion  
-├── Channel 6: Available for expansion
-└── Channel 7: Available for expansion
+├── Channel 4: BH1705 Light Sensor (0x23)
+├── Channel 5: Weight/Scale Sensor
+├── Channel 6: [Available]
+└── Channel 7: [Available]
 ```
 
-### GPIO Pin Assignments
-- **Pin 4**: Rotary Encoder A
-- **Pin 5**: Rotary Encoder B
-- **Pin 6**: Rotary Encoder Button
-- **Pin 17**: I2C SDA
-- **Pin 16**: I2C SCL
+### GPIO Pin Configuration
+```
+ESP32-S3 Pin Assignments:
+├── GPIO 4: Rotary Encoder Channel A
+├── GPIO 5: Rotary Encoder Channel B
+├── GPIO 6: Rotary Encoder Button
+├── GPIO 17: I2C SDA (System Bus)
+└── GPIO 16: I2C SCL (System Bus)
 
-### PCF8574 GPIO Expander Pin Mapping
-- **Pin 0**: Interior Fan Control
-- **Pin 1**: Exterior Fan Control
-- **Pin 2**: Humidify Control
-- **Pin 3**: Dehumidify Control
-- **Pin 4**: Temperature Control Enable
-- **Pin 5**: Cooling Control
-- **Pin 6**: Heating Control
-- **Pin 7**: Spare Output
+PCF8574 Output Mapping:
+├── Pin 0: Exterior Fan Control
+├── Pin 1: Interior Fan Control
+├── Pin 2: Humidification Control
+├── Pin 3: Dehumidification Control
+├── Pin 4: Temperature Enable
+├── Pin 5: Cooling Control
+├── Pin 6: Heating Control
+└── Pin 7: Spare Output
+```
 
 ## Software Dependencies
 
