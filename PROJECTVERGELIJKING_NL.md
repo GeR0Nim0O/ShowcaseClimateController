@@ -364,15 +364,14 @@ public:
 void handleUserInput() {
     static bool inTempMode = true;
     long encoderChange = rotaryEncoder->getPositionChange();
-    
-    if (encoderChange != 0) {
+      if (encoderChange != 0) {
         if (inTempMode) {
             float newTemp = climateController->getTemperatureSetpoint() + 
-                           (encoderChange * 0.5);  // 0.5°C increments
+                           (encoderChange * 0.1);  // 0.1°C increments
             climateController->setTemperatureSetpoint(newTemp);
         } else {
             float newHum = climateController->getHumiditySetpoint() + 
-                          (encoderChange * 2.0);   // 2% increments
+                          (encoderChange * 1.0);   // 1% increments
             climateController->setHumiditySetpoint(newHum);
         }
         
