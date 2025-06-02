@@ -190,10 +190,17 @@ void setup()
           Serial.print("→ User declined ('");
           Serial.print(userInput);
           Serial.println("') - keeping SD card configuration");
-        }
-        Serial.println("================================");
+        }        Serial.println("================================");
         Serial.println();
       }
+        } else {
+          Serial.println("Warning: Could not parse project config.json from SPIFFS");
+        }
+      } else {
+        Serial.println("Warning: Could not open project config.json from SPIFFS");
+      }
+    } else {
+      Serial.println("Warning: Could not initialize SPIFFS to read project config");
     }
   }
   Configuration::printConfigValues();
