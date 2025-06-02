@@ -185,11 +185,44 @@ void setup()
   topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
   // Print debugging information
   printDebugInfo();
-
   // Try to connect to WiFi (don't stop if it fails)
   Serial.println("Attempting WiFi connection...");
   bool wifiConnected = WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword());
-    if (wifiConnected) {
+  
+  if (!wifiConnected) {
+    Serial.println();
+    Serial.println("==== WiFi Connection Failed - Troubleshooting Help ====");
+    Serial.println("WiFi connection failed. Here are some troubleshooting steps:");
+    Serial.println();
+    Serial.println("1. NETWORK SCAN:");
+    WifiMqttHandler::scanAndDisplayNetworks();
+    Serial.println();
+    Serial.println("2. CONFIGURATION CHECK:");
+    Serial.print("   Current SSID: '");
+    Serial.print(Configuration::getWiFiSSID());
+    Serial.println("'");
+    Serial.print("   Password length: ");
+    Serial.println(Configuration::getWiFiPassword().length());
+    Serial.println();
+    Serial.println("3. COMMON SOLUTIONS:");
+    Serial.println("   - Verify network name is exactly correct (case-sensitive)");
+    Serial.println("   - Check WiFi password");
+    Serial.println("   - Ensure router is powered on and broadcasting");
+    Serial.println("   - Move ESP32 closer to router");
+    Serial.println("   - Restart router if needed");
+    Serial.println("   - Check for MAC address filtering on router");
+    Serial.println();
+    Serial.println("4. TO UPDATE WIFI SETTINGS:");
+    Serial.println("   - Edit data/config.json file");
+    Serial.println("   - Upload to ESP32 via PlatformIO");
+    Serial.println("   - Or use SD card with updated config.json");
+    Serial.println();
+    Serial.println("Continuing in offline mode...");
+    Serial.println("======================================================");
+    Serial.println();
+  }
+  
+  if (wifiConnected) {
     Serial.println("WiFi connected successfully in setup.");
     offlineMode = false;
     
