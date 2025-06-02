@@ -1,6 +1,161 @@
-# Climate Controller Project
+# Showcase Climate Controller
 
-An object-oriented climate control system for ESP32-S3 that manages temperature and humidity using I2C devices through a PCA9548A multiplexer.
+[![PlatformIO CI](https://img.shields.io/badge/PlatformIO-passing-brightgreen.svg)](https://platformio.org/)
+[![ESP32-S3](https://img.shields.io/badge/ESP32--S3-supported-blue.svg)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/)
+[![Arduino Framework](https://img.shields.io/badge/Arduino-Framework-00979C.svg)](https://www.arduino.cc/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> An object-oriented climate control system for ESP32-S3 featuring PID controllers, analog power management, and comprehensive device management through I2C multiplexing.
+
+## Table of Contents
+
+- [Features](#features)
+- [Architecture Overview](#architecture-overview)
+- [Hardware Requirements](#hardware-requirements)
+- [Software Dependencies](#software-dependencies)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Usage Guide](#usage-guide)
+- [Configuration](#configuration)
+- [System Architecture](#system-architecture)
+- [Safety Features](#safety-features)
+- [Development Notes](#development-notes)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Features
+
+### Core Climate Control
+- **Dual PID Controllers** for temperature and humidity with configurable parameters
+- **Analog Power Management** via GP8403 DAC (0-100% power control)
+- **Multi-mode Operation** (AUTO/HEATING/COOLING/HUMIDIFYING/DEHUMIDIFYING/OFF)
+- **Safety Limits** with automatic emergency shutdown
+- **Hysteresis Control** for stable operation
+
+### Hardware Integration
+- **ESP32-S3 Box** with 16MB Flash and PSRAM support
+- **I2C Multiplexing** via PCA9548A (8-channel support)
+- **Multi-sensor Support** (SHT31/SHT40, BH1705, weight sensors)
+- **GPIO Expansion** through PCF8574 (8 digital outputs)
+- **User Interface** with rotary encoder and OLED display
+
+### Professional Architecture
+- **Factory Pattern** for device instantiation
+- **Device Registry** with automatic discovery
+- **Modular Configuration** (JSON-based with multiple sources)
+- **EEPROM Persistence** with checksum validation
+- **Error Recovery** and fallback mechanisms
+
+### Connectivity & Communication
+- **WiFi & MQTT** with throttling and reconnection
+- **NTP Time Sync** for accurate logging
+- **SD Card Support** for configuration and logging
+- **Real-time Status** reporting and monitoring
+
+## Architecture Overview
+
+```mermaid
+graph TB
+    A[ESP32-S3 Box] --> B[PCA9548A I2C Multiplexer]
+    B --> C[Channel 0: PCF8574 GPIO]
+    B --> D[Channel 1: SHT31 Sensor]
+    B --> E[Channel 2: OLED Display]
+    B --> F[Channel 3: GP8403 DAC]
+    
+    C --> G[8x Digital Outputs]
+    G --> H[Fans, Heating, Cooling, Humidifier]
+    
+    F --> I[Analog Power Control]
+    I --> J[Variable Temperature Power]
+    
+    K[ClimateController] --> L[Temperature PID]
+    K --> M[Humidity PID]
+    L --> F
+    M --> C
+    
+    N[DeviceRegistry] --> O[Automatic Discovery]
+    P[Configuration] --> Q[SD Card]
+    P --> R[SPIFFS]
+    P --> S[EEPROM]
+```
+
+## Hardware Requirements
+
+### Core Components
+| Component | Model | Purpose | I2C Address |
+|-----------|-------|---------|-------------|
+| **Microcontroller** | ESP32-S3 Box | Main controller with 16MB Flash | - |
+| **I2C Multiplexer** | PCA9548A | 8-channel I2C switching | 0x70 |
+| **GPIO Expander** | PCF8574 | 8 digital outputs | 0x20 |
+| **Temp/Humidity** | SHT31/SHT40 | Environmental sensing | 0x44 |
+| **DAC** | GP8403 | Analog power control | 0x5F |
+| **Display** | SSD1306 OLED | User interface | 0x3C |
+| **User Input** | Rotary Encoder | Setting adjustment | GPIO 4,5,6 |
+
+### I2C Device Mapping
+```
+PCA9548A Multiplexer Channels:
+├── Channel 0: PCF8574 GPIO Expander (0x20)
+├── Channel 1: SHT31 Temperature/Humidity (0x44)
+├── Channel 2: SSD1306 OLED Display (0x3C)
+├── Channel 3: GP8403 DAC Controller (0x5F)
+├── Channel 4: Available for expansion
+├── Channel 5: Available for expansion  
+├── Channel 6: Available for expansion
+└── Channel 7: Available for expansion
+```
+
+### GPIO Pin Assignments
+- **Pin 4**: Rotary Encoder A
+- **Pin 5**: Rotary Encoder B
+- **Pin 6**: Rotary Encoder Button
+- **Pin 17**: I2C SDA
+- **Pin 16**: I2C SCL
+
+### PCF8574 GPIO Expander Pin Mapping
+- **Pin 0**: Interior Fan Control
+- **Pin 1**: Exterior Fan Control
+- **Pin 2**: Humidify Control
+- **Pin 3**: Dehumidify Control
+- **Pin 4**: Temperature Control Enable
+- **Pin 5**: Cooling Control
+- **Pin 6**: Heating Control
+- **Pin 7**: Spare Output
+
+## Software Dependencies
+
+### Library Dependencies
+```ini
+lib_deps = 
+    adafruit/Adafruit NeoPixel@^1.12.5    # LED status indicators
+    br3ttb/PID@^1.0.0                     # PID control algorithms
+    br3ttb/PID-AutoTune@^1.0.0            # PID auto-tuning capability
+    knolleary/PubSubClient@^2.8           # MQTT communication
+    bblanchon/ArduinoJson@7.2.1           # Latest JSON library
+    arduino-libraries/NTPClient@^3.2.1    # Network time synchronization
+```
+
+### Build Configuration
+```ini
+[env:esp32-s3-devkitc-1]
+platform = espressif32
+board = esp32s3box
+framework = arduino
+
+# Memory configuration
+board_build.flash_mode = qio          # Quad I/O for speed
+board_build.psram_type = opi          # Octal PI PSRAM
+board_build.memory_type = qio_opi     # Optimized memory access
+board_build.filesystem = spiffmins    # Minimal SPIFFS for efficiency
+board_upload.flash_size = 16MB       # Full flash support
+
+# Development optimizations
+build_flags = 
+    -DCORE_DEBUG_LEVEL=5              # Maximum debug information
+    -DARDUINO_USB_CDC_ON_BOOT=1       # USB CDC for debugging
+    -DBOARD_HAS_PSRAM=1               # PSRAM feature flag
+```
 
 ## Project Structure
 
