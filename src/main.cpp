@@ -229,45 +229,47 @@ void setup()
     Serial.println();
     delay(2000); // Give user time to read the result
   }
-  
-  // Now continue with normal initialization
+    // Now continue with normal initialization
   Serial.println("2. Initializing I2C bus...");
   I2CHandler::initializeI2C();
+  
+  Serial.println("3. Printing configuration values...");
   Configuration::printConfigValues();
 
+  Serial.println("4. Scanning I2C devices...");
   // Get connected I2C devices with their addresses and TCA ports
   tcaScanResults = I2CHandler::TCAScanner();
 
   // Print TCA scan results
   I2CHandler::printTCAScanResults(tcaScanResults);
+  
+  Serial.println("5. Initializing devices...");
   // Initialize devices based on configuration
   devices = Configuration::initializeDevices(tcaScanResults, rtc);
 
   // Initialize each device
   Configuration::initializeEachDevice(devices);
 
-  // Debug: Print device count before cleanup
-  Serial.print("Devices vector size before cleanup: ");
-  Serial.println(devices.size());
-
   // Remove nullptr entries from devices vector
   devices.erase(std::remove(devices.begin(), devices.end(), nullptr), devices.end());
-
-  // Debug: Print device count after cleanup
-  Serial.print("Devices vector size after cleanup: ");
-  Serial.println(devices.size());
   
-  // Print created sensors for debugging (moved after initialization)
+  Serial.print("✓ Initialized ");
+  Serial.print(devices.size());
+  Serial.println(" devices successfully");
+  
+  // Print created sensors for debugging
   printCreatedSensors();
-    // Initialize climate controller
+  
+  Serial.println("6. Initializing climate controller...");
+  // Initialize climate controller
   initializeClimateController();
   
-  
+  Serial.println("7. Initializing display...");
   // Initialize display device
   initializeDisplayDevice();
   
-  // NEW: Read and print initial sensor values after initialization
-  Serial.println("\n=== Initial Sensor Readings ===");
+  Serial.println("8. Reading initial sensor data...");
+  // Read and print initial sensor values after initialization
   readAndPrintInitialSensorData();
   // Additional debug: Check each device individually
   Serial.println("Device validation:");
