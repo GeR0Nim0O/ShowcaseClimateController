@@ -265,8 +265,9 @@ Device (Base Class)
    ```
 
 4. **Configure Hardware**
-   - Connect I2C devices according to the hardware mapping
-   - Verify I2C addresses match configuration
+   - Connect I2C devices to any available PCA9548A multiplexer channels
+   - No specific channel assignment required - system auto-discovers devices
+   - Verify I2C addresses match supported device types (see Hardware Requirements)
    - Check power supply requirements (3.3V/5V)
 
 5. **Build and Upload**
