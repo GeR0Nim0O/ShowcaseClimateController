@@ -808,7 +808,7 @@ lib/
 │   └── Display.cpp
 ├── RTC/                      # ⏰ Real-time clock
 │   └── DS3231rtc/           # High-precision RTC
-└── Config/                   # ⚙️ Configuration management
+└── Config/                   # Configuration management
     └── ClimateConfig/        # EEPROM-based climate settings
         ├── ClimateConfig.h
         └── ClimateConfig.cpp
