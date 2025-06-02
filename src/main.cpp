@@ -109,7 +109,7 @@ void setup()
   delay(5000);
   
   Serial.println("========================================");
-  Serial.println("  Showcase Climate Controller v2.0");
+  Serial.println("  Showcase Climate Controller");
   Serial.println("========================================");
   Serial.println();
   
