@@ -403,7 +403,7 @@ void handleUserInput() {
 
 ## Connectiviteit & Communicatie
 
-### **🌐 Showcase Climate Controller - Advanced Connectivity**
+### **Showcase Climate Controller - Advanced Connectivity**
 
 #### **MQTT Throttling & Efficiency**
 ```cpp
