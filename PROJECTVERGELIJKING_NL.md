@@ -914,7 +914,7 @@ lib_deps =
 
 ## 📈 Code Kwaliteit & Maintainability
 
-### **🏗️ Showcase Climate Controller - Enterprise Code Standards**
+### **Showcase Climate Controller - Code Standards**
 
 #### **SOLID Principles Implementation**
 
