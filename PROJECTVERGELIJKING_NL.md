@@ -902,7 +902,7 @@ lib_deps =
     bblanchon/ArduinoJson
 ```
 
-### **🔍 Development Voordelen**
+### **Development Voordelen**
 | Aspect | Showcase | Casekeeper | Verbetering |
 |--------|----------|------------|-------------|
 | **Debug Level** | 5 (Maximum) | Basis | +400% debug detail |
