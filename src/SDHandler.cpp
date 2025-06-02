@@ -383,15 +383,14 @@ bool SDHandler::copyDefaultConfig() {
             "gateway": "192.168.1.1",
             "subnet": "255.255.255.0",
             "dns": "8.8.8.8"
-        },
-        "mqtt": {
-            "server": "145.220.74.140",
+        },        "mqtt": {
+            "server": "mqtt.flespi.io",
             "port": 1883,
             "username": "mqtt_user",
             "password": "mqtt_password"
         },
         "mqtts": {
-            "server": "145.220.74.140",
+            "server": "mqtt.flespi.io",
             "port": 8883,
             "username": "mqtts_user",
             "password": "mqtts_password"
