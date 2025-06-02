@@ -394,10 +394,10 @@ void handleUserInput() {
 ### **User Interface Voordelen**
 | Feature | Showcase | Casekeeper | Verbetering |
 |---------|----------|------------|-------------|
-| **Display** | ✅ OLED met real-time data | ❌ Geen | +∞ gebruiksvriendelijkheid |
-| **Input Method** | ✅ Rotary encoder | ❌ Geen | +∞ interactiviteit |
-| **Settings Save** | ✅ EEPROM persistentie | ❌ Geen | +∞ gebruiksgemak |
-| **Visual Feedback** | ✅ Status indicators | ❌ Geen | +∞ system awareness |
+| **Display** | OLED met real-time data | Geen | +∞ gebruiksvriendelijkheid |
+| **Input Method** | Rotary encoder | Geen | +∞ interactiviteit |
+| **Settings Save** | EEPROM persistentie | Geen | +∞ gebruiksgemak |
+| **Visual Feedback** | Status indicators | Geen | +∞ system awareness |
 
 ---
 
