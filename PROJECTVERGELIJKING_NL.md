@@ -531,9 +531,9 @@ public:
 ### **Connectiviteit Voordelen**
 | Feature | Showcase | Casekeeper | Verbetering |
 |---------|----------|------------|-------------|
-| **MQTT Efficiency** | ✅ Throttling + retry | ❌ Basis | +200% efficiency |
-| **Time Sync** | ✅ NTP synchronization | ❌ Geen | +∞ timestamp accuracy |
-| **JSON Processing** | ✅ v7.2.1 + validation | ❌ Basis | +150% reliability |
+| **MQTT Efficiency** | Throttling + retry | Basis | +200% efficiency |
+| **Time Sync** | NTP synchronization | Geen | +∞ timestamp accuracy |
+| **JSON Processing** | v7.2.1 + validation | Basis | +150% reliability |
 | **Connection Management** | ✅ Auto-reconnect | ❌ Manual | +300% stability |
 
 ---
