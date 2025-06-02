@@ -30,7 +30,6 @@
 - **Dual PID Controllers** for temperature and humidity with configurable parameters
 - **Analog Power Management** via GP8403 DAC (0-100% power control)
 - **Multi-mode Operation** (AUTO/HEATING/COOLING/HUMIDIFYING/DEHUMIDIFYING/OFF)
-- **Safety Limits** with automatic emergency shutdown
 - **Hysteresis Control** for stable operation
 
 ### Hardware Integration
@@ -49,6 +48,9 @@
 
 ### Connectivity & Communication
 - **WiFi & MQTT** with throttling and reconnection
+- **NTP Time Sync** for accurate logging
+- **SD Card Support** for configuration and logging
+- **Real-time Status** reporting and monitoring
 - **NTP Time Sync** for accurate logging
 - **SD Card Support** for configuration and logging
 - **Real-time Status** reporting and monitoring
