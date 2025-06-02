@@ -420,9 +420,12 @@ setHeatingPower(75.0);  // 75% heating power = 3.75V output
 ## System Architecture
 
 ### Device Management
-- **DeviceRegistry**: Singleton pattern for managing all devices
-- **Device Base Class**: Common interface for all I2C devices
-- **Automatic Initialization**: Sequential device initialization with error handling
+- **DeviceRegistry**: Singleton pattern for managing all discovered devices
+- **Automatic Discovery**: Sequential scanning of all PCA9548A channels (0-7)
+- **Factory Pattern**: Dynamic device instantiation based on detected I2C addresses
+- **Channel Independence**: Devices can be connected to any available multiplexer channel
+- **Runtime Flexibility**: Hot-swapping and reconfiguration supported
+- **Address-Based Detection**: Device types determined by I2C address, not channel location
 
 ### Configuration Management
 - **ClimateConfig**: Singleton configuration manager
