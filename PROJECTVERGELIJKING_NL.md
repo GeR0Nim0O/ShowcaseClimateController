@@ -299,7 +299,7 @@ devices.push_back(new PCF8574gpio(wire, 0x20, 0, "GPIO", 0));
 
 ## User Interface & Display
 
-### **🎨 Showcase Climate Controller - Rich User Experience**
+### **Showcase Climate Controller - Rich User Experience**
 
 #### **Display Management System**
 ```cpp
