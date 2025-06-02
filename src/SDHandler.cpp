@@ -340,9 +340,9 @@ bool SDHandler::forceUpdateSDConfig() {
         Serial.println("Removed existing config.json from SD card");
     }
     
-    // Copy updated default config to SD card
-    if (copyDefaultConfig()) {
-        Serial.println("Successfully updated SD card config.json with new WiFi credentials");
+    // Copy project config.json from SPIFFS to SD card
+    if (copyProjectConfigToSD()) {
+        Serial.println("Successfully updated SD card config.json with project configuration");
         return true;
     } else {
         Serial.println("Failed to update SD card config.json");
