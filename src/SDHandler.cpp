@@ -331,6 +331,25 @@ bool SDHandler::updateConfig() {
     }
 }
 
+bool SDHandler::forceUpdateSDConfig() {
+    Serial.println("Force updating SD card configuration...");
+    
+    // Remove existing config file if it exists
+    if (SD.exists("/config.json")) {
+        SD.remove("/config.json");
+        Serial.println("Removed existing config.json from SD card");
+    }
+    
+    // Copy updated default config to SD card
+    if (copyDefaultConfig()) {
+        Serial.println("Successfully updated SD card config.json with new WiFi credentials");
+        return true;
+    } else {
+        Serial.println("Failed to update SD card config.json");
+        return false;
+    }
+}
+
 bool SDHandler::copyDefaultConfig() {
     const char* defaultConfig = R"(
     {        "wifi": {
