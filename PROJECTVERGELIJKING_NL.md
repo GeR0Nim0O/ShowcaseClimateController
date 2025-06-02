@@ -1,31 +1,31 @@
-# 📊 Showcase Climate Controller vs Casekeeper - Projectvergelijking
+# Showcase Climate Controller vs Casekeeper - Projectvergelijking
 
-> Een uitgebreide analyse van de verbeteringen en innovaties in de Showcase Climate Controller ten opzichte van de oorspronkelijke Casekeeper implementatie.
+Een technische analyse van de wijzigingen en verbeteringen in de Showcase Climate Controller ten opzichte van de oorspronkelijke Casekeeper implementatie.
 
-## 📋 Inhoudsopgave
+## Inhoudsopgave
 
-- [🎯 Executive Summary](#-executive-summary)
-- [🏗️ Hardware & Platform Verbeteringen](#️-hardware--platform-verbeteringen)
-- [🎛️ Klimaatregeling - Nieuwe Functionaliteit](#️-klimaatregeling---nieuwe-functionaliteit)
-- [🏛️ Architectuur & Design Patterns](#️-architectuur--design-patterns)
-- [📊 Sensor & Device Management](#-sensor--device-management)
-- [🖥️ User Interface & Display](#️-user-interface--display)
-- [📡 Connectiviteit & Communicatie](#-connectiviteit--communicatie)
-- [💾 Data Management & Persistentie](#-data-management--persistentie)
-- [🔧 Development & Debugging](#-development--debugging)
-- [📈 Code Kwaliteit & Maintainability](#-code-kwaliteit--maintainability)
-- [🎯 Conclusie](#-conclusie)
+- [Executive Summary](#executive-summary)
+- [Hardware & Platform Verbeteringen](#hardware--platform-verbeteringen)
+- [Klimaatregeling - Nieuwe Functionaliteit](#klimaatregeling---nieuwe-functionaliteit)
+- [Architectuur & Design Patterns](#architectuur--design-patterns)
+- [Sensor & Device Management](#sensor--device-management)
+- [User Interface & Display](#user-interface--display)
+- [Connectiviteit & Communicatie](#connectiviteit--communicatie)
+- [Data Management & Persistentie](#data-management--persistentie)
+- [Development & Debugging](#development--debugging)
+- [Code Kwaliteit & Maintainability](#code-kwaliteit--maintainability)
+- [Conclusie](#conclusie)
 
-## 🎯 Executive Summary
+## Executive Summary
 
-De **Showcase Climate Controller** representeert een significante evolutie van de **Casekeeper** code, waarbij een basis IoT sensor platform is getransformeerd naar een professioneel klimaatregelsysteem met enterprise-niveau architectuur en functionaliteit.
+De **Showcase Climate Controller** toont de evolutie van de **Casekeeper** code van een basis IoT sensor platform naar een klimaatregelsysteem met uitgebreide architectuur en functionaliteit.
 
-### **Kernverbeteringen in één oogopslag:**
-- ✅ **Nieuwe core functionaliteit**: Volledige klimaatregeling met PID controllers
-- ✅ **Hardware upgrade**: ESP32-S3 met 16MB Flash en PSRAM ondersteuning  
-- ✅ **Professionele architectuur**: Factory patterns, modulaire configuratie
-- ✅ **Uitgebreide sensor ecosystem**: Automatische device discovery
-- ✅ **Enterprise-level features**: EEPROM persistentie, safety systems
+### **Kernwijzigingen:**
+- **Nieuwe core functionaliteit**: Volledige klimaatregeling met PID controllers
+- **Hardware upgrade**: ESP32-S3 met 16MB Flash en PSRAM ondersteuning  
+- **Architectuur verbetering**: Factory patterns, modulaire configuratie
+- **Uitgebreide sensor ondersteuning**: Automatische device discovery
+- **Geavanceerde features**: EEPROM persistentie
 
 ---
 
