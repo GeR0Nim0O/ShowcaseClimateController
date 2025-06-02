@@ -808,7 +808,7 @@ class MLPredictor {
 - **Web Dashboard**: Real-time monitoring and control interface
 - **Mobile App**: iOS/Android companion application
 - **Cloud Logging**: Remote data collection and analysis
-- **OTA Updates**: Over-the-air firmware updates
+
 
 #### Enhanced Sensors & Control
 - **Multi-zone Control**: Support for multiple climate zones
