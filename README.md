@@ -60,26 +60,30 @@
 ```mermaid
 graph TB
     A[ESP32-S3 Box] --> B[PCA9548A I2C Multiplexer]
-    B --> C[Channel 0: PCF8574 GPIO]
-    B --> D[Channel 1: SHT31 Sensor]
-    B --> E[Channel 2: OLED Display]
-    B --> F[Channel 3: GP8403 DAC]
+    B --> C[Channel 0-7: Auto-discovered Devices]
     
-    C --> G[8x Digital Outputs]
-    G --> H[Fans, Heating, Cooling, Humidifier]
+    C --> D[DeviceRegistry Scan Process]
+    D --> E[PCF8574 GPIO - Found at Address 0x20]
+    D --> F[SHT31 Sensor - Found at Address 0x44]
+    D --> G[OLED Display - Found at Address 0x3C]
+    D --> H[GP8403 DAC - Found at Address 0x5F]
+    D --> I[Additional Sensors - Auto-detected]
     
-    F --> I[Analog Power Control]
-    I --> J[Variable Temperature Power]
+    E --> J[8x Digital Outputs]
+    J --> K[Fans, Heating, Cooling, Humidifier]
     
-    K[ClimateController] --> L[Temperature PID]
-    K --> M[Humidity PID]
-    L --> F
-    M --> C
+    H --> L[Analog Power Control]
+    L --> M[Variable Temperature Power]
     
-    N[DeviceRegistry] --> O[Automatic Discovery]
-    P[Configuration] --> Q[SD Card]
-    P --> R[SPIFFS]
-    P --> S[EEPROM]
+    N[ClimateController] --> O[Temperature PID]
+    N --> P[Humidity PID]
+    O --> H
+    P --> E
+    
+    Q[DeviceRegistry] --> R[Automatic Discovery & Factory]
+    S[Configuration] --> T[SD Card]
+    S --> U[SPIFFS]
+    S --> V[EEPROM]
 ```
 
 ## Hardware Requirements
