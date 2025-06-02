@@ -227,7 +227,7 @@ ClimateController* ClimateController::createFromDeviceRegistry() {
 #### **Multi-Sensor Ondersteuning**
 | Sensor Type | Model | Purpose | Features |
 |-------------|-------|---------|----------|
-| **SHT31/SHT40** | Temp/Humidity | Climate control | ±0.1°C, ±2% RH accuracy |
+| **SHT31/SHT8** | Temp/Humidity | Climate control | ±0.1°C, ±2% RH accuracy |
 | **BH1705** | Light sensor | Environmental monitoring | 0.11 - 100,000 lx range |
 | **SCALES** | Weight sensor | Process monitoring | Load cell interface |
 | **Rotary Encoder** | User input | Settings adjustment | Quadrature encoding |
@@ -912,7 +912,7 @@ lib_deps =
 
 ---
 
-## 📈 Code Kwaliteit & Maintainability
+## Code Kwaliteit & Maintainability
 
 ### **Showcase Climate Controller - Code Standards**
 
