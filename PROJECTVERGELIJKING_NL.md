@@ -540,7 +540,7 @@ public:
 
 ## Data Management & Persistentie
 
-### **🗄️ Showcase Climate Controller - Multi-Level Data Strategy**
+### **Showcase Climate Controller - Multi-Level Data Strategy**
 
 #### **EEPROM Persistentie met Validatie**
 ```cpp
