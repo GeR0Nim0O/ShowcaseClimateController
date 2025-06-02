@@ -456,3 +456,154 @@ bool WifiMqttHandler::isNetworkAvailable(const String& ssid) {
     }
     return false;
 }
+
+// Enhanced WiFi scanning and analysis functions
+void WifiMqttHandler::scanAndAnalyzeNetworks() {
+    Serial.println("╔══════════════════════════════════════════════════════════╗");
+    Serial.println("║                 WiFi Network Analysis                    ║");
+    Serial.println("╚══════════════════════════════════════════════════════════╝");
+    
+    Serial.println("Scanning for WiFi networks...");
+    int networkCount = WiFi.scanNetworks(false, true); // Show hidden networks
+    
+    if (networkCount == 0) {
+        Serial.println("❌ No networks found!");
+        Serial.println("   Possible causes:");
+        Serial.println("   • WiFi radio is off or malfunctioning");
+        Serial.println("   • No access points in range");
+        Serial.println("   • ESP32 antenna issue");
+        return;
+    }
+    
+    Serial.println("┌────────────────────────────────────────────────────────────┐");
+    Serial.printf("│ Found %d networks:                                        │\n", networkCount);
+    Serial.println("└────────────────────────────────────────────────────────────┘");
+    Serial.println();
+    
+    // Sort networks by signal strength
+    int sortedIndices[networkCount];
+    for (int i = 0; i < networkCount; i++) {
+        sortedIndices[i] = i;
+    }
+    
+    // Simple bubble sort by RSSI (strongest first)
+    for (int i = 0; i < networkCount - 1; i++) {
+        for (int j = 0; j < networkCount - i - 1; j++) {
+            if (WiFi.RSSI(sortedIndices[j]) < WiFi.RSSI(sortedIndices[j + 1])) {
+                int temp = sortedIndices[j];
+                sortedIndices[j] = sortedIndices[j + 1];
+                sortedIndices[j + 1] = temp;
+            }
+        }
+    }
+    
+    // Display networks with enhanced information
+    for (int i = 0; i < networkCount; i++) {
+        displayNetworkDetails(sortedIndices[i]);
+        Serial.println();
+    }
+    
+    Serial.println("┌────────────────────────────────────────────────────────────┐");
+    Serial.println("│ Signal Strength Guide:                                    │");
+    Serial.println("│ ████████ Excellent (-30 to -50 dBm)                       │");
+    Serial.println("│ ██████   Good      (-50 to -60 dBm)                       │");
+    Serial.println("│ ████     Fair      (-60 to -70 dBm)                       │");
+    Serial.println("│ ██       Poor      (-70 to -80 dBm)                       │");
+    Serial.println("│ ▌        Very Poor (-80 to -90 dBm)                       │");
+    Serial.println("└────────────────────────────────────────────────────────────┘");
+}
+
+void WifiMqttHandler::displayNetworkDetails(int networkIndex) {
+    String ssid = WiFi.SSID(networkIndex);
+    int32_t rssi = WiFi.RSSI(networkIndex);
+    wifi_auth_mode_t encType = WiFi.encryptionType(networkIndex);
+    uint8_t* bssid = WiFi.BSSID(networkIndex);
+    int32_t channel = WiFi.channel(networkIndex);
+    
+    // Create visual signal strength indicator
+    String signalBars = getSignalQuality(rssi);
+    
+    Serial.println("┌────────────────────────────────────────────────────────────┐");
+    Serial.printf("│ Network: %-47s│\n", ssid.c_str());
+    Serial.printf("│ Signal:  %s (%d dBm)                        │\n", signalBars.c_str(), rssi);
+    Serial.printf("│ Channel: %-47d│\n", channel);
+    
+    // Security information
+    String security;
+    String recommendation;
+    switch(encType) {
+        case WIFI_AUTH_OPEN: 
+            security = "OPEN"; 
+            recommendation = "⚠️  UNSECURED - Avoid for sensitive data";
+            break;
+        case WIFI_AUTH_WEP: 
+            security = "WEP"; 
+            recommendation = "⚠️  WEAK - Consider upgrading to WPA2/3";
+            break;
+        case WIFI_AUTH_WPA_PSK: 
+            security = "WPA-PSK"; 
+            recommendation = "⚠️  OUTDATED - Upgrade to WPA2/3 recommended";
+            break;
+        case WIFI_AUTH_WPA2_PSK: 
+            security = "WPA2-PSK"; 
+            recommendation = "✅ GOOD - Secure for most uses";
+            break;
+        case WIFI_AUTH_WPA_WPA2_PSK: 
+            security = "WPA/WPA2-PSK"; 
+            recommendation = "✅ GOOD - Backward compatible";
+            break;
+        case WIFI_AUTH_WPA2_ENTERPRISE: 
+            security = "WPA2-Enterprise"; 
+            recommendation = "🏢 ENTERPRISE - May require special setup";
+            break;
+        case WIFI_AUTH_WPA3_PSK: 
+            security = "WPA3-PSK"; 
+            recommendation = "✅ EXCELLENT - Latest security standard";
+            break;
+        case WIFI_AUTH_WPA2_WPA3_PSK: 
+            security = "WPA2/WPA3-PSK"; 
+            recommendation = "✅ EXCELLENT - Best compatibility + security";
+            break;
+        default: 
+            security = "UNKNOWN"; 
+            recommendation = "❓ UNKNOWN - Check router settings";
+            break;
+    }
+    
+    Serial.printf("│ Security: %-44s│\n", security.c_str());
+    Serial.printf("│ %s│\n", recommendation.c_str());
+    
+    // BSSID (MAC address)
+    Serial.printf("│ BSSID: %02X:%02X:%02X:%02X:%02X:%02X                           │\n", 
+                  bssid[0], bssid[1], bssid[2], bssid[3], bssid[4], bssid[5]);
+    
+    Serial.println("└────────────────────────────────────────────────────────────┘");
+}
+
+String WifiMqttHandler::getSignalQuality(int rssi) {
+    if (rssi >= -50) {
+        return "████████ Excellent";
+    } else if (rssi >= -60) {
+        return "██████   Good     ";
+    } else if (rssi >= -70) {
+        return "████     Fair     ";
+    } else if (rssi >= -80) {
+        return "██       Poor     ";
+    } else {
+        return "▌        Very Poor";
+    }
+}
+
+String WifiMqttHandler::getSecurityRecommendation(wifi_auth_mode_t encType) {
+    switch(encType) {
+        case WIFI_AUTH_OPEN: return "⚠️  UNSECURED";
+        case WIFI_AUTH_WEP: return "⚠️  WEAK";
+        case WIFI_AUTH_WPA_PSK: return "⚠️  OUTDATED";
+        case WIFI_AUTH_WPA2_PSK: return "✅ GOOD";
+        case WIFI_AUTH_WPA_WPA2_PSK: return "✅ GOOD";
+        case WIFI_AUTH_WPA2_ENTERPRISE: return "🏢 ENTERPRISE";
+        case WIFI_AUTH_WPA3_PSK: return "✅ EXCELLENT";
+        case WIFI_AUTH_WPA2_WPA3_PSK: return "✅ EXCELLENT";
+        default: return "❓ UNKNOWN";
+    }
+}
