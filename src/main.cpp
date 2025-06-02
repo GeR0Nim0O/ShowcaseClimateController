@@ -369,7 +369,7 @@ void setup()
     Serial.println();
   }
 
-  // Print initial system status
+  *************************
 void loop() {
   if (!setupComplete) {
     return; // Exit loop if setup is not complete
