@@ -333,9 +333,7 @@ void setup()
       TimeHandler::fetchTime(*rtc);
     } else {
       Serial.println("RTC not connected or not initialized. Skipping RTC time fetch.");
-    }
-
-    // Try to connect to MQTT broker only if WiFi is connected
+    }    // Try to connect to MQTT broker only if WiFi is connected
     Serial.println("Attempting MQTT connection...");
     if (!WifiMqttHandler::connectToMqttBrokerWithCheck(client, espClient, 
         Configuration::getMqttsServer(), rootCACertificate, 
@@ -345,11 +343,8 @@ void setup()
     } else {
       Serial.println("MQTT connected successfully in setup.");
     }
-  } else {
-    Serial.println("WiFi connection failed in setup - program will continue offline");
-    Serial.println("WiFi and MQTT connections will be retried in main loop");
-    offlineMode = true;
   }
+  
   delay(500);
   setupComplete = true; // Indicate that setup is complete
   Serial.println("Setup complete: " + String(setupComplete));
