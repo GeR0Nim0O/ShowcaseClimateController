@@ -1165,7 +1165,7 @@ public:
 };
 ```
 
-### **🔧 Casekeeper - Basis Code Kwaliteit**
+### **Casekeeper - Basis Code Kwaliteit**
 
 #### **Monolithische Structuur**
 ```cpp
