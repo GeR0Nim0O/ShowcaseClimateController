@@ -19,7 +19,7 @@
     },
     {
       "ssid": "Bruns_Guest",
-      "password": "esp32test"
+      "password": "Guest@"
     }
   ],
   "ethernet": {
