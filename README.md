@@ -37,7 +37,7 @@
 - **I2C Multiplexing** via PCA9548A (8-channel support)
 - **Multi-sensor Support** (SHT31/SHT85, BH1705, weight sensors)
 - **GPIO Expansion** through PCF8574 (8 digital outputs)
-- **User Interface** with rotary encoder and OLED display
+- **User Interface** with rotary encoder and LCD display
 
 ### Professional Architecture
 - **Factory Pattern** for device instantiation
