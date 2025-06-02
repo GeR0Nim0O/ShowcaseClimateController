@@ -386,7 +386,7 @@ void handleUserInput() {
 }
 ```
 
-### **❌ Casekeeper - Geen User Interface**
+### ** Casekeeper - Geen User Interface**
 - Geen display functionaliteit
 - Geen user input mechanismen
 - Alleen serial interface voor debugging
