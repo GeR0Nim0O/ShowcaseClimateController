@@ -227,7 +227,7 @@ ClimateController* ClimateController::createFromDeviceRegistry() {
 #### **Multi-Sensor Ondersteuning**
 | Sensor Type | Model | Purpose | Features |
 |-------------|-------|---------|----------|
-| **SHT31/SHT8** | Temp/Humidity | Climate control | ±0.1°C, ±2% RH accuracy |
+| **SHT31/SHT85** | Temp/Humidity | Climate control | ±0.1°C, ±2% RH accuracy |
 | **BH1705** | Light sensor | Environmental monitoring | 0.11 - 100,000 lx range |
 | **SCALES** | Weight sensor | Process monitoring | Load cell interface |
 | **Rotary Encoder** | User input | Settings adjustment | Quadrature encoding |
@@ -1219,7 +1219,7 @@ if (Wire.endTransmission() != 0) {
 | **Error Recovery** | Fallback levels | 3 niveaus | 0 niveaus | +∞ |
 | **Code Modularity** | Classes/modules | 15+ modules | 5 modules | +200% |
 
-### **🚀 Kwalitatieve Transformatie**
+### **Kwalitatieve Transformatie**
 
 #### **Van Monitoring naar Controle**
 - **Casekeeper**: Passief monitoring systeem voor data verzameling
