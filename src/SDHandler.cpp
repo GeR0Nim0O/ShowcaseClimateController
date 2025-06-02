@@ -394,12 +394,11 @@ bool SDHandler::copyDefaultConfig() {
             "port": 8883,
             "username": "mqtts_user",
             "password": "mqtts_password"
-        },
-        "project": {
+        },        "project": {
             "device": "Casekeeper",
-            "number": "18304",
-            "showcase_id": "5.A3"
-        },        "Devices": {
+            "number": "24123",
+            "showcase_id": "2.4"
+        },"Devices": {
             "DS3231": {
                 "Type": "RTC",
                 "TypeNumber": "DS3231",
