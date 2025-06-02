@@ -801,7 +801,7 @@ lib/
 │   └── SCALESsensor/        # Weight/force measurement
 ├── GPIO/                     # 🔌 Digital I/O expansion
 │   └── PCF8574gpio/         # 8-bit I2C GPIO expander
-├── DAC/                      # 📈 Analog output
+├── DAC/                      # Analog output
 │   └── GP8403dac/           # 12-bit dual-channel DAC
 ├── Display/                  # 🖥️ User interface
 │   ├── Display.h
