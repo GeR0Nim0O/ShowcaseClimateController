@@ -402,3 +402,57 @@ void WifiMqttHandler::printConnectionStatus(PubSubClient &client) {
     
     Serial.println("===========================");
 }
+
+// WiFi scanning and debugging functions
+void WifiMqttHandler::scanAndDisplayNetworks() {
+    Serial.println("=== WiFi Network Scan ===");
+    int networkCount = WiFi.scanNetworks();
+    
+    if (networkCount == 0) {
+        Serial.println("No networks found!");
+    } else {
+        Serial.print("Found ");
+        Serial.print(networkCount);
+        Serial.println(" networks:");
+        
+        for (int i = 0; i < networkCount; i++) {
+            String ssid = WiFi.SSID(i);
+            int32_t rssi = WiFi.RSSI(i);
+            wifi_auth_mode_t encryptionType = WiFi.encryptionType(i);
+            
+            Serial.print("  ");
+            Serial.print(i + 1);
+            Serial.print(": ");
+            Serial.print(ssid);
+            Serial.print(" (");
+            Serial.print(rssi);
+            Serial.print(" dBm) ");
+            
+            switch(encryptionType) {
+                case WIFI_AUTH_OPEN: Serial.print("[OPEN]"); break;
+                case WIFI_AUTH_WEP: Serial.print("[WEP]"); break;
+                case WIFI_AUTH_WPA_PSK: Serial.print("[WPA_PSK]"); break;
+                case WIFI_AUTH_WPA2_PSK: Serial.print("[WPA2_PSK]"); break;
+                case WIFI_AUTH_WPA_WPA2_PSK: Serial.print("[WPA_WPA2_PSK]"); break;
+                case WIFI_AUTH_WPA2_ENTERPRISE: Serial.print("[WPA2_ENTERPRISE]"); break;
+                case WIFI_AUTH_WPA3_PSK: Serial.print("[WPA3_PSK]"); break;
+                case WIFI_AUTH_WPA2_WPA3_PSK: Serial.print("[WPA2_WPA3_PSK]"); break;
+                default: Serial.print("[UNKNOWN]"); break;
+            }
+            
+            Serial.println();
+        }
+    }
+    Serial.println("=========================");
+}
+
+bool WifiMqttHandler::isNetworkAvailable(const String& ssid) {
+    int networkCount = WiFi.scanNetworks();
+    
+    for (int i = 0; i < networkCount; i++) {
+        if (WiFi.SSID(i).equals(ssid)) {
+            return true;
+        }
+    }
+    return false;
+}
