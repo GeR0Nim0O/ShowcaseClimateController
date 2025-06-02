@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../../Semester 3/Code/Casekeeper_20240106_Proto"
+		}
+	],
+	"settings": {
+		"emeraldwalk.runonsave": {
+			"commands": [
+				{
+					"match": ".*",
+					"cmd": "git add . && git commit -m \"Auto-commit on save\" && git push"
+				}
+			]
+		}
+	}
+}
