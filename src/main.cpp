@@ -191,72 +191,8 @@ void setup()
     Serial.println("ERROR: Both project and SD card config.json failed!");
     Serial.println("System cannot continue without configuration.");
     while(1) { delay(1000); } // Halt system
-  }
-  
-  // If there's a config mismatch, handle it cleanly BEFORE other initialization
-  if (sdConfigMismatch) {
-    Serial.println();
-    Serial.println("========================================");
-    Serial.println("   CONFIGURATION MISMATCH DETECTED");
-    Serial.println("========================================");
-    Serial.print("SD Card WiFi SSID: '");
-    Serial.print(sdWifiSSID);
-    Serial.println("'");
-    Serial.print("Project WiFi SSID: '");
-    Serial.print(projectWifiSSID);
-    Serial.println("'");
-    Serial.println();
-    Serial.println("The SD card has different WiFi settings than your project.");
-    Serial.println("Would you like to update the SD card with project settings?");
-    Serial.println();
-    Serial.println("Type 'Y' and press Enter within 20 seconds to update");
-    Serial.println("Type anything else or wait to keep current SD config");
-    Serial.println();
-    Serial.print("Your choice: ");
-    Serial.flush(); // Ensure prompt is displayed
-    
-    // Wait for user input with clear timeout
-    unsigned long startWait = millis();
-    String userInput = "";
-    
-    while (millis() - startWait < 20000) { // 20 second timeout
-      if (Serial.available()) {
-        userInput = Serial.readStringUntil('\n');
-        userInput.trim();
-        break;
-      }
-      delay(100);
-    }
-    
-    Serial.println(); // New line after input
-    
-    if (userInput.length() == 0) {
-      Serial.println("⏱️  No input received (timeout)");
-      Serial.println("→ Keeping current SD card configuration");
-    } else if (userInput.equalsIgnoreCase("y")) {
-      Serial.println("✅ User confirmed update");
-      Serial.print("→ Updating SD card configuration... ");
-      if (SDHandler::forceUpdateSDConfig()) {
-        Serial.println("SUCCESS!");
-        Serial.println("→ Restarting ESP32 to use new configuration...");
-        Serial.println();
-        delay(3000);
-        ESP.restart();
-      } else {
-        Serial.println("FAILED!");
-        Serial.println("→ Continuing with current SD card configuration");
-      }
-    } else {
-      Serial.print("❌ User declined (input: '");
-      Serial.print(userInput);
-      Serial.println("')");
-      Serial.println("→ Keeping current SD card configuration");
-    }
-    Serial.println("========================================");
-    Serial.println();
-    delay(2000); // Give user time to read the result
-  }
-    // Now continue with normal initialization
+  }  
+  // Now continue with normal initialization
   Serial.println("2. Initializing I2C bus...");
   I2CHandler::initializeI2C();
   
