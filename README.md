@@ -130,18 +130,7 @@ PCF8574 Output Mapping:
 
 ## Software Dependencies
 
-### Library Dependencies
-```ini
-lib_deps = 
-    adafruit/Adafruit NeoPixel@^1.12.5    # LED status indicators
-    br3ttb/PID@^1.0.0                     # PID control algorithms
-    br3ttb/PID-AutoTune@^1.0.0            # PID auto-tuning capability
-    knolleary/PubSubClient@^2.8           # MQTT communication
-    bblanchon/ArduinoJson@7.2.1           # Latest JSON library
-    arduino-libraries/NTPClient@^3.2.1    # Network time synchronization
-```
-
-### Build Configuration
+### PlatformIO Configuration
 ```ini
 [env:esp32-s3-devkitc-1]
 platform = espressif32
@@ -160,6 +149,14 @@ build_flags =
     -DCORE_DEBUG_LEVEL=5              # Maximum debug information
     -DARDUINO_USB_CDC_ON_BOOT=1       # USB CDC for debugging
     -DBOARD_HAS_PSRAM=1               # PSRAM feature flag
+
+lib_deps = 
+    adafruit/Adafruit NeoPixel@^1.12.5    # LED status indicators
+    br3ttb/PID@^1.0.0                     # PID control algorithms
+    br3ttb/PID-AutoTune@^1.0.0            # PID auto-tuning capability
+    knolleary/PubSubClient@^2.8           # MQTT communication
+    bblanchon/ArduinoJson@7.2.1           # Latest JSON library
+    arduino-libraries/NTPClient@^3.2.1    # Network time synchronization
 ```
 
 ## Project Structure
