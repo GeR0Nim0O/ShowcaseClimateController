@@ -30,6 +30,7 @@ public:
     static bool checkAndCreateLogFile();
     static String getLogFileInfo();
     static bool copyFile(const char* srcPath, const char* destPath);    static bool updateConfig();
+    static bool forceUpdateSDConfig();
     static bool copyDefaultConfig();
     
     // New function to initialize SD card and config
