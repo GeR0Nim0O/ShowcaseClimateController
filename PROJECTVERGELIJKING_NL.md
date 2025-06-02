@@ -738,7 +738,7 @@ private:
 
 ## Development & Debugging
 
-### **⚙️ Showcase Climate Controller - Professional Development Environment**
+### **Showcase Climate Controller - Development Environment**
 
 #### **Uitgebreide Build Configuration**
 ```ini
