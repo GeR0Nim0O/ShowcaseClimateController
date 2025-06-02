@@ -128,11 +128,10 @@ void setup()
   } else {
     // SD card config loaded successfully - check if it differs from project config
     String sdWifiSSID = Configuration::getWiFiSSID();
-    
-    // Temporarily load project config to compare
+      // Temporarily load project config to compare
     JsonDocument tempProjectConfig;
-    if (Configuration::loadJsonFromCodebase(tempProjectConfig)) {
-      String projectWifiSSID = tempProjectConfig["wifi"]["ssid"].as<String>();
+    if (Configuration::readProjectConfigJson()) {
+      String projectWifiSSID = Configuration::getWiFiSSID();
       
       if (sdWifiSSID != projectWifiSSID) {
         Serial.println();
