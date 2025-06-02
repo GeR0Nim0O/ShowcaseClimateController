@@ -210,11 +210,21 @@ void setup()
     Serial.println("   - Move ESP32 closer to router");
     Serial.println("   - Restart router if needed");
     Serial.println("   - Check for MAC address filtering on router");
-    Serial.println();
-    Serial.println("4. TO UPDATE WIFI SETTINGS:");
+    Serial.println();    Serial.println("4. TO UPDATE WIFI SETTINGS:");
     Serial.println("   - Edit data/config.json file");
     Serial.println("   - Upload to ESP32 via PlatformIO");
     Serial.println("   - Or use SD card with updated config.json");
+    Serial.println();
+    Serial.println("5. AUTOMATIC SD CARD CONFIG UPDATE:");
+    Serial.println("   Attempting to update SD card configuration with current project settings...");
+    if (SDHandler::forceUpdateSDConfig()) {
+        Serial.println("   ✓ SD card config updated successfully!");
+        Serial.println("   → Please restart the ESP32 to use the updated configuration");
+        Serial.println("   → The system will now use 'Ron-Rowie' network instead of 'Ron&Rowie_Gast'");
+    } else {
+        Serial.println("   ✗ Failed to update SD card configuration");
+        Serial.println("   → Please manually update the SD card config.json file");
+    }
     Serial.println();
     Serial.println("Continuing in offline mode...");
     Serial.println("======================================================");
