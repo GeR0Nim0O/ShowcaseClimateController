@@ -793,7 +793,7 @@ lib/
 │   └── DeviceRegistry/       # Factory pattern implementation
 │       ├── DeviceRegistry.h  # Interface definition
 │       └── DeviceRegistry.cpp # Device management logic
-├── Sensors/                  # 📊 Environmental sensors
+├── Sensors/                  # Environmental sensors
 │   ├── SHTsensor/           # Temperature/humidity (SHT31/40)
 │   │   ├── SHTsensor.h
 │   │   └── SHTsensor.cpp
