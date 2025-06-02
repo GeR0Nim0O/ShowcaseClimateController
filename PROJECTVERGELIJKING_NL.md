@@ -726,7 +726,7 @@ private:
 - Geen checksum validatie
 - Eenvoudige file handling
 
-### **🔍 Data Management Voordelen**
+### **Data Management Voordelen**
 | Feature | Showcase | Casekeeper | Verbetering |
 |---------|----------|------------|-------------|
 | **Storage Layers** | 4 (SD/SPIFFS/EEPROM/Default) | 1 (JSON) | +300% redundancy |
