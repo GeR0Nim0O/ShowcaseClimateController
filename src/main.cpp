@@ -347,7 +347,6 @@ void setup()
       Serial.println("✓ MQTT connected successfully!");
     }
   }
-
   
   Serial.println();
   Serial.println("========================================");
@@ -365,13 +364,12 @@ void setup()
     Serial.print(" (");
     Serial.print(Configuration::getMqttThrottlingInterval() / 1000);
     Serial.println(" second intervals)");
-  } 8
-  else {
+  } else {
     Serial.println();
   }
 }
 
-  void loop() {
+void loop() {
   if (!setupComplete) {
     return; // Exit loop if setup is not complete
   }
