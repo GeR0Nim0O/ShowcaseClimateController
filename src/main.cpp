@@ -108,29 +108,34 @@ void setup()
   Serial.begin(115200);
   delay(5000);
   
+  Serial.println("========================================");
+  Serial.println("  Showcase Climate Controller v2.0");
+  Serial.println("========================================");
+  Serial.println();
+  
   // Test PSRAM first
   testPSRAM();
   
-  // Initialize I2C bus
-  I2CHandler::initializeI2C();  // Setup configuration
+  // Initialize SD card and handle configuration early
+  Serial.println("1. Initializing SD card and configuration...");
   if (!SDHandler::initializeSDCardAndConfig()) {
     Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
   }
   
-  // Try to load configuration from SD card first, then fallback to project config.json
-  if (!Configuration::loadConfigFromSD("/config.json")) {
-    Serial.println("SD card config failed, trying project config.json fallback...");
-    if (!Configuration::loadConfigFromCodebase()) {
-      Serial.println("ERROR: Both SD card and project config.json failed!");
-      Serial.println("System cannot continue without configuration.");
-      while(1) { delay(1000); } // Halt system
-    }
-  } else {
-    // SD card config loaded successfully - check if it differs from project config
-    String sdWifiSSID = Configuration::getWiFiSSID();    // Temporarily load project config to compare
-    JsonDocument tempProjectConfig;
+  // Handle configuration loading and mismatch checking FIRST before other initialization
+  bool configLoaded = false;
+  bool sdConfigMismatch = false;
+  String sdWifiSSID = "";
+  String projectWifiSSID = "";
+  
+  // Try to load configuration from SD card first
+  if (Configuration::loadConfigFromSD("/config.json")) {
+    Serial.println("✓ SD card configuration loaded successfully");
+    configLoaded = true;
+    sdWifiSSID = Configuration::getWiFiSSID();
     
-    // Read project config.json directly from SPIFFS without affecting current Configuration
+    // Check if SD card config differs from project config
+    JsonDocument tempProjectConfig;
     if (SPIFFS.begin()) {
       File configFile = SPIFFS.open("/config.json", "r");
       if (configFile) {
@@ -139,70 +144,95 @@ void setup()
         
         DeserializationError error = deserializeJson(tempProjectConfig, configContent);
         if (!error && !tempProjectConfig["wifi"]["ssid"].isNull()) {
-          String projectWifiSSID = tempProjectConfig["wifi"]["ssid"].as<String>();
-      
-      if (sdWifiSSID != projectWifiSSID) {
-        Serial.println();
-        Serial.println("=== CONFIG MISMATCH DETECTED ===");
-        Serial.print("SD Card WiFi SSID: '");
-        Serial.print(sdWifiSSID);
-        Serial.println("'");
-        Serial.print("Project WiFi SSID: '");
-        Serial.print(projectWifiSSID);
-        Serial.println("'");
-        Serial.println();
-        Serial.println("The SD card configuration differs from your project config.json");
-        Serial.println("Would you like to update the SD card with the project configuration?");
-        Serial.println();
-        Serial.println("Send 'Y' or 'y' within 15 seconds to update SD card");
-        Serial.println("Send any other key or wait to keep current SD card config");
-        Serial.print("Waiting for input: ");
-        
-        // Wait for user input for 15 seconds
-        unsigned long startWait = millis();
-        String userInput = "";
-        
-        while (millis() - startWait < 15000) { // 15 second timeout
-          if (Serial.available()) {
-            userInput = Serial.readString();
-            userInput.trim();
-            Serial.println(userInput);
-            break;
+          projectWifiSSID = tempProjectConfig["wifi"]["ssid"].as<String>();
+          
+          if (sdWifiSSID != projectWifiSSID) {
+            sdConfigMismatch = true;
           }
-          delay(100);
         }
-        
-        if (userInput.length() == 0) {
-          Serial.println("(timeout)");
-          Serial.println("→ Keeping current SD card configuration");
-        } else if (userInput.equalsIgnoreCase("y")) {
-          Serial.println("→ Updating SD card with project configuration...");
-          if (SDHandler::forceUpdateSDConfig()) {
-            Serial.println("✓ SD card updated successfully!");
-            Serial.println("→ Restarting ESP32 to use new configuration...");
-            delay(2000);
-            ESP.restart();
-          } else {
-            Serial.println("✗ Failed to update SD card");
-            Serial.println("→ Continuing with current SD card configuration");
-          }
-        } else {
-          Serial.print("→ User declined ('");
-          Serial.print(userInput);
-          Serial.println("') - keeping SD card configuration");
-        }        Serial.println("================================");
-        Serial.println();
       }
-        } else {
-          Serial.println("Warning: Could not parse project config.json from SPIFFS");
-        }
-      } else {
-        Serial.println("Warning: Could not open project config.json from SPIFFS");
-      }
-    } else {
-      Serial.println("Warning: Could not initialize SPIFFS to read project config");
+    }
+  } else {
+    Serial.println("SD card config failed, trying project config.json fallback...");
+    if (Configuration::loadConfigFromCodebase()) {
+      Serial.println("✓ Project configuration loaded successfully");
+      configLoaded = true;
     }
   }
+  
+  if (!configLoaded) {
+    Serial.println("ERROR: Both SD card and project config.json failed!");
+    Serial.println("System cannot continue without configuration.");
+    while(1) { delay(1000); } // Halt system
+  }
+  
+  // If there's a config mismatch, handle it cleanly BEFORE other initialization
+  if (sdConfigMismatch) {
+    Serial.println();
+    Serial.println("========================================");
+    Serial.println("   CONFIGURATION MISMATCH DETECTED");
+    Serial.println("========================================");
+    Serial.print("SD Card WiFi SSID: '");
+    Serial.print(sdWifiSSID);
+    Serial.println("'");
+    Serial.print("Project WiFi SSID: '");
+    Serial.print(projectWifiSSID);
+    Serial.println("'");
+    Serial.println();
+    Serial.println("The SD card has different WiFi settings than your project.");
+    Serial.println("Would you like to update the SD card with project settings?");
+    Serial.println();
+    Serial.println("Type 'Y' and press Enter within 20 seconds to update");
+    Serial.println("Type anything else or wait to keep current SD config");
+    Serial.println();
+    Serial.print("Your choice: ");
+    Serial.flush(); // Ensure prompt is displayed
+    
+    // Wait for user input with clear timeout
+    unsigned long startWait = millis();
+    String userInput = "";
+    
+    while (millis() - startWait < 20000) { // 20 second timeout
+      if (Serial.available()) {
+        userInput = Serial.readStringUntil('\n');
+        userInput.trim();
+        break;
+      }
+      delay(100);
+    }
+    
+    Serial.println(); // New line after input
+    
+    if (userInput.length() == 0) {
+      Serial.println("⏱️  No input received (timeout)");
+      Serial.println("→ Keeping current SD card configuration");
+    } else if (userInput.equalsIgnoreCase("y")) {
+      Serial.println("✅ User confirmed update");
+      Serial.print("→ Updating SD card configuration... ");
+      if (SDHandler::forceUpdateSDConfig()) {
+        Serial.println("SUCCESS!");
+        Serial.println("→ Restarting ESP32 to use new configuration...");
+        Serial.println();
+        delay(3000);
+        ESP.restart();
+      } else {
+        Serial.println("FAILED!");
+        Serial.println("→ Continuing with current SD card configuration");
+      }
+    } else {
+      Serial.print("❌ User declined (input: '");
+      Serial.print(userInput);
+      Serial.println("')");
+      Serial.println("→ Keeping current SD card configuration");
+    }
+    Serial.println("========================================");
+    Serial.println();
+    delay(2000); // Give user time to read the result
+  }
+  
+  // Now continue with normal initialization
+  Serial.println("2. Initializing I2C bus...");
+  I2CHandler::initializeI2C();
   Configuration::printConfigValues();
 
   // Get connected I2C devices with their addresses and TCA ports
