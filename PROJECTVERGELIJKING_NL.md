@@ -391,7 +391,7 @@ void handleUserInput() {
 - Geen user input mechanismen
 - Alleen serial interface voor debugging
 
-### **🔍 User Interface Voordelen**
+### **User Interface Voordelen**
 | Feature | Showcase | Casekeeper | Verbetering |
 |---------|----------|------------|-------------|
 | **Display** | ✅ OLED met real-time data | ❌ Geen | +∞ gebruiksvriendelijkheid |
