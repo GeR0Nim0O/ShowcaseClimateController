@@ -257,8 +257,17 @@ void setup()
   
   // Print debugging information
   printDebugInfo();
+    Serial.println("10. Attempting WiFi connection ONCE during setup...");
+  Serial.println("=== SINGLE SETUP WiFi CONNECTION ATTEMPT ===");
+  Serial.print("WiFi SSID: '");
+  Serial.print(Configuration::getWiFiSSID());
+  Serial.println("'");
+  Serial.print("WiFi Password: '");
+  Serial.print(Configuration::getWiFiPassword());
+  Serial.println("'");
+  Serial.print("WiFi Password Length: ");
+  Serial.println(Configuration::getWiFiPassword().length());
   
-  Serial.println("10. Attempting WiFi connection...");
   bool wifiConnected = WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword());
   
   if (!wifiConnected) {
@@ -266,7 +275,7 @@ void setup()
     Serial.println("========================================");
     Serial.println("        WiFi Connection Failed");
     Serial.println("========================================");
-    Serial.println("WiFi connection failed. Troubleshooting information:");
+    Serial.println("WiFi connection failed during setup. Troubleshooting information:");
     Serial.println();
     Serial.println("1. NETWORK ANALYSIS:");
     WifiMqttHandler::scanAndAnalyzeNetworks();
@@ -275,21 +284,25 @@ void setup()
     Serial.print("   SSID: '");
     Serial.print(Configuration::getWiFiSSID());
     Serial.println("'");
+    Serial.print("   Password: '");
+    Serial.print(Configuration::getWiFiPassword());
+    Serial.println("'");
     Serial.print("   Password length: ");
     Serial.println(Configuration::getWiFiPassword().length());
     Serial.println();
     Serial.println("3. TROUBLESHOOTING TIPS:");
     Serial.println("   • Verify network name (case-sensitive)");
-    Serial.println("   • Check WiFi password");
+    Serial.println("   • Check WiFi password - should be 'Nek@F1993!'");
     Serial.println("   • Ensure router is powered and broadcasting");
-    Serial.println("   • Move ESP32 closer to router");    Serial.println("   • Check for MAC filtering on router");
+    Serial.println("   • Move ESP32 closer to router");
+    Serial.println("   • Check for MAC filtering on router");
     Serial.println();
-    Serial.println("→ Continuing in OFFLINE mode...");
+    Serial.println("→ Will retry after 60-second timer in main loop...");
     Serial.println("========================================");
     Serial.println();
     offlineMode = true;
   } else {
-    Serial.println("✓ WiFi connected successfully!");
+    Serial.println("✓ WiFi connected successfully during setup!");
     offlineMode = false;
     
     Serial.println("11. Initializing time synchronization...");
