@@ -244,6 +244,267 @@ Device (Base Class)
 - ESP32-S3 development board
 - Required hardware components (see Hardware Requirements)
 
+## Setup & Configuration Process
+
+### Phase 1: Software Environment Setup
+
+#### 1.1 Development Environment
+```powershell
+# Install Visual Studio Code (if not already installed)
+# Download from: https://code.visualstudio.com/
+
+# Install PlatformIO Extension
+# Open VS Code -> Extensions -> Search "PlatformIO IDE" -> Install
+```
+
+#### 1.2 Project Setup
+```powershell
+# Clone the repository
+git clone https://github.com/your-username/showcase-climate-controller.git
+cd showcase-climate-controller
+
+# Open project in VS Code
+code .
+```
+
+#### 1.3 Dependency Management
+PlatformIO automatically handles dependencies via `platformio.ini`:
+```ini
+lib_deps = 
+    adafruit/Adafruit NeoPixel@^1.12.5    # LED status indicators
+    br3ttb/PID@^1.0.0                     # PID control algorithms
+    knolleary/PubSubClient@^2.8           # MQTT communication
+    bblanchon/ArduinoJson@7.2.1           # JSON parsing
+    arduino-libraries/NTPClient@^3.2.1    # Time synchronization
+```
+
+### Phase 2: Hardware Configuration
+
+#### 2.1 I2C Device Connection (Automatic Discovery)
+**Key Feature: No manual channel assignment required!**
+
+Connect your I2C devices to **any available** PCA9548A multiplexer channel (0-7):
+
+| Device Type | I2C Address | Function | Connection |
+|-------------|-------------|----------|------------|
+| PCF8574 GPIO | 0x20 | Digital outputs | Any channel |
+| SHT31 Sensor | 0x44 | Temperature/Humidity | Any channel |
+| SSD1306 OLED | 0x3C | Display interface | Any channel |
+| GP8403 DAC | 0x5F | Analog power control | Any channel |
+| BH1705 Light | 0x23 | Light measurement | Any channel |
+| Weight Sensor | Custom | Scale measurement | Any channel |
+
+#### 2.2 Wiring Checklist
+- **Power Supply**: Ensure 3.3V/5V compatibility for all devices
+- **I2C Bus**: Connect SDA (GPIO 17) and SCL (GPIO 16) to PCA9548A
+- **PCA9548A**: Connect to ESP32-S3 at address 0x70
+- **Rotary Encoder**: GPIO 4 (A), GPIO 5 (B), GPIO 6 (Button)
+- **Ground**: Common ground for all devices
+
+### Phase 3: First Build & Upload
+
+#### 3.1 Build Process
+```powershell
+# Build the project
+python -m platformio run
+
+# Expected output:
+# [SUCCESS] Took X.XX seconds
+```
+
+#### 3.2 Upload to Device
+```powershell
+# Upload firmware (adjust COM port as needed)
+python -m platformio run --target upload --upload-port COM11
+
+# Monitor serial output
+python -m platformio device monitor --port COM11 --baud 115200
+```
+
+### Phase 4: Automatic Device Discovery
+
+#### 4.1 First Boot Sequence
+Upon first startup, monitor the serial output for device discovery:
+
+```
+[INFO] ========== Showcase Climate Controller ==========
+[INFO] Starting I2C device discovery...
+[INFO] Scanning PCA9548A Channel 0... Found: PCF8574 GPIO (0x20)
+[INFO] Scanning PCA9548A Channel 1... Found: SHT31 Sensor (0x44)
+[INFO] Scanning PCA9548A Channel 2... Found: SSD1306 Display (0x3C)
+[INFO] Scanning PCA9548A Channel 3... Found: GP8403 DAC (0x5F)
+[INFO] Scanning PCA9548A Channel 4... Found: BH1705 Light (0x23)
+[INFO] Scanning PCA9548A Channel 5... No device found
+[INFO] Scanning PCA9548A Channel 6... No device found
+[INFO] Scanning PCA9548A Channel 7... No device found
+[INFO] Device Registry: 5 devices successfully initialized
+[INFO] ClimateController: PID controllers ready
+[INFO] System operational - entering main loop
+```
+
+#### 4.2 Device Discovery Troubleshooting
+
+**If devices are not detected:**
+1. **Check I2C addresses** with an I2C scanner
+2. **Verify power supply** (3.3V vs 5V requirements)
+3. **Test connections** (SDA, SCL, GND, VCC)
+4. **Check PCA9548A** functionality at address 0x70
+
+### Phase 5: Configuration Management
+
+#### 5.1 Configuration File Hierarchy
+The system uses a **4-tier configuration** system (highest to lowest priority):
+
+1. **SD Card Configuration** (`/config.json`, `/ClimateConfig.json`)
+2. **SPIFFS Flash Storage** (`/data/config.json`, `/data/ClimateConfig.json`)
+3. **EEPROM Settings** (Runtime user adjustments)
+4. **Compiled Defaults** (Safe fallback values)
+
+#### 5.2 Creating Configuration Files
+
+**Main System Configuration** (`config.json`):
+```json
+{
+  "system": {
+    "device_name": "ClimateController_01",
+    "update_interval_ms": 5000,
+    "debug_level": 3
+  },
+  "wifi": {
+    "ssid": "YourWiFiNetwork",
+    "password": "YourWiFiPassword",
+    "timeout_ms": 10000
+  },
+  "mqtt": {
+    "server": "your.mqtt.broker.com",
+    "port": 1883,
+    "username": "mqtt_user",
+    "password": "mqtt_pass",
+    "topic_prefix": "climate/controller"
+  },
+  "climate": {
+    "enabled": true,
+    "temperature_setpoint": 22.0,
+    "humidity_setpoint": 50.0,
+    "update_interval_ms": 3000
+  }
+}
+```
+
+**Climate-Specific Configuration** (`ClimateConfig.json`):
+```json
+{
+  "setpoints": {
+    "temperature": 22.0,
+    "humidity": 50.0,
+    "temperature_hysteresis": 0.5,
+    "humidity_hysteresis": 2.0
+  },
+  "modes": {
+    "climate_mode": "AUTO",
+    "humidity_mode": "AUTO"
+  },
+  "pid_parameters": {
+    "temperature": {
+      "kp": 2.0,
+      "ki": 0.5,
+      "kd": 0.1,
+      "output_min": 0.0,
+      "output_max": 100.0
+    },
+    "humidity": {
+      "kp": 1.0,
+      "ki": 0.2,
+      "kd": 0.05,
+      "output_min": 0.0,
+      "output_max": 100.0
+    }
+  },
+  "limits": {
+    "temperature_min": 10.0,
+    "temperature_max": 35.0,
+    "humidity_min": 20.0,
+    "humidity_max": 80.0
+  }
+}
+```
+
+### Phase 6: Initial Calibration & Testing
+
+#### 6.1 Basic Operation Verification
+1. **OLED Display**: Verify temperature/humidity readings
+2. **Rotary Encoder**: Test setpoint adjustment (0.1°C/1% increments)
+3. **Button Functions**:
+   - **Short Press**: Save settings to EEPROM
+   - **Long Press**: Enter configuration mode
+
+#### 6.2 Climate Control Testing
+```
+Mode Testing Sequence:
+├── AUTO Mode: Verify automatic heating/cooling switching
+├── HEATING Mode: Test heating-only operation
+├── COOLING Mode: Test cooling-only operation
+├── HUMIDIFY Mode: Test humidification control
+├── DEHUMIDIFY Mode: Test dehumidification control
+└── OFF Mode: Verify all outputs disabled
+```
+
+#### 6.3 PID Tuning (Optional)
+For optimal performance, adjust PID parameters:
+```cpp
+// Temperature PID tuning via serial commands
+setTemperaturePID(2.0, 0.5, 0.1);  // Kp, Ki, Kd
+
+// Humidity PID tuning
+setHumidityPID(1.0, 0.2, 0.05);    // Kp, Ki, Kd
+```
+
+### Phase 7: Advanced Configuration
+
+#### 7.1 MQTT Integration
+Configure MQTT for remote monitoring:
+```json
+{
+  "mqtt": {
+    "enabled": true,
+    "server": "homeassistant.local",
+    "port": 1883,
+    "topic_prefix": "climate/showcase",
+    "publish_interval_ms": 30000
+  }
+}
+```
+
+#### 7.2 Safety Features Verification
+Test emergency shutdown scenarios:
+- Sensor failure detection
+- Temperature/humidity limit violations
+- Power supply monitoring
+- Automatic fallback to safe defaults
+
+### Configuration Troubleshooting
+
+#### Common Issues & Solutions
+
+| Issue | Symptom | Solution |
+|-------|---------|----------|
+| **Device Not Found** | Missing from discovery list | Check I2C address and wiring |
+| **OLED Blank** | No display output | Verify 0x3C address and power |
+| **No Sensor Data** | Zero/invalid readings | Check SHT31 at 0x44 |
+| **Controls Inactive** | No heating/cooling | Verify PCF8574 GPIO at 0x20 |
+| **Config Not Saved** | Settings reset on reboot | Check EEPROM functionality |
+
+#### Diagnostic Commands
+Monitor system status via serial terminal:
+```
+[DEBUG] Device Registry Status: 5/8 channels active
+[DEBUG] Temperature PID: Setpoint=22.0°C, Current=21.5°C, Output=25%
+[DEBUG] Humidity PID: Setpoint=50%, Current=48%, Output=15%
+[DEBUG] GPIO States: Heat=ON, Cool=OFF, Fan=AUTO
+```
+
+This comprehensive setup process ensures a smooth installation and configuration experience with minimal manual intervention required.
+
 ### Installation
 
 1. **Clone the Repository**
