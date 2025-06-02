@@ -3,6 +3,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include <ArduinoJson.h>
+#include <SPIFFS.h>
 
 #define SD_MISO_PIN 5
 #define SD_MOSI_PIN 6
