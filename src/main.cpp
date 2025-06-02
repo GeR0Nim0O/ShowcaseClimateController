@@ -188,14 +188,13 @@ void setup()
   // Try to connect to WiFi (don't stop if it fails)
   Serial.println("Attempting WiFi connection...");
   bool wifiConnected = WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword());
-  
-  if (!wifiConnected) {
+    if (!wifiConnected) {
     Serial.println();
     Serial.println("==== WiFi Connection Failed - Troubleshooting Help ====");
     Serial.println("WiFi connection failed. Here are some troubleshooting steps:");
     Serial.println();
-    Serial.println("1. NETWORK SCAN:");
-    WifiMqttHandler::scanAndDisplayNetworks();
+    Serial.println("1. DETAILED NETWORK ANALYSIS:");
+    WifiMqttHandler::scanAndAnalyzeNetworks();
     Serial.println();
     Serial.println("2. CONFIGURATION CHECK:");
     Serial.print("   Current SSID: '");
