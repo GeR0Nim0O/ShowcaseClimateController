@@ -101,13 +101,19 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
       humidifyingActive(false), dehumidifyingActive(false),
       tempControlEnabled(false), 
       fanInteriorActive(false), fanExteriorActive(false),  // Initialize fan states
-      autoFanControlEnabled(true),                         // Enable auto fan control by default
-      lastUpdate(0), updateInterval(Configuration::getClimateUpdateInterval()),
+      autoFanControlEnabled(true),                         // Enable auto fan control by default      lastUpdate(0), updateInterval(Configuration::getClimateUpdateInterval()),
       heatingPower(0.0), coolingPower(0.0), 
       humidifierPower(0.0), dehumidifierPower(0.0),
       temperaturePID(nullptr), humidityPID(nullptr),
       tempInput(0.0), tempOutput(0.0), tempSetpoint(temperatureSetpoint),
-      humInput(0.0), humOutput(0.0), humSetpoint(humiditySetpoint) {
+      humInput(0.0), humOutput(0.0), humSetpoint(humiditySetpoint),
+      lastStatusPrint(0), statusPrintInterval(10000), // Print status every 10 seconds
+      lastPrintedTemperature(0.0), lastPrintedHumidity(0.0),
+      lastPrintedHeatingActive(false), lastPrintedCoolingActive(false),
+      lastPrintedHumidifyingActive(false), lastPrintedDehumidifyingActive(false),
+      lastPrintedFanInteriorActive(false), lastPrintedFanExteriorActive(false),
+      lastPrintedClimateMode(ClimateMode::AUTO), lastPrintedHumidityMode(HumidityMode::AUTO),
+      temperatureThreshold(0.5), humidityThreshold(2.0) { // 0.5°C and 2% thresholds
     
     // Safely assign the device pointers
     this->gpio = gpioExpander;
