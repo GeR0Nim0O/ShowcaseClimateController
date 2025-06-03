@@ -759,6 +759,63 @@ void ClimateController::printClimateStatus() {
     Serial.println("==================================");
 }
 
+// New method to print status only if there are significant changes
+void ClimateController::printClimateStatusIfChanged() {
+    unsigned long currentTime = millis();
+    
+    // Check if we should print due to time interval
+    bool timeToPrint = (currentTime - lastStatusPrint >= statusPrintInterval);
+    
+    // Check if there are significant state or sensor changes
+    bool stateChanged = hasSignificantStateChange();
+    bool sensorChanged = hasSignificantSensorChange();
+    
+    if (timeToPrint || stateChanged || sensorChanged) {
+        Serial.print("[Climate] ");
+        if (stateChanged) Serial.print("STATE CHANGE - ");
+        if (sensorChanged) Serial.print("SENSOR CHANGE - ");
+        if (timeToPrint && !stateChanged && !sensorChanged) Serial.print("PERIODIC UPDATE - ");
+        
+        printClimateStatus();
+        updateStatusPrintTracking();
+        lastStatusPrint = currentTime;
+    }
+}
+
+// Check if there are significant state changes
+bool ClimateController::hasSignificantStateChange() {
+    return (heatingActive != lastPrintedHeatingActive) ||
+           (coolingActive != lastPrintedCoolingActive) ||
+           (humidifyingActive != lastPrintedHumidifyingActive) ||
+           (dehumidifyingActive != lastPrintedDehumidifyingActive) ||
+           (fanInteriorActive != lastPrintedFanInteriorActive) ||
+           (fanExteriorActive != lastPrintedFanExteriorActive) ||
+           (climateMode != lastPrintedClimateMode) ||
+           (humidityMode != lastPrintedHumidityMode);
+}
+
+// Check if there are significant sensor value changes
+bool ClimateController::hasSignificantSensorChange() {
+    float tempDiff = abs(currentTemperature - lastPrintedTemperature);
+    float humDiff = abs(currentHumidity - lastPrintedHumidity);
+    
+    return (tempDiff >= temperatureThreshold) || (humDiff >= humidityThreshold);
+}
+
+// Update tracking variables with current values
+void ClimateController::updateStatusPrintTracking() {
+    lastPrintedTemperature = currentTemperature;
+    lastPrintedHumidity = currentHumidity;
+    lastPrintedHeatingActive = heatingActive;
+    lastPrintedCoolingActive = coolingActive;
+    lastPrintedHumidifyingActive = humidifyingActive;
+    lastPrintedDehumidifyingActive = dehumidifyingActive;
+    lastPrintedFanInteriorActive = fanInteriorActive;
+    lastPrintedFanExteriorActive = fanExteriorActive;
+    lastPrintedClimateMode = climateMode;
+    lastPrintedHumidityMode = humidityMode;
+}
+
 // Static method for controlled update with timing management
 void ClimateController::updateControllerWithTiming(ClimateController* controller) {
     if (controller == nullptr) {
