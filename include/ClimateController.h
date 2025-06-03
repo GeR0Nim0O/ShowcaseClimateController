@@ -89,6 +89,12 @@ public:
     
     // Status reporting
     void printClimateStatus();
+    
+    // New methods for enhanced status reporting
+    void printClimateStatusIfChanged();
+    bool hasSignificantStateChange();
+    bool hasSignificantSensorChange();
+    void updateStatusPrintTracking();
 
 private:
     PCF8574gpio* gpio;
