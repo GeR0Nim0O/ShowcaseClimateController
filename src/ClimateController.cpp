@@ -288,10 +288,12 @@ void ClimateController::update() {
                 // Force re-apply fan control during refresh
                 if (fanInteriorActive || fanExteriorActive) {
                     applyFanControl();
-                }
-            }
+                }            }
             lastGpioRefresh = currentTime;
         }
+        
+        // Enhanced status printing - print on changes or periodically
+        printClimateStatusIfChanged();
         
         lastUpdate = currentTime;
     }
