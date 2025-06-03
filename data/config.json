@@ -5,7 +5,7 @@
     "showcase_id": "2.4"
   },  "wifi": {
     "ssid": "Bruns-Guest",
-    "password": "Gast@Ron&Rowie"
+    "password": "guest@bruns"
   },
   "ethernet": {
     "ip": "192.168.1.100",
