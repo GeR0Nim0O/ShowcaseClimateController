@@ -100,12 +100,10 @@
           "Threshold": 1.0
         }
       }
-    },    
-    "SHT_Exterior": {
+    },      "SHT_Exterior": {
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
-      "TCAChannel": 1,
       "Label": "Interior",
       "Channels": {
         "T": {
