@@ -89,7 +89,6 @@
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
-      "TCAChannel": 0,
       "Label": "Exterior",
       "Channels": {
         "T": {
