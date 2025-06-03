@@ -157,6 +157,15 @@ private:
     float temperatureThreshold;
     float humidityThreshold;
     
+    // Pin mappings from configuration
+    uint8_t pinTemperatureEnable;
+    uint8_t pinTemperatureHeat;
+    uint8_t pinTemperatureCool;
+    uint8_t pinHumidify;
+    uint8_t pinDehumidify;
+    uint8_t pinFanInterior;
+    uint8_t pinFanExterior;
+    
     // Control methods
     void updateTemperatureControl();
     void updateHumidityControl();
