@@ -135,14 +135,21 @@ private:
     unsigned long lastUpdate;
     unsigned long updateInterval;
     
-    // Pin mappings from configuration
-    uint8_t pinTemperatureEnable;
-    uint8_t pinTemperatureHeat;
-    uint8_t pinTemperatureCool;
-    uint8_t pinHumidify;
-    uint8_t pinDehumidify;
-    uint8_t pinFanInterior;
-    uint8_t pinFanExterior;
+    // Status printing frequency and tracking
+    unsigned long lastStatusPrint;
+    unsigned long statusPrintInterval;
+    float lastPrintedTemperature;
+    float lastPrintedHumidity;
+    bool lastPrintedHeatingActive;
+    bool lastPrintedCoolingActive;
+    bool lastPrintedHumidifyingActive;
+    bool lastPrintedDehumidifyingActive;
+    bool lastPrintedFanInteriorActive;
+    bool lastPrintedFanExteriorActive;
+    ClimateMode lastPrintedClimateMode;
+    HumidityMode lastPrintedHumidityMode;
+    float temperatureThreshold;
+    float humidityThreshold;
     
     // Control methods
     void updateTemperatureControl();
