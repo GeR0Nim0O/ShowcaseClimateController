@@ -35,6 +35,7 @@ public:
     void configure(float tempSetpoint, float humSetpoint, ClimateMode climateMode, HumidityMode humidityMode);
     
     ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac = nullptr);
+    ~ClimateController();
     
     bool begin();
     void update();
