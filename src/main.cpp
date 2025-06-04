@@ -263,7 +263,7 @@ void setup()
     }
   }
   
-  Serial.println("9. Setting up MQTT client ID and topic...");
+  Serial.println("10. Setting up MQTT client ID and topic...");
   clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
   topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
   
