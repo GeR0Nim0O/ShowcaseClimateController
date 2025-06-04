@@ -976,14 +976,27 @@ void ClimateController::reloadConfiguration() {
         
         // Update update interval from ClimateConfig
         updateInterval = climateConfig.getUpdateInterval();
-        
-        // Update PID parameters from ClimateConfig
+          // Update PID parameters from ClimateConfig
         if (temperaturePID != nullptr) {
-            temperaturePID->SetTunings(
-                climateConfig.getTemperatureKp(),
-                climateConfig.getTemperatureKi(),
-                climateConfig.getTemperatureKd()
-            );
+            // Check if we have AutoTune results to use
+            if (climateConfig.hasAutoTuneResults()) {
+                Serial.println("Using AutoTune results for temperature PID");
+                temperaturePID->SetTunings(
+                    climateConfig.getAutoTuneKp(),
+                    climateConfig.getAutoTuneKi(),
+                    climateConfig.getAutoTuneKd()
+                );
+                Serial.print("AutoTune Kp: "); Serial.println(climateConfig.getAutoTuneKp(), 4);
+                Serial.print("AutoTune Ki: "); Serial.println(climateConfig.getAutoTuneKi(), 4);
+                Serial.print("AutoTune Kd: "); Serial.println(climateConfig.getAutoTuneKd(), 4);
+            } else {
+                Serial.println("Using default PID parameters for temperature");
+                temperaturePID->SetTunings(
+                    climateConfig.getTemperatureKp(),
+                    climateConfig.getTemperatureKi(),
+                    climateConfig.getTemperatureKd()
+                );
+            }
             Serial.println("Temperature PID parameters updated from ClimateConfig");
         }
         
