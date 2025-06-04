@@ -292,14 +292,20 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
     
     settings.updateInterval = climate["update_interval_ms"].as<int>();
     if (!climate["update_interval_ms"]) settings.updateInterval = 1000;
-    
-    // Load safety limits
+      // Load safety limits
     JsonObject safety = climate["safety_limits"];
     if (safety) {
-        settings.maxTemperature = safety["max_temperature"] | 35.0;
-        settings.minTemperature = safety["min_temperature"] | 10.0;
-        settings.maxHumidity = safety["max_humidity"] | 80.0;
-        settings.minHumidity = safety["min_humidity"] | 20.0;
+        settings.maxTemperature = safety["max_temperature"].as<double>();
+        if (!safety["max_temperature"]) settings.maxTemperature = 35.0;
+        
+        settings.minTemperature = safety["min_temperature"].as<double>();
+        if (!safety["min_temperature"]) settings.minTemperature = 10.0;
+        
+        settings.maxHumidity = safety["max_humidity"].as<double>();
+        if (!safety["max_humidity"]) settings.maxHumidity = 80.0;
+        
+        settings.minHumidity = safety["min_humidity"].as<double>();
+        if (!safety["min_humidity"]) settings.minHumidity = 20.0;
     }
     
     // Load PID parameters
