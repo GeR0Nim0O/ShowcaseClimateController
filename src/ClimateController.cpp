@@ -187,16 +187,10 @@ ClimateController::~ClimateController() {
         delete humidityPID;
         humidityPID = nullptr;
     }
-    
-    // Clean up AutoTune controllers
+      // Clean up AutoTune controllers
     if (temperatureAutoTuner != nullptr) {
         delete temperatureAutoTuner;
         temperatureAutoTuner = nullptr;
-    }
-    
-    if (humidityAutoTuner != nullptr) {
-        delete humidityAutoTuner;
-        humidityAutoTuner = nullptr;
     }
     
     Serial.println("ClimateController destroyed, resources cleaned up");
