@@ -78,12 +78,12 @@
 
 ## Connectiviteit
 
-| Feature | Showcase | Casekeeper |
-|---------|----------|------------|
-| **MQTT** | Throttled (30s) | Basis |
-| **JSON** | v7.2.1 + validation | Basis |
-| **WiFi** | Auto-reconnect | Handmatig |
-| **Time Sync** | NTP synchronization | Geen |
+| Feature | Casekeeper | Showcase |
+|---------|------------|----------|
+| **MQTT** | Basis | Throttled (30s) |
+| **JSON** | Basis | v7.2.1 + validation |
+| **WiFi** | Handmatig | Auto-reconnect |
+| **Time Sync** | Geen | NTP synchronization |
 
 ---
 
