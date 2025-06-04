@@ -97,6 +97,7 @@ void testPSRAM(); // Function to test PSRAM
 
 // AutoTune functions
 bool promptForAutoTune(); // Function to prompt user for AutoTune with timeout
+void handleSerialCommands(); // Function to handle serial commands for AutoTune control
 
 // Display functions
 void initializeDisplayDevice(); // Function to initialize display device
@@ -952,6 +953,57 @@ bool promptForAutoTune() {
         Serial.println();
         return false;
     }
+}
+
+// Function to handle serial commands for AutoTune control
+void handleSerialCommands() {
+    Serial.println("Handling serial commands...");
+    
+    // Check if data is available to read
+    if (Serial.available() > 0) {
+        String command = Serial.readStringUntil('\n');
+        command.trim(); // Remove any leading/trailing whitespace
+        
+        Serial.print("Received command: '");
+        Serial.print(command);
+        Serial.println("'");
+        
+        // Convert command to lowercase for case-insensitive comparison
+        String lowerCommand = command;
+        lowerCommand.toLowerCase();
+        
+        // Handle known commands
+        if (lowerCommand == "start autotune") {
+            Serial.println("Starting AutoTune...");
+            if (climateController != nullptr) {
+                climateController->startTemperatureAutoTune();
+                Serial.println("AutoTune started");
+            } else {
+                Serial.println("Error: Climate controller not initialized");
+            }
+        } else if (lowerCommand == "stop autotune") {
+            Serial.println("Stopping AutoTune...");
+            if (climateController != nullptr) {
+                climateController->stopTemperatureAutoTune();
+                Serial.println("AutoTune stopped");
+            } else {
+                Serial.println("Error: Climate controller not initialized");
+            }
+        } else if (lowerCommand == "status") {
+            Serial.println("Fetching status...");
+            if (climateController != nullptr) {
+                // Print current climate status
+                climateController->printClimateStatus();
+            } else {
+                Serial.println("Error: Climate controller not initialized");
+            }
+        } else {
+            Serial.println("Unknown command, please try again");
+        }
+    } else {
+        Serial.println("No serial data available");
+    }
+    Serial.println("===============================");
 }
 
 
