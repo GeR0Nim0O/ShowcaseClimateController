@@ -168,9 +168,11 @@ bool ClimateConfig::validateSettings() {
     if (settings.humidityKp <= 0 || settings.humidityKi < 0 || settings.humidityKd < 0) {
         return false;
     }
-    
-    // Check update interval is reasonable
+      // Check update interval is reasonable
+    Serial.print("DEBUG: ClimateConfig::validateSettings() - updateInterval value: ");
+    Serial.println(settings.updateInterval);
     if (settings.updateInterval < 100 || settings.updateInterval > 10000) {
+        Serial.println("DEBUG: ClimateConfig::validateSettings() - updateInterval validation failed!");
         return false;
     }
     
