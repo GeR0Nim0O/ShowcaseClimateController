@@ -94,10 +94,27 @@ public:
     void setFanInteriorEnabled(bool enabled) { settings.fanInteriorEnabled = enabled; }
     void setFanExteriorEnabled(bool enabled) { settings.fanExteriorEnabled = enabled; }
     void setUpdateInterval(uint16_t interval) { settings.updateInterval = interval; }    void setClimateMode(const String& mode) { strncpy(settings.climateMode, mode.c_str(), 15); settings.climateMode[15] = '\0'; }
-    void setHumidityMode(const String& mode) { strncpy(settings.humidityMode, mode.c_str(), 15); settings.humidityMode[15] = '\0'; }
-    void setAutoFanControl(bool enabled) { settings.autoFanControl = enabled; }
+    void setHumidityMode(const String& mode) { strncpy(settings.humidityMode, mode.c_str(), 15); settings.humidityMode[15] = '\0'; }    void setAutoFanControl(bool enabled) { settings.autoFanControl = enabled; }
     void setTemperatureHysteresis(float value) { settings.temperatureHysteresis = value; }
     void setHumidityHysteresis(float value) { settings.humidityHysteresis = value; }
+    
+    // AutoTune getters and setters
+    bool hasAutoTuneResults() const { return settings.hasAutoTuneResults; }
+    float getAutoTuneKp() const { return settings.autoTuneKp; }
+    float getAutoTuneKi() const { return settings.autoTuneKi; }
+    float getAutoTuneKd() const { return settings.autoTuneKd; }
+    void setAutoTuneResults(float kp, float ki, float kd) { 
+        settings.hasAutoTuneResults = true;
+        settings.autoTuneKp = kp; 
+        settings.autoTuneKi = ki; 
+        settings.autoTuneKd = kd; 
+    }
+    void clearAutoTuneResults() { 
+        settings.hasAutoTuneResults = false;
+        settings.autoTuneKp = 0.0;
+        settings.autoTuneKi = 0.0;
+        settings.autoTuneKd = 0.0;
+    }
       // Utility
     void printSettings();
     bool validateSettings();
