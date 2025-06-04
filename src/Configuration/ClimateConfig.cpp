@@ -461,3 +461,28 @@ bool ClimateConfig::createDefaultJsonFile(const String& filePath) {
     // Save defaults to JSON file
     return saveToJsonFile(filePath);
 }
+
+void ClimateConfig::clearEEPROM() {
+    Serial.println("DEBUG: ClimateConfig::clearEEPROM() - Clearing EEPROM");
+    
+    // Clear EEPROM by writing zeros
+    for (int i = 0; i < EEPROM_SIZE; i++) {
+        EEPROM.write(i, 0);
+    }
+    EEPROM.commit();
+    
+    Serial.println("DEBUG: ClimateConfig::clearEEPROM() - EEPROM cleared, forcing reload from JSON");
+    
+    // Force reload from JSON files
+    if (loadFromJsonFile("/data/config.json")) {
+        Serial.println("DEBUG: ClimateConfig - Successfully reloaded from main config.json after EEPROM clear");
+        saveSettings(); // Save to EEPROM
+    } else if (loadFromJsonFile()) {
+        Serial.println("DEBUG: ClimateConfig - Successfully reloaded from ClimateConfig.json after EEPROM clear");
+        saveSettings(); // Save to EEPROM
+    } else {
+        Serial.println("DEBUG: ClimateConfig - No JSON files available, loading defaults after EEPROM clear");
+        loadDefaults();
+        saveSettings();
+    }
+}
