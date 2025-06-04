@@ -112,16 +112,13 @@
 
 ## Error Handling
 
-### Showcase - Robust
-- ✅ **Graceful degradation**: Systeem blijft draaien
-- ✅ **Retry mechanisms**: 3x retry met exponential backoff
-- ✅ **Checksum validation**: Data integriteit
-- ✅ **Emergency shutdown**: Safety limits
-
-### Casekeeper - Basic
-- ❌ Basis error logging
-- ❌ Geen recovery
-- ❌ Geen validation
+| Error Type | Showcase | Casekeeper |
+|------------|----------|------------|
+| **Hardware Falen** | Graceful degradation | Crash |
+| **Network Issues** | Retry met backoff | Geen recovery |
+| **Data Corruption** | Checksum validation | Geen detectie |
+| **Config Fouten** | Fallback naar defaults | System halt |
+| **Sensor Fouten** | Continue met anderen | Geen handling |
 
 ---
 
