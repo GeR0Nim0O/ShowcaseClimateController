@@ -255,7 +255,8 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
     // Iterate through each device configuration in the JSON
     for (JsonPair devicePair : devicesConfig) {
         String deviceKey = devicePair.key().c_str();
-        JsonObject deviceConfig = devicePair.value().as<JsonObject>();        if (deviceConfig.isNull()) {
+        JsonObject deviceConfig = devicePair.value().as<JsonObject>();
+          if (deviceConfig.isNull()) {
             Serial.print("Skipping invalid device config for: ");
             Serial.println(deviceKey);
             continue;
