@@ -153,4 +153,4 @@
 
 ---
 
-*Ron Groenen - Fontys Semester 4 - Advanced Embedded Systems*
+*Ron Groenen - Fontys Semester 4 - Junior Embedded Software Engineer*
