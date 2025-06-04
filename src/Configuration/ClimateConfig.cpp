@@ -80,10 +80,15 @@ void ClimateConfig::loadDefaults() {
     strncpy(settings.climateMode, "AUTO", 15);
     settings.climateMode[15] = '\0';
     strncpy(settings.humidityMode, "AUTO", 15);
-    settings.humidityMode[15] = '\0';
-    settings.autoFanControl = true;
+    settings.humidityMode[15] = '\0';    settings.autoFanControl = true;
     settings.temperatureHysteresis = 0.5;
     settings.humidityHysteresis = 2.0;
+    
+    // Initialize AutoTune results as empty
+    settings.hasAutoTuneResults = false;
+    settings.autoTuneKp = 0.0;
+    settings.autoTuneKi = 0.0;
+    settings.autoTuneKd = 0.0;
     
     Serial.print("DEBUG: ClimateConfig::loadDefaults() - updateInterval set to: ");
     Serial.println(settings.updateInterval);
