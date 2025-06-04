@@ -124,12 +124,9 @@ private:
       // PID controllers
     PID* temperaturePID;
     PID* humidityPID;
-    
-    // PID AutoTune controllers
+      // PID AutoTune controllers - Temperature only (humidity uses digital control)
     PID_ATune* temperatureAutoTuner;
-    PID_ATune* humidityAutoTuner;
     bool temperatureAutoTuning;
-    bool humidityAutoTuning;
     double autoTuneSetpoint;
     double autoTuneOutputStep;
     unsigned long autoTuneStartTime;
