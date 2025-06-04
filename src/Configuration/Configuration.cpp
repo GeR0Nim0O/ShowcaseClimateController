@@ -705,13 +705,13 @@ void Configuration::parseMainProgramConfig(const JsonObject& config) {
 }
 
 void Configuration::parseClimateControllerConfig(const JsonObject& config) {
-    climateControllerConfig["enabled"] = config["enabled"] | true;
-    climateControllerConfig["temperature_setpoint"] = String(config["temperature_setpoint"] | 22.0);
-    climateControllerConfig["humidity_setpoint"] = String(config["humidity_setpoint"] | 50.0);
-    climateControllerConfig["climate_mode"] = config["climate_mode"] | "AUTO";
-    climateControllerConfig["humidity_mode"] = config["humidity_mode"] | "AUTO";
-    climateControllerConfig["auto_fan_control"] = config["auto_fan_control"] | true;
-    climateControllerConfig["update_interval_ms"] = String(config["update_interval_ms"] | 1000);
+    climateControllerConfig["enabled"] = config["enabled"].as<bool>() ? "1" : "0";
+    climateControllerConfig["temperature_setpoint"] = String(config["temperature_setpoint"].as<double>());
+    climateControllerConfig["humidity_setpoint"] = String(config["humidity_setpoint"].as<double>());
+    climateControllerConfig["climate_mode"] = config["climate_mode"].as<String>();
+    climateControllerConfig["humidity_mode"] = config["humidity_mode"].as<String>();
+    climateControllerConfig["auto_fan_control"] = config["auto_fan_control"].as<bool>() ? "1" : "0";
+    climateControllerConfig["update_interval_ms"] = String(config["update_interval_ms"].as<int>());
     
     // Parse safety limits
     if (config["safety_limits"].is<JsonObject>()) {
