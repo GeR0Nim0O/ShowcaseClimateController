@@ -452,11 +452,23 @@ bool ClimateConfig::saveToJsonFile(const String& filePath) {
       // Control parameters
     JsonObject control = climate["control_parameters"].to<JsonObject>();
     control["temperature_hysteresis"] = settings.temperatureHysteresis;
-    control["humidity_hysteresis"] = settings.humidityHysteresis;
-      // Fan settings
+    control["humidity_hysteresis"] = settings.humidityHysteresis;    // Fan settings
     JsonObject fans = climate["fan_settings"].to<JsonObject>();
     fans["interior_fan_enabled"] = settings.fanInteriorEnabled;
     fans["exterior_fan_enabled"] = settings.fanExteriorEnabled;
+    
+    // AutoTune results
+    JsonObject autoTune = climate["autotune_results"].to<JsonObject>();
+    autoTune["has_results"] = settings.hasAutoTuneResults;
+    if (settings.hasAutoTuneResults) {
+        autoTune["kp"] = settings.autoTuneKp;
+        autoTune["ki"] = settings.autoTuneKi;
+        autoTune["kd"] = settings.autoTuneKd;
+    } else {
+        autoTune["kp"] = 0.0;
+        autoTune["ki"] = 0.0;
+        autoTune["kd"] = 0.0;
+    }
       // Metadata
     JsonObject metadata = doc["metadata"].to<JsonObject>();
     metadata["version"] = "1.0";
