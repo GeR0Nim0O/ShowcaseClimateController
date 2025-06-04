@@ -694,12 +694,12 @@ void Configuration::parseMqttThrottlingConfig(const JsonObject& config) {
 
 void Configuration::parseMainProgramConfig(const JsonObject& config) {
     std::map<String, String> mainProgramConfig;
-    mainProgramConfig["status_update_interval_ms"] = String(config["status_update_interval_ms"] | 60000);
-    mainProgramConfig["time_fetch_interval_ms"] = String(config["time_fetch_interval_ms"] | 3600000);
-    mainProgramConfig["connection_retry_interval_ms"] = String(config["connection_retry_interval_ms"] | 60000);
-    mainProgramConfig["startup_delay_ms"] = String(config["startup_delay_ms"] | 5000);
-    mainProgramConfig["wifi_connection_timeout_ms"] = String(config["wifi_connection_timeout_ms"] | 15000);
-    mainProgramConfig["button_press_timeout_ms"] = String(config["button_press_timeout_ms"] | 5000);
+    mainProgramConfig["status_update_interval_ms"] = String(config["status_update_interval_ms"].as<int>());
+    mainProgramConfig["time_fetch_interval_ms"] = String(config["time_fetch_interval_ms"].as<int>());
+    mainProgramConfig["connection_retry_interval_ms"] = String(config["connection_retry_interval_ms"].as<int>());
+    mainProgramConfig["startup_delay_ms"] = String(config["startup_delay_ms"].as<int>());
+    mainProgramConfig["wifi_connection_timeout_ms"] = String(config["wifi_connection_timeout_ms"].as<int>());
+    mainProgramConfig["button_press_timeout_ms"] = String(config["button_press_timeout_ms"].as<int>());
     
     // Store in systemConfig for compatibility with existing getters
     systemConfig["status_update_interval_ms"] = mainProgramConfig["status_update_interval_ms"];
