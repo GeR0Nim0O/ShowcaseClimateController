@@ -300,15 +300,58 @@ void ClimateController::update() {
 }
 
 void ClimateController::updateSensorReadings() {
+    if (sensor == nullptr) {
+        Serial.println("DEBUG: Climate Controller sensor is null!");
+        return;
+    }
+    
+    if (!sensor->isInitialized()) {
+        Serial.println("DEBUG: Climate Controller sensor is not initialized!");
+        return;
+    }
+    
+    Serial.println("DEBUG: Climate Controller updating sensor readings...");
+    
+    // Get readings before sensor update for comparison
+    float tempBefore = sensor->getTemperature();
+    float humBefore = sensor->getHumidity();
+    
+    Serial.print("DEBUG: Sensor readings before update - Temp: ");
+    Serial.print(tempBefore);
+    Serial.print("°C, Humidity: ");
+    Serial.print(humBefore);
+    Serial.println("%");
+    
     sensor->update();
+    
     currentTemperature = sensor->getTemperature();
     currentHumidity = sensor->getHumidity();
+    
+    Serial.print("DEBUG: Sensor readings after update - Temp: ");
+    Serial.print(currentTemperature);
+    Serial.print("°C, Humidity: ");
+    Serial.print(currentHumidity);
+    Serial.println("%");
+    
+    // Check if readings are valid
+    if (isnan(currentTemperature) || isnan(currentHumidity)) {
+        Serial.println("DEBUG: WARNING - NaN readings detected from sensor!");
+    }
+    
+    if (currentTemperature == 0.0 && currentHumidity == 0.0) {
+        Serial.println("DEBUG: WARNING - Zero readings detected, sensor may not be updating!");
+    }
     
     // Update PID inputs
     tempInput = currentTemperature;
     tempSetpoint = temperatureSetpoint;
     humInput = currentHumidity;
     humSetpoint = humiditySetpoint;
+    
+    Serial.print("DEBUG: PID inputs updated - tempInput: ");
+    Serial.print(tempInput);
+    Serial.print(", humInput: ");
+    Serial.println(humInput);
 }
 
 void ClimateController::updateTemperatureControl() {
