@@ -306,9 +306,11 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
     
     settings.autoFanControl = climate["auto_fan_control"].as<bool>();
     if (!climate["auto_fan_control"]) settings.autoFanControl = true;
-    
-    settings.updateInterval = climate["update_interval_ms"].as<int>();
+      settings.updateInterval = climate["update_interval_ms"].as<int>();
     if (!climate["update_interval_ms"]) settings.updateInterval = 1000;
+    
+    Serial.print("DEBUG: ClimateConfig - JSON updateInterval parsed as: ");
+    Serial.println(settings.updateInterval);
       // Load safety limits
     JsonObject safety = climate["safety_limits"];
     if (safety) {
