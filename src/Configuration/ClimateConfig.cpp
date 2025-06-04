@@ -24,15 +24,32 @@ bool ClimateConfig::begin() {
         return false;
     }
     
-    // Try to load settings from JSON file first, then from EEPROM
-    if (!loadFromJsonFile()) {
-        Serial.println("No valid JSON file found, trying EEPROM");
-        if (!loadSettings()) {
-            Serial.println("No valid settings found in EEPROM, loading defaults");
-            loadDefaults();
-            saveSettings(); // Save the defaults to EEPROM
-            createDefaultJsonFile(); // Create default JSON file
-        }
+    // Try to load settings from main config.json first, then dedicated ClimateConfig.json, then EEPROM
+    Serial.println("DEBUG: ClimateConfig::begin() - Attempting to load from main config.json");
+    if (loadFromJsonFile("/data/config.json")) {
+        Serial.println("DEBUG: ClimateConfig - Successfully loaded from main config.json");
+        saveSettings(); // Save to EEPROM as backup
+        return true;
+    }
+    
+    Serial.println("DEBUG: ClimateConfig::begin() - Main config.json failed, trying dedicated ClimateConfig.json");
+    if (loadFromJsonFile()) {
+        Serial.println("DEBUG: ClimateConfig - Successfully loaded from ClimateConfig.json");
+        saveSettings(); // Save to EEPROM as backup
+        return true;
+    }
+    
+    Serial.println("No valid JSON file found, trying EEPROM");
+    if (!loadSettings()) {
+        Serial.println("No valid settings found in EEPROM, loading defaults");
+        loadDefaults();
+        Serial.print("DEBUG: ClimateConfig - Default updateInterval set to: ");
+        Serial.println(settings.updateInterval);
+        saveSettings(); // Save the defaults to EEPROM
+        createDefaultJsonFile(); // Create default JSON file
+    } else {
+        Serial.print("DEBUG: ClimateConfig - EEPROM updateInterval loaded as: ");
+        Serial.println(settings.updateInterval);
     }
     
     return true;
