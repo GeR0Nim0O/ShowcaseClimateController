@@ -177,6 +177,32 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
     Serial.println("ClimateController constructor completed successfully");
 }
 
+ClimateController::~ClimateController() {
+    // Clean up PID controllers
+    if (temperaturePID != nullptr) {
+        delete temperaturePID;
+        temperaturePID = nullptr;
+    }
+    
+    if (humidityPID != nullptr) {
+        delete humidityPID;
+        humidityPID = nullptr;
+    }
+    
+    // Clean up AutoTune controllers
+    if (temperatureAutoTuner != nullptr) {
+        delete temperatureAutoTuner;
+        temperatureAutoTuner = nullptr;
+    }
+    
+    if (humidityAutoTuner != nullptr) {
+        delete humidityAutoTuner;
+        humidityAutoTuner = nullptr;
+    }
+    
+    Serial.println("ClimateController destroyed, resources cleaned up");
+}
+
 bool ClimateController::begin() {
     // Load updateInterval from ClimateConfig
     ClimateConfig& climateConfig = ClimateConfig::getInstance();
