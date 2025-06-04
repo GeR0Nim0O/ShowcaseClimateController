@@ -327,7 +327,7 @@ void setup()
       Serial.println("RTC not connected or not initialized. Skipping RTC time fetch.");
     }
 
-    Serial.println("12. Attempting MQTT connection...");
+    Serial.println("13. Attempting MQTT connection...");
     // Try to connect to MQTT broker only if WiFi is connected
     if (!WifiMqttHandler::connectToMqttBrokerWithCheck(client, espClient, 
         Configuration::getMqttsServer(), rootCACertificate, 
