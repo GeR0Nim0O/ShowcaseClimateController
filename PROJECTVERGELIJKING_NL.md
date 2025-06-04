@@ -89,16 +89,13 @@
 
 ## User Interface
 
-### Showcase
-- 🖥️ **OLED Display**: Real-time status
-- 🎚️ **Rotary Encoder**: Settings aanpassing
-- 💾 **Save functie**: Instellingen opslaan
-- 📊 **Visual feedback**: Heating/Cooling status
-
-### Casekeeper
-- ❌ Geen display
-- ❌ Geen user input
-- 📡 Alleen serial debugging
+| Interface Element | Showcase | Casekeeper |
+|-------------------|----------|------------|
+| **Display** | OLED real-time status | Geen |
+| **Input** | Rotary encoder | Geen |
+| **Feedback** | Visual + Audio | Serial debugging |
+| **Settings** | Interactive menu | Code wijzigen |
+| **Save** | Permanente opslag | Niet mogelijk |
 
 ---
 
