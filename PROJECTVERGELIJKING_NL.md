@@ -112,13 +112,13 @@
 
 ## Error Handling
 
-| Error Type | Showcase | Casekeeper |
-|------------|----------|------------|
-| **Hardware Falen** | Graceful degradation | Crash |
-| **Network Issues** | Retry met backoff | Geen recovery |
-| **Data Corruption** | Checksum validation | Geen detectie |
-| **Config Fouten** | Fallback naar defaults | System halt |
-| **Sensor Fouten** | Continue met anderen | Geen handling |
+| Error Type | Casekeeper | Showcase |
+|------------|------------|----------|
+| **Hardware Falen** | Crash | Graceful degradation |
+| **Network Issues** | Geen recovery | Retry met backoff |
+| **Data Corruption** | Geen detectie | Checksum validation |
+| **Config Fouten** | System halt | Fallback naar defaults |
+| **Sensor Fouten** | Geen handling | Continue met anderen |
 
 ---
 
