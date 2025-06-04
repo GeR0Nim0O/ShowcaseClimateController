@@ -175,6 +175,14 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
 }
 
 bool ClimateController::begin() {
+    // Load updateInterval from ClimateConfig
+    ClimateConfig& climateConfig = ClimateConfig::getInstance();
+    updateInterval = climateConfig.getUpdateInterval();
+    
+    Serial.print("DEBUG: ClimateController::begin() - Updated updateInterval from ClimateConfig: ");
+    Serial.print(updateInterval);
+    Serial.println(" ms");
+    
     // Initialize DAC if available
     if (dac != nullptr) {
         // Check if DAC is already initialized (to avoid double initialization)
