@@ -28,10 +28,10 @@
 | Functie | Casekeeper | Showcase |
 |---------|------------|----------|
 | **Temperatuur** | Monitoring alleen | PID regeling |
-| **Vochtigheid** | Monitoring alleen | PID regeling |
+| **Vochtigheid** | Monitoring alleen | Monitoring + setpoint controle |
 | **Besturing** | Geen | 4 modi: AUTO/HEATING/COOLING/OFF |
 | **Uitgangen** | Geen | 0-5V DAC voor vermogensregeling |
-| **Interface** | Serial debugging | OLED display + rotary encoder |
+| **Interface** | Serial debugging | LCD display + rotary encoder |
 | **Opslag** | Geen persistentie | EEPROM met checksum |
 
 ---
