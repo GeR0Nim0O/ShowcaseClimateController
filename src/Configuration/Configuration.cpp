@@ -943,8 +943,19 @@ unsigned long Configuration::getClimateUpdateInterval() {
     Serial.print(intervalStr);
     Serial.print("', converted to int: ");
     Serial.print(interval);
-    Serial.print(", expected: 1000");
+    Serial.print(", expected: 1000, climateControllerConfig size: ");
+    Serial.print(climateControllerConfig.size());
     Serial.println();
+    
+    // Debug: Print all climate controller config values
+    Serial.println("DEBUG: All climateControllerConfig values:");
+    for (auto it = climateControllerConfig.begin(); it != climateControllerConfig.end(); ++it) {
+        Serial.print("  ");
+        Serial.print(it->first.c_str());
+        Serial.print(" = '");
+        Serial.print(it->second.c_str());
+        Serial.println("'");
+    }
     
     // Safety check - if the value is unreasonable, use default
     if (interval == 0 || interval > 3600000) { // Max 1 hour
