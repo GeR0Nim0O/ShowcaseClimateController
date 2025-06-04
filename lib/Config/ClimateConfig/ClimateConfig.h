@@ -91,10 +91,10 @@ public:
     void setAutoFanControl(bool enabled) { settings.autoFanControl = enabled; }
     void setTemperatureHysteresis(float value) { settings.temperatureHysteresis = value; }
     void setHumidityHysteresis(float value) { settings.humidityHysteresis = value; }
-    
-    // Utility
+      // Utility
     void printSettings();
     bool validateSettings();
+    void clearEEPROM(); // Clear EEPROM and force reload from JSON
 
 private:
     ClimateConfig() = default;
