@@ -67,16 +67,12 @@
 
 ## Data Persistentie
 
-### Showcase - Multi-Level Storage
-1. **SD Card** → Primary config
-2. **SPIFFS** → Fallback config  
-3. **EEPROM** → Runtime settings (met checksum)
-4. **Defaults** → Last resort
-
-### Casekeeper - Runtime Only
-- Alleen JSON configuratie
-- Geen persistentie
-- Settings verloren bij reboot
+| Laag | Casekeeper | Showcase |
+|------|------------|----------|
+| **Primary** | Runtime JSON | SD Card |
+| **Fallback** | Geen | SPIFFS |
+| **Runtime** | Geen persistentie | EEPROM met checksum |
+| **Emergency** | Geen | Default waarden |
 
 ---
 
