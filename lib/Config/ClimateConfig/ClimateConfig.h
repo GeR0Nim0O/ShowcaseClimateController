@@ -29,6 +29,13 @@ struct ClimateSettings {
     bool autoFanControl;
     float temperatureHysteresis;
     float humidityHysteresis;
+    
+    // AutoTune results
+    bool hasAutoTuneResults;
+    float autoTuneKp;
+    float autoTuneKi;
+    float autoTuneKd;
+    
     uint32_t checksum;
 };
 
