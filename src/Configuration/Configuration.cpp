@@ -673,9 +673,9 @@ void Configuration::parseProjectConfig(const JsonObject& config) {
 }
 
 void Configuration::parseCustomWifiConfig(const JsonObject& config) {
-    customWifiConfig["enable"] = config["enable"] | false;
-    customWifiConfig["ssid"] = config["ssid"] | "";
-    customWifiConfig["password"] = config["password"] | "";
+    customWifiConfig["enable"] = config["enable"].as<bool>() ? "1" : "0";
+    customWifiConfig["ssid"] = config["ssid"].as<String>();
+    customWifiConfig["password"] = config["password"].as<String>();
 }
 
 void Configuration::parseCustomMqttConfig(const JsonObject& config) {
