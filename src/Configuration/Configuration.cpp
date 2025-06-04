@@ -679,10 +679,10 @@ void Configuration::parseCustomWifiConfig(const JsonObject& config) {
 }
 
 void Configuration::parseCustomMqttConfig(const JsonObject& config) {
-    customMqttConfig["enable"] = config["enable"] | false;
-    customMqttConfig["server"] = config["server"] | "";
-    customMqttConfig["port"] = String(config["port"] | 8883);
-    customMqttConfig["token"] = config["token"] | "";
+    customMqttConfig["enable"] = config["enable"].as<bool>() ? "1" : "0";
+    customMqttConfig["server"] = config["server"].as<String>();
+    customMqttConfig["port"] = String(config["port"].as<int>());
+    customMqttConfig["token"] = config["token"].as<String>();
 }
 
 void Configuration::parseMqttThrottlingConfig(const JsonObject& config) {
