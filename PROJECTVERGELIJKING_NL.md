@@ -101,30 +101,12 @@
 
 ## Development Environment
 
-### Showcase - Professional
-```ini
-# Advanced PlatformIO setup
-board_build.flash_mode = qio
-board_build.psram_type = opi
-board_build.memory_type = qio_opi
-build_flags = -DCORE_DEBUG_LEVEL=5
-
-# Versioned libraries
-lib_deps = 
-    br3ttb/PID@^1.0.0
-    bblanchon/ArduinoJson@7.2.1
-    arduino-libraries/NTPClient@^3.2.1
-```
-
-### Casekeeper - Basic
-```ini
-# Minimal setup
-platform = espressif32
-board = esp32-poe-iso
-lib_deps = 
-    PubSubClient
-    ArduinoJson
-```
+| Aspect | Showcase | Casekeeper |
+|--------|----------|------------|
+| **PlatformIO Setup** | Advanced (QIO, PSRAM) | Minimal |
+| **Debug Level** | Maximum (5) | Basis |
+| **Library Versions** | Vastgezet (PID, ArduinoJson) | Floating |
+| **Build Optimization** | Custom flags | Standaard |
 
 ---
 
