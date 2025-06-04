@@ -783,8 +783,8 @@ void Configuration::parseDisplayConfig(const JsonObject& config) {
 }
 
 void Configuration::parseSystemConfig(const JsonObject& config) {
-    systemConfig["status_update_interval_ms"] = String(config["status_update_interval_ms"] | 60000);
-    systemConfig["time_fetch_interval_ms"] = String(config["time_fetch_interval_ms"] | 3600000);
+    systemConfig["status_update_interval_ms"] = String(config["status_update_interval_ms"].as<int>());
+    systemConfig["time_fetch_interval_ms"] = String(config["time_fetch_interval_ms"].as<int>());
 }
 
 // Getter and setter implementations
