@@ -58,7 +58,11 @@ public:
     float getHumidityKd() const { return settings.humidityKd; }
     bool getFanInteriorEnabled() const { return settings.fanInteriorEnabled; }
     bool getFanExteriorEnabled() const { return settings.fanExteriorEnabled; }
-    uint16_t getUpdateInterval() const { return settings.updateInterval; }
+    uint16_t getUpdateInterval() const { 
+        Serial.print("DEBUG: ClimateConfig::getUpdateInterval() returning: ");
+        Serial.println(settings.updateInterval);
+        return settings.updateInterval; 
+    }
     float getMaxTemperature() const { return settings.maxTemperature; }
     float getMinTemperature() const { return settings.minTemperature; }
     float getMaxHumidity() const { return settings.maxHumidity; }
