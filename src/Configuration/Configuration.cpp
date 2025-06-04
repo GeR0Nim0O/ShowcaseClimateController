@@ -712,14 +712,13 @@ void Configuration::parseClimateControllerConfig(const JsonObject& config) {
     climateControllerConfig["humidity_mode"] = config["humidity_mode"].as<String>();
     climateControllerConfig["auto_fan_control"] = config["auto_fan_control"].as<bool>() ? "1" : "0";
     climateControllerConfig["update_interval_ms"] = String(config["update_interval_ms"].as<int>());
-    
-    // Parse safety limits
+      // Parse safety limits
     if (config["safety_limits"].is<JsonObject>()) {
         JsonObject safetyLimits = config["safety_limits"];
-        climateControllerConfig["max_temperature"] = String(safetyLimits["max_temperature"] | 35.0);
-        climateControllerConfig["min_temperature"] = String(safetyLimits["min_temperature"] | 10.0);
-        climateControllerConfig["max_humidity"] = String(safetyLimits["max_humidity"] | 80.0);
-        climateControllerConfig["min_humidity"] = String(safetyLimits["min_humidity"] | 20.0);
+        climateControllerConfig["max_temperature"] = String(safetyLimits["max_temperature"].as<double>());
+        climateControllerConfig["min_temperature"] = String(safetyLimits["min_temperature"].as<double>());
+        climateControllerConfig["max_humidity"] = String(safetyLimits["max_humidity"].as<double>());
+        climateControllerConfig["min_humidity"] = String(safetyLimits["min_humidity"].as<double>());
     } else {
         // Default values if safety_limits section is missing
         climateControllerConfig["max_temperature"] = String(35.0);
