@@ -261,11 +261,10 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             Serial.print("Skipping invalid device config for: ");
             Serial.println(deviceKey);
             continue;
-        }        // Extract device configuration
-        String deviceType = deviceConfig["Type"] | "";
-        String deviceTypeNumber = deviceConfig["TypeNumber"] | "";
-        String addressStr = deviceConfig["Address"] | "";
-        String deviceMode = deviceConfig["Mode"] | "";
+        }        // Extract device configuration        String deviceType = deviceConfig["Type"].as<String>();
+        String deviceTypeNumber = deviceConfig["TypeNumber"].as<String>();
+        String addressStr = deviceConfig["Address"].as<String>();
+        String deviceMode = deviceConfig["Mode"].as<String>();
         
         // Extract label with modern ArduinoJson approach
         String deviceLabel = "";
