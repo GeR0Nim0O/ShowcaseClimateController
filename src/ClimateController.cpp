@@ -1274,22 +1274,6 @@ void ClimateController::printAutoTuneStatus() {
         Serial.print(tempOutput, 2);
         Serial.println("%");
         Serial.println("==================================");
-    } else if (humidityAutoTuning) {
-        unsigned long elapsed = (millis() - autoTuneStartTime) / 1000;
-        Serial.println("=== Humidity AutoTune Status ===");
-        Serial.print("Elapsed Time: ");
-        Serial.print(elapsed);
-        Serial.println(" seconds");
-        Serial.print("Current Humidity: ");
-        Serial.print(currentHumidity, 2);
-        Serial.println("%");
-        Serial.print("Target Setpoint: ");
-        Serial.print(autoTuneSetpoint, 2);
-        Serial.println("%");
-        Serial.print("Current Output: ");
-        Serial.print(humOutput, 2);
-        Serial.println("%");
-        Serial.println("===============================");
     } else {
         Serial.println("No AutoTune currently running");
     }
