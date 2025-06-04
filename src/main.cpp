@@ -343,10 +343,24 @@ void setup()
   Serial.println("========================================");
   Serial.println("      SETUP COMPLETE");
   Serial.println("========================================");
-  
-  delay(500);
+    delay(500);
   setupComplete = true; // Indicate that setup is complete
   Serial.println("System ready! Setup complete: " + String(setupComplete ? "YES" : "NO"));
+  
+  // Start AutoTune if requested
+  if (enableAutoTune && Configuration::isClimateControllerEnabled() && climateController != nullptr) {
+    Serial.println();
+    Serial.println("========================================");
+    Serial.println("       STARTING PID AutoTune");
+    Serial.println("========================================");
+    Serial.println("AutoTune process will now begin...");
+    Serial.println("This may take several minutes to complete.");
+    Serial.println("Temperature will fluctuate during calibration.");
+    Serial.println("========================================");
+    Serial.println();
+    
+    climateController->startTemperatureAutoTune();
+  }
   
   // Configure MQTT throttling from configuration
   Serial.print("MQTT throttling: ");
