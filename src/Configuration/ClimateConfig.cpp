@@ -38,8 +38,7 @@ bool ClimateConfig::begin() {
         saveSettings(); // Save to EEPROM as backup
         return true;
     }
-    
-    Serial.println("No valid JSON file found, trying EEPROM");
+      Serial.println("No valid JSON file found, trying EEPROM");
     if (!loadSettings()) {
         Serial.println("No valid settings found in EEPROM, loading defaults");
         loadDefaults();
@@ -50,6 +49,12 @@ bool ClimateConfig::begin() {
     } else {
         Serial.print("DEBUG: ClimateConfig - EEPROM updateInterval loaded as: ");
         Serial.println(settings.updateInterval);
+        
+        // Check if the loaded value looks corrupted (outside reasonable range)
+        if (settings.updateInterval < 100 || settings.updateInterval > 10000) {
+            Serial.println("DEBUG: ClimateConfig - EEPROM data appears corrupted, clearing and reloading");
+            clearEEPROM();
+        }
     }
     
     return true;
