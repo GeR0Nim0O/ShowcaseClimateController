@@ -16,10 +16,10 @@
 
 | Component | Showcase | Casekeeper | Voordeel |
 |-----------|----------|------------|----------|
-| **Platform** | ESP32-S3 Box | ESP32-POE-ISO | 4x meer Flash |
-| **Geheugen** | 16MB Flash + PSRAM | 4MB Flash | Complexere apps |
-| **Flash Mode** | QIO | Standaard | 40% sneller |
-| **Debug Level** | Maximum (5) | Basis | Betere ontwikkeling |
+| **Platform** | ESP32-POE-ISO | ESP32-S3 Box | 4x meer Flash |
+| **Geheugen** | 4MB Flash | 16MB Flash + PSRAM | Complexere apps |
+| **Flash Mode** | Standaard | QIO | 40% sneller |
+| **Debug Level** | Basis | Maximum (5) | Betere ontwikkeling |
 
 ---
 
