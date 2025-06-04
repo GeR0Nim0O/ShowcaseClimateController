@@ -379,8 +379,7 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         settings.humidityHysteresis = control["humidity_hysteresis"].as<double>();
         if (!control["humidity_hysteresis"]) settings.humidityHysteresis = 2.0;
     }
-    
-    // Load fan settings
+      // Load fan settings
     JsonObject fans = climate["fan_settings"];
     if (fans) {
         settings.fanInteriorEnabled = fans["interior_fan_enabled"].as<bool>();
@@ -388,6 +387,28 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         
         settings.fanExteriorEnabled = fans["exterior_fan_enabled"].as<bool>();
         if (!fans["exterior_fan_enabled"]) settings.fanExteriorEnabled = false;
+    }
+    
+    // Load AutoTune results
+    JsonObject autoTune = climate["autotune_results"];
+    if (autoTune) {
+        settings.hasAutoTuneResults = autoTune["has_results"].as<bool>();
+        if (settings.hasAutoTuneResults) {
+            settings.autoTuneKp = autoTune["kp"].as<double>();
+            settings.autoTuneKi = autoTune["ki"].as<double>();
+            settings.autoTuneKd = autoTune["kd"].as<double>();
+            
+            Serial.println("AutoTune results loaded from JSON:");
+            Serial.print("  Kp: "); Serial.println(settings.autoTuneKp, 4);
+            Serial.print("  Ki: "); Serial.println(settings.autoTuneKi, 4);
+            Serial.print("  Kd: "); Serial.println(settings.autoTuneKd, 4);
+        }
+    } else {
+        // No AutoTune results in JSON
+        settings.hasAutoTuneResults = false;
+        settings.autoTuneKp = 0.0;
+        settings.autoTuneKi = 0.0;
+        settings.autoTuneKd = 0.0;
     }
     
     // Validate loaded settings
