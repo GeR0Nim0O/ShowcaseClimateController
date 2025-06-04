@@ -298,21 +298,8 @@ void ClimateController::update() {
                     applyFanControl();
                 }            }
             lastGpioRefresh = currentTime;
-        }
-          // Enhanced status printing - print on changes or periodically
+        }        // Enhanced status printing - print on changes or periodically
         printClimateStatusIfChanged();
-        
-        // CRITICAL FIX: Restore GPIO state to prevent interference with other devices
-        if (gpio != nullptr && gpioStateBefore != 0x00) {
-            uint8_t gpioStateAfter = gpio->getGPIOState();
-            Serial.print("DEBUG: GPIO state after operations: 0x");
-            Serial.print(gpioStateAfter, HEX);
-            Serial.print(", restoring to: 0x");            Serial.println(gpioStateBefore, HEX);
-            // Only restore if state actually changed to avoid unnecessary I2C operations
-            if (gpioStateAfter != gpioStateBefore) {
-                gpio->writeByte(gpioStateBefore);
-            }
-        }
         
         lastUpdate = currentTime;
     }
