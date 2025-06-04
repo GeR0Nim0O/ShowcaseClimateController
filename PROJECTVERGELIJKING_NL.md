@@ -82,7 +82,7 @@
 |---------|------------|----------|
 | **MQTT** | Basis | Throttled (30s) |
 | **JSON** | Basis | v7.2.1 + validation |
-| **WiFi** | Handmatig | Auto-reconnect |
+| **WiFi** | Auto-reconnect | Auto-reconnect |
 | **Time Sync** | NTP synchronization | NTP synchronization |
 
 ---
