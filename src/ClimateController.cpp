@@ -1199,11 +1199,16 @@ void ClimateController::updateAutoTune() {
             // Apply the new parameters
             temperaturePID->SetTunings(kp, ki, kd);
             temperaturePID->SetMode(AUTOMATIC);
-            
-            // Update ClimateConfig with new parameters
+              // Update ClimateConfig with new parameters
             ClimateConfig& climateConfig = ClimateConfig::getInstance();
             climateConfig.setTemperaturePID(kp, ki, kd);
+            
+            // Save AutoTune results separately for future use
+            climateConfig.setAutoTuneResults(kp, ki, kd);
             climateConfig.saveSettings();
+            
+            // Also update the JSON file
+            climateConfig.updateJsonFile("/data/ClimateConfig.json");
             
             Serial.println("=== Temperature AutoTune Complete ===");
             Serial.print("Optimized Kp: ");
@@ -1212,7 +1217,7 @@ void ClimateController::updateAutoTune() {
             Serial.println(ki, 4);
             Serial.print("Optimized Kd: ");
             Serial.println(kd, 4);
-            Serial.println("Parameters saved to configuration");
+            Serial.println("AutoTune results saved to configuration");
             Serial.println("====================================");
             
             // Clean up
