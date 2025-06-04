@@ -38,40 +38,20 @@
 
 ## Architectuur Vergelijking
 
-### Design Patterns
-
-| Pattern | Showcase | Casekeeper |
-|---------|----------|------------|
-| **Factory** | ✅ DeviceRegistry uitgebreid | ✅ DeviceRegistry basis |
-| **Singleton** | ✅ Configuration | ✅ Configuration |
-| **SOLID** | ✅ Volledig | ✅ Basis implementatie |
+| Aspect | Casekeeper | Showcase |
+|--------|------------|----------|
+| **Factory Pattern** | DeviceRegistry basis | DeviceRegistry uitgebreid |
+| **Singleton** | Configuration | Configuration |
+| **SOLID** | Basis implementatie | Volledig |
+| **Modules** | 4 basis modules | 7+ gespecialiseerde modules |
+| **Device Management** | Handmatige configuratie | Smart discovery + fallback |
 
 ### Code Structuur
 
-**Showcase** (Uitgebreide modules):
-```
-lib/
-├── Device/           # Base classes + factory patterns
-├── Sensors/          # SHT, BH1705, Scales + meer types
-├── GPIO/             # PCF8574 expander + advanced features
-├── DAC/              # GP8403 analog out voor regeling
-├── Display/          # LCD interface + user interaction
-├── Config/           # EEPROM settings + multi-level storage
-└── RTC/              # Real-time clock support
-```
-
-**Casekeeper** (Basis modules):
-```
-lib/
-├── Device/           # Basis device classes
-├── Sensors/          # SHT, BH1705, Scales (basis)
-├── GPIO/             # PCF8574 basis functionaliteit
-└── RTC/              # Real-time clock basis
-src/
-└── main.cpp          # Hoofdlogica
-```
-
-**Verschil**: Beide hebben modulaire structuur, maar Showcase heeft uitgebreidere en gespecialiseerdere modules.
+| Project | Modules |
+|---------|---------|
+| **Casekeeper** | Device, Sensors, GPIO, RTC |
+| **Showcase** | Device, Sensors, GPIO, RTC, DAC, Display, Config |
 
 ---
 
