@@ -318,7 +318,7 @@ void setup()
     Serial.println("✓ WiFi connected successfully during setup!");
     offlineMode = false;
     
-    Serial.println("11. Initializing time synchronization...");
+    Serial.println("12. Initializing time synchronization...");
     // Connect to TimeAPI and NTP only if WiFi is connected
     // Only fetch time from RTC if RTC is connected and initialized
     if (rtc && rtc->isInitialized()) {
