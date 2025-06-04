@@ -38,7 +38,9 @@ Modules: Device, Sensors, GPIO, RTC
 - **Besturingsmodi**: AUTO modus met vermogensgestuurde regeling
   - **Temperatuur**: Cool/Heat/Off via 0-5V DAC vermogensregeling
   - **Luchtvochtigheid**: Humidify/Dehumidify/Off
-- **Uitgangssignalen**: 0-5V DAC voor vermogensregeling van temperatuur actuatoren
+- **Uitgangssignalen**: 
+  - **0-5V DAC**: Vermogensregeling van temperatuur actuatoren
+  - **GPIO Expander**: Aansturen van temperatuur regelaar, luchtvochtigheid regelaar, en interne/externe luchtcirculatie
 - **Sensor Uitbreiding**: Ondersteuning voor 5+ verschillende sensor types
 
 ### User Interface Toevoegingen
