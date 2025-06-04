@@ -405,12 +405,15 @@ void loop() {
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
     updateClimateController();
   }
-    // Update display with climate status periodically
+  // Update display with climate status periodically
   unsigned long displayUpdateInterval = Configuration::getDisplayUpdateInterval();
   if (millis() - lastDisplayUpdate >= displayUpdateInterval) {
     updateDisplayWithClimateStatus();
     lastDisplayUpdate = millis();
   }
+
+  // Handle serial commands for AutoTune control
+  handleSerialCommands();
 }
 
 // New function to read and print initial sensor values
