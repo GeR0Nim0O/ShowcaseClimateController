@@ -912,7 +912,14 @@ unsigned long Configuration::getMqttThrottlingInterval() {
 
 // Climate Controller configuration getters
 bool Configuration::isClimateControllerEnabled() {
-    return climateControllerConfig["enabled"] == "true" || climateControllerConfig["enabled"] == "1";
+    String enabledValue = climateControllerConfig["enabled"];
+    Serial.print("DEBUG: climateControllerConfig[\"enabled\"] = '");
+    Serial.print(enabledValue);
+    Serial.println("'");
+    bool result = enabledValue == "true" || enabledValue == "1";
+    Serial.print("DEBUG: isClimateControllerEnabled result = ");
+    Serial.println(result);
+    return result;
 }
 
 float Configuration::getClimateTemperatureSetpoint() {
