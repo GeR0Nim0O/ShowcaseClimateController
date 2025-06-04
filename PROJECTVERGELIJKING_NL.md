@@ -25,22 +25,14 @@
 
 ## Functionaliteit Vergelijking
 
-### Showcase Climate Controller
-- 🌡️ **Automatische temperatuurregeling** (PID)
-- 💧 **Vochtigheidscontrole** (PID) 
-- 🎛️ **4 besturingsmodi**: AUTO/HEATING/COOLING/OFF
-- 📊 **Analoge uitgangen**: 0-5V DAC voor vermogensregeling
-- 🖥️ **OLED display** met real-time status
-- 🎚️ **Rotary encoder** voor instellingen
-- 💾 **EEPROM opslag** voor instellingen
-
-### Casekeeper
-- 📈 **Alleen monitoring**: temperatuur/vochtigheid uitlezen
-- 📡 **Basis MQTT**: data verzending
-- ❌ **Geen regeling**: passieve sensoren
-
-### Resultaat
-**Showcase = Actief regelsysteem** vs **Casekeeper = Passief monitoring**
+| Functie | Casekeeper | Showcase |
+|---------|------------|----------|
+| **Temperatuur** | Monitoring alleen | PID regeling |
+| **Vochtigheid** | Monitoring alleen | PID regeling |
+| **Besturing** | Geen | 4 modi: AUTO/HEATING/COOLING/OFF |
+| **Uitgangen** | Geen | 0-5V DAC voor vermogensregeling |
+| **Interface** | Serial debugging | OLED display + rotary encoder |
+| **Opslag** | Geen persistentie | EEPROM met checksum |
 
 ---
 
