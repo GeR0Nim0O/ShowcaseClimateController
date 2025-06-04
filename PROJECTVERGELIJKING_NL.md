@@ -88,7 +88,7 @@ Modules: Device, Sensors, GPIO, RTC
 
 ### Key Achievements
 1. **Nieuwe functionaliteit**: Volledige klimaatregeling
-2. **Professional architectuur**: SOLID principles + design patterns
+2. **Professional architectuur**: design patterns
 3. **Enterprise features**: Multi-level config, error recovery, persistentie
 4. **User experience**: Display + interactive controls
 5. **Development quality**: Advanced debugging + structured codebase
