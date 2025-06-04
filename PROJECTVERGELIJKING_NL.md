@@ -93,7 +93,7 @@
 |-------------------|------------|----------|
 | **Display** | Geen | LCD real-time status |
 | **Input** | Geen | Rotary encoder |
-| **Feedback** | Serial debugging | Visual + Audio |
+| **Feedback** | Serial debugging | Visual feedback |
 | **Settings** | Code wijzigen | Interactive menu |
 | **Save** | Niet mogelijk | Permanente opslag |
 
