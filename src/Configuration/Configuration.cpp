@@ -666,10 +666,10 @@ void Configuration::parseMQTTConfig(const JsonObject& config) {
 }
 
 void Configuration::parseProjectConfig(const JsonObject& config) {
-    projectConfig["number"] = config["number"] | "12345";
-    projectConfig["showcase_id"] = config["showcase_id"] | "0.0";
-    projectConfig["device"] = config["device"] | "Showcase";
-    projectConfig["timezone"] = config["timezone"] | "UTC";
+    projectConfig["number"] = config["number"].as<String>();
+    projectConfig["showcase_id"] = config["showcase_id"].as<String>();
+    projectConfig["device"] = config["device"].as<String>();
+    projectConfig["timezone"] = config["timezone"].as<String>();
 }
 
 void Configuration::parseCustomWifiConfig(const JsonObject& config) {
