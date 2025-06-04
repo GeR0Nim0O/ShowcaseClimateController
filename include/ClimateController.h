@@ -126,9 +126,11 @@ private:
     PID* temperaturePID;
     PID* humidityPID;
     
-    // PID variables
-    double tempInput, tempOutput, tempSetpoint;
-    double humInput, humOutput, humSetpoint;
+    // PID Autotuning
+    PID_ATune* temperatureATune;
+    bool temperatureAutotuning;
+    double autotuneInput, autotuneOutput, autotuneSetpoint;
+    unsigned long autotuneStartTime;
     
     // Control states
     bool heatingActive;
@@ -139,7 +141,6 @@ private:
     bool fanInteriorActive;      // Add fan state tracking
     bool fanExteriorActive;      // Add fan state tracking
     bool autoFanControlEnabled; // Add auto fan control flag
-    bool temperatureAutotuning; // Add autotune state variable
     
     // Power levels for analog control
     float heatingPower;
