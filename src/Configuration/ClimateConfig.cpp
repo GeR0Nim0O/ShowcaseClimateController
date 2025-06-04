@@ -56,6 +56,7 @@ bool ClimateConfig::begin() {
 }
 
 void ClimateConfig::loadDefaults() {
+    Serial.println("DEBUG: ClimateConfig::loadDefaults() called");
     settings.temperatureSetpoint = 22.0;
     settings.humiditySetpoint = 50.0;
     settings.temperatureKp = 2.0;
@@ -66,7 +67,7 @@ void ClimateConfig::loadDefaults() {
     settings.humidityKd = 0.05;
     settings.fanInteriorEnabled = true;
     settings.fanExteriorEnabled = false;
-    settings.updateInterval = 1000; // 1 second
+    settings.updateInterval = 500; // Fix: Use 500ms like config.json
     settings.maxTemperature = 35.0;
     settings.minTemperature = 10.0;
     settings.maxHumidity = 80.0;
@@ -78,6 +79,9 @@ void ClimateConfig::loadDefaults() {
     settings.autoFanControl = true;
     settings.temperatureHysteresis = 0.5;
     settings.humidityHysteresis = 2.0;
+    
+    Serial.print("DEBUG: ClimateConfig::loadDefaults() - updateInterval set to: ");
+    Serial.println(settings.updateInterval);
 }
 
 bool ClimateConfig::saveSettings() {
