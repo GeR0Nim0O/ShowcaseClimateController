@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include <PID_v1.h>
-#include <PID_AutoTune_v0.h>
 #include "PCF8574gpio.h"
 #include "SHTsensor.h"
 #include "GP8403dac.h"
