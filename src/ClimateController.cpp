@@ -1202,23 +1202,6 @@ void ClimateController::stopAutoTune() {
         
         Serial.println("Temperature AutoTune stopped");
     }
-    
-    if (humidityAutoTuning) {
-        humidityAutoTuning = false;
-        
-        // Return PID to automatic mode
-        if (humidityPID != nullptr) {
-            humidityPID->SetMode(AUTOMATIC);
-        }
-        
-        // Clean up AutoTuner
-        if (humidityAutoTuner != nullptr) {
-            delete humidityAutoTuner;
-            humidityAutoTuner = nullptr;
-        }
-        
-        Serial.println("Humidity AutoTune stopped");
-    }
 }
 
 void ClimateController::updateAutoTune() {
