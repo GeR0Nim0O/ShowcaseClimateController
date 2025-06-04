@@ -879,26 +879,57 @@ void testPSRAM() {
     Serial.println("==================\n");
 }
 
-// Function to prompt user for AutoTune with timeout
+// Function to prompt user for AutoTune with 5-second timeout
 bool promptForAutoTune() {
-    Serial.println("AutoTune: Press 'Y' to start tuning, or wait 5 seconds to skip.");
+    Serial.println();
+    Serial.println("========================================");
+    Serial.println("       PID AutoTune Configuration");
+    Serial.println("========================================");
+    Serial.println("AutoTune will automatically determine optimal PID parameters");
+    Serial.println("for temperature control by analyzing system response.");
+    Serial.println();
+    Serial.println("WARNING: AutoTune process takes several minutes and will");
+    Serial.println("cause temperature fluctuations during calibration.");
+    Serial.println();
+    Serial.print("Enable AutoTune? Press 'Y' within 5 seconds or any key to skip: ");
+    Serial.flush();
     
     unsigned long startTime = millis();
-    while (millis() - startTime < 5000) {
-        if (Serial.available() > 0) {
-            char c = Serial.read();
-            if (c == 'Y' || c == 'y') {
-                Serial.println("AutoTune started.");
-                return true;
-            } else if (c == 'N' || c == 'n') {
-                Serial.println("AutoTune skipped.");
-                return false;
-            }
+    const unsigned long timeoutMs = 5000; // 5 seconds
+    bool inputReceived = false;
+    char response = 0;
+    
+    // Wait for input or timeout
+    while (millis() - startTime < timeoutMs && !inputReceived) {
+        if (Serial.available()) {
+            response = Serial.read();
+            inputReceived = true;
+            break;
         }
+        delay(10); // Small delay to prevent excessive CPU usage
     }
     
-    Serial.println("No input detected. Skipping AutoTune.");
-    return false;
+    if (inputReceived) {
+        Serial.println(response); // Echo the response
+        if (response == 'Y' || response == 'y') {
+            Serial.println("✓ AutoTune ENABLED");
+            Serial.println("AutoTune will start after system initialization completes.");
+            Serial.println("========================================");
+            Serial.println();
+            return true;
+        } else {
+            Serial.println("→ AutoTune skipped");
+            Serial.println("========================================");
+            Serial.println();
+            return false;
+        }
+    } else {
+        Serial.println("TIMEOUT");
+        Serial.println("→ AutoTune skipped (no input received)");
+        Serial.println("========================================");
+        Serial.println();
+        return false;
+    }
 }
 
 
