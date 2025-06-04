@@ -762,12 +762,11 @@ void Configuration::parseClimateControllerConfig(const JsonObject& config) {
         climateControllerConfig["hum_ki"] = String(0.2);
         climateControllerConfig["hum_kd"] = String(0.05);
     }
-    
-    // Parse control parameters
+      // Parse control parameters
     if (config["control_parameters"].is<JsonObject>()) {
         JsonObject controlParams = config["control_parameters"];
-        climateControllerConfig["temperature_hysteresis"] = String(controlParams["temperature_hysteresis"] | 0.1);
-        climateControllerConfig["humidity_hysteresis"] = String(controlParams["humidity_hysteresis"] | 0.5);
+        climateControllerConfig["temperature_hysteresis"] = String(controlParams["temperature_hysteresis"].as<double>());
+        climateControllerConfig["humidity_hysteresis"] = String(controlParams["humidity_hysteresis"].as<double>());
     } else {
         // Default values if control_parameters section is missing
         climateControllerConfig["temperature_hysteresis"] = String(0.1);
