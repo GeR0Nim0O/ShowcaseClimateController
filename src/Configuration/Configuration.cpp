@@ -775,7 +775,7 @@ void Configuration::parseClimateControllerConfig(const JsonObject& config) {
 }
 
 void Configuration::parseDisplayConfig(const JsonObject& config) {
-    displayConfig["update_interval_ms"] = String(config["update_interval_ms"] | 5000);
+    displayConfig["update_interval_ms"] = String(config["update_interval_ms"].as<int>());
 }
 
 void Configuration::parseSystemConfig(const JsonObject& config) {
