@@ -57,23 +57,11 @@
 
 ## Device Management
 
-### Showcase - Smart Discovery
-```cpp
-// Automatische device detectie
-SHTsensor* sensor = registry.getDeviceByTypeAndLabel("TemperatureHumidity", "Interior");
-
-// Fallback naar eerste beschikbare
-if (!sensor) {
-    sensor = registry.getDeviceByType("TemperatureHumidity", 0);
-}
-```
-### Casekeeper - Device Registry
-```cpp
-// Device registry met handmatige configuratie
-devices.push_back(new SHTsensor(wire, 0x44, 1, "SHT31", 0));
-```
-
-**Verschil**: Beide gebruiken DeviceRegistry, maar Showcase heeft intelligente discovery met fallback mechanismen.
+| Systeem | Casekeeper | Showcase |
+|---------|------------|----------|
+| **Detectie** | Handmatige configuratie | Smart discovery |
+| **Fallback** | Geen | Automatisch naar eerste beschikbare |
+| **Code** | `devices.push_back(new SHTsensor(...))` | `registry.getDeviceByTypeAndLabel(...)` |
 
 ---
 
