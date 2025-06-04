@@ -123,10 +123,18 @@ private:
     // Control modes
     ClimateMode climateMode;
     HumidityMode humidityMode;
-    
-    // PID controllers
+      // PID controllers
     PID* temperaturePID;
     PID* humidityPID;
+    
+    // PID AutoTune controllers
+    PID_ATune* temperatureAutoTuner;
+    PID_ATune* humidityAutoTuner;
+    bool temperatureAutoTuning;
+    bool humidityAutoTuning;
+    double autoTuneSetpoint;
+    double autoTuneOutputStep;
+    unsigned long autoTuneStartTime;
     
     // PID variables
     double tempInput, tempOutput, tempSetpoint;
