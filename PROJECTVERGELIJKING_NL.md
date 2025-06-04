@@ -35,7 +35,7 @@ Modules: Device, Sensors, GPIO, RTC
 ### Nieuwe Functionaliteit
 - **Temperatuurregeling**: PID controller voor actieve temperatuurregeling
 - **Luchtvochtigheidsregeling**: Setpoint controle voor actieve luchtvochtigheidsregeling
-- **Besturingsmodi**: AUTO modus met vermogensgestuurde regeling
+- **Volledig Automatische Klimaat Controle**: Vermogensgestuurde regeling
   - **Temperatuur**: Cool/Heat/Off via 0-5V DAC vermogensregeling
   - **Luchtvochtigheid**: Humidify/Dehumidify/Off
 - **Uitgangssignalen**: 
