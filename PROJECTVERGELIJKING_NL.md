@@ -42,7 +42,7 @@
 |--------|------------|----------|
 | **Factory Pattern** | DeviceRegistry basis | DeviceRegistry uitgebreid |
 | **Singleton** | Configuration | Configuration |
-| **SOLID** | Basis implementatie | Volledig |
+| **SOLID** | Basis implementatie | Volledig (S=Single Responsibility, O=Open/Closed, L=Liskov Substitution, I=Interface Segregation, D=Dependency Inversion) |
 | **Modules** | 4 basis modules | 7+ gespecialiseerde modules |
 | **Device Management** | Handmatige configuratie | Smart discovery + fallback |
 
