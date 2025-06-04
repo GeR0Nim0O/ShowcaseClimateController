@@ -124,14 +124,14 @@
 
 ## Kwantitatieve Vergelijking
 
-| Metric | Showcase | Casekeeper | Verbetering |
-|--------|----------|------------|-------------|
-| **Core Functionaliteit** | Klimaatregeling + monitoring | Alleen monitoring | +200% |
-| **Flash Memory** | 16MB | 4MB | +300% |
-| **Sensor Types** | 5+ typen | 3 typen | +67% |
-| **Configuration Layers** | 4 lagen | 1 laag | +300% |
-| **Code Modules** | 15+ modules | 5 modules | +200% |
-| **Error Recovery** | 3 niveaus | 0 niveaus | +∞ |
+| Metric | Casekeeper | Showcase | Verbetering |
+|--------|------------|----------|-------------|
+| **Core Functionaliteit** | Alleen monitoring | Klimaatregeling + monitoring | +200% |
+| **Flash Memory** | 4MB | 16MB | +300% |
+| **Sensor Types** | 3 typen | 5+ typen | +67% |
+| **Configuration Layers** | 1 laag | 4 lagen | +300% |
+| **Code Modules** | 5 modules | 15+ modules | +200% |
+| **Error Recovery** | 0 niveaus | 3 niveaus | +∞ |
 
 ---
 
