@@ -99,10 +99,9 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
       climateMode(ClimateMode::AUTO), humidityMode(HumidityMode::AUTO),
       heatingActive(false), coolingActive(false), 
       humidifyingActive(false), dehumidifyingActive(false),
-      tempControlEnabled(false), 
-      fanInteriorActive(false), fanExteriorActive(false),  // Initialize fan states
-      autoFanControlEnabled(true),                         // Enable auto fan control by default      lastUpdate(0), updateInterval(Configuration::getClimateUpdateInterval()),
-      heatingPower(0.0), coolingPower(0.0), 
+      tempControlEnabled(false),      fanInteriorActive(false), fanExteriorActive(false),  // Initialize fan states
+      autoFanControlEnabled(true),                         // Enable auto fan control by default      lastUpdate(0), updateInterval(500),  // Use default value, will be updated from ClimateConfig in begin()
+      heatingPower(0.0), coolingPower(0.0),
       humidifierPower(0.0), dehumidifierPower(0.0),
       temperaturePID(nullptr), humidityPID(nullptr),
       tempInput(0.0), tempOutput(0.0), tempSetpoint(temperatureSetpoint),
