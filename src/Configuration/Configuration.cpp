@@ -686,8 +686,8 @@ void Configuration::parseCustomMqttConfig(const JsonObject& config) {
 }
 
 void Configuration::parseMqttThrottlingConfig(const JsonObject& config) {
-    mqttThrottlingConfig["enabled"] = config["enabled"] | true;
-    mqttThrottlingConfig["interval_ms"] = String(config["interval_ms"] | 60000);
+    mqttThrottlingConfig["enabled"] = config["enabled"].as<bool>() ? "1" : "0";
+    mqttThrottlingConfig["interval_ms"] = String(config["interval_ms"].as<int>());
 }
 
 void Configuration::parseMainProgramConfig(const JsonObject& config) {
