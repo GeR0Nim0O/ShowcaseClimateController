@@ -1094,3 +1094,304 @@ void ClimateController::updateClimateConfigFile() {
         Serial.println("Failed to update ClimateConfig JSON file");
     }
 }
+
+// PID AutoTune functionality
+bool ClimateController::startTemperatureAutoTune(double targetSetpoint, double outputStep, double noiseband, unsigned int lookBack) {
+    if (temperatureAutoTuning || humidityAutoTuning) {
+        Serial.println("AutoTune already in progress");
+        return false;
+    }
+    
+    if (temperaturePID == nullptr || sensor == nullptr) {
+        Serial.println("Temperature PID or sensor not initialized");
+        return false;
+    }
+    
+    // Clean up any existing AutoTuner
+    if (temperatureAutoTuner != nullptr) {
+        delete temperatureAutoTuner;
+        temperatureAutoTuner = nullptr;
+    }
+    
+    // Use current temperature setpoint if not specified
+    if (targetSetpoint == 0.0) {
+        targetSetpoint = temperatureSetpoint;
+    }
+    
+    // Create new AutoTuner
+    temperatureAutoTuner = new PID_ATune(&tempInput, &tempOutput);
+    if (temperatureAutoTuner == nullptr) {
+        Serial.println("Failed to create temperature AutoTuner");
+        return false;
+    }
+    
+    // Configure AutoTuner parameters
+    temperatureAutoTuner->SetNoiseBand(noiseband);
+    temperatureAutoTuner->SetOutputStep(outputStep);
+    temperatureAutoTuner->SetLookbackSec((int)lookBack);
+    
+    // Set the setpoint for autotuning
+    autoTuneSetpoint = targetSetpoint;
+    autoTuneOutputStep = outputStep;
+    tempSetpoint = targetSetpoint;
+    
+    // Switch PID to manual mode for autotuning
+    temperaturePID->SetMode(MANUAL);
+    
+    // Start autotuning
+    temperatureAutoTuning = true;
+    autoTuneStartTime = millis();
+    
+    Serial.println("=== Temperature PID AutoTune Started ===");
+    Serial.print("Target Setpoint: ");
+    Serial.print(targetSetpoint);
+    Serial.println("°C");
+    Serial.print("Output Step: ");
+    Serial.print(outputStep);
+    Serial.println("%");
+    Serial.print("Noise Band: ");
+    Serial.print(noiseband);
+    Serial.println("°C");
+    Serial.print("Look Back: ");
+    Serial.print(lookBack);
+    Serial.println(" seconds");
+    Serial.println("======================================");
+    
+    return true;
+}
+
+bool ClimateController::startHumidityAutoTune(double targetSetpoint, double outputStep, double noiseband, unsigned int lookBack) {
+    if (temperatureAutoTuning || humidityAutoTuning) {
+        Serial.println("AutoTune already in progress");
+        return false;
+    }
+    
+    if (humidityPID == nullptr || sensor == nullptr) {
+        Serial.println("Humidity PID or sensor not initialized");
+        return false;
+    }
+    
+    // Clean up any existing AutoTuner
+    if (humidityAutoTuner != nullptr) {
+        delete humidityAutoTuner;
+        humidityAutoTuner = nullptr;
+    }
+    
+    // Use current humidity setpoint if not specified
+    if (targetSetpoint == 0.0) {
+        targetSetpoint = humiditySetpoint;
+    }
+    
+    // Create new AutoTuner
+    humidityAutoTuner = new PID_ATune(&humInput, &humOutput);
+    if (humidityAutoTuner == nullptr) {
+        Serial.println("Failed to create humidity AutoTuner");
+        return false;
+    }
+    
+    // Configure AutoTuner parameters
+    humidityAutoTuner->SetNoiseBand(noiseband);
+    humidityAutoTuner->SetOutputStep(outputStep);
+    humidityAutoTuner->SetLookbackSec((int)lookBack);
+    
+    // Set the setpoint for autotuning
+    autoTuneSetpoint = targetSetpoint;
+    autoTuneOutputStep = outputStep;
+    humSetpoint = targetSetpoint;
+    
+    // Switch PID to manual mode for autotuning
+    humidityPID->SetMode(MANUAL);
+    
+    // Start autotuning
+    humidityAutoTuning = true;
+    autoTuneStartTime = millis();
+    
+    Serial.println("=== Humidity PID AutoTune Started ===");
+    Serial.print("Target Setpoint: ");
+    Serial.print(targetSetpoint);
+    Serial.println("%");
+    Serial.print("Output Step: ");
+    Serial.print(outputStep);
+    Serial.println("%");
+    Serial.print("Noise Band: ");
+    Serial.print(noiseband);
+    Serial.println("%");
+    Serial.print("Look Back: ");
+    Serial.print(lookBack);
+    Serial.println(" seconds");
+    Serial.println("====================================");
+    
+    return true;
+}
+
+void ClimateController::stopAutoTune() {
+    if (temperatureAutoTuning) {
+        temperatureAutoTuning = false;
+        
+        // Return PID to automatic mode
+        if (temperaturePID != nullptr) {
+            temperaturePID->SetMode(AUTOMATIC);
+        }
+        
+        // Clean up AutoTuner
+        if (temperatureAutoTuner != nullptr) {
+            delete temperatureAutoTuner;
+            temperatureAutoTuner = nullptr;
+        }
+        
+        Serial.println("Temperature AutoTune stopped");
+    }
+    
+    if (humidityAutoTuning) {
+        humidityAutoTuning = false;
+        
+        // Return PID to automatic mode
+        if (humidityPID != nullptr) {
+            humidityPID->SetMode(AUTOMATIC);
+        }
+        
+        // Clean up AutoTuner
+        if (humidityAutoTuner != nullptr) {
+            delete humidityAutoTuner;
+            humidityAutoTuner = nullptr;
+        }
+        
+        Serial.println("Humidity AutoTune stopped");
+    }
+}
+
+void ClimateController::updateAutoTune() {
+    // Update temperature AutoTune
+    if (temperatureAutoTuning && temperatureAutoTuner != nullptr) {
+        tempInput = currentTemperature;
+        
+        if (temperatureAutoTuner->Runtime()) {
+            // AutoTune is complete
+            temperatureAutoTuning = false;
+            
+            // Get the tuned parameters
+            double kp = temperatureAutoTuner->GetKp();
+            double ki = temperatureAutoTuner->GetKi();
+            double kd = temperatureAutoTuner->GetKd();
+            
+            // Apply the new parameters
+            temperaturePID->SetTunings(kp, ki, kd);
+            temperaturePID->SetMode(AUTOMATIC);
+            
+            // Update ClimateConfig with new parameters
+            ClimateConfig& climateConfig = ClimateConfig::getInstance();
+            climateConfig.setTemperaturePID(kp, ki, kd);
+            climateConfig.saveSettings();
+            
+            Serial.println("=== Temperature AutoTune Complete ===");
+            Serial.print("Optimized Kp: ");
+            Serial.println(kp, 4);
+            Serial.print("Optimized Ki: ");
+            Serial.println(ki, 4);
+            Serial.print("Optimized Kd: ");
+            Serial.println(kd, 4);
+            Serial.println("Parameters saved to configuration");
+            Serial.println("====================================");
+            
+            // Clean up
+            delete temperatureAutoTuner;
+            temperatureAutoTuner = nullptr;
+        } else {
+            // AutoTune is still running, use the output
+            tempOutput = temperatureAutoTuner->GetOutput();
+        }
+    }
+    
+    // Update humidity AutoTune
+    if (humidityAutoTuning && humidityAutoTuner != nullptr) {
+        humInput = currentHumidity;
+        
+        if (humidityAutoTuner->Runtime()) {
+            // AutoTune is complete
+            humidityAutoTuning = false;
+            
+            // Get the tuned parameters
+            double kp = humidityAutoTuner->GetKp();
+            double ki = humidityAutoTuner->GetKi();
+            double kd = humidityAutoTuner->GetKd();
+            
+            // Apply the new parameters
+            humidityPID->SetTunings(kp, ki, kd);
+            humidityPID->SetMode(AUTOMATIC);
+            
+            // Update ClimateConfig with new parameters
+            ClimateConfig& climateConfig = ClimateConfig::getInstance();
+            climateConfig.setHumidityPID(kp, ki, kd);
+            climateConfig.saveSettings();
+            
+            Serial.println("=== Humidity AutoTune Complete ===");
+            Serial.print("Optimized Kp: ");
+            Serial.println(kp, 4);
+            Serial.print("Optimized Ki: ");
+            Serial.println(ki, 4);
+            Serial.print("Optimized Kd: ");
+            Serial.println(kd, 4);
+            Serial.println("Parameters saved to configuration");
+            Serial.println("=================================");
+            
+            // Clean up
+            delete humidityAutoTuner;
+            humidityAutoTuner = nullptr;
+        } else {
+            // AutoTune is still running, use the output
+            humOutput = humidityAutoTuner->GetOutput();
+        }
+    }
+}
+
+void ClimateController::getAutoTuneResults(double& kp, double& ki, double& kd) {
+    kp = ki = kd = 0.0;
+    
+    if (temperatureAutoTuning && temperatureAutoTuner != nullptr) {
+        kp = temperatureAutoTuner->GetKp();
+        ki = temperatureAutoTuner->GetKi();
+        kd = temperatureAutoTuner->GetKd();
+    } else if (humidityAutoTuning && humidityAutoTuner != nullptr) {
+        kp = humidityAutoTuner->GetKp();
+        ki = humidityAutoTuner->GetKi();
+        kd = humidityAutoTuner->GetKd();
+    }
+}
+
+void ClimateController::printAutoTuneStatus() {
+    if (temperatureAutoTuning) {
+        unsigned long elapsed = (millis() - autoTuneStartTime) / 1000;
+        Serial.println("=== Temperature AutoTune Status ===");
+        Serial.print("Elapsed Time: ");
+        Serial.print(elapsed);
+        Serial.println(" seconds");
+        Serial.print("Current Temperature: ");
+        Serial.print(currentTemperature, 2);
+        Serial.println("°C");
+        Serial.print("Target Setpoint: ");
+        Serial.print(autoTuneSetpoint, 2);
+        Serial.println("°C");
+        Serial.print("Current Output: ");
+        Serial.print(tempOutput, 2);
+        Serial.println("%");
+        Serial.println("==================================");
+    } else if (humidityAutoTuning) {
+        unsigned long elapsed = (millis() - autoTuneStartTime) / 1000;
+        Serial.println("=== Humidity AutoTune Status ===");
+        Serial.print("Elapsed Time: ");
+        Serial.print(elapsed);
+        Serial.println(" seconds");
+        Serial.print("Current Humidity: ");
+        Serial.print(currentHumidity, 2);
+        Serial.println("%");
+        Serial.print("Target Setpoint: ");
+        Serial.print(autoTuneSetpoint, 2);
+        Serial.println("%");
+        Serial.print("Current Output: ");
+        Serial.print(humOutput, 2);
+        Serial.println("%");
+        Serial.println("===============================");
+    } else {
+        Serial.println("No AutoTune currently running");
+    }
+}
