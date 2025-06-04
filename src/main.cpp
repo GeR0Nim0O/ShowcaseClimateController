@@ -670,7 +670,12 @@ void printCreatedSensors() {
 
 // Function to initialize the climate controller
 void initializeClimateController() {
-    if (Configuration::isClimateControllerEnabled()) {
+    Serial.println("DEBUG: Checking if Climate Controller is enabled...");
+    bool isEnabled = Configuration::isClimateControllerEnabled();
+    Serial.print("DEBUG: Configuration::isClimateControllerEnabled() = ");
+    Serial.println(isEnabled);
+    
+    if (isEnabled) {
         Serial.println("Initializing Climate Controller...");
         climateController = ClimateController::createFromDeviceRegistry();
         
