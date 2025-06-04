@@ -394,10 +394,15 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             for (JsonPair channelPair : channels) {
                 String channelKey = channelPair.key().c_str();
                 JsonObject channelConfig = channelPair.value().as<JsonObject>();
-                
-                if (!channelConfig.isNull()) {
-                    String channelName = channelConfig["Name"] | channelKey;
-                    float threshold = channelConfig["Threshold"] | 1.0f;
+                  if (!channelConfig.isNull()) {
+                    String channelName = channelConfig["Name"].as<String>();
+                    if (channelName.isEmpty()) {
+                        channelName = channelKey;
+                    }
+                    float threshold = channelConfig["Threshold"].as<float>();
+                    if (threshold == 0.0f) {
+                        threshold = 1.0f;
+                    }
                     
                     channelNames[channelKey] = channelName;
                     channelThresholds[channelKey] = threshold;
