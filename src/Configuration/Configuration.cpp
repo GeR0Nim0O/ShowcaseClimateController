@@ -256,12 +256,14 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
     for (JsonPair devicePair : devicesConfig) {
         String deviceKey = devicePair.key().c_str();
         JsonObject deviceConfig = devicePair.value().as<JsonObject>();
-        
-        if (deviceConfig.isNull()) {
+          if (deviceConfig.isNull()) {
             Serial.print("Skipping invalid device config for: ");
             Serial.println(deviceKey);
             continue;
-        }        // Extract device configuration        String deviceType = deviceConfig["Type"].as<String>();
+        }
+        
+        // Extract device configuration
+        String deviceType = deviceConfig["Type"].as<String>();
         String deviceTypeNumber = deviceConfig["TypeNumber"].as<String>();
         String addressStr = deviceConfig["Address"].as<String>();
         String deviceMode = deviceConfig["Mode"].as<String>();
