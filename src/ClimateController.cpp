@@ -860,7 +860,6 @@ void ClimateController::updateStatusPrintTracking() {
 // Static method for controlled update with timing management
 void ClimateController::updateControllerWithTiming(ClimateController* controller) {
     if (controller == nullptr) {
-        Serial.println("DEBUG: updateControllerWithTiming called but controller is nullptr");
         return; // Exit if climate controller is not available
     }
     
@@ -868,19 +867,9 @@ void ClimateController::updateControllerWithTiming(ClimateController* controller
     static unsigned long lastClimateUpdate = 0;
     unsigned long currentTime = millis();
     
-    Serial.print("DEBUG: updateControllerWithTiming called - currentTime: ");
-    Serial.print(currentTime);
-    Serial.print(", lastClimateUpdate: ");
-    Serial.print(lastClimateUpdate);
-    Serial.print(", time since last: ");
-    Serial.println(currentTime - lastClimateUpdate);
-    
     if (currentTime - lastClimateUpdate >= 5000) { // Update every 5 seconds
-        Serial.println("DEBUG: Time to update climate controller!");
         controller->update();
         lastClimateUpdate = currentTime;
-    } else {
-        Serial.println("DEBUG: Not yet time to update climate controller");
     }
 }
 
