@@ -113,14 +113,17 @@ bool ClimateConfig::loadSettings() {
         Serial.println("Checksum validation failed");
         return false;
     }
-    
-    // Validate that values are within reasonable ranges
+      // Validate that values are within reasonable ranges
     if (!validateSettings()) {
         Serial.println("Settings validation failed");
+        Serial.print("DEBUG: ClimateConfig - updateInterval value during validation failure: ");
+        Serial.println(settings.updateInterval);
         return false;
     }
     
     Serial.println("Settings loaded from EEPROM");
+    Serial.print("DEBUG: ClimateConfig - Final updateInterval after EEPROM load: ");
+    Serial.println(settings.updateInterval);
     return true;
 }
 
