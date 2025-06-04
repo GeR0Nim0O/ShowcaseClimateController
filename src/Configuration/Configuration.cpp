@@ -936,7 +936,23 @@ bool Configuration::isAutoFanControlEnabled() {
 }
 
 unsigned long Configuration::getClimateUpdateInterval() {
-    return climateControllerConfig["update_interval_ms"].toInt();
+    String intervalStr = climateControllerConfig["update_interval_ms"];
+    unsigned long interval = intervalStr.toInt();
+    
+    Serial.print("DEBUG: getClimateUpdateInterval() - raw string: '");
+    Serial.print(intervalStr);
+    Serial.print("', converted to int: ");
+    Serial.print(interval);
+    Serial.print(", expected: 1000");
+    Serial.println();
+    
+    // Safety check - if the value is unreasonable, use default
+    if (interval == 0 || interval > 3600000) { // Max 1 hour
+        Serial.println("DEBUG: Invalid interval detected, using default 1000ms");
+        return 1000;
+    }
+    
+    return interval;
 }
 
 // Climate safety limits
