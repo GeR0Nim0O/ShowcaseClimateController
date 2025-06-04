@@ -239,8 +239,7 @@ void setup()
       Serial.println("→ AutoTune will be started after WiFi/MQTT setup");
     }
   }
-  
-  Serial.println("7. Initializing display...");
+    Serial.println("7. Initializing display...");
   // Initialize display device
   initializeDisplayDevice();
     Serial.println("8. Reading initial sensor data...");
