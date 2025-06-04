@@ -1047,10 +1047,9 @@ void handleSerialCommands() {
         }
         Serial.println("========================================");
         Serial.println();
-    }
-    else if (command == "autotune results") {
+    }    else if (command == "autotune results") {
         // Load climate config to get AutoTune results
-        ClimateConfig config;
+        ClimateConfig& config = ClimateConfig::getInstance();
         if (config.hasAutoTuneResults()) {
             Serial.println();
             Serial.println("========================================");
