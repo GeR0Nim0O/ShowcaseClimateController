@@ -957,53 +957,154 @@ bool promptForAutoTune() {
 
 // Function to handle serial commands for AutoTune control
 void handleSerialCommands() {
-    Serial.println("Handling serial commands...");
+    if (!Serial.available()) {
+        return;
+    }
     
-    // Check if data is available to read
-    if (Serial.available() > 0) {
-        String command = Serial.readStringUntil('\n');
-        command.trim(); // Remove any leading/trailing whitespace
+    String command = Serial.readStringUntil('\n');
+    command.trim(); // Remove leading/trailing whitespace
+    command.toLowerCase(); // Make command case-insensitive
+    
+    if (command == "help" || command == "?") {
+        Serial.println();
+        Serial.println("========================================");
+        Serial.println("       Available Serial Commands");
+        Serial.println("========================================");
+        Serial.println("help, ?          - Show this help menu");
+        Serial.println("autotune start   - Start temperature AutoTune");
+        Serial.println("autotune stop    - Stop AutoTune");
+        Serial.println("autotune status  - Show AutoTune status");
+        Serial.println("autotune results - Show saved AutoTune results");
+        Serial.println("autotune clear   - Clear saved AutoTune results");
+        Serial.println("status           - Show system status");
+        Serial.println("========================================");
+        Serial.println();
+    }
+    else if (command == "autotune start") {
+        if (!Configuration::isClimateControllerEnabled() || climateController == nullptr) {
+            Serial.println("ERROR: Climate controller not enabled or not initialized");
+            return;
+        }
         
-        Serial.print("Received command: '");
+        if (climateController->isAutoTuning()) {
+            Serial.println("AutoTune is already running");
+            return;
+        }
+        
+        Serial.println();
+        Serial.println("========================================");
+        Serial.println("       STARTING PID AutoTune");
+        Serial.println("========================================");
+        Serial.println("AutoTune process starting...");
+        Serial.println("This may take several minutes to complete.");
+        Serial.println("Temperature will fluctuate during calibration.");
+        Serial.println("Use 'autotune stop' to cancel if needed.");
+        Serial.println("========================================");
+        Serial.println();
+        
+        if (climateController->startTemperatureAutoTune()) {
+            Serial.println("✓ AutoTune started successfully");
+        } else {
+            Serial.println("✗ Failed to start AutoTune");
+        }
+    }
+    else if (command == "autotune stop") {
+        if (!Configuration::isClimateControllerEnabled() || climateController == nullptr) {
+            Serial.println("ERROR: Climate controller not enabled or not initialized");
+            return;
+        }
+        
+        if (!climateController->isAutoTuning()) {
+            Serial.println("AutoTune is not currently running");
+            return;
+        }
+        
+        Serial.println("Stopping AutoTune...");
+        climateController->stopAutoTune();
+        Serial.println("✓ AutoTune stopped");
+    }
+    else if (command == "autotune status") {
+        if (!Configuration::isClimateControllerEnabled() || climateController == nullptr) {
+            Serial.println("ERROR: Climate controller not enabled or not initialized");
+            return;
+        }
+        
+        Serial.println();
+        Serial.println("========================================");
+        Serial.println("       AutoTune Status");
+        Serial.println("========================================");
+        Serial.print("AutoTune Active: ");
+        Serial.println(climateController->isAutoTuning() ? "YES" : "NO");
+        
+        if (climateController->isAutoTuning()) {
+            Serial.println("Status: AutoTune is currently running");
+            Serial.println("Please wait for completion or use 'autotune stop'");
+        } else {
+            Serial.println("Status: AutoTune is not running");
+        }
+        Serial.println("========================================");
+        Serial.println();
+    }
+    else if (command == "autotune results") {
+        // Load climate config to get AutoTune results
+        ClimateConfig config;
+        if (config.hasAutoTuneResults()) {
+            Serial.println();
+            Serial.println("========================================");
+            Serial.println("       Saved AutoTune Results");
+            Serial.println("========================================");
+            Serial.print("Kp (Proportional): ");
+            Serial.println(config.getAutoTuneKp(), 4);
+            Serial.print("Ki (Integral):      ");
+            Serial.println(config.getAutoTuneKi(), 4);
+            Serial.print("Kd (Derivative):    ");
+            Serial.println(config.getAutoTuneKd(), 4);
+            Serial.println("========================================");
+            Serial.println("These values are automatically used for PID control.");
+            Serial.println();
+        } else {
+            Serial.println("No AutoTune results found.");
+            Serial.println("Run 'autotune start' to generate optimal PID parameters.");
+        }
+    }
+    else if (command == "autotune clear") {
+        Serial.println("Clearing saved AutoTune results...");
+        ClimateConfig config;
+        config.clearAutoTuneResults();
+        config.saveToEEPROM();
+        config.saveToJSON();
+        Serial.println("✓ AutoTune results cleared. Default PID parameters will be used.");
+    }
+    else if (command == "status") {
+        Serial.println();
+        Serial.println("========================================");
+        Serial.println("         System Status");
+        Serial.println("========================================");
+        Serial.print("Setup Complete: ");
+        Serial.println(setupComplete ? "YES" : "NO");
+        Serial.print("WiFi Status: ");
+        Serial.println(WiFi.status() == WL_CONNECTED ? "Connected" : "Disconnected");
+        Serial.print("MQTT Status: ");
+        Serial.println(client.connected() ? "Connected" : "Disconnected");
+        Serial.print("Climate Controller: ");
+        if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
+            Serial.println("Enabled");
+            Serial.print("  AutoTune Active: ");
+            Serial.println(climateController->isAutoTuning() ? "YES" : "NO");
+        } else {
+            Serial.println("Disabled or Not Initialized");
+        }
+        Serial.print("Offline Mode: ");
+        Serial.println(offlineMode ? "YES" : "NO");
+        Serial.println("========================================");
+        Serial.println();
+    }
+    else if (command.length() > 0) {
+        Serial.print("Unknown command: '");
         Serial.print(command);
         Serial.println("'");
-        
-        // Convert command to lowercase for case-insensitive comparison
-        String lowerCommand = command;
-        lowerCommand.toLowerCase();
-        
-        // Handle known commands
-        if (lowerCommand == "start autotune") {
-            Serial.println("Starting AutoTune...");
-            if (climateController != nullptr) {
-                climateController->startTemperatureAutoTune();
-                Serial.println("AutoTune started");
-            } else {
-                Serial.println("Error: Climate controller not initialized");
-            }
-        } else if (lowerCommand == "stop autotune") {
-            Serial.println("Stopping AutoTune...");
-            if (climateController != nullptr) {
-                climateController->stopTemperatureAutoTune();
-                Serial.println("AutoTune stopped");
-            } else {
-                Serial.println("Error: Climate controller not initialized");
-            }
-        } else if (lowerCommand == "status") {
-            Serial.println("Fetching status...");
-            if (climateController != nullptr) {
-                // Print current climate status
-                climateController->printClimateStatus();
-            } else {
-                Serial.println("Error: Climate controller not initialized");
-            }
-        } else {
-            Serial.println("Unknown command, please try again");
-        }
-    } else {
-        Serial.println("No serial data available");
+        Serial.println("Type 'help' for available commands.");
     }
-    Serial.println("===============================");
 }
 
 
