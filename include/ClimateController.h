@@ -58,7 +58,15 @@ public:
     // PID parameters
     void setTemperaturePID(double kp, double ki, double kd);
     void setHumidityPID(double kp, double ki, double kd);
-      // Configuration reload
+    
+    // PID Autotuning
+    bool startTemperatureAutotune(double targetSetpoint = -1.0, double outputStep = 50.0, int lookBack = 20);
+    bool isTemperatureAutotuning() const { return temperatureAutotuning; }
+    void stopTemperatureAutotune();
+    void updateTemperatureAutotune();
+    bool getTemperatureAutotuneResults(double& kp, double& ki, double& kd);
+    
+    // Configuration reload
     void reloadConfiguration();
     
     // Dynamic configuration update
@@ -131,6 +139,7 @@ private:
     bool fanInteriorActive;      // Add fan state tracking
     bool fanExteriorActive;      // Add fan state tracking
     bool autoFanControlEnabled; // Add auto fan control flag
+    bool temperatureAutotuning; // Add autotune state variable
     
     // Power levels for analog control
     float heatingPower;
