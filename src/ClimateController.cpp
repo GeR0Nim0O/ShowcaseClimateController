@@ -1254,10 +1254,6 @@ void ClimateController::getAutoTuneResults(double& kp, double& ki, double& kd) {
         kp = temperatureAutoTuner->GetKp();
         ki = temperatureAutoTuner->GetKi();
         kd = temperatureAutoTuner->GetKd();
-    } else if (humidityAutoTuning && humidityAutoTuner != nullptr) {
-        kp = humidityAutoTuner->GetKp();
-        ki = humidityAutoTuner->GetKi();
-        kd = humidityAutoTuner->GetKd();
     }
 }
 
