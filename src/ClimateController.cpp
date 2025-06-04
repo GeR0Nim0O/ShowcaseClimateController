@@ -315,11 +315,10 @@ void ClimateController::update() {
             uint8_t gpioStateAfter = gpio->getGPIOState();
             Serial.print("DEBUG: GPIO state after operations: 0x");
             Serial.print(gpioStateAfter, HEX);
-            Serial.print(", restoring to: 0x");
-            Serial.println(gpioStateBefore, HEX);
+            Serial.print(", restoring to: 0x");            Serial.println(gpioStateBefore, HEX);
             // Only restore if state actually changed to avoid unnecessary I2C operations
             if (gpioStateAfter != gpioStateBefore) {
-                gpio->setGPIOState(gpioStateBefore);
+                gpio->writeByte(gpioStateBefore);
             }
         }
         
