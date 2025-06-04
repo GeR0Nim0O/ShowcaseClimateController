@@ -41,7 +41,7 @@ Modules: Device, Sensors, GPIO, RTC
 - **Uitgangssignalen**: 
   - **0-5V DAC**: Vermogensregeling van temperatuur actuatoren
   - **GPIO Expander**: Aansturen van temperatuur regelaar, luchtvochtigheid regelaar, en interne/externe luchtcirculatie
-- **Sensor Uitbreiding**: Ondersteuning voor 5+ verschillende sensor types
+- **Sensor Uitbreiding**: Rotary encoder voor interactieve bediening
 
 ### User Interface Toevoegingen
 - **LCD Display**: Real-time status weergave van alle systeem parameters
