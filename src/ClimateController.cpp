@@ -222,14 +222,6 @@ void ClimateController::update() {
     Serial.println(currentTime - lastUpdate);    if (currentTime - lastUpdate >= updateInterval) {
         Serial.println("DEBUG: Inside update interval condition - about to call updateSensorReadings()");
         
-        // CRITICAL FIX: Store current GPIO state before any operations
-        uint8_t gpioStateBefore = 0x00;
-        if (gpio != nullptr) {
-            gpioStateBefore = gpio->getGPIOState();
-            Serial.print("DEBUG: GPIO state before operations: 0x");
-            Serial.println(gpioStateBefore, HEX);
-        }
-        
         updateSensorReadings();
         
         // Store previous states to avoid unnecessary writes
