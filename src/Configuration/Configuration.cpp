@@ -726,17 +726,16 @@ void Configuration::parseClimateControllerConfig(const JsonObject& config) {
         climateControllerConfig["max_humidity"] = String(80.0);
         climateControllerConfig["min_humidity"] = String(20.0);
     }
-    
-    // Parse PID parameters
+      // Parse PID parameters
     if (config["pid_parameters"].is<JsonObject>()) {
         JsonObject pidParams = config["pid_parameters"];
         
         // Temperature PID
         if (pidParams["temperature"].is<JsonObject>()) {
             JsonObject tempPid = pidParams["temperature"];
-            climateControllerConfig["temp_kp"] = String(tempPid["kp"] | 2.0);
-            climateControllerConfig["temp_ki"] = String(tempPid["ki"] | 0.5);
-            climateControllerConfig["temp_kd"] = String(tempPid["kd"] | 0.1);
+            climateControllerConfig["temp_kp"] = String(tempPid["kp"].as<double>());
+            climateControllerConfig["temp_ki"] = String(tempPid["ki"].as<double>());
+            climateControllerConfig["temp_kd"] = String(tempPid["kd"].as<double>());
         } else {
             climateControllerConfig["temp_kp"] = String(2.0);
             climateControllerConfig["temp_ki"] = String(0.5);
@@ -746,9 +745,9 @@ void Configuration::parseClimateControllerConfig(const JsonObject& config) {
         // Humidity PID
         if (pidParams["humidity"].is<JsonObject>()) {
             JsonObject humPid = pidParams["humidity"];
-            climateControllerConfig["hum_kp"] = String(humPid["kp"] | 1.0);
-            climateControllerConfig["hum_ki"] = String(humPid["ki"] | 0.2);
-            climateControllerConfig["hum_kd"] = String(humPid["kd"] | 0.05);
+            climateControllerConfig["hum_kp"] = String(humPid["kp"].as<double>());
+            climateControllerConfig["hum_ki"] = String(humPid["ki"].as<double>());
+            climateControllerConfig["hum_kd"] = String(humPid["kd"].as<double>());
         } else {
             climateControllerConfig["hum_kp"] = String(1.0);
             climateControllerConfig["hum_ki"] = String(0.2);
