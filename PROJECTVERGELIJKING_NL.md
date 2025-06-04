@@ -33,8 +33,8 @@ Modules: Device, Sensors, GPIO, RTC
 - **Geheugen**: 4x meer Flash geheugen voor complexere applicaties
 
 ### Nieuwe Functionaliteit
-- **Actieve Klimaatregeling**: PID controller voor temperatuurregeling
-- **Vochtigheidscontrole**: Monitoring met setpoint controle
+- **Temperatuurregeling**: PID controller voor actieve temperatuurregeling
+- **Vochtigheidsregeling**: Setpoint controle voor actieve vochtigheidsregeling
 - **Besturingsmodi**: 4 operationele modi (AUTO/HEATING/COOLING/OFF)
 - **Uitgangssignalen**: 0-5V DAC voor vermogensregeling van actuatoren
 - **Sensor Uitbreiding**: Ondersteuning voor 5+ verschillende sensor types
