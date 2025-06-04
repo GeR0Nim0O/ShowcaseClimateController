@@ -59,9 +59,10 @@
 
 | Systeem | Casekeeper | Showcase |
 |---------|------------|----------|
-| **Detectie** | Handmatige configuratie | Smart discovery |
-| **Fallback** | Geen | Automatisch naar eerste beschikbare |
-| **Code** | `devices.push_back(new SHTsensor(...))` | `registry.getDeviceByTypeAndLabel(...)` |
+| **Pattern** | DeviceRegistry basis | DeviceRegistry uitgebreid |
+| **Discovery** | Automatisch via factory | Smart discovery met labels |
+| **Fallback** | Eerste beschikbare device | Positional indexing + fallback |
+| **Code** | `registry.getDeviceByType(...)` | `registry.getDeviceByTypeAndLabel(...)` |
 
 ---
 
