@@ -307,34 +307,49 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         settings.minHumidity = safety["min_humidity"].as<double>();
         if (!safety["min_humidity"]) settings.minHumidity = 20.0;
     }
-    
-    // Load PID parameters
+      // Load PID parameters
     JsonObject tempPid = climate["pid_parameters"]["temperature"];
     if (tempPid) {
-        settings.temperatureKp = tempPid["kp"] | 2.0;
-        settings.temperatureKi = tempPid["ki"] | 0.5;
-        settings.temperatureKd = tempPid["kd"] | 0.1;
+        settings.temperatureKp = tempPid["kp"].as<double>();
+        if (!tempPid["kp"]) settings.temperatureKp = 2.0;
+        
+        settings.temperatureKi = tempPid["ki"].as<double>();
+        if (!tempPid["ki"]) settings.temperatureKi = 0.5;
+        
+        settings.temperatureKd = tempPid["kd"].as<double>();
+        if (!tempPid["kd"]) settings.temperatureKd = 0.1;
     }
     
     JsonObject humPid = climate["pid_parameters"]["humidity"];
     if (humPid) {
-        settings.humidityKp = humPid["kp"] | 1.0;
-        settings.humidityKi = humPid["ki"] | 0.2;
-        settings.humidityKd = humPid["kd"] | 0.05;
+        settings.humidityKp = humPid["kp"].as<double>();
+        if (!humPid["kp"]) settings.humidityKp = 1.0;
+        
+        settings.humidityKi = humPid["ki"].as<double>();
+        if (!humPid["ki"]) settings.humidityKi = 0.2;
+        
+        settings.humidityKd = humPid["kd"].as<double>();
+        if (!humPid["kd"]) settings.humidityKd = 0.05;
     }
     
     // Load control parameters
     JsonObject control = climate["control_parameters"];
     if (control) {
-        settings.temperatureHysteresis = control["temperature_hysteresis"] | 0.5;
-        settings.humidityHysteresis = control["humidity_hysteresis"] | 2.0;
+        settings.temperatureHysteresis = control["temperature_hysteresis"].as<double>();
+        if (!control["temperature_hysteresis"]) settings.temperatureHysteresis = 0.5;
+        
+        settings.humidityHysteresis = control["humidity_hysteresis"].as<double>();
+        if (!control["humidity_hysteresis"]) settings.humidityHysteresis = 2.0;
     }
     
     // Load fan settings
     JsonObject fans = climate["fan_settings"];
     if (fans) {
-        settings.fanInteriorEnabled = fans["interior_fan_enabled"] | true;
-        settings.fanExteriorEnabled = fans["exterior_fan_enabled"] | false;
+        settings.fanInteriorEnabled = fans["interior_fan_enabled"].as<bool>();
+        if (!fans["interior_fan_enabled"]) settings.fanInteriorEnabled = true;
+        
+        settings.fanExteriorEnabled = fans["exterior_fan_enabled"].as<bool>();
+        if (!fans["exterior_fan_enabled"]) settings.fanExteriorEnabled = false;
     }
     
     // Validate loaded settings
