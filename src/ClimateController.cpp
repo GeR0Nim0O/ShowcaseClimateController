@@ -1235,10 +1235,9 @@ void ClimateController::updateAutoTune() {
             
             // Clean up
             delete temperatureAutoTuner;
-            temperatureAutoTuner = nullptr;
-        } else {
+            temperatureAutoTuner = nullptr;        } else {
             // AutoTune is still running, use the output
-            tempOutput = temperatureAutoTuner->GetOutput();
+            tempOutput = temperatureAutoTuner->GetOutputStep();
         }
     }
 }
