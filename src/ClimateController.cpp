@@ -1245,47 +1245,6 @@ void ClimateController::updateAutoTune() {
             tempOutput = temperatureAutoTuner->GetOutput();
         }
     }
-    
-    // Update humidity AutoTune
-    if (humidityAutoTuning && humidityAutoTuner != nullptr) {
-        humInput = currentHumidity;
-        
-        if (humidityAutoTuner->Runtime()) {
-            // AutoTune is complete
-            humidityAutoTuning = false;
-            
-            // Get the tuned parameters
-            double kp = humidityAutoTuner->GetKp();
-            double ki = humidityAutoTuner->GetKi();
-            double kd = humidityAutoTuner->GetKd();
-            
-            // Apply the new parameters
-            humidityPID->SetTunings(kp, ki, kd);
-            humidityPID->SetMode(AUTOMATIC);
-            
-            // Update ClimateConfig with new parameters
-            ClimateConfig& climateConfig = ClimateConfig::getInstance();
-            climateConfig.setHumidityPID(kp, ki, kd);
-            climateConfig.saveSettings();
-            
-            Serial.println("=== Humidity AutoTune Complete ===");
-            Serial.print("Optimized Kp: ");
-            Serial.println(kp, 4);
-            Serial.print("Optimized Ki: ");
-            Serial.println(ki, 4);
-            Serial.print("Optimized Kd: ");
-            Serial.println(kd, 4);
-            Serial.println("Parameters saved to configuration");
-            Serial.println("=================================");
-            
-            // Clean up
-            delete humidityAutoTuner;
-            humidityAutoTuner = nullptr;
-        } else {
-            // AutoTune is still running, use the output
-            humOutput = humidityAutoTuner->GetOutput();
-        }
-    }
 }
 
 void ClimateController::getAutoTuneResults(double& kp, double& ki, double& kd) {
