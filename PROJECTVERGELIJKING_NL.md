@@ -1,17 +1,14 @@
 # Showcase Climate Controller vs Casekeeper - Projectvergelijking
 
-Een technische vergelijking tussen Showcase Climate Controller en de oorspronkelijke Casekeeper implementatie.
-
 ## Executive Summary
 
-**Showcase Climate Controller** transformeert **Casekeeper** van een basis IoT sensor platform naar een volledig klimaatregelsysteem.
-
-### Kernwijzigingen
-- **Klimaatregeling**: PID controllers voor temperatuur/vochtigheid
-- **Hardware upgrade**: ESP32-S3 (16MB Flash + PSRAM)
-- **Uitgebreide modules**: Meer gespecialiseerde components
-- **User interface**: OLED display + rotary encoder
-- **Data persistentie**: EEPROM met checksum validatie
+| Aspect | Casekeeper | Showcase Climate Controller |
+|--------|------------|----------------------------|
+| **Functie** | Passief monitoring | Actief klimaatregelsysteem |
+| **Hardware** | ESP32-POE-ISO (4MB) | ESP32-S3 Box (16MB + PSRAM) |
+| **Architectuur** | Basis modulair | Uitgebreid modulair |
+| **Interface** | Geen | OLED display + rotary encoder |
+| **Persistentie** | Runtime alleen | Multi-level storage |
 
 ---
 
