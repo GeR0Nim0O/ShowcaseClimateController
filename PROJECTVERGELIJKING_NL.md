@@ -101,12 +101,12 @@
 
 ## Development Environment
 
-| Aspect | Showcase | Casekeeper |
-|--------|----------|------------|
-| **PlatformIO Setup** | Advanced (QIO, PSRAM) | Minimal |
-| **Debug Level** | Maximum (5) | Basis |
-| **Library Versions** | Vastgezet (PID, ArduinoJson) | Floating |
-| **Build Optimization** | Custom flags | Standaard |
+| Aspect | Casekeeper | Showcase |
+|--------|------------|----------|
+| **PlatformIO Setup** | Minimal | Advanced (QIO, PSRAM) |
+| **Debug Level** | Basis | Maximum (5) |
+| **Library Versions** | Floating | Vastgezet (PID, ArduinoJson) |
+| **Build Optimization** | Standaard | Custom flags |
 
 ---
 
