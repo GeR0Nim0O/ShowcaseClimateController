@@ -120,6 +120,11 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
     this->sensor = tempHumSensor;
     this->dac = dac;
     
+    // Debug: Print the updateInterval that was loaded
+    Serial.print("DEBUG: ClimateController constructor - updateInterval set to: ");
+    Serial.print(updateInterval);
+    Serial.println(" ms");
+    
     // Initialize with default pin mappings - will be updated in begin()
     pinFanExterior = 0;
     pinFanInterior = 1;
