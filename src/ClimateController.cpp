@@ -207,7 +207,23 @@ bool ClimateController::begin() {
 void ClimateController::update() {
     unsigned long currentTime = millis();
     
+    Serial.print("DEBUG: ClimateController::update() called - currentTime: ");
+    Serial.print(currentTime);
+    Serial.print(", lastUpdate: ");
+    Serial.print(lastUpdate);
+    Serial.print(", updateInterval: ");
+    Serial.print(updateInterval);
+    Serial.print(", time since last: ");
+    Serial.println(currentTime - lastUpdate);
+    
     if (currentTime - lastUpdate >= updateInterval) {
+        Serial.println("DEBUG: Inside update interval condition - about to call updateSensorReadings()");
+        
+        // CRITICAL FIX: Store current GPIO state before any operations
+        uint8_t gpioStateBefore = 0x00;
+        if (gpio != nullptr) {
+            gpioStateBefore = gpio->getGPIOState();
+        }
         // CRITICAL FIX: Store current GPIO state before any operations
         uint8_t gpioStateBefore = 0x00;
         if (gpio != nullptr) {
