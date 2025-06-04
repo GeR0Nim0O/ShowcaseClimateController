@@ -269,6 +269,10 @@ void ClimateController::update() {
         static bool lastFanInteriorActive = false;       // Add fan state tracking
         static bool lastFanExteriorActive = false;       // Add fan state tracking
         
+        // Update AutoTune if active
+        updateAutoTune();
+        
+        // Update control logic (normal PID or AutoTune output)
         updateTemperatureControl();
         updateHumidityControl();
         updateFanControl();  // Add fan control update
