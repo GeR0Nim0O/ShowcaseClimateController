@@ -1,137 +1,81 @@
-# Showcase Climate Controller vs Casekeeper - Projectvergelijking
+# Showcase Climate Controller - Ontwikkeling en Verbeteringen
 
-## Samenvatting
+## Casekeeper - Basis Project
 
-| Aspect | Casekeeper | Showcase Climate Controller |
-|--------|------------|----------------------------|
-| **Functie** | Passief monitoring | Actief klimaatregelsysteem |
-| **Hardware** | ESP32-POE-ISO (4MB) | ESP32-S3 Box (16MB + PSRAM) |
-| **Architectuur** | Basis modulair | Uitgebreid modulair |
-| **Interface** | Geen | LCD display + rotary encoder |
-| **Persistentie** | Runtime alleen | Multi-level storage |
+**Casekeeper** is een passief monitoring systeem voor klimaatcondities, gebouwd op een ESP32-POE-ISO platform. Het systeem verzamelt sensordata van temperatuur, vochtigheid en lichtsterkte en publiceert deze via MQTT naar een centrale server.
 
----
+### Kernfuncties Casekeeper
+- **Hardware**: ESP32-POE-ISO (4MB Flash)
+- **Sensoren**: SHT31 (temperatuur/vochtigheid), BH1705 (licht), HX711 (gewicht)
+- **Connectiviteit**: WiFi + MQTT met NTP time synchronization
+- **Architectuur**: Modulaire opbouw met DeviceRegistry pattern
+- **Interface**: Serial debugging voor ontwikkeling
+- **Opslag**: Runtime JSON configuratie zonder persistentie
 
-## Hardware Vergelijking
-
-| Component | Showcase | Casekeeper | Voordeel |
-|-----------|----------|------------|----------|
-| **Platform** | ESP32-POE-ISO | ESP32-S3 Box | 4x meer Flash |
-| **Geheugen** | 4MB Flash | 16MB Flash + PSRAM | Complexere apps |
-| **Flash Mode** | Standaard | QIO | 40% sneller |
-| **Debug Level** | Basis | Maximum (5) | Betere ontwikkeling |
-
----
-
-## Functionaliteit Vergelijking
-
-| Functie | Casekeeper | Showcase |
-|---------|------------|----------|
-| **Temperatuur** | Monitoring alleen | PID regeling |
-| **Vochtigheid** | Monitoring alleen | Monitoring + setpoint controle |
-| **Besturing** | Geen | 4 modi: AUTO/HEATING/COOLING/OFF |
-| **Uitgangen** | Geen | 0-5V DAC voor vermogensregeling |
-| **Interface** | Serial debugging | LCD display + rotary encoder |
-| **Opslag** | Geen persistentie | EEPROM met checksum |
+### Code Structuur Casekeeper
+```
+Modules: Device, Sensors, GPIO, RTC
+- DeviceRegistry voor automatische device discovery
+- Configuration singleton voor runtime instellingen
+- Basis error handling
+```
 
 ---
 
-## Architectuur Vergelijking
+## Showcase Climate Controller - Toevoegingen en Verbeteringen
 
-| Aspect | Casekeeper | Showcase |
-|--------|------------|----------|
-| **Factory Pattern** | DeviceRegistry basis | DeviceRegistry uitgebreid |
-| **Singleton** | Configuration | Configuration |
-| **Modules** | 4 basis modules | 7+ gespecialiseerde modules |
-| **Device Management** | Handmatige configuratie | Smart discovery + fallback |
+**Showcase Climate Controller** bouwt voort op Casekeeper en transformeert het van een passief monitoring systeem naar een volledig actief klimaatregelsysteem.
 
-### Code Structuur
+### Hardware Verbeteringen
+- **Platform**: Upgrade naar ESP32-S3 Box (16MB Flash + PSRAM)
+- **Prestaties**: QIO flash mode voor 40% snellere data toegang
+- **Debugging**: Maximum debug level (5) voor uitgebreide ontwikkelingsondersteuning
+- **Geheugen**: 4x meer Flash geheugen voor complexere applicaties
 
-| Project | Modules |
-|---------|---------|
-| **Casekeeper** | Device, Sensors, GPIO, RTC |
-| **Showcase** | Device, Sensors, GPIO, RTC, DAC, Display, Config |
+### Nieuwe Functionaliteit
+- **Actieve Klimaatregeling**: PID controller voor temperatuurregeling
+- **Vochtigheidscontrole**: Monitoring met setpoint controle
+- **Besturingsmodi**: 4 operationele modi (AUTO/HEATING/COOLING/OFF)
+- **Uitgangssignalen**: 0-5V DAC voor vermogensregeling van actuatoren
+- **Sensor Uitbreiding**: Ondersteuning voor 5+ verschillende sensor types
 
----
+### User Interface Toevoegingen
+- **LCD Display**: Real-time status weergave van alle systeem parameters
+- **Rotary Encoder**: Interactieve bedieningselement voor menu navigatie
+- **Visuele Feedback**: Directe feedback via display interface
+- **Interactive Menu**: Instelbare parameters zonder code wijzigingen
+- **Permanente Opslag**: Configuratie wijzigingen worden opgeslagen
 
-## Device Management
+### Architectuur Verbeteringen
+- **Uitgebreide Modules**: 7+ gespecialiseerde modules vs 4 basis modules
+- **Smart Device Discovery**: Labels en positional indexing met fallback mechanismen
+- **Enhanced DeviceRegistry**: `getDeviceByTypeAndLabel()` voor specifieke device selectie
+- **Nieuwe Modules**: DAC, Display, Config modules toegevoegd
 
-| Systeem | Casekeeper | Showcase |
-|---------|------------|----------|
-| **Pattern** | DeviceRegistry basis | DeviceRegistry uitgebreid |
-| **Discovery** | Automatisch via factory | Smart discovery met labels |
-| **Fallback** | Eerste beschikbare device | Positional indexing + fallback |
-| **Code** | `registry.getDeviceByType(...)` | `registry.getDeviceByTypeAndLabel(...)` |
+### Data Persistentie Systeem
+- **Multi-level Storage**: 4-laags opslag architectuur
+  - **Primary**: SD Card voor hoofdconfiguratie
+  - **Fallback**: SPIFFS als backup storage
+  - **Runtime**: EEPROM met checksum validatie
+  - **Emergency**: Default waarden als laatste redmiddel
 
----
+### Connectiviteit Verbeteringen
+- **MQTT Throttling**: Intelligente 30-seconden throttling tegen spam
+- **JSON Validatie**: ArduinoJson v7.2.1 met input validatie
+- **Library Management**: Vastgezette versies voor stabiliteit
 
-## Data Persistentie
+### Error Handling Systeem
+- **Graceful Degradation**: Systeem blijft operationeel bij hardware falen
+- **Network Recovery**: Retry mechanisme met exponential backoff
+- **Data Integrity**: Checksum validatie voor corruptie detectie
+- **Config Protection**: Fallback naar defaults bij configuratie fouten
+- **Sensor Redundancy**: Continueren met werkende sensoren bij uitval
 
-| Laag | Casekeeper | Showcase |
-|------|------------|----------|
-| **Primary** | Runtime JSON | SD Card |
-| **Fallback** | Geen | SPIFFS |
-| **Runtime** | Geen persistentie | EEPROM met checksum |
-| **Emergency** | Geen | Default waarden |
-
----
-
-## Connectiviteit
-
-| Feature | Casekeeper | Showcase |
-|---------|------------|----------|
-| **MQTT** | Basis | Throttled (30s) |
-| **JSON** | Basis | v7.2.1 + validation |
-| **WiFi** | Auto-reconnect | Auto-reconnect |
-| **Time Sync** | NTP synchronization | NTP synchronization |
-
----
-
-## User Interface
-
-| Interface Element | Casekeeper | Showcase |
-|-------------------|------------|----------|
-| **Display** | Geen | LCD real-time status |
-| **Input** | Geen | Rotary encoder |
-| **Feedback** | Serial debugging | Visual feedback |
-| **Settings** | Code wijzigen | Interactive menu |
-| **Save** | Niet mogelijk | Permanente opslag |
-
----
-
-## Development Environment
-
-| Aspect | Casekeeper | Showcase |
-|--------|------------|----------|
-| **PlatformIO Setup** | Minimal | Advanced (QIO, PSRAM) |
-| **Debug Level** | Basis | Maximum (5) |
-| **Library Versions** | Floating | Vastgezet (PID, ArduinoJson) |
-| **Build Optimization** | Standaard | Custom flags |
-
----
-
-## Error Handling
-
-| Error Type | Casekeeper | Showcase |
-|------------|------------|----------|
-| **Hardware Falen** | Crash | Graceful degradation |
-| **Network Issues** | Geen recovery | Retry met backoff |
-| **Data Corruption** | Geen detectie | Checksum validation |
-| **Config Fouten** | System halt | Fallback naar defaults |
-| **Sensor Fouten** | Geen handling | Continue met anderen |
-
----
-
-## Kwantitatieve Vergelijking
-
-| Metric | Casekeeper | Showcase | Verbetering |
-|--------|------------|----------|-------------|
-| **Core Functionaliteit** | Alleen monitoring | Klimaatregeling + monitoring | +200% |
-| **Flash Memory** | 4MB | 16MB | +300% |
-| **Sensor Types** | 3 typen | 5+ typen | +67% |
-| **Configuration Layers** | 1 laag | 4 lagen | +300% |
-| **Code Modules** | 5 modules | 15+ modules | +200% |
-| **Error Recovery** | 0 niveaus | 3 niveaus | +∞ |
+### Development Environment
+- **Advanced PlatformIO**: Geoptimaliseerde build configuratie
+- **Custom Build Flags**: Performance optimalisaties
+- **Library Pinning**: Vastgezette versies (PID, ArduinoJson)
+- **Enhanced Debugging**: Maximum debug output voor ontwikkeling
 
 ---
 
