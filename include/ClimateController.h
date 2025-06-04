@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include <PID_v1.h>
-#include <PID_AutoTune_v0.h>
 #include "PCF8574gpio.h"
 #include "SHTsensor.h"
 #include "GP8403dac.h"
@@ -58,15 +57,7 @@ public:
     // PID parameters
     void setTemperaturePID(double kp, double ki, double kd);
     void setHumidityPID(double kp, double ki, double kd);
-    
-    // PID Autotuning
-    bool startTemperatureAutotune(double targetSetpoint = -1.0, double outputStep = 50.0, int lookBack = 20);
-    bool isTemperatureAutotuning() const { return temperatureAutotuning; }
-    void stopTemperatureAutotune();
-    void updateTemperatureAutotune();
-    bool getTemperatureAutotuneResults(double& kp, double& ki, double& kd);
-    
-    // Configuration reload
+      // Configuration reload
     void reloadConfiguration();
     
     // Dynamic configuration update
@@ -126,11 +117,9 @@ private:
     PID* temperaturePID;
     PID* humidityPID;
     
-    // PID Autotuning
-    PID_ATune* temperatureATune;
-    bool temperatureAutotuning;
-    double autotuneInput, autotuneOutput, autotuneSetpoint;
-    unsigned long autotuneStartTime;
+    // PID variables
+    double tempInput, tempOutput, tempSetpoint;
+    double humInput, humOutput, humSetpoint;
     
     // Control states
     bool heatingActive;
