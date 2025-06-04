@@ -66,7 +66,7 @@ lib/
 ├── Sensors/          # SHT, BH1705, Scales
 ├── GPIO/             # PCF8574 expander
 ├── DAC/              # GP8403 analog out
-├── Display/          # LC interface
+├── Display/          # LCD interface
 └── Config/           # EEPROM settings
 ```
 
