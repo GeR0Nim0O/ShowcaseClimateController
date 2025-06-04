@@ -393,7 +393,11 @@ void ClimateController::updateTemperatureControl() {
         return;
     }
     
-    temperaturePID->Compute();
+    // Skip normal PID computation if AutoTune is active
+    // AutoTune will handle tempOutput directly
+    if (!temperatureAutoTuning) {
+        temperaturePID->Compute();
+    }
     
     switch (climateMode) {
         case ClimateMode::HEATING:
