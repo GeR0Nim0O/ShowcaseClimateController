@@ -271,20 +271,27 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
     if (!climate) {
         Serial.println("No climate_controller section found in JSON");
         return false;
-    }
-      // Load basic settings
-    settings.temperatureSetpoint = climate["temperature_setpoint"] | 22.0;
-    settings.humiditySetpoint = climate["humidity_setpoint"] | 50.0;
+    }    // Load basic settings
+    settings.temperatureSetpoint = climate["temperature_setpoint"].as<double>();
+    if (!climate["temperature_setpoint"]) settings.temperatureSetpoint = 22.0;
     
-    String tempClimateMode = climate["climate_mode"] | "AUTO";
-    String tempHumidityMode = climate["humidity_mode"] | "AUTO";
+    settings.humiditySetpoint = climate["humidity_setpoint"].as<double>();
+    if (!climate["humidity_setpoint"]) settings.humiditySetpoint = 50.0;
+    
+    String tempClimateMode = climate["climate_mode"].as<String>();
+    if (!climate["climate_mode"]) tempClimateMode = "AUTO";
+    String tempHumidityMode = climate["humidity_mode"].as<String>();
+    if (!climate["humidity_mode"]) tempHumidityMode = "AUTO";
     strncpy(settings.climateMode, tempClimateMode.c_str(), 15);
     settings.climateMode[15] = '\0';
     strncpy(settings.humidityMode, tempHumidityMode.c_str(), 15);
     settings.humidityMode[15] = '\0';
     
-    settings.autoFanControl = climate["auto_fan_control"] | true;
-    settings.updateInterval = climate["update_interval_ms"] | 1000;
+    settings.autoFanControl = climate["auto_fan_control"].as<bool>();
+    if (!climate["auto_fan_control"]) settings.autoFanControl = true;
+    
+    settings.updateInterval = climate["update_interval_ms"].as<int>();
+    if (!climate["update_interval_ms"]) settings.updateInterval = 1000;
     
     // Load safety limits
     JsonObject safety = climate["safety_limits"];
