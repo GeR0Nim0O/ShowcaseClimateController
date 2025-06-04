@@ -1,13 +1,13 @@
 # Showcase Climate Controller vs Casekeeper - Projectvergelijking
 
-## Executive Summary
+## Samenvatting
 
 | Aspect | Casekeeper | Showcase Climate Controller |
 |--------|------------|----------------------------|
 | **Functie** | Passief monitoring | Actief klimaatregelsysteem |
 | **Hardware** | ESP32-POE-ISO (4MB) | ESP32-S3 Box (16MB + PSRAM) |
 | **Architectuur** | Basis modulair | Uitgebreid modulair |
-| **Interface** | Geen | OLED display + rotary encoder |
+| **Interface** | Geen | LCD display + rotary encoder |
 | **Persistentie** | Runtime alleen | Multi-level storage |
 
 ---
