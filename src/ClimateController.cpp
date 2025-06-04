@@ -443,7 +443,31 @@ void ClimateController::updateHumidityControl() {
         dehumidifyingActive = false;
         return;
     }
-      // Use a simple hysteresis control for humidity (on/off control)
+    
+    // If humidity AutoTune is active, use PID output
+    if (humidityAutoTuning) {
+        // AutoTune handles humOutput directly
+        // Apply the output as control signals
+        if (humOutput > 0.1) {
+            humidifyingActive = true;
+            dehumidifyingActive = false;
+            humidifierPower = map(humOutput, 0.1, 100, 0, 100);
+            dehumidifierPower = 0.0;
+        } else if (humOutput < -0.1) {
+            humidifyingActive = false;
+            dehumidifyingActive = true;
+            humidifierPower = 0.0;
+            dehumidifierPower = map(-humOutput, 0.1, 100, 0, 100);
+        } else {
+            humidifyingActive = false;
+            dehumidifyingActive = false;
+            humidifierPower = 0.0;
+            dehumidifierPower = 0.0;
+        }
+        return;
+    }
+    
+    // Normal hysteresis control for humidity (when not auto-tuning)
     const float hysteresis = Configuration::getHumidityHysteresis(); // Get hysteresis from configuration
     
     switch (humidityMode) {
