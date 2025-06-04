@@ -98,11 +98,13 @@ if (!sensor) {
     sensor = registry.getDeviceByType("TemperatureHumidity", 0);
 }
 ```
-### Casekeeper - Handmatig
+### Casekeeper - Device Registry
 ```cpp
-// Handmatige instantiation
+// Device registry met handmatige configuratie
 devices.push_back(new SHTsensor(wire, 0x44, 1, "SHT31", 0));
 ```
+
+**Verschil**: Beide gebruiken DeviceRegistry, maar Showcase heeft intelligente discovery met fallback mechanismen.
 
 ---
 
