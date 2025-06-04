@@ -86,12 +86,12 @@ Modules: Device, Sensors, GPIO, RTC
 - **Van**: Passief monitoring systeem
 - **Naar**: Passief monitoring systeem + Actief klimaatregelsysteem
 
-### Key Achievements
+### Belangrijkste Resultaten
 1. **Nieuwe functionaliteit**: Volledige klimaatregeling
-2. **Professional architectuur**: design patterns
-3. **Enterprise features**: Multi-level config, error recovery, persistentie
-4. **User experience**: Display + interactive controls
-5. **Development quality**: Advanced debugging + structured codebase
+2. **Professionele architectuur**: Design patterns en modulaire opbouw
+3. **Enterprise functionaliteiten**: Multi-level configuratie, error recovery, persistentie
+4. **Gebruikerservaring**: Display en interactieve bediening
+5. **Ontwikkelingskwaliteit**: Geavanceerde debugging en gestructureerde codebase
 
 ### Impact
 **Showcase Climate Controller** demonstreert een professionele evolutie van prototype naar production-ready embedded systeem, geschikt voor commerciële toepassing.
