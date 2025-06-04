@@ -95,6 +95,9 @@ void updateClimateController(); // Function to update climate controller
 void showTemperatureAndHumidity(); // Function to show current temperature and humidity
 void testPSRAM(); // Function to test PSRAM
 
+// AutoTune functions
+bool promptForAutoTune(); // Function to prompt user for AutoTune with timeout
+
 // Display functions
 void initializeDisplayDevice(); // Function to initialize display device
 void updateDisplayWithClimateStatus(); // Function to update display with climate status
@@ -874,6 +877,28 @@ void testPSRAM() {
         Serial.println("Check hardware connections and configuration");
     }
     Serial.println("==================\n");
+}
+
+// Function to prompt user for AutoTune with timeout
+bool promptForAutoTune() {
+    Serial.println("AutoTune: Press 'Y' to start tuning, or wait 5 seconds to skip.");
+    
+    unsigned long startTime = millis();
+    while (millis() - startTime < 5000) {
+        if (Serial.available() > 0) {
+            char c = Serial.read();
+            if (c == 'Y' || c == 'y') {
+                Serial.println("AutoTune started.");
+                return true;
+            } else if (c == 'N' || c == 'n') {
+                Serial.println("AutoTune skipped.");
+                return false;
+            }
+        }
+    }
+    
+    Serial.println("No input detected. Skipping AutoTune.");
+    return false;
 }
 
 
