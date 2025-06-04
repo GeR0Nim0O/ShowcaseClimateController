@@ -375,13 +375,9 @@ void loop() {
   
   // Read and send data from each device
   readAndSendDataFromDevices();
-    // Update climate controller
+  // Update climate controller
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
-    Serial.println("DEBUG: About to call updateClimateController()");
     updateClimateController();
-    Serial.println("DEBUG: Returned from updateClimateController()");
-  } else {
-    Serial.println("DEBUG: Climate controller not enabled or is nullptr");
   }
     // Update display with climate status periodically
   unsigned long displayUpdateInterval = Configuration::getDisplayUpdateInterval();
