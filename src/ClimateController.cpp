@@ -1100,8 +1100,8 @@ void ClimateController::updateClimateConfigFile() {
 
 // PID AutoTune functionality
 bool ClimateController::startTemperatureAutoTune(double targetSetpoint, double outputStep, double noiseband, unsigned int lookBack) {
-    if (temperatureAutoTuning || humidityAutoTuning) {
-        Serial.println("AutoTune already in progress");
+    if (temperatureAutoTuning) {
+        Serial.println("Temperature AutoTune already in progress");
         return false;
     }
     
