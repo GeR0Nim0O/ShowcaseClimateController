@@ -653,8 +653,8 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
 
 // Parse configuration sections
 void Configuration::parseWiFiConfig(const JsonObject& config) {
-    wifiConfig["ssid"] = config["ssid"] | "";
-    wifiConfig["password"] = config["password"] | "";
+    wifiConfig["ssid"] = config["ssid"].as<String>();
+    wifiConfig["password"] = config["password"].as<String>();
 }
 
 void Configuration::parseMQTTConfig(const JsonObject& config) {
