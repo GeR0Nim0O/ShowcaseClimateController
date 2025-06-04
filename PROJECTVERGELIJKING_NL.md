@@ -53,28 +53,36 @@ Een technische vergelijking tussen Showcase Climate Controller en de oorspronkel
 
 | Pattern | Showcase | Casekeeper |
 |---------|----------|------------|
-| **Factory** | ✅ DeviceRegistry | ❌ Direct instantiation |
-| **Singleton** | ✅ Configuration | ❌ Global variables |
-| **SOLID** | ✅ Volledig | ❌ Monolithisch |
+| **Factory** | ✅ DeviceRegistry uitgebreid | ✅ DeviceRegistry basis |
+| **Singleton** | ✅ Configuration | ✅ Configuration |
+| **SOLID** | ✅ Volledig | ✅ Basis implementatie |
 
 ### Code Structuur
 
-**Showcase** (Modulair):
+**Showcase** (Uitgebreide modules):
 ```
 lib/
-├── Device/           # Base classes
-├── Sensors/          # SHT, BH1705, Scales
-├── GPIO/             # PCF8574 expander
-├── DAC/              # GP8403 analog out
-├── Display/          # LCD interface
-└── Config/           # EEPROM settings
+├── Device/           # Base classes + factory patterns
+├── Sensors/          # SHT, BH1705, Scales + meer types
+├── GPIO/             # PCF8574 expander + advanced features
+├── DAC/              # GP8403 analog out voor regeling
+├── Display/          # LCD interface + user interaction
+├── Config/           # EEPROM settings + multi-level storage
+└── RTC/              # Real-time clock support
 ```
 
-**Casekeeper** (Monolithisch):
+**Casekeeper** (Basis modules):
 ```
+lib/
+├── Device/           # Basis device classes
+├── Sensors/          # SHT, BH1705, Scales (basis)
+├── GPIO/             # PCF8574 basis functionaliteit
+└── RTC/              # Real-time clock basis
 src/
-└── main.cpp          # Alles in één file
+└── main.cpp          # Hoofdlogica
 ```
+
+**Verschil**: Beide hebben modulaire structuur, maar Showcase heeft uitgebreidere en gespecialiseerdere modules.
 
 ---
 
