@@ -658,11 +658,11 @@ void Configuration::parseWiFiConfig(const JsonObject& config) {
 }
 
 void Configuration::parseMQTTConfig(const JsonObject& config) {
-    mqttConfig["server"] = config["server"] | "";
-    mqttConfig["port"] = String(config["port"] | 1883);
-    mqttConfig["username"] = config["username"] | "";
-    mqttConfig["password"] = config["password"] | "";
-    mqttConfig["token"] = config["token"] | "";
+    mqttConfig["server"] = config["server"].as<String>();
+    mqttConfig["port"] = String(config["port"].as<int>());
+    mqttConfig["username"] = config["username"].as<String>();
+    mqttConfig["password"] = config["password"].as<String>();
+    mqttConfig["token"] = config["token"].as<String>();
 }
 
 void Configuration::parseProjectConfig(const JsonObject& config) {
