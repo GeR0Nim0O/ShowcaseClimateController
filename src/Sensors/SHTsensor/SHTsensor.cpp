@@ -246,7 +246,7 @@ bool SHTsensor::isConnected() {
 
 void SHTsensor::update() {
     // Always select the correct TCA channel before communicating
-    selectTCAChannel(tcaChannel);
+    I2CHandler::selectTCA(getTCAChannel());
     
     // Reset readingSuccess flag
     bool readingSuccess = false;
