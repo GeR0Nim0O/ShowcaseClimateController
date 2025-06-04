@@ -89,13 +89,13 @@
 
 ## User Interface
 
-| Interface Element | Showcase | Casekeeper |
-|-------------------|----------|------------|
-| **Display** | OLED real-time status | Geen |
-| **Input** | Rotary encoder | Geen |
-| **Feedback** | Visual + Audio | Serial debugging |
-| **Settings** | Interactive menu | Code wijzigen |
-| **Save** | Permanente opslag | Niet mogelijk |
+| Interface Element | Casekeeper | Showcase |
+|-------------------|------------|----------|
+| **Display** | Geen | LCD real-time status |
+| **Input** | Geen | Rotary encoder |
+| **Feedback** | Serial debugging | Visual + Audio |
+| **Settings** | Code wijzigen | Interactive menu |
+| **Save** | Niet mogelijk | Permanente opslag |
 
 ---
 
