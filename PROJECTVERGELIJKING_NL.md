@@ -84,7 +84,7 @@ Modules: Device, Sensors, GPIO, RTC
 
 ### Transformatie
 - **Van**: Passief monitoring systeem
-- **Naar**: Actief klimaatregelsysteem
+- **Naar**: Passief monitoring systeem + Actief klimaatregelsysteem
 
 ### Key Achievements
 1. **Nieuwe functionaliteit**: Volledige klimaatregeling
