@@ -96,7 +96,7 @@ void showTemperatureAndHumidity(); // Function to show current temperature and h
 void testPSRAM(); // Function to test PSRAM
 
 // AutoTune functions
-bool promptForAutoTune(); // Function to prompt user for AutoTune with timeout
+AutoTuneMode promptForAutoTune(); // Function to prompt user for AutoTune mode selection
 void handleSerialCommands(); // Function to handle serial commands for AutoTune control
 
 // Display functions
