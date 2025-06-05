@@ -138,7 +138,7 @@ private:
     unsigned long autoTuneStartTime;
     
     // AutoTune type tracking for percentage calculation
-    enum class AutoTuneType { NORMAL, FAST, ULTRA_FAST };
+    enum class AutoTuneType { NORMAL, FAST };
     AutoTuneType currentAutoTuneType;
     unsigned long expectedAutoTuneDuration; // in milliseconds
     
