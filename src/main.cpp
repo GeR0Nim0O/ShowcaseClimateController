@@ -240,28 +240,11 @@ void setup()
     Serial.println("7. Initializing display...");
   // Initialize display device
   initializeDisplayDevice();
-    Serial.println("8. Reading initial sensor data...");
+  Serial.println("8. Reading initial sensor data...");
   // Read and print initial sensor values after initialization
   readAndPrintInitialSensorData();
   
-  // Additional debug: Check each device individually
-  Serial.println("Device validation:");
-  for (size_t i = 0; i < devices.size(); i++) {
-    Device* device = devices[i];
-    Serial.print("Device ");
-    Serial.print(i);
-    Serial.print(": ");
-    if (device == nullptr) {
-      Serial.println("NULL POINTER");
-    } else {
-      Serial.print("Type: ");
-      Serial.print(device->getType());
-      Serial.print(", Initialized: ");
-      Serial.println(device->isInitialized() ? "Yes" : "No");
-    }
-  }
-  
-  Serial.println("10. Setting up MQTT client ID and topic...");
+  Serial.println("9. Setting up MQTT client ID and topic...");
   clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
   topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
   
