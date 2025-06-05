@@ -519,9 +519,9 @@ void ClimateController::setDACSetupMode(bool setupActive) {
             dac->setChannelVoltage(0, 5.0);
             Serial.println("DAC set to 5V - setup mode active");
         } else {
-            // Set DAC to 0V when setup is finished
-            dac->setChannelVoltage(0, 0.0);
-            Serial.println("DAC set to 0V - setup mode finished");
+            // Set DAC to 1V when setup is finished (0% power in 1-5V range)
+            dac->setChannelVoltage(0, 1.0);
+            Serial.println("DAC set to 1V - setup mode finished (0% power)");
         }
     } catch (...) {
         Serial.println("Error setting DAC setup mode");
