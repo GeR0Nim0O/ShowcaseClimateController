@@ -1329,3 +1329,81 @@ void ClimateController::printAutoTuneStatus() {
         Serial.println("No AutoTune currently running");
     }
 }
+
+// Fast AutoTune functionality for testing purposes
+bool ClimateController::startTemperatureAutoTuneFast(double targetSetpoint, double outputStep, double noiseband, unsigned int lookBack) {
+    if (temperatureAutoTuning) {
+        Serial.println("Temperature AutoTune already in progress");
+        return false;
+    }
+    
+    if (temperaturePID == nullptr || sensor == nullptr) {
+        Serial.println("Temperature PID or sensor not initialized");
+        return false;
+    }
+    
+    // Clean up any existing AutoTuner
+    if (temperatureAutoTuner != nullptr) {
+        delete temperatureAutoTuner;
+        temperatureAutoTuner = nullptr;
+    }
+    
+    // Use current temperature setpoint if not specified
+    if (targetSetpoint == 0.0) {
+        targetSetpoint = temperatureSetpoint;
+    }
+    
+    // Set FAST testing parameters for quick results
+    if (outputStep == 0.0) {
+        outputStep = 60.0;    // Higher output step (60%) for faster response
+    }
+    if (noiseband == 0.0) {
+        noiseband = 0.5;      // Larger noise band (0.5°C) for quicker detection
+    }
+    if (lookBack == 0) {
+        lookBack = 300;       // Much shorter lookback (5 minutes) for testing
+    }
+    
+    // Create new AutoTuner
+    temperatureAutoTuner = new PID_ATune(&tempInput, &tempOutput);
+    if (temperatureAutoTuner == nullptr) {
+        Serial.println("Failed to create temperature AutoTuner");
+        return false;
+    }
+    
+    // Configure AutoTuner parameters
+    temperatureAutoTuner->SetNoiseBand(noiseband);
+    temperatureAutoTuner->SetOutputStep(outputStep);
+    temperatureAutoTuner->SetLookbackSec((int)lookBack);
+    
+    // Set the setpoint for autotuning
+    autoTuneSetpoint = targetSetpoint;
+    autoTuneOutputStep = outputStep;
+    tempSetpoint = targetSetpoint;
+    
+    // Switch PID to manual mode for autotuning
+    temperaturePID->SetMode(MANUAL);
+    
+    // Start autotuning
+    temperatureAutoTuning = true;
+    autoTuneStartTime = millis();
+    
+    Serial.println("=== FAST Temperature PID AutoTune Started (TESTING MODE) ===");
+    Serial.print("Target Setpoint: ");
+    Serial.print(targetSetpoint);
+    Serial.println("°C");
+    Serial.print("Output Step: ");
+    Serial.print(outputStep);
+    Serial.println("% (HIGH power for fast testing)");
+    Serial.print("Noise Band: ");
+    Serial.print(noiseband);
+    Serial.println("°C (relaxed for quick detection)");
+    Serial.print("Look Back: ");
+    Serial.print(lookBack);
+    Serial.println(" seconds (5 minutes for fast testing)");
+    Serial.println("Expected duration: 15-30 minutes for quick analysis");
+    Serial.println("WARNING: Results may be less accurate - use for testing only!");
+    Serial.println("===========================================================");
+    
+    return true;
+}
