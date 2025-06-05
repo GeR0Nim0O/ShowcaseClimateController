@@ -890,8 +890,15 @@ void testPSRAM() {
     Serial.println("==================\n");
 }
 
-// Function to prompt user for AutoTune with 5-second timeout
-bool promptForAutoTune() {
+// AutoTune mode selection
+enum class AutoTuneMode {
+    SKIP,
+    NORMAL,
+    FAST
+};
+
+// Function to prompt user for AutoTune with mode selection
+AutoTuneMode promptForAutoTune() {
     Serial.println();
     Serial.println("========================================");
     Serial.println("       PID AutoTune Configuration");
@@ -899,14 +906,18 @@ bool promptForAutoTune() {
     Serial.println("AutoTune will automatically determine optimal PID parameters");
     Serial.println("for temperature control by analyzing system response.");
     Serial.println();
-    Serial.println("WARNING: AutoTune process takes several minutes and will");
-    Serial.println("cause temperature fluctuations during calibration.");
+    Serial.println("Available AutoTune modes:");
+    Serial.println("  N - NORMAL  (2-4 hours, highest accuracy, production use)");
+    Serial.println("  F - FAST    (15-30 minutes, good accuracy, testing/demo)");
+    Serial.println("  S - SKIP    (No AutoTune, use current PID settings)");
     Serial.println();
-    Serial.print("Enable AutoTune? Press 'Y' within 5 seconds or any key to skip: ");
+    Serial.println("WARNING: AutoTune process will cause temperature fluctuations!");
+    Serial.println();
+    Serial.print("Select AutoTune mode (N/F/S) within 10 seconds: ");
     Serial.flush();
     
     unsigned long startTime = millis();
-    const unsigned long timeoutMs = 5000; // 5 seconds
+    const unsigned long timeoutMs = 10000; // 10 seconds for mode selection
     bool inputReceived = false;
     String response = "";
     
@@ -925,25 +936,40 @@ bool promptForAutoTune() {
     if (inputReceived) {
         Serial.println(response); // Echo the response
         
-        // Check for 'Y' or 'y' in the response (case insensitive)
-        if (response.equalsIgnoreCase("Y") || response.equalsIgnoreCase("YES")) {
-            Serial.println("✓ AutoTune ENABLED");
-            Serial.println("AutoTune will start after system initialization completes.");
+        // Parse the response (case insensitive)
+        if (response.equalsIgnoreCase("N") || response.equalsIgnoreCase("NORMAL")) {
+            Serial.println("✓ NORMAL AutoTune SELECTED");
+            Serial.println("  Duration: 2-4 hours for complete thermal analysis");
+            Serial.println("  Accuracy: Highest - recommended for production use");
             Serial.println("========================================");
             Serial.println();
-            return true;
+            return AutoTuneMode::NORMAL;
+        } else if (response.equalsIgnoreCase("F") || response.equalsIgnoreCase("FAST")) {
+            Serial.println("✓ FAST AutoTune SELECTED");
+            Serial.println("  Duration: 15-30 minutes for quick analysis");
+            Serial.println("  Accuracy: Good - suitable for testing and demos");
+            Serial.println("  WARNING: Less accurate than normal mode!");
+            Serial.println("========================================");
+            Serial.println();
+            return AutoTuneMode::FAST;
+        } else if (response.equalsIgnoreCase("S") || response.equalsIgnoreCase("SKIP")) {
+            Serial.println("→ AutoTune SKIPPED");
+            Serial.println("  Using current PID parameters from configuration");
+            Serial.println("========================================");
+            Serial.println();
+            return AutoTuneMode::SKIP;
         } else {
-            Serial.println("→ AutoTune skipped");
+            Serial.println("→ Invalid selection - AutoTune SKIPPED");
             Serial.println("========================================");
             Serial.println();
-            return false;
+            return AutoTuneMode::SKIP;
         }
     } else {
         Serial.println("TIMEOUT");
-        Serial.println("→ AutoTune skipped (no input received)");
+        Serial.println("→ AutoTune SKIPPED (no input received)");
         Serial.println("========================================");
         Serial.println();
-        return false;
+        return AutoTuneMode::SKIP;
     }
 }
 
