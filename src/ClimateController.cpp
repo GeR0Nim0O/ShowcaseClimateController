@@ -1637,7 +1637,7 @@ bool ClimateController::startTemperatureAutoTuneUltraFast(double targetSetpoint)
       // Start autotuning
     temperatureAutoTuning = true;
     autoTuneStartTime = millis();
-    currentAutoTuneType = AutoTuneType::ULTRA_FAST;
+    currentAutoTuneType = AutoTuneType::FAST;
     expectedAutoTuneDuration = 7.5 * 60 * 1000; // 7.5 minutes in milliseconds (middle of 5-10 minute range)
     
     Serial.println("=== ULTRA-FAST Temperature PID AutoTune Started (IMMEDIATE TESTING) ===");
