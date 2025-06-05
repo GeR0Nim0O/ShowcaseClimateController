@@ -81,6 +81,10 @@ public:
       // DAC control
     void setDACDevice(GP8403dac* dac) { this->dac = dac; }
     bool hasDACControl() const { return dac != nullptr; }
+    
+    // DAC setup state control
+    void setDACSetupMode(bool setupActive); // 5V during setup, 0V when finished
+    
     void setHeatingPower(float percentage); // 0-100%
     void setCoolingPower(float percentage); // 0-100%
     void setHumidifierPower(float percentage); // 0-100%
