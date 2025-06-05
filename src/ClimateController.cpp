@@ -1544,12 +1544,11 @@ bool ClimateController::startTemperatureAutoTuneFast(double targetSetpoint, doub
     // Use current temperature setpoint if not specified
     if (targetSetpoint == 0.0) {
         targetSetpoint = temperatureSetpoint;
-    }
-      // Set FAST testing parameters for quick results
+    }    // Set FAST testing parameters for quick results
     if (outputStep == 0.0) {
-        // Get configured output step from ClimateConfig for consistency
+        // Get configured FAST autotune output step from ClimateConfig
         ClimateConfig& climateConfig = ClimateConfig::getInstance();
-        outputStep = climateConfig.getAutoTuneOutputStep();
+        outputStep = climateConfig.getFastAutoTuneOutputStep();
         
         Serial.print("Using configured AutoTune output step: ");
         Serial.print(outputStep);
