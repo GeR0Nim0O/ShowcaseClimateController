@@ -35,11 +35,10 @@
     "startup_delay_ms": 5000,
     "wifi_connection_timeout_ms": 15000,
     "button_press_timeout_ms": 5000
-  },
-  "climate_controller": {
+  },  "climate_controller": {
     "enabled": true,
-    "temperature_setpoint": 22.0,
-    "humidity_setpoint": 50.0,    
+    "temperature_setpoint": 20.0,
+    "humidity_setpoint": 40.0,    
     "climate_mode": "AUTO",
     "humidity_mode": "AUTO",
     "auto_fan_control": true,
