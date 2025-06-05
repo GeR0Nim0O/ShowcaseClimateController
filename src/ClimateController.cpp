@@ -343,22 +343,23 @@ void ClimateController::updateTemperatureControl() {
         temperaturePID->Compute();
     }
     
-    switch (climateMode) {        case ClimateMode::HEATING:
+    switch (climateMode) {
+        case ClimateMode::HEATING:
             heatingActive = (tempOutput > 0);
             coolingActive = false;
             tempControlEnabled = heatingActive;
             heatingPower = heatingActive ? constrain(tempOutput, 0.0, 100.0) : 0.0;
             coolingPower = 0.0;
             break;
-              case ClimateMode::COOLING:
+        case ClimateMode::COOLING:
             heatingActive = false;
             coolingActive = (tempOutput < 0);
             tempControlEnabled = coolingActive;
             heatingPower = 0.0;
             coolingPower = coolingActive ? constrain(-tempOutput, 0.0, 100.0) : 0.0;
             break;
-              case ClimateMode::AUTO:
-            if (tempOutput > 0.1) // Very small deadband for precise control
+        case ClimateMode::AUTO:
+            if (tempOutput > 0.1) { // Very small deadband for precise control
                 heatingActive = true;
                 coolingActive = false;
                 heatingPower = constrain(tempOutput, 0.0, 100.0);
@@ -376,7 +377,6 @@ void ClimateController::updateTemperatureControl() {
             }
             tempControlEnabled = (heatingActive || coolingActive);
             break;
-            
         case ClimateMode::OFF:
         default:
             tempControlEnabled = false;
