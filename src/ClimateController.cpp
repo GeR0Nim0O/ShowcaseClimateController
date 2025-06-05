@@ -484,19 +484,21 @@ void ClimateController::applyDACControls() {
     
     try {
         // Use channel 0 for temperature control power
-        float dacVoltage = 0.0;
+        float dacVoltage = 1.0; // Default to 1V (minimum output for 0% power)
         
         if (heatingActive && heatingPower > 0) {
-            // Convert heating power (0-100%) to voltage (0-5V)
-            dacVoltage = (heatingPower / 100.0) * 5.0;
+            // Convert heating power (0-100%) to voltage (1-5V)
+            // 0% = 1V, 100% = 5V
+            dacVoltage = 1.0 + (heatingPower / 100.0) * 4.0;
         } else if (coolingActive && coolingPower > 0) {
-            // Convert cooling power (0-100%) to voltage (0-5V)
-            dacVoltage = (coolingPower / 100.0) * 5.0;
+            // Convert cooling power (0-100%) to voltage (1-5V)
+            // 0% = 1V, 100% = 5V
+            dacVoltage = 1.0 + (coolingPower / 100.0) * 4.0;
         }
         
-        // Clamp voltage to safe range
+        // Clamp voltage to safe range (1-5V)
         if (dacVoltage > 5.0) dacVoltage = 5.0;
-        if (dacVoltage < 0.0) dacVoltage = 0.0;
+        if (dacVoltage < 1.0) dacVoltage = 1.0;
         
         // Set DAC output voltage
         dac->setChannelVoltage(0, dacVoltage);
