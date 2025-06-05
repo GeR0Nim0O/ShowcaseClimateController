@@ -1224,24 +1224,57 @@ void ClimateController::updateAutoTune() {
         // Provide periodic progress updates during AutoTune
         static unsigned long lastProgressUpdate = 0;
         unsigned long currentTime = millis();
-        
-        // Show progress every 30 seconds during AutoTune
+          // Show progress every 30 seconds during AutoTune
         if (currentTime - lastProgressUpdate >= 30000) {
             unsigned long autoTuneRuntime = (currentTime - autoTuneStartTime) / 1000;
+            unsigned long autoTuneRuntimeMs = currentTime - autoTuneStartTime;
+            
+            // Calculate percentage based on expected duration
+            float progressPercentage = 0.0;
+            if (expectedAutoTuneDuration > 0) {
+                progressPercentage = (float)autoTuneRuntimeMs / (float)expectedAutoTuneDuration * 100.0;
+                // Cap at 100% to avoid showing over 100% for longer-than-expected runs
+                if (progressPercentage > 100.0) progressPercentage = 100.0;
+            }
+            
             Serial.println("");
             Serial.println("=== AutoTune Progress Update ===");
             Serial.print("Runtime: ");
             Serial.print(autoTuneRuntime);
-            Serial.println(" seconds");
+            Serial.print(" seconds (");
+            Serial.print(progressPercentage, 1);
+            Serial.println("% complete)");
             Serial.print("Current Temperature: ");
             Serial.print(currentTemperature, 2);
             Serial.print("°C (Target: ");
             Serial.print(autoTuneSetpoint, 1);
-            Serial.println("°C)");            Serial.print("Current Output: ");
+            Serial.println("°C)");
+            Serial.print("Current Output: ");
             Serial.print(abs(tempOutput), 1);
             Serial.print("% (");
             Serial.print(tempOutput > 0 ? "Heating" : "Cooling");
             Serial.println(")");
+            
+            // Show AutoTune type and estimated remaining time
+            const char* autoTuneTypeName = "Unknown";
+            switch (currentAutoTuneType) {
+                case AutoTuneType::NORMAL: autoTuneTypeName = "Normal"; break;
+                case AutoTuneType::FAST: autoTuneTypeName = "Fast"; break;
+                case AutoTuneType::ULTRA_FAST: autoTuneTypeName = "Ultra-Fast"; break;
+            }
+            Serial.print("Mode: ");
+            Serial.print(autoTuneTypeName);
+            Serial.print(" AutoTune");
+            
+            if (progressPercentage < 100.0 && expectedAutoTuneDuration > 0) {
+                unsigned long remainingMs = expectedAutoTuneDuration - autoTuneRuntimeMs;
+                unsigned long remainingMinutes = remainingMs / (60 * 1000);
+                Serial.print(" (Est. ");
+                Serial.print(remainingMinutes);
+                Serial.print(" min remaining)");
+            }
+            Serial.println();
+            
             Serial.println("AutoTune is still analyzing...");
             Serial.println("===============================");
             lastProgressUpdate = currentTime;
