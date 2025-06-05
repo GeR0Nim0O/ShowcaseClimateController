@@ -316,10 +316,10 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         return false;
     }    // Load basic settings
     settings.temperatureSetpoint = climate["temperature_setpoint"].as<double>();
-    if (!climate["temperature_setpoint"]) settings.temperatureSetpoint = 22.0;
+    if (!climate["temperature_setpoint"]) settings.temperatureSetpoint = 20.0;  // Updated from hardcoded 22.0
     
     settings.humiditySetpoint = climate["humidity_setpoint"].as<double>();
-    if (!climate["humidity_setpoint"]) settings.humiditySetpoint = 50.0;
+    if (!climate["humidity_setpoint"]) settings.humiditySetpoint = 40.0;  // Updated from hardcoded 50.0
     
     String tempClimateMode = climate["climate_mode"].as<String>();
     if (!climate["climate_mode"]) tempClimateMode = "AUTO";
