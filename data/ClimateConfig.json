@@ -6,7 +6,7 @@
     "climate_mode": "AUTO",
     "humidity_mode": "AUTO",
     "auto_fan_control": true,
-    "update_interval_ms": 1000,
+    "update_interval_ms": 500,
     "safety_limits": {
       "max_temperature": 35.0,
       "min_temperature": 10.0,
@@ -28,7 +28,26 @@
     "control_parameters": {
       "temperature_hysteresis": 0.1,
       "humidity_hysteresis": 0.5
-    },    "fan_settings": {
+    },
+    "autotune_parameters": {
+      "temperature": {
+        "enabled": false,
+        "target_oscillation_amplitude": 1.0,
+        "test_duration_minutes": 30,
+        "output_step_percent": 50,
+        "noise_band": 0.5,
+        "lookback_seconds": 20
+      },
+      "humidity": {
+        "enabled": false,
+        "target_oscillation_amplitude": 2.0,
+        "test_duration_minutes": 45,
+        "output_step_percent": 40,
+        "noise_band": 1.0,
+        "lookback_seconds": 30
+      }
+    },
+    "fan_settings": {
       "interior_fan_enabled": true,
       "exterior_fan_enabled": false
     },
