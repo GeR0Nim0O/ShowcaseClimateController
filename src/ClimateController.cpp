@@ -1277,12 +1277,10 @@ void ClimateController::updateAutoTune() {
             Serial.print(tempOutput > 0 ? "Heating" : "Cooling");
             Serial.println(")");
             
-            // Show AutoTune type and estimated remaining time
-            const char* autoTuneTypeName = "Unknown";
+            // Show AutoTune type and estimated remaining time            const char* autoTuneTypeName = "Unknown";
             switch (currentAutoTuneType) {
                 case AutoTuneType::NORMAL: autoTuneTypeName = "Normal"; break;
                 case AutoTuneType::FAST: autoTuneTypeName = "Fast"; break;
-                case AutoTuneType::ULTRA_FAST: autoTuneTypeName = "Ultra-Fast"; break;
             }
             Serial.print("Mode: ");
             Serial.print(autoTuneTypeName);
