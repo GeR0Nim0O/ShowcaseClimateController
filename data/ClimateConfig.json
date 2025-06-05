@@ -20,13 +20,6 @@
         "kd": 0.1,
         "auto_tuned": false,
         "tuned_timestamp": ""
-      },
-      "humidity": {
-        "kp": 1.0,
-        "ki": 0.2,
-        "kd": 0.05,
-        "auto_tuned": false,
-        "tuned_timestamp": ""
       }
     },
     "control_parameters": {
@@ -41,14 +34,6 @@
         "output_step_percent": 50,
         "noise_band": 0.5,
         "lookback_seconds": 20
-      },
-      "humidity": {
-        "enabled": false,
-        "target_oscillation_amplitude": 2.0,
-        "test_duration_minutes": 45,
-        "output_step_percent": 40,
-        "noise_band": 1.0,
-        "lookback_seconds": 30
       }
     },
     "fan_settings": {
