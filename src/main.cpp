@@ -1050,29 +1050,16 @@ void handleSerialCommands() {
         Serial.println("Stopping AutoTune...");
         climateController->stopAutoTune();
         Serial.println("✓ AutoTune stopped");
-    }
-    else if (command == "autotune status") {
+    }    else if (command == "autotune status") {
         if (!Configuration::isClimateControllerEnabled() || climateController == nullptr) {
             Serial.println("ERROR: Climate controller not enabled or not initialized");
             return;
         }
         
         Serial.println();
-        Serial.println("========================================");
-        Serial.println("       AutoTune Status");
-        Serial.println("========================================");
-        Serial.print("AutoTune Active: ");
-        Serial.println(climateController->isAutoTuning() ? "YES" : "NO");
-        
-        if (climateController->isAutoTuning()) {
-            Serial.println("Status: AutoTune is currently running");
-            Serial.println("Please wait for completion or use 'autotune stop'");
-        } else {
-            Serial.println("Status: AutoTune is not running");
-        }
-        Serial.println("========================================");
+        climateController->printAutoTuneStatus();
         Serial.println();
-    }    else if (command == "autotune results") {
+    }else if (command == "autotune results") {
         // Load climate config to get AutoTune results
         ClimateConfig& config = ClimateConfig::getInstance();
         if (config.hasAutoTuneResults()) {
