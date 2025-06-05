@@ -25,13 +25,12 @@
     "control_parameters": {
       "temperature_hysteresis": 0.1,
       "humidity_hysteresis": 0.5
-    },
-    "autotune_parameters": {
+    },    "autotune_parameters": {
       "temperature": {
         "enabled": false,
         "target_oscillation_amplitude": 1.0,
         "test_duration_minutes": 30,
-        "output_step_percent": 50,
+        "output_step_percent": 65,
         "noise_band": 0.5,
         "lookback_seconds": 20
       }
