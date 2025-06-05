@@ -923,12 +923,14 @@ bool promptForAutoTune() {
     unsigned long startTime = millis();
     const unsigned long timeoutMs = 5000; // 5 seconds
     bool inputReceived = false;
-    char response = 0;
+    String response = "";
     
     // Wait for input or timeout
     while (millis() - startTime < timeoutMs && !inputReceived) {
         if (Serial.available()) {
-            response = Serial.read();
+            // Read the entire input string
+            response = Serial.readStringUntil('\n');
+            response.trim(); // Remove whitespace and control characters
             inputReceived = true;
             break;
         }
@@ -937,7 +939,9 @@ bool promptForAutoTune() {
     
     if (inputReceived) {
         Serial.println(response); // Echo the response
-        if (response == 'Y' || response == 'y') {
+        
+        // Check for 'Y' or 'y' in the response (case insensitive)
+        if (response.equalsIgnoreCase("Y") || response.equalsIgnoreCase("YES")) {
             Serial.println("✓ AutoTune ENABLED");
             Serial.println("AutoTune will start after system initialization completes.");
             Serial.println("========================================");
