@@ -228,12 +228,11 @@ void setup()
   printCreatedSensors();  Serial.println("6. Initializing climate controller...");
   // Initialize climate controller
   initializeClimateController();
-  
-  // Prompt for AutoTune if climate controller is enabled
-  bool enableAutoTune = false;
+    // Prompt for AutoTune if climate controller is enabled
+  AutoTuneMode autoTuneMode = AutoTuneMode::SKIP;
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
-    enableAutoTune = promptForAutoTune();
-    if (enableAutoTune) {
+    autoTuneMode = promptForAutoTune();
+    if (autoTuneMode != AutoTuneMode::SKIP) {
       Serial.println("→ AutoTune will be started after WiFi/MQTT setup");
     }
   }
