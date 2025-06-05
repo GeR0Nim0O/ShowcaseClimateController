@@ -85,7 +85,14 @@ ClimateController* climateController = nullptr;
 Display* displayDevice = nullptr;
 unsigned long lastDisplayUpdate = 0;
 
-void readAndPrintInitialSensorData(); // Add this function prototype
+// AutoTune mode selection enum
+enum class AutoTuneMode {
+    SKIP,
+    NORMAL,
+    FAST
+};
+
+// Function declarations
 void readAndSendDataFromDevices();
 void printDebugInfo();
 void printCreatedSensors(); // Declare the function here
