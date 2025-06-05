@@ -1232,6 +1232,10 @@ void ClimateController::stopAutoTune() {
             temperatureAutoTuner = nullptr;
         }
         
+        // Reset AutoTune tracking variables
+        expectedAutoTuneDuration = 0;
+        currentAutoTuneType = AutoTuneType::NORMAL;
+        
         Serial.println("Temperature AutoTune stopped");
     }
 }
