@@ -444,20 +444,22 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         settings.autoTuneKi = 0.0;
         settings.autoTuneKd = 0.0;
     }
-    
-    // Load AutoTune configuration
+      // Load AutoTune configuration (fallback for legacy config files)
     JsonObject autoTuneConfig = climate["autotune_config"];
     if (autoTuneConfig) {
-        settings.autoTuneOutputStep = autoTuneConfig["output_step"].as<double>();
-        if (!autoTuneConfig["output_step"]) settings.autoTuneOutputStep = 50.0;
-        
-        Serial.print("AutoTune output step loaded from JSON: ");
-        Serial.print(settings.autoTuneOutputStep);
-        Serial.println("%");
-    } else {
-        // Default AutoTune configuration
-        settings.autoTuneOutputStep = 50.0;
-        Serial.println("Using default AutoTune output step: 50%");
+        // Only use this if we didn't already load from PID parameters section
+        JsonObject tempPid = climate["pid_parameters"]["temperature"];
+        if (!tempPid || (!tempPid["normal_autotune"] && !tempPid["fast_autotune"])) {
+            settings.autoTuneOutputStep = autoTuneConfig["output_step"].as<double>();
+            if (!autoTuneConfig["output_step"]) settings.autoTuneOutputStep = 50.0;
+            
+            Serial.print("Legacy AutoTune output step loaded from JSON: ");
+            Serial.print(settings.autoTuneOutputStep);
+            Serial.println("% (applied to both normal and fast)");
+            
+            // For legacy configs, use same value for fast autotune
+            settings.fastAutoTuneOutputStep = settings.autoTuneOutputStep;
+        }
     }
     
     // Validate loaded settings
