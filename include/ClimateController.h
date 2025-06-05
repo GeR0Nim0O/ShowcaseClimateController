@@ -137,6 +137,11 @@ private:
     double autoTuneOutputStep;
     unsigned long autoTuneStartTime;
     
+    // AutoTune type tracking for percentage calculation
+    enum class AutoTuneType { NORMAL, FAST, ULTRA_FAST };
+    AutoTuneType currentAutoTuneType;
+    unsigned long expectedAutoTuneDuration; // in milliseconds
+    
     // PID variables
     double tempInput, tempOutput, tempSetpoint;
     double humInput, humOutput, humSetpoint;
