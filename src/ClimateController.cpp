@@ -1247,7 +1247,18 @@ void ClimateController::updateAutoTune() {
             delete temperatureAutoTuner;
             temperatureAutoTuner = nullptr;        } else {
             // AutoTune is still running, use the output
-            tempOutput = temperatureAutoTuner->GetOutputStep();
+            double rawOutput = temperatureAutoTuner->GetOutputStep();
+            
+            // Determine if we should heat or cool based on temperature error
+            double error = autoTuneSetpoint - currentTemperature;
+            
+            if (error > 0) {
+                // Temperature is below setpoint, heating needed (positive output)
+                tempOutput = abs(rawOutput);
+            } else {
+                // Temperature is above setpoint, cooling needed (negative output)
+                tempOutput = -abs(rawOutput);
+            }
         }
     }
 }
