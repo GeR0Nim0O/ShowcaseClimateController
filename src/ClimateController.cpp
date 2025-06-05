@@ -114,9 +114,8 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
       lastPrintedTemperature(0.0), lastPrintedHumidity(0.0),
       lastPrintedHeatingActive(false), lastPrintedCoolingActive(false),
       lastPrintedHumidifyingActive(false), lastPrintedDehumidifyingActive(false),
-      lastPrintedFanInteriorActive(false), lastPrintedFanExteriorActive(false),
-      lastPrintedClimateMode(ClimateMode::AUTO), lastPrintedHumidityMode(HumidityMode::AUTO),
-      temperatureThreshold(0.5), humidityThreshold(2.0) {
+      lastPrintedFanInteriorActive(false), lastPrintedFanExteriorActive(false),      lastPrintedClimateMode(ClimateMode::AUTO), lastPrintedHumidityMode(HumidityMode::AUTO),
+      temperatureThreshold(Configuration::getTemperatureHysteresis()), humidityThreshold(Configuration::getHumidityHysteresis()) {
     
     // Safely assign the device pointers
     this->gpio = gpioExpander;    this->sensor = tempHumSensor;
