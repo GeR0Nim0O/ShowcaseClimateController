@@ -493,13 +493,41 @@ bool ClimateConfig::saveToJsonFile(const String& filePath) {
     safety["max_temperature"] = settings.maxTemperature;
     safety["min_temperature"] = settings.minTemperature;
     safety["max_humidity"] = settings.maxHumidity;
-    safety["min_humidity"] = settings.minHumidity;
-      // PID parameters
+    safety["min_humidity"] = settings.minHumidity;    // PID parameters
     JsonObject pid = climate["pid_parameters"].to<JsonObject>();
     JsonObject tempPid = pid["temperature"].to<JsonObject>();
     tempPid["kp"] = settings.temperatureKp;
     tempPid["ki"] = settings.temperatureKi;
     tempPid["kd"] = settings.temperatureKd;
+    tempPid["auto_tuned"] = settings.hasAutoTuneResults;
+    tempPid["tuned_timestamp"] = "";
+    
+    // Normal AutoTune configuration
+    JsonObject normalAutoTune = tempPid["normal_autotune"].to<JsonObject>();
+    normalAutoTune["enabled"] = false;
+    normalAutoTune["target_oscillation_amplitude"] = 1.0;
+    normalAutoTune["test_duration_minutes"] = 30;
+    normalAutoTune["output_step_percent"] = settings.autoTuneOutputStep;
+    normalAutoTune["noise_band"] = 0.05;
+    normalAutoTune["lookback_seconds"] = 20;
+    
+    // Fast AutoTune configuration
+    JsonObject fastAutoTune = tempPid["fast_autotune"].to<JsonObject>();
+    fastAutoTune["output_step_percent"] = settings.fastAutoTuneOutputStep;
+    fastAutoTune["description"] = "Higher values create stronger oscillations for faster tuning";
+    
+    // AutoTune results
+    JsonObject autoTuneResults = tempPid["autotune_results"].to<JsonObject>();
+    autoTuneResults["has_results"] = settings.hasAutoTuneResults;
+    if (settings.hasAutoTuneResults) {
+        autoTuneResults["kp"] = settings.autoTuneKp;
+        autoTuneResults["ki"] = settings.autoTuneKi;
+        autoTuneResults["kd"] = settings.autoTuneKd;
+    } else {
+        autoTuneResults["kp"] = 0.0;
+        autoTuneResults["ki"] = 0.0;
+        autoTuneResults["kd"] = 0.0;
+    }
     
     JsonObject humPid = pid["humidity"].to<JsonObject>();
     humPid["kp"] = settings.humidityKp;
