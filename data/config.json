@@ -36,7 +36,7 @@
     "wifi_connection_timeout_ms": 15000,
     "button_press_timeout_ms": 5000
   },
-  i
+
     },
     "control_parameters": {
       "temperature_hysteresis": 0.1,
