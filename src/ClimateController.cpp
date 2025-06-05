@@ -1480,3 +1480,36 @@ bool ClimateController::startTemperatureAutoTuneUltraFast(double targetSetpoint)
     
     return true;
 }
+
+// Set fast testing mode - reduces update intervals for quicker AutoTune testing
+void ClimateController::setFastTestingMode(bool enabled) {
+    if (enabled) {
+        // Store original interval for restoration
+        static unsigned long originalInterval = updateInterval;
+        
+        // Set very fast update interval for testing (100ms instead of 500ms)
+        updateInterval = 100;
+        statusPrintInterval = 5000; // More frequent status updates (5 seconds)
+        
+        Serial.println("=== FAST TESTING MODE ENABLED ===");
+        Serial.print("Update interval reduced to: ");
+        Serial.print(updateInterval);
+        Serial.println("ms for rapid AutoTune testing");
+        Serial.print("Status updates every: ");
+        Serial.print(statusPrintInterval / 1000);
+        Serial.println(" seconds");
+        Serial.println("WARNING: High CPU usage - for testing only!");
+        Serial.println("=================================");
+    } else {
+        // Restore normal intervals
+        ClimateConfig& climateConfig = ClimateConfig::getInstance();
+        updateInterval = climateConfig.getUpdateInterval();
+        statusPrintInterval = 10000; // Back to 10 seconds
+        
+        Serial.println("=== FAST TESTING MODE DISABLED ===");
+        Serial.print("Update interval restored to: ");
+        Serial.print(updateInterval);
+        Serial.println("ms for normal operation");
+        Serial.println("==================================");
+    }
+}
