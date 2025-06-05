@@ -337,12 +337,11 @@ void ClimateController::updateTemperatureControl() {
         temperaturePID->Compute();
     }
     
-    switch (climateMode) {
-        case ClimateMode::HEATING:
+    switch (climateMode) {        case ClimateMode::HEATING:
             heatingActive = (tempOutput > 0);
             coolingActive = false;
             tempControlEnabled = heatingActive;
-            heatingPower = heatingActive ? map(tempOutput, 0, 100, 0, 100) : 0.0;
+            heatingPower = heatingActive ? constrain(tempOutput, 0.0, 100.0) : 0.0;
             coolingPower = 0.0;
             break;
               case ClimateMode::COOLING:
