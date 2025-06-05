@@ -1201,10 +1201,11 @@ void ClimateController::updateAutoTune() {
             Serial.print(currentTemperature, 2);
             Serial.print("°C (Target: ");
             Serial.print(autoTuneSetpoint, 1);
-            Serial.println("°C)");
-            Serial.print("Current Output: ");
-            Serial.print(tempOutput, 1);
-            Serial.println("%");
+            Serial.println("°C)");            Serial.print("Current Output: ");
+            Serial.print(abs(tempOutput), 1);
+            Serial.print("% (");
+            Serial.print(tempOutput > 0 ? "Heating" : "Cooling");
+            Serial.println(")");
             Serial.println("AutoTune is still analyzing...");
             Serial.println("===============================");
             lastProgressUpdate = currentTime;
