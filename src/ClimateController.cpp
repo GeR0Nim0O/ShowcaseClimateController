@@ -1366,10 +1366,34 @@ void ClimateController::getAutoTuneResults(double& kp, double& ki, double& kd) {
 void ClimateController::printAutoTuneStatus() {
     if (temperatureAutoTuning) {
         unsigned long elapsed = (millis() - autoTuneStartTime) / 1000;
+        unsigned long elapsedMs = millis() - autoTuneStartTime;
+        
         Serial.println("=== Temperature AutoTune Status ===");
         Serial.print("Elapsed Time: ");
         Serial.print(elapsed);
-        Serial.println(" seconds");
+        Serial.print(" seconds");
+        
+        // Calculate and show progress percentage
+        if (expectedAutoTuneDuration > 0) {
+            float progressPercentage = (float)elapsedMs / (float)expectedAutoTuneDuration * 100.0;
+            if (progressPercentage > 100.0) progressPercentage = 100.0;
+            Serial.print(" (");
+            Serial.print(progressPercentage, 1);
+            Serial.print("% complete)");
+        }
+        Serial.println();
+        
+        // Show AutoTune mode
+        const char* autoTuneTypeName = "Unknown";
+        switch (currentAutoTuneType) {
+            case AutoTuneType::NORMAL: autoTuneTypeName = "Normal"; break;
+            case AutoTuneType::FAST: autoTuneTypeName = "Fast"; break;
+            case AutoTuneType::ULTRA_FAST: autoTuneTypeName = "Ultra-Fast"; break;
+        }
+        Serial.print("Mode: ");
+        Serial.print(autoTuneTypeName);
+        Serial.println(" AutoTune");
+        
         Serial.print("Current Temperature: ");
         Serial.print(currentTemperature, 2);
         Serial.println("°C");
@@ -1379,6 +1403,16 @@ void ClimateController::printAutoTuneStatus() {
         Serial.print("Current Output: ");
         Serial.print(tempOutput, 2);
         Serial.println("%");
+        
+        // Show estimated remaining time if available
+        if (expectedAutoTuneDuration > 0 && elapsedMs < expectedAutoTuneDuration) {
+            unsigned long remainingMs = expectedAutoTuneDuration - elapsedMs;
+            unsigned long remainingMinutes = remainingMs / (60 * 1000);
+            Serial.print("Estimated Time Remaining: ");
+            Serial.print(remainingMinutes);
+            Serial.println(" minutes");
+        }
+        
         Serial.println("==================================");
     } else {
         Serial.println("No AutoTune currently running");
