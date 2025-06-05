@@ -1217,6 +1217,31 @@ void ClimateController::updateAutoTune() {
     if (temperatureAutoTuning && temperatureAutoTuner != nullptr) {
         tempInput = currentTemperature;
         
+        // Provide periodic progress updates during AutoTune
+        static unsigned long lastProgressUpdate = 0;
+        unsigned long currentTime = millis();
+        
+        // Show progress every 30 seconds during AutoTune
+        if (currentTime - lastProgressUpdate >= 30000) {
+            unsigned long autoTuneRuntime = (currentTime - autoTuneStartTime) / 1000;
+            Serial.println("");
+            Serial.println("=== AutoTune Progress Update ===");
+            Serial.print("Runtime: ");
+            Serial.print(autoTuneRuntime);
+            Serial.println(" seconds");
+            Serial.print("Current Temperature: ");
+            Serial.print(currentTemperature, 2);
+            Serial.print("°C (Target: ");
+            Serial.print(autoTuneSetpoint, 1);
+            Serial.println("°C)");
+            Serial.print("Current Output: ");
+            Serial.print(tempOutput, 1);
+            Serial.println("%");
+            Serial.println("AutoTune is still analyzing...");
+            Serial.println("===============================");
+            lastProgressUpdate = currentTime;
+        }
+        
         if (temperatureAutoTuner->Runtime()) {
             // AutoTune is complete
             temperatureAutoTuning = false;
