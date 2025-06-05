@@ -487,7 +487,13 @@ bool ClimateConfig::saveToJsonFile(const String& filePath) {
         autoTune["ki"] = 0.0;
         autoTune["kd"] = 0.0;
     }
-      // Metadata
+    
+    // AutoTune configuration
+    JsonObject autoTuneConfig = climate["autotune_config"].to<JsonObject>();
+    autoTuneConfig["output_step"] = settings.autoTuneOutputStep;
+    autoTuneConfig["description"] = "AutoTune output step percentage (0-100) for power control during calibration";
+      
+    // Metadata
     JsonObject metadata = doc["metadata"].to<JsonObject>();
     metadata["version"] = "1.0";
     metadata["last_updated"] = "2025-05-31T00:00:00Z";
