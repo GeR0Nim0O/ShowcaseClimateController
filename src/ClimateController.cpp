@@ -192,12 +192,7 @@ ClimateController::~ClimateController() {
 
 bool ClimateController::begin() {
     // Load updateInterval from ClimateConfig
-    ClimateConfig& climateConfig = ClimateConfig::getInstance();
-    updateInterval = climateConfig.getUpdateInterval();
-    
-    Serial.print("DEBUG: ClimateController::begin() - Updated updateInterval from ClimateConfig: ");
-    Serial.print(updateInterval);
-    Serial.println(" ms");
+    ClimateConfig& climateConfig = ClimateConfig::getInstance();    updateInterval = climateConfig.getUpdateInterval();
     
     // Initialize DAC if available
     if (dac != nullptr) {
