@@ -355,9 +355,9 @@ void ClimateController::updateTemperatureControl() {
             heatingActive = false;
             coolingActive = (tempOutput < 0);
             tempControlEnabled = coolingActive;
-            heatingPower = 0.0;
-            coolingPower = coolingActive ? constrain(-tempOutput, 0.0, 100.0) : 0.0;
-            break;        case ClimateMode::AUTO:
+            heatingPower = 0.0;            coolingPower = coolingActive ? constrain(-tempOutput, 0.0, 100.0) : 0.0;
+            break;
+        case ClimateMode::AUTO:
             {
                 const float temperatureHysteresis = Configuration::getTemperatureHysteresis();
                 if (tempOutput > temperatureHysteresis) {
