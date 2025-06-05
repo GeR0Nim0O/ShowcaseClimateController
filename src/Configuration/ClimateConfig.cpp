@@ -414,6 +414,21 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         settings.autoTuneKd = 0.0;
     }
     
+    // Load AutoTune configuration
+    JsonObject autoTuneConfig = climate["autotune_config"];
+    if (autoTuneConfig) {
+        settings.autoTuneOutputStep = autoTuneConfig["output_step"].as<double>();
+        if (!autoTuneConfig["output_step"]) settings.autoTuneOutputStep = 50.0;
+        
+        Serial.print("AutoTune output step loaded from JSON: ");
+        Serial.print(settings.autoTuneOutputStep);
+        Serial.println("%");
+    } else {
+        // Default AutoTune configuration
+        settings.autoTuneOutputStep = 50.0;
+        Serial.println("Using default AutoTune output step: 50%");
+    }
+    
     // Validate loaded settings
     if (!validateSettings()) {
         Serial.println("Loaded climate settings failed validation");
