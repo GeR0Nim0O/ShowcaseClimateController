@@ -813,24 +813,44 @@ void ClimateController::printClimateStatus() {
     Serial.print("°C, Humidity ");
     Serial.print(getHumiditySetpoint(), 1);
     Serial.println("%");
-      Serial.print("PID AutoTune: ");
-    if (temperatureAutoTuning) {
+      Serial.print("PID AutoTune: ");    if (temperatureAutoTuning) {
         Serial.println("ACTIVE");
         
-        // Show AutoTune progress information
+        // Show AutoTune progress information with percentage
         Serial.print("  → Target: ");
         Serial.print(autoTuneSetpoint, 1);
         Serial.print("°C, Runtime: ");
         unsigned long autoTuneRuntime = millis() - autoTuneStartTime;
         Serial.print(autoTuneRuntime / 60000);
         Serial.print(":");
-        Serial.printf("%02d", (autoTuneRuntime / 1000) % 60);        Serial.print(", Output: ");
+        Serial.printf("%02d", (autoTuneRuntime / 1000) % 60);
+        
+        // Calculate and show progress percentage
+        if (expectedAutoTuneDuration > 0) {
+            float progressPercentage = (float)autoTuneRuntime / (float)expectedAutoTuneDuration * 100.0;
+            if (progressPercentage > 100.0) progressPercentage = 100.0;
+            Serial.print(" (");
+            Serial.print(progressPercentage, 1);
+            Serial.print("%)");
+        }
+        
+        Serial.print(", Output: ");
         Serial.print(abs(tempOutput), 1);
         Serial.print("% (");
         Serial.print(tempOutput > 0 ? "Heat" : "Cool");
         Serial.println(")");
         
-        Serial.println("  → Analyzing system response, fluctuations expected");    } else {
+        // Show AutoTune mode
+        const char* autoTuneTypeName = "Unknown";
+        switch (currentAutoTuneType) {
+            case AutoTuneType::NORMAL: autoTuneTypeName = "Normal"; break;
+            case AutoTuneType::FAST: autoTuneTypeName = "Fast"; break;
+            case AutoTuneType::ULTRA_FAST: autoTuneTypeName = "Ultra-Fast"; break;
+        }
+        Serial.print("  → Mode: ");
+        Serial.print(autoTuneTypeName);
+        Serial.println(" - Analyzing system response, fluctuations expected");
+    } else {
         Serial.println("DISABLED");
     }
     
