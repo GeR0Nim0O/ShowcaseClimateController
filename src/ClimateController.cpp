@@ -798,25 +798,8 @@ void ClimateController::printClimateStatus() {
         Serial.print(tempOutput, 1);
         Serial.println("%");
         
-        Serial.println("  → Analyzing system response, fluctuations expected");
-    } else {
-        ClimateConfig& config = ClimateConfig::getInstance();
-        if (config.hasAutoTuneResults()) {
-            Serial.print("DISABLED (using tuned PID: Kp=");
-            Serial.print(config.getAutoTuneKp(), 2);
-            Serial.print(", Ki=");
-            Serial.print(config.getAutoTuneKi(), 3);
-            Serial.print(", Kd=");
-            Serial.print(config.getAutoTuneKd(), 2);
-            Serial.println(")");
-        } else {
-            Serial.println("DISABLED (using default PID parameters)");
-        }
-        
-        // Show current PID output
-        Serial.print("  → PID Output: ");
-        Serial.print(tempOutput, 1);
-        Serial.println("%");
+        Serial.println("  → Analyzing system response, fluctuations expected");    } else {
+        Serial.println("DISABLED");
     }
     
     Serial.println("==================================");
