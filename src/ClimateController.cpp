@@ -1448,10 +1448,15 @@ bool ClimateController::startTemperatureAutoTuneFast(double targetSetpoint, doub
     if (targetSetpoint == 0.0) {
         targetSetpoint = temperatureSetpoint;
     }
-    
-    // Set FAST testing parameters for quick results
+      // Set FAST testing parameters for quick results
     if (outputStep == 0.0) {
-        outputStep = 30.0;    // Higher output step (60%) for faster response
+        // Get configured output step from ClimateConfig for consistency
+        ClimateConfig& climateConfig = ClimateConfig::getInstance();
+        outputStep = climateConfig.getAutoTuneOutputStep();
+        
+        Serial.print("Using configured AutoTune output step: ");
+        Serial.print(outputStep);
+        Serial.println("% for FAST mode testing");
     }
     if (noiseband == 0.0) {
         noiseband = 0.5;      // Larger noise band (0.5°C) for quicker detection
