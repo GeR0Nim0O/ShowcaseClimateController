@@ -1588,8 +1588,6 @@ bool ClimateController::startTemperatureAutoTuneFast(double targetSetpoint, doub
     return true;
 }
 
-// Ultra-fast mode has been removed as requested
-
 // Set fast testing mode - reduces update intervals for quicker AutoTune testing
 void ClimateController::setFastTestingMode(bool enabled) {
     if (enabled) {
