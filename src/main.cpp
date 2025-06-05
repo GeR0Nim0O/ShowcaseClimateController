@@ -318,12 +318,24 @@ void setup()
       Serial.println("✓ MQTT connected successfully!");
     }
   }
-  
-  Serial.println();
+    Serial.println();
   Serial.println("========================================");
   Serial.println("      SETUP COMPLETE");
   Serial.println("========================================");
-    delay(500);
+  
+  // Turn off DAC now that setup is complete
+  if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
+    Serial.println("Turning off DAC - setup complete");
+    // Get DAC device and turn it off
+    DeviceRegistry& registry = DeviceRegistry::getInstance();
+    GP8403dac* dac = (GP8403dac*)registry.getDeviceByType("DAC", 0);
+    if (dac != nullptr && dac->isInitialized()) {
+      dac->setChannelVoltage(0, 0.0);
+      Serial.println("✓ DAC turned off (0V) - setup finished");
+    }
+  }
+  
+  delay(500);
   setupComplete = true; // Indicate that setup is complete
   Serial.println("System ready! Setup complete: " + String(setupComplete ? "YES" : "NO"));
   
