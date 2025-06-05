@@ -66,8 +66,8 @@ bool ClimateConfig::begin() {
 
 void ClimateConfig::loadDefaults() {
     Serial.println("DEBUG: ClimateConfig::loadDefaults() called");
-    settings.temperatureSetpoint = 22.0;
-    settings.humiditySetpoint = 50.0;
+    settings.temperatureSetpoint = 0.0; // Will be set from config file
+    settings.humiditySetpoint = 0.0;    // Will be set from config file
     settings.temperatureKp = 2.0;
     settings.temperatureKi = 0.5;
     settings.temperatureKd = 0.1;
