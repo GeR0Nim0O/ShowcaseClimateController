@@ -100,15 +100,16 @@ public:
     void setHumidityMode(const String& mode) { strncpy(settings.humidityMode, mode.c_str(), 15); settings.humidityMode[15] = '\0'; }    void setAutoFanControl(bool enabled) { settings.autoFanControl = enabled; }
     void setTemperatureHysteresis(float value) { settings.temperatureHysteresis = value; }
     void setHumidityHysteresis(float value) { settings.humidityHysteresis = value; }
-    
-    // AutoTune getters and setters
+      // AutoTune getters and setters
     bool hasAutoTuneResults() const { return settings.hasAutoTuneResults; }
     float getAutoTuneKp() const { return settings.autoTuneKp; }
     float getAutoTuneKi() const { return settings.autoTuneKi; }
     float getAutoTuneKd() const { return settings.autoTuneKd; }
     float getAutoTuneOutputStep() const { return settings.autoTuneOutputStep; }
+    float getFastAutoTuneOutputStep() const { return settings.fastAutoTuneOutputStep; }
     
     void setAutoTuneOutputStep(float outputStep) { settings.autoTuneOutputStep = outputStep; }
+    void setFastAutoTuneOutputStep(float outputStep) { settings.fastAutoTuneOutputStep = outputStep; }
     void setAutoTuneResults(float kp, float ki, float kd) { 
         settings.hasAutoTuneResults = true;
         settings.autoTuneKp = kp; 
