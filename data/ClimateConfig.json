@@ -39,7 +39,7 @@
       "interior_fan_enabled": true,
       "exterior_fan_enabled": false
     },    "autotune_config": {
-      "output_step": 65.0,
+      "output_step": 70.0,
       "description": "AutoTune relay amplitude percentage (0-100) - higher values create stronger oscillations for faster tuning"
     },
     "autotune_results": {
