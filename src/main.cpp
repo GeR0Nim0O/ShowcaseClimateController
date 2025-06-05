@@ -247,9 +247,8 @@ void setup()
   Serial.println("9. Setting up MQTT client ID and topic...");
   clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
   topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
-  
-  // Print debugging information
-  printDebugInfo();  Serial.println("11. Attempting WiFi connection ONCE during setup...");
+    // Print debugging information
+  printDebugInfo();  Serial.println("10. Attempting WiFi connection ONCE during setup...");
   Serial.println("=== SINGLE SETUP WiFi CONNECTION ATTEMPT ===");
   Serial.print("WiFi SSID: '");
   Serial.print(Configuration::getWiFiSSID());
