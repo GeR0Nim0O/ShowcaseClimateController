@@ -1138,7 +1138,13 @@ bool ClimateController::startTemperatureAutoTune(double targetSetpoint, double o
         targetSetpoint = temperatureSetpoint;
     }    // Set default parameters optimized for slow-responding climate system
     if (outputStep == 0.0) {
-        outputStep = 50.0;  // Use moderate power (50%) for balanced system response
+        // Get configured output step from ClimateConfig
+        ClimateConfig& climateConfig = ClimateConfig::getInstance();
+        outputStep = climateConfig.getAutoTuneOutputStep();
+        
+        Serial.print("Using configured AutoTune output step: ");
+        Serial.print(outputStep);
+        Serial.println("% for balanced system response");
     }
     if (noiseband == 0.0) {
         noiseband = 0.3;    // Reduced from default for better precision
