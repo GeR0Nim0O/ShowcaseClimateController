@@ -109,9 +109,6 @@ public:
     bool hasSignificantStateChange();
     bool hasSignificantSensorChange();
     void updateStatusPrintTracking();
-    
-    // Hardware debugging methods
-    void testHumidityPins(); // Test humidity control pins for hardware issues
 
 private:
     PCF8574gpio* gpio;

@@ -341,15 +341,7 @@ void setup()
   delay(500);
   setupComplete = true; // Indicate that setup is complete
   Serial.println("System ready! Setup complete: " + String(setupComplete ? "YES" : "NO"));
-  
-  // Test humidity control pins for hardware debugging
-  if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
-    Serial.println();
-    climateController->testHumidityPins();
-    Serial.println();
-  }
-  
-  // Start AutoTune if requested
+    // Start AutoTune if requested
   if (autoTuneMode != AutoTuneMode::SKIP && Configuration::isClimateControllerEnabled() && climateController != nullptr) {
     Serial.println();
     Serial.println("========================================");
