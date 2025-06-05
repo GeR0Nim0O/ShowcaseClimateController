@@ -286,10 +286,9 @@ void setup()
     Serial.println("'");
     Serial.print("   Password length: ");
     Serial.println(Configuration::getWiFiPassword().length());
-    Serial.println();
-    Serial.println("3. TROUBLESHOOTING TIPS:");
+    Serial.println();    Serial.println("3. TROUBLESHOOTING TIPS:");
     Serial.println("   • Verify network name (case-sensitive)");
-    Serial.println("   • Check WiFi password - should be 'Nek@F1993!'");
+    Serial.println("   • Check WiFi password matches your config.json");
     Serial.println("   • Ensure router is powered and broadcasting");
     Serial.println("   • Move ESP32 closer to router");
     Serial.println("   • Check for MAC filtering on router");
