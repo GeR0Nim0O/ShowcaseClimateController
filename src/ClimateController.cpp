@@ -1417,8 +1417,7 @@ void ClimateController::updateAutoTune() {
                 // Clean up
                 delete temperatureAutoTuner;
                 temperatureAutoTuner = nullptr;
-                
-                // Reset AutoTune tracking variables
+                  // Reset AutoTune tracking variables
                 expectedAutoTuneDuration = 0;
                 currentAutoTuneType = AutoTuneType::NORMAL;
             } else {
@@ -1428,12 +1427,13 @@ void ClimateController::updateAutoTune() {
                 // Determine if we should heat or cool based on temperature error
                 double error = autoTuneSetpoint - currentTemperature;
             
-            if (error > 0) {
-                // Temperature is below setpoint, heating needed (positive output)
-                tempOutput = abs(rawOutput);
-            } else {
-                // Temperature is above setpoint, cooling needed (negative output)
-                tempOutput = -abs(rawOutput);
+                if (error > 0) {
+                    // Temperature is below setpoint, heating needed (positive output)
+                    tempOutput = abs(rawOutput);
+                } else {
+                    // Temperature is above setpoint, cooling needed (negative output)
+                    tempOutput = -abs(rawOutput);
+                }
             }
         }
     }
