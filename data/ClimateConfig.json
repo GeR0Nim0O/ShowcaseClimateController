@@ -33,7 +33,7 @@
       "exterior_fan_enabled": false
     },
     "autotune_config": {
-      "output_step": 50.0,
+      "output_step": 20.0,
       "description": "AutoTune output step percentage (0-100) for power control during calibration"
     },
     "autotune_results": {
