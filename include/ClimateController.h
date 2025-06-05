@@ -60,6 +60,7 @@ public:
     void setHumidityPID(double kp, double ki, double kd);    // PID AutoTune functionality - Temperature only (humidity uses digital on/off control)
     bool startTemperatureAutoTune(double targetSetpoint = 0.0, double outputStep = 0.0, double noiseband = 0.0, unsigned int lookBack = 0);
     bool startTemperatureAutoTuneFast(double targetSetpoint = 0.0, double outputStep = 0.0, double noiseband = 0.0, unsigned int lookBack = 0);
+    bool startTemperatureAutoTuneUltraFast(double targetSetpoint = 0.0); // Ultra-fast 5-10 minute testing
     void stopAutoTune();
     bool isAutoTuning() const { return temperatureAutoTuning; }
     bool isTemperatureAutoTuning() const { return temperatureAutoTuning; }
