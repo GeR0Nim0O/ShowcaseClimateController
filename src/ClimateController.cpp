@@ -105,7 +105,7 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
       humidifierPower(0.0), dehumidifierPower(0.0),
       temperaturePID(nullptr), humidityPID(nullptr),      temperatureAutoTuner(nullptr),
       temperatureAutoTuning(false),
-      autoTuneSetpoint(0.0), autoTuneOutputStep(100.0), autoTuneStartTime(0),
+      autoTuneSetpoint(0.0), autoTuneOutputStep(50.0), autoTuneStartTime(0),
       tempInput(0.0), tempOutput(0.0), tempSetpoint(temperatureSetpoint),
       humInput(0.0), humOutput(0.0), humSetpoint(humiditySetpoint),
       lastStatusPrint(0), statusPrintInterval(10000), // Print status every 10 seconds
