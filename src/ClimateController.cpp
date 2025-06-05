@@ -478,8 +478,16 @@ void ClimateController::applyTemperatureControl() {
 }
 
 void ClimateController::applyHumidityControl() {
-    safeWritePin(pinHumidify, humidifyingActive);
-    safeWritePin(pinDehumidify, dehumidifyingActive);
+    Serial.printf("ClimateController::applyHumidityControl: humidifying=%s, dehumidifying=%s\n", 
+                 humidifyingActive ? "true" : "false", dehumidifyingActive ? "true" : "false");
+    Serial.printf("ClimateController::applyHumidityControl: pinHumidify=%d, pinDehumidify=%d\n", 
+                 pinHumidify, pinDehumidify);
+    
+    bool humidifyResult = safeWritePin(pinHumidify, humidifyingActive);
+    bool dehumidifyResult = safeWritePin(pinDehumidify, dehumidifyingActive);
+    
+    Serial.printf("ClimateController::applyHumidityControl: humidify write result=%s, dehumidify write result=%s\n", 
+                 humidifyResult ? "SUCCESS" : "FAILED", dehumidifyResult ? "SUCCESS" : "FAILED");
 }
 
 void ClimateController::applyDACControls() {
