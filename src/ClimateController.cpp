@@ -506,6 +506,26 @@ void ClimateController::applyDACControls() {
     }
 }
 
+void ClimateController::setDACSetupMode(bool setupActive) {
+    if (!dac || !dac->isInitialized()) {
+        return; // No DAC available or not initialized
+    }
+    
+    try {
+        if (setupActive) {
+            // Set DAC to 5V during setup to indicate system is initializing
+            dac->setChannelVoltage(0, 5.0);
+            Serial.println("DAC set to 5V - setup mode active");
+        } else {
+            // Set DAC to 0V when setup is finished
+            dac->setChannelVoltage(0, 0.0);
+            Serial.println("DAC set to 0V - setup mode finished");
+        }
+    } catch (...) {
+        Serial.println("Error setting DAC setup mode");
+    }
+}
+
 /*
 void ClimateController::emergencyShutdown() {
     safeWritePin(pinTemperatureEnable, false);
