@@ -262,11 +262,9 @@ void setup()
   Serial.println("'");
   Serial.print("WiFi Password: '");
   Serial.print(Configuration::getWiFiPassword());
-  Serial.println("'");
-  Serial.print("WiFi Password Length: ");
+  Serial.println("'");  Serial.print("WiFi Password Length: ");
   Serial.println(Configuration::getWiFiPassword().length());
   Serial.println("NOTE: After flash erase, password should now be read correctly from config.json");
-  Serial.println("Expected password: 'Nek@F1993!' (10 characters with @ symbol)");
   
   bool wifiConnected = WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword());
     if (!wifiConnected) {
