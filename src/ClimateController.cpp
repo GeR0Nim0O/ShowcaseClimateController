@@ -1333,13 +1333,16 @@ void ClimateController::updateAutoTune() {
             Serial.print("Optimized Ki: ");
             Serial.println(ki, 4);
             Serial.print("Optimized Kd: ");
-            Serial.println(kd, 4);
-            Serial.println("AutoTune results saved to configuration");
+            Serial.println(kd, 4);            Serial.println("AutoTune results saved to configuration");
             Serial.println("====================================");
             
             // Clean up
             delete temperatureAutoTuner;
-            temperatureAutoTuner = nullptr;        } else {
+            temperatureAutoTuner = nullptr;
+            
+            // Reset AutoTune tracking variables
+            expectedAutoTuneDuration = 0;
+            currentAutoTuneType = AutoTuneType::NORMAL;} else {
             // AutoTune is still running, use the output
             double rawOutput = temperatureAutoTuner->GetOutputStep();
             
