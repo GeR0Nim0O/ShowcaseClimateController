@@ -336,20 +336,31 @@ void setup()
   delay(500);
   setupComplete = true; // Indicate that setup is complete
   Serial.println("System ready! Setup complete: " + String(setupComplete ? "YES" : "NO"));
-  
-  // Start AutoTune if requested
-  if (enableAutoTune && Configuration::isClimateControllerEnabled() && climateController != nullptr) {
+    // Start AutoTune if requested
+  if (autoTuneMode != AutoTuneMode::SKIP && Configuration::isClimateControllerEnabled() && climateController != nullptr) {
     Serial.println();
     Serial.println("========================================");
     Serial.println("       STARTING PID AutoTune");
     Serial.println("========================================");
-    Serial.println("AutoTune process will now begin...");
-    Serial.println("This may take several minutes to complete.");
-    Serial.println("Temperature will fluctuate during calibration.");
-    Serial.println("========================================");
-    Serial.println();
     
-    climateController->startTemperatureAutoTune();
+    if (autoTuneMode == AutoTuneMode::NORMAL) {
+      Serial.println("Normal AutoTune process will now begin...");
+      Serial.println("This may take 2-4 hours to complete.");
+      Serial.println("Temperature will fluctuate during calibration.");
+      Serial.println("========================================");
+      Serial.println();
+      
+      climateController->startTemperatureAutoTune();
+    } else if (autoTuneMode == AutoTuneMode::FAST) {
+      Serial.println("Fast AutoTune process will now begin...");
+      Serial.println("This may take 15-30 minutes to complete.");
+      Serial.println("Temperature will fluctuate during calibration.");
+      Serial.println("WARNING: Results may be less accurate than normal mode!");
+      Serial.println("========================================");
+      Serial.println();
+      
+      climateController->startTemperatureAutoTuneFast();
+    }
   }
   
   // Configure MQTT throttling from configuration
