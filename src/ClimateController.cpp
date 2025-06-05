@@ -839,8 +839,8 @@ void ClimateController::printClimateStatus() {
         Serial.print("% (");
         Serial.print(tempOutput > 0 ? "Heat" : "Cool");
         Serial.println(")");
-        
-        // Show AutoTune mode        const char* autoTuneTypeName = "Unknown";
+          // Show AutoTune mode
+        const char* autoTuneTypeName = "Unknown";
         switch (currentAutoTuneType) {
             case AutoTuneType::NORMAL: autoTuneTypeName = "Normal"; break;
             case AutoTuneType::FAST: autoTuneTypeName = "Fast"; break;
