@@ -90,6 +90,9 @@ void ClimateConfig::loadDefaults() {
     settings.autoTuneKi = 0.0;
     settings.autoTuneKd = 0.0;
     
+    // Initialize AutoTune configuration
+    settings.autoTuneOutputStep = 50.0;  // Default to 50% output step for moderate power
+    
     Serial.print("DEBUG: ClimateConfig::loadDefaults() - updateInterval set to: ");
     Serial.println(settings.updateInterval);
 }
