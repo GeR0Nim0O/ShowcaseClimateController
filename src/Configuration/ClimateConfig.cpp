@@ -443,13 +443,16 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         settings.autoTuneKp = 0.0;
         settings.autoTuneKi = 0.0;
         settings.autoTuneKd = 0.0;
-    }
-      // Load AutoTune configuration (fallback for legacy config files)
+    }      // Load AutoTune configuration (fallback for legacy config files)
     JsonObject autoTuneConfig = climate["autotune_config"];
     if (autoTuneConfig) {
         // Only use this if we didn't already load from PID parameters section
         JsonObject tempPid = climate["pid_parameters"]["temperature"];
-        if (!tempPid || (!tempPid["normal_autotune"] && !tempPid["fast_autotune"])) {
+        JsonObject normalAutoTune = tempPid["normal_autotune"];
+        JsonObject fastAutoTune = tempPid["fast_autotune"];
+        
+        // Only apply legacy config if new format doesn't exist
+        if (!tempPid || (!normalAutoTune && !fastAutoTune)) {
             settings.autoTuneOutputStep = autoTuneConfig["output_step"].as<double>();
             if (!autoTuneConfig["output_step"]) settings.autoTuneOutputStep = 50.0;
             
@@ -459,6 +462,8 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
             
             // For legacy configs, use same value for fast autotune
             settings.fastAutoTuneOutputStep = settings.autoTuneOutputStep;
+        } else {
+            Serial.println("Skipping legacy AutoTune config - new format already loaded");
         }
     }
     
