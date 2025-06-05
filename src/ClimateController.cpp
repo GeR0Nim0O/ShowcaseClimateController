@@ -822,11 +822,36 @@ void ClimateController::printClimateStatus() {
     Serial.print("Ventilation: Interior ");
     Serial.print(isFanInteriorOn() ? "ON" : "OFF");
     Serial.print(", Exterior ");
-    Serial.print(isFanExteriorOn() ? "ON" : "OFF");
-    if (isAutoFanControlEnabled()) {
+    Serial.print(isFanExteriorOn() ? "ON" : "OFF");    if (isAutoFanControlEnabled()) {
         Serial.println(" (Auto)");
     } else {
         Serial.println(" (Manual)");
+    }
+    
+    // Print AutoTune status
+    Serial.print("PID AutoTune: ");
+    if (temperatureAutoTuning) {
+        Serial.println("ACTIVE (Temperature control)");
+        Serial.println("  → AutoTune is analyzing system response");
+        Serial.println("  → Temperature fluctuations are expected");
+        Serial.println("  → Use 'autotune stop' to cancel if needed");
+    } else {
+        Serial.println("INACTIVE");
+        
+        // Show if we have saved AutoTune results
+        ClimateConfig& config = ClimateConfig::getInstance();
+        if (config.hasAutoTuneResults()) {
+            Serial.println("  → Using saved AutoTune parameters:");
+            Serial.print("    Kp: ");
+            Serial.print(config.getAutoTuneKp(), 4);
+            Serial.print(", Ki: ");
+            Serial.print(config.getAutoTuneKi(), 4);
+            Serial.print(", Kd: ");
+            Serial.println(config.getAutoTuneKd(), 4);
+        } else {
+            Serial.println("  → Using default PID parameters");
+            Serial.println("  → Use 'autotune start' to optimize settings");
+        }
     }
     
     Serial.println("==================================");
