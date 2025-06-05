@@ -772,11 +772,42 @@ void ClimateController::printClimateStatus() {
     } else {
         Serial.println(" (Manual)");
     }
+      // Print AutoTune status with detailed information
+    Serial.println("");
+    Serial.println("--- PID Control & AutoTune Status ---");
     
-    // Print AutoTune status
+    // Always show current setpoints
+    Serial.print("Current Setpoints: Temp ");
+    Serial.print(getTemperatureSetpoint(), 1);
+    Serial.print("°C, Humidity ");
+    Serial.print(getHumiditySetpoint(), 1);
+    Serial.println("%");
+    
     Serial.print("PID AutoTune: ");
     if (temperatureAutoTuning) {
         Serial.println("ACTIVE (Temperature control)");
+        
+        // Show AutoTune setpoint (which may be different from normal setpoint)
+        Serial.print("  → AutoTune Target: ");
+        Serial.print(autoTuneSetpoint, 1);
+        Serial.println("°C");
+        
+        // Show runtime information
+        unsigned long autoTuneRuntime = millis() - autoTuneStartTime;
+        Serial.print("  → Runtime: ");
+        Serial.print(autoTuneRuntime / 1000);
+        Serial.println(" seconds");
+        
+        // Show current output step
+        Serial.print("  → Output Step: ");
+        Serial.print(autoTuneOutputStep, 1);
+        Serial.println("%");
+        
+        // Show current PID output being used by AutoTune
+        Serial.print("  → Current Output: ");
+        Serial.print(tempOutput, 1);
+        Serial.println("%");
+        
         Serial.println("  → AutoTune is analyzing system response");
         Serial.println("  → Temperature fluctuations are expected");
         Serial.println("  → Use 'autotune stop' to cancel if needed");
@@ -795,8 +826,24 @@ void ClimateController::printClimateStatus() {
             Serial.println(config.getAutoTuneKd(), 4);
         } else {
             Serial.println("  → Using default PID parameters");
+            
+            // Show current default PID parameters
+            if (temperaturePID != nullptr) {
+                Serial.print("    Current Kp: ");
+                Serial.print(temperaturePID->GetKp(), 4);
+                Serial.print(", Ki: ");
+                Serial.print(temperaturePID->GetKi(), 4);
+                Serial.print(", Kd: ");
+                Serial.println(temperaturePID->GetKd(), 4);
+            }
+            
             Serial.println("  → Use 'autotune start' to optimize settings");
         }
+        
+        // Show current PID output even when not autotuning
+        Serial.print("  → Current PID Output: ");
+        Serial.print(tempOutput, 1);
+        Serial.println("%");
     }
     
     Serial.println("==================================");
