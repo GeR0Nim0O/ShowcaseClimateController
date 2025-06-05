@@ -37,10 +37,9 @@
           "kd": 0.0
         }
       }
-    },
-    "control_parameters": {
+    },    "control_parameters": {
       "temperature_hysteresis": 0.05,
-      "humidity_hysteresis": 0.1
+      "humidity_hysteresis": 2.0
     },
     "fan_settings": {
       "interior_fan_enabled": true,
