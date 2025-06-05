@@ -325,13 +325,12 @@ void setup()
   
   // Turn off DAC now that setup is complete
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
-    Serial.println("Turning off DAC - setup complete");
-    // Get DAC device and turn it off
+    Serial.println("Turning off DAC - setup complete");    // Get DAC device and set it to 1V (0% power in 1-5V range)
     DeviceRegistry& registry = DeviceRegistry::getInstance();
     GP8403dac* dac = (GP8403dac*)registry.getDeviceByType("DAC", 0);
     if (dac != nullptr && dac->isInitialized()) {
-      dac->setChannelVoltage(0, 0.0);
-      Serial.println("✓ DAC turned off (0V) - setup finished");
+      dac->setChannelVoltage(0, 1.0);
+      Serial.println("✓ DAC set to 1V (0% power) - setup finished");
     }
   }
   
