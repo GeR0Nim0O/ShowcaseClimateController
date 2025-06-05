@@ -231,6 +231,20 @@ void WifiMqttHandler::setupSecureClient(WiFiClientSecure &espClient, const char*
 }
 
 void WifiMqttHandler::connectToMqttBroker(PubSubClient &client, WiFiClientSecure &espClient, const char* mqtt_server, const char* rootCACertificate, int mqtt_port, const char* clientId, const char* topic, const char* token) {
+    // Check WiFi status before attempting MQTT connection
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("MQTT connection aborted: WiFi not connected");
+        Serial.print("WiFi status: ");
+        Serial.println(WiFi.status());
+        return;
+    }
+
+    // Verify we have a valid IP address
+    if (WiFi.localIP() == IPAddress(0, 0, 0, 0)) {
+        Serial.println("MQTT connection aborted: No valid IP address assigned");
+        return;
+    }
+
     Serial.println("MQTT parameters:");
     if (mqtt_server) {
         Serial.print("mqtt_server: ");
@@ -253,6 +267,15 @@ void WifiMqttHandler::connectToMqttBroker(PubSubClient &client, WiFiClientSecure
         Serial.println("Error: MQTT parameters are null");
         return;
     }
+
+    // Additional WiFi connectivity check
+    Serial.print("WiFi status: Connected to ");
+    Serial.print(WiFi.SSID());
+    Serial.print(" (IP: ");
+    Serial.print(WiFi.localIP());
+    Serial.print(", Signal: ");
+    Serial.print(WiFi.RSSI());
+    Serial.println(" dBm)");
 
     Serial.println("Setting up SSL/TLS connection...");
     setupSecureClient(espClient, rootCACertificate);
