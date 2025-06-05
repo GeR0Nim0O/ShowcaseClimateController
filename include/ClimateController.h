@@ -57,9 +57,8 @@ public:
     float getCurrentHumidity() const { return currentHumidity; }
       // PID parameters
     void setTemperaturePID(double kp, double ki, double kd);
-    void setHumidityPID(double kp, double ki, double kd);
-      // PID AutoTune functionality - Temperature only (humidity uses digital on/off control)
-    bool startTemperatureAutoTune(double targetSetpoint = 0.0, double outputStep = 50.0, double noiseband = 0.5, unsigned int lookBack = 20);
+    void setHumidityPID(double kp, double ki, double kd);    // PID AutoTune functionality - Temperature only (humidity uses digital on/off control)
+    bool startTemperatureAutoTune(double targetSetpoint = 0.0, double outputStep = 0.0, double noiseband = 0.0, unsigned int lookBack = 0);
     void stopAutoTune();
     bool isAutoTuning() const { return temperatureAutoTuning; }
     bool isTemperatureAutoTuning() const { return temperatureAutoTuning; }
