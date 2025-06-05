@@ -793,10 +793,11 @@ void ClimateController::printClimateStatus() {
         unsigned long autoTuneRuntime = millis() - autoTuneStartTime;
         Serial.print(autoTuneRuntime / 60000);
         Serial.print(":");
-        Serial.printf("%02d", (autoTuneRuntime / 1000) % 60);
-        Serial.print(", Output: ");
-        Serial.print(tempOutput, 1);
-        Serial.println("%");
+        Serial.printf("%02d", (autoTuneRuntime / 1000) % 60);        Serial.print(", Output: ");
+        Serial.print(abs(tempOutput), 1);
+        Serial.print("% (");
+        Serial.print(tempOutput > 0 ? "Heat" : "Cool");
+        Serial.println(")");
         
         Serial.println("  → Analyzing system response, fluctuations expected");    } else {
         Serial.println("DISABLED");
