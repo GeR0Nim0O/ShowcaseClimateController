@@ -900,13 +900,6 @@ void testPSRAM() {
     Serial.println("==================\n");
 }
 
-// AutoTune mode selection
-enum class AutoTuneMode {
-    SKIP,
-    NORMAL,
-    FAST
-};
-
 // Function to prompt user for AutoTune with mode selection
 AutoTuneMode promptForAutoTune() {
     Serial.println();
