@@ -95,7 +95,7 @@ ClimateController* ClimateController::createFromDeviceRegistry() {
 
 ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac)
     : gpio(nullptr), sensor(nullptr), dac(nullptr),
-      temperatureSetpoint(22.0), humiditySetpoint(50.0),
+      temperatureSetpoint(0.0), humiditySetpoint(0.0),
       currentTemperature(0.0), currentHumidity(0.0),
       climateMode(ClimateMode::AUTO), humidityMode(HumidityMode::AUTO),
       heatingActive(false), coolingActive(false), 
@@ -108,15 +108,15 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
       temperatureAutoTuning(false),
       autoTuneSetpoint(0.0), autoTuneOutputStep(0.0), autoTuneStartTime(0),
       currentAutoTuneType(AutoTuneType::NORMAL), expectedAutoTuneDuration(0),// Will be loaded from ClimateConfig
-      tempInput(0.0), tempOutput(0.0), tempSetpoint(temperatureSetpoint),
-      humInput(0.0), humOutput(0.0), humSetpoint(humiditySetpoint),
+      tempInput(0.0), tempOutput(0.0), tempSetpoint(0.0),
+      humInput(0.0), humOutput(0.0), humSetpoint(0.0),
       lastStatusPrint(0), statusPrintInterval(10000), // Print status every 10 seconds
       lastPrintedTemperature(0.0), lastPrintedHumidity(0.0),
       lastPrintedHeatingActive(false), lastPrintedCoolingActive(false),
       lastPrintedHumidifyingActive(false), lastPrintedDehumidifyingActive(false),
       lastPrintedFanInteriorActive(false), lastPrintedFanExteriorActive(false),
       lastPrintedClimateMode(ClimateMode::AUTO), lastPrintedHumidityMode(HumidityMode::AUTO),
-      temperatureThreshold(0.5), humidityThreshold(2.0) { // 0.5°C and 2% thresholds
+      temperatureThreshold(0.5), humidityThreshold(2.0) {
     
     // Safely assign the device pointers
     this->gpio = gpioExpander;    this->sensor = tempHumSensor;
@@ -193,8 +193,11 @@ ClimateController::~ClimateController() {
 }
 
 bool ClimateController::begin() {
-    // Load updateInterval from ClimateConfig
-    ClimateConfig& climateConfig = ClimateConfig::getInstance();    updateInterval = climateConfig.getUpdateInterval();
+    // Load updateInterval and setpoints from ClimateConfig
+    ClimateConfig& climateConfig = ClimateConfig::getInstance();
+    updateInterval = climateConfig.getUpdateInterval();
+    temperatureSetpoint = climateConfig.getTemperatureSetpoint();
+    humiditySetpoint = climateConfig.getHumiditySetpoint();
       // Initialize DAC if available
     if (dac != nullptr) {
         // Check if DAC is already initialized (to avoid double initialization)
