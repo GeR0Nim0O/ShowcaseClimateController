@@ -431,10 +431,9 @@ void ClimateController::updateHumidityControl() {
                 dehumidifyingActive = false;
             } else if (currentHumidity > humiditySetpoint + hysteresis) {
                 humidifyingActive = false;
-                dehumidifyingActive = true;
-            } else if (currentHumidity >= humiditySetpoint - 1.0 && 
-                      currentHumidity <= humiditySetpoint + 1.0) {
-                // Within +/- 1% of setpoint, turn everything off
+                dehumidifyingActive = true;            } else if (currentHumidity >= humiditySetpoint - Configuration::getHumidityHysteresis() && 
+                      currentHumidity <= humiditySetpoint + Configuration::getHumidityHysteresis()) {
+                // Within humidity hysteresis of setpoint, turn everything off
                 humidifyingActive = false;
                 dehumidifyingActive = false;
             }
