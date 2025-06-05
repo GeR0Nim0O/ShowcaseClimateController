@@ -39,7 +39,7 @@
       }
     },
     "control_parameters": {
-      "temperature_hysteresis": 0.1,
+      "temperature_hysteresis": 0.05,
       "humidity_hysteresis": 0.1
     },
     "fan_settings": {
