@@ -1675,3 +1675,50 @@ void ClimateController::setFastTestingMode(bool enabled) {
         Serial.println("==================================");
     }
 }
+
+// Humidity control test function for debugging hardware issues
+void ClimateController::testHumidityPins() {
+    Serial.println("=== HUMIDITY PIN HARDWARE TEST ===");
+    
+    // Test pin 2 (Humidify)
+    Serial.println("Testing PIN 2 (Humidify):");
+    Serial.print("  Current GPIO state: 0x");
+    Serial.println(gpio->readByte(), HEX);
+    
+    Serial.println("  Setting pin 2 HIGH...");
+    safeWritePin(pinHumidify, HIGH);
+    delay(1000);
+    
+    Serial.println("  Setting pin 2 LOW...");
+    safeWritePin(pinHumidify, LOW);
+    delay(1000);
+    
+    // Test pin 3 (Dehumidify)
+    Serial.println("Testing PIN 3 (Dehumidify):");
+    Serial.print("  Current GPIO state: 0x");
+    Serial.println(gpio->readByte(), HEX);
+    
+    Serial.println("  Setting pin 3 HIGH...");
+    safeWritePin(pinDehumidify, HIGH);
+    delay(1000);
+    
+    Serial.println("  Setting pin 3 LOW...");
+    safeWritePin(pinDehumidify, LOW);
+    delay(1000);
+    
+    // Test both pins together
+    Serial.println("Testing BOTH pins HIGH:");
+    safeWritePin(pinHumidify, HIGH);
+    safeWritePin(pinDehumidify, HIGH);
+    Serial.print("  Final GPIO state: 0x");
+    Serial.println(gpio->readByte(), HEX);
+    delay(2000);
+    
+    // Return to OFF state
+    safeWritePin(pinHumidify, LOW);
+    safeWritePin(pinDehumidify, LOW);
+    Serial.print("  Reset GPIO state: 0x");
+    Serial.println(gpio->readByte(), HEX);
+    
+    Serial.println("=== HUMIDITY PIN TEST COMPLETE ===");
+}
