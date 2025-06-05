@@ -1136,10 +1136,9 @@ bool ClimateController::startTemperatureAutoTune(double targetSetpoint, double o
     // Use current temperature setpoint if not specified
     if (targetSetpoint == 0.0) {
         targetSetpoint = temperatureSetpoint;
-    }
-      // Set default parameters optimized for slow-responding climate system
+    }    // Set default parameters optimized for slow-responding climate system
     if (outputStep == 0.0) {
-        outputStep = 100.0;  // Use full power (100%) for maximum system response
+        outputStep = 50.0;  // Use moderate power (50%) for balanced system response
     }
     if (noiseband == 0.0) {
         noiseband = 0.3;    // Reduced from default for better precision
