@@ -425,10 +425,19 @@ void WifiMqttHandler::keepAlive(PubSubClient &client, WiFiClientSecure &espClien
         wifiSkipped = false;
         mqttReconnectAttempts = 0;
         mqttSkipped = false;
-    }
-
-    // Case 2: WLAN UP, MQTT DOWN
+    }    // Case 2: WLAN UP, MQTT DOWN
     if (!client.connected() && !mqttSkipped && !wifiSkipped) {
+        // Double-check WiFi status and IP assignment before MQTT connection
+        if (WiFi.status() != WL_CONNECTED) {
+            Serial.println("⚠️  WiFi disconnected during MQTT attempt, skipping MQTT connection");
+            return;
+        }
+        
+        if (WiFi.localIP() == IPAddress(0, 0, 0, 0)) {
+            Serial.println("⚠️  No valid IP address, skipping MQTT connection");
+            return;
+        }
+
         if (millis() - lastMqttReconnectAttempt > 5000) {
             mqttReconnectAttempts++;
             Serial.print("Reconnecting to MQTT broker... Attempt ");
