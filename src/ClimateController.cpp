@@ -685,18 +685,35 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
 // Add this implementation of the safeWritePin method we previously added to the header
 bool ClimateController::safeWritePin(uint8_t pin, bool value) {
     if (!gpio || !gpio->isInitialized()) {
+        Serial.printf("ClimateController::safeWritePin: GPIO not initialized! (pin %d, value %s)\n", pin, value ? "HIGH" : "LOW");
         return false;
     }
     
     try {
+        Serial.printf("ClimateController::safeWritePin: Writing pin %d to %s\n", pin, value ? "HIGH" : "LOW");
+        
+        // Get state before write
+        uint8_t stateBefore = gpio->getGPIOState();
+        Serial.printf("ClimateController::safeWritePin: GPIO state before write: 0x%02X\n", stateBefore);
+        
         gpio->writePin(pin, value);
         
         // Verify the write
         uint8_t currentState = gpio->getGPIOState();
         bool actualState = (currentState & (1 << pin)) != 0;
         
-        return (actualState == value);
+        Serial.printf("ClimateController::safeWritePin: GPIO state after write: 0x%02X\n", currentState);
+        Serial.printf("ClimateController::safeWritePin: Pin %d actual state: %s (expected %s)\n", 
+                     pin, actualState ? "HIGH" : "LOW", value ? "HIGH" : "LOW");
+        
+        bool success = (actualState == value);
+        if (!success) {
+            Serial.printf("ClimateController::safeWritePin: WRITE VERIFICATION FAILED for pin %d!\n", pin);
+        }
+        
+        return success;
     } catch (...) {
+        Serial.printf("ClimateController::safeWritePin: Exception caught while writing pin %d!\n", pin);
         return false;
     }
 }
