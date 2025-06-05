@@ -225,12 +225,9 @@ void setup()
   Serial.println(" devices successfully");
   
   // Print created sensors for debugging
-  printCreatedSensors();
-  Serial.println("6. Initializing climate controller...");
+  printCreatedSensors();  Serial.println("6. Initializing climate controller...");
   // Initialize climate controller
-  Serial.println("DEBUG: About to call initializeClimateController()");
   initializeClimateController();
-  Serial.println("DEBUG: Returned from initializeClimateController()");
   
   // Prompt for AutoTune if climate controller is enabled
   bool enableAutoTune = false;
