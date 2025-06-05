@@ -227,19 +227,9 @@ bool ClimateController::begin() {
     return true;
 }
 
-void ClimateController::update() {
-    unsigned long currentTime = millis();
+void ClimateController::update() {    unsigned long currentTime = millis();
     
-    Serial.print("DEBUG: ClimateController::update() called - currentTime: ");
-    Serial.print(currentTime);
-    Serial.print(", lastUpdate: ");
-    Serial.print(lastUpdate);
-    Serial.print(", updateInterval: ");
-    Serial.print(updateInterval);
-    Serial.print(", time since last: ");
-    Serial.println(currentTime - lastUpdate);    if (currentTime - lastUpdate >= updateInterval) {
-        Serial.println("DEBUG: Inside update interval condition - about to call updateSensorReadings()");
-        
+    if (currentTime - lastUpdate >= updateInterval) {
         updateSensorReadings();
         
         // Store previous states to avoid unnecessary writes
