@@ -106,6 +106,9 @@ public:
     float getAutoTuneKp() const { return settings.autoTuneKp; }
     float getAutoTuneKi() const { return settings.autoTuneKi; }
     float getAutoTuneKd() const { return settings.autoTuneKd; }
+    float getAutoTuneOutputStep() const { return settings.autoTuneOutputStep; }
+    
+    void setAutoTuneOutputStep(float outputStep) { settings.autoTuneOutputStep = outputStep; }
     void setAutoTuneResults(float kp, float ki, float kd) { 
         settings.hasAutoTuneResults = true;
         settings.autoTuneKp = kp; 
