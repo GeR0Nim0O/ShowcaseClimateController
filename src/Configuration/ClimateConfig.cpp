@@ -351,8 +351,7 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         
         settings.minHumidity = safety["min_humidity"].as<double>();
         if (!safety["min_humidity"]) settings.minHumidity = 20.0;
-    }
-      // Load PID parameters
+    }    // Load PID parameters
     JsonObject tempPid = climate["pid_parameters"]["temperature"];
     if (tempPid) {
         settings.temperatureKp = tempPid["kp"].as<double>();
@@ -363,6 +362,34 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         
         settings.temperatureKd = tempPid["kd"].as<double>();
         if (!tempPid["kd"]) settings.temperatureKd = 0.1;
+        
+        // Load normal autotune configuration
+        JsonObject normalAutoTune = tempPid["normal_autotune"];
+        if (normalAutoTune) {
+            settings.autoTuneOutputStep = normalAutoTune["output_step_percent"].as<double>();
+            if (!normalAutoTune["output_step_percent"]) settings.autoTuneOutputStep = 50.0;
+            
+            Serial.print("Normal AutoTune output step loaded from JSON: ");
+            Serial.print(settings.autoTuneOutputStep);
+            Serial.println("%");
+        } else {
+            settings.autoTuneOutputStep = 50.0;
+            Serial.println("Using default Normal AutoTune output step: 50%");
+        }
+        
+        // Load fast autotune configuration
+        JsonObject fastAutoTune = tempPid["fast_autotune"];
+        if (fastAutoTune) {
+            settings.fastAutoTuneOutputStep = fastAutoTune["output_step_percent"].as<double>();
+            if (!fastAutoTune["output_step_percent"]) settings.fastAutoTuneOutputStep = 75.0;
+            
+            Serial.print("Fast AutoTune output step loaded from JSON: ");
+            Serial.print(settings.fastAutoTuneOutputStep);
+            Serial.println("%");
+        } else {
+            settings.fastAutoTuneOutputStep = 75.0;
+            Serial.println("Using default Fast AutoTune output step: 75%");
+        }
     }
     
     JsonObject humPid = climate["pid_parameters"]["humidity"];
