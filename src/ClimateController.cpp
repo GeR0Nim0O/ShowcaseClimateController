@@ -353,14 +353,23 @@ void ClimateController::updateTemperatureControl() {
             heatingPower = 0.0;
             coolingPower = coolingActive ? map(-tempOutput, 0, 100, 0, 100) : 0.0;
             break;
-            
-        case ClimateMode::AUTO:
-            if (tempOutput > 0.1) // Very small deadband for precise control
-                heatingActive = true, coolingActive = false, heatingPower = map(tempOutput, 0.1, 100, 0, 100), coolingPower = 0.0;
-            else if (tempOutput < -0.1)
-                heatingActive = false, coolingActive = true, heatingPower = 0.0, coolingPower = map(-tempOutput, 0.1, 100, 0, 100);
-            else
-                heatingActive = false, coolingActive = false, heatingPower = 0.0, coolingPower = 0.0;
+              case ClimateMode::AUTO:
+            if (tempOutput > 0.1) { // Very small deadband for precise control
+                heatingActive = true;
+                coolingActive = false;
+                heatingPower = constrain(tempOutput, 0.0, 100.0);
+                coolingPower = 0.0;
+            } else if (tempOutput < -0.1) {
+                heatingActive = false;
+                coolingActive = true;
+                heatingPower = 0.0;
+                coolingPower = constrain(-tempOutput, 0.0, 100.0);  // Convert negative to positive percentage
+            } else {
+                heatingActive = false;
+                coolingActive = false;
+                heatingPower = 0.0;
+                coolingPower = 0.0;
+            }
             tempControlEnabled = (heatingActive || coolingActive);
             break;
             
