@@ -117,14 +117,8 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
       temperatureThreshold(0.5), humidityThreshold(2.0) { // 0.5°C and 2% thresholds
     
     // Safely assign the device pointers
-    this->gpio = gpioExpander;
-    this->sensor = tempHumSensor;
+    this->gpio = gpioExpander;    this->sensor = tempHumSensor;
     this->dac = dac;
-    
-    // Debug: Print the updateInterval that was loaded
-    Serial.print("DEBUG: ClimateController constructor - updateInterval set to: ");
-    Serial.print(updateInterval);
-    Serial.println(" ms");
     
     // Initialize with default pin mappings - will be updated in begin()
     pinFanExterior = 0;
