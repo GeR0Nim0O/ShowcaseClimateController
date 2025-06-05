@@ -782,66 +782,39 @@ void ClimateController::printClimateStatus() {
     Serial.print("°C, Humidity ");
     Serial.print(getHumiditySetpoint(), 1);
     Serial.println("%");
-    
-    Serial.print("PID AutoTune: ");
+      Serial.print("PID AutoTune: ");
     if (temperatureAutoTuning) {
-        Serial.println("ACTIVE (Temperature control)");
+        Serial.println("ACTIVE");
         
-        // Show AutoTune setpoint (which may be different from normal setpoint)
-        Serial.print("  → AutoTune Target: ");
+        // Show AutoTune progress information
+        Serial.print("  → Target: ");
         Serial.print(autoTuneSetpoint, 1);
-        Serial.println("°C");
-        
-        // Show runtime information
+        Serial.print("°C, Runtime: ");
         unsigned long autoTuneRuntime = millis() - autoTuneStartTime;
-        Serial.print("  → Runtime: ");
-        Serial.print(autoTuneRuntime / 1000);
-        Serial.println(" seconds");
-        
-        // Show current output step
-        Serial.print("  → Output Step: ");
-        Serial.print(autoTuneOutputStep, 1);
-        Serial.println("%");
-        
-        // Show current PID output being used by AutoTune
-        Serial.print("  → Current Output: ");
+        Serial.print(autoTuneRuntime / 60000);
+        Serial.print(":");
+        Serial.printf("%02d", (autoTuneRuntime / 1000) % 60);
+        Serial.print(", Output: ");
         Serial.print(tempOutput, 1);
         Serial.println("%");
         
-        Serial.println("  → AutoTune is analyzing system response");
-        Serial.println("  → Temperature fluctuations are expected");
-        Serial.println("  → Use 'autotune stop' to cancel if needed");
+        Serial.println("  → Analyzing system response, fluctuations expected");
     } else {
-        Serial.println("INACTIVE");
-        
-        // Show if we have saved AutoTune results
         ClimateConfig& config = ClimateConfig::getInstance();
         if (config.hasAutoTuneResults()) {
-            Serial.println("  → Using saved AutoTune parameters:");
-            Serial.print("    Kp: ");
-            Serial.print(config.getAutoTuneKp(), 4);
-            Serial.print(", Ki: ");
-            Serial.print(config.getAutoTuneKi(), 4);
-            Serial.print(", Kd: ");
-            Serial.println(config.getAutoTuneKd(), 4);
+            Serial.print("DISABLED (using tuned PID: Kp=");
+            Serial.print(config.getAutoTuneKp(), 2);
+            Serial.print(", Ki=");
+            Serial.print(config.getAutoTuneKi(), 3);
+            Serial.print(", Kd=");
+            Serial.print(config.getAutoTuneKd(), 2);
+            Serial.println(")");
         } else {
-            Serial.println("  → Using default PID parameters");
-            
-            // Show current default PID parameters
-            if (temperaturePID != nullptr) {
-                Serial.print("    Current Kp: ");
-                Serial.print(temperaturePID->GetKp(), 4);
-                Serial.print(", Ki: ");
-                Serial.print(temperaturePID->GetKi(), 4);
-                Serial.print(", Kd: ");
-                Serial.println(temperaturePID->GetKd(), 4);
-            }
-            
-            Serial.println("  → Use 'autotune start' to optimize settings");
+            Serial.println("DISABLED (using default PID parameters)");
         }
         
-        // Show current PID output even when not autotuning
-        Serial.print("  → Current PID Output: ");
+        // Show current PID output
+        Serial.print("  → PID Output: ");
         Serial.print(tempOutput, 1);
         Serial.println("%");
     }
