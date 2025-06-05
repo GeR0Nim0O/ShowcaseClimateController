@@ -36,6 +36,9 @@ struct ClimateSettings {
     float autoTuneKi;
     float autoTuneKd;
     
+    // AutoTune configuration
+    float autoTuneOutputStep;  // Output step size percentage (0-100) for AutoTune
+    
     uint32_t checksum;
 };
 
