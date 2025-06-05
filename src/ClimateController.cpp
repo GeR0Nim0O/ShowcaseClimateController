@@ -1355,7 +1355,7 @@ bool ClimateController::startTemperatureAutoTuneFast(double targetSetpoint, doub
     
     // Set FAST testing parameters for quick results
     if (outputStep == 0.0) {
-        outputStep = 60.0;    // Higher output step (60%) for faster response
+        outputStep = 30.0;    // Higher output step (60%) for faster response
     }
     if (noiseband == 0.0) {
         noiseband = 0.5;      // Larger noise band (0.5°C) for quicker detection
