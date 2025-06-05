@@ -1173,10 +1173,9 @@ bool ClimateController::startTemperatureAutoTune(double targetSetpoint, double o
     Serial.println("=== Temperature PID AutoTune Started ===");
     Serial.print("Target Setpoint: ");
     Serial.print(targetSetpoint);
-    Serial.println("°C");
-    Serial.print("Output Step: ");
+    Serial.println("°C");    Serial.print("Output Step: ");
     Serial.print(outputStep);
-    Serial.println("% (optimized for slow thermal response)");
+    Serial.println("% (full power for maximum system response)");
     Serial.print("Noise Band: ");
     Serial.print(noiseband);
     Serial.println("°C");
