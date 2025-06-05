@@ -93,6 +93,7 @@ enum class AutoTuneMode {
 };
 
 // Function declarations
+void readAndPrintInitialSensorData(); // Add this function prototype
 void readAndSendDataFromDevices();
 void printDebugInfo();
 void printCreatedSensors(); // Declare the function here
