@@ -1303,8 +1303,7 @@ void ClimateController::updateAutoTune() {
             Serial.println("===============================");
             lastProgressUpdate = currentTime;
         }
-        
-        if (temperatureAutoTuner->Runtime()) {
+          if (temperatureAutoTuner->Runtime()) {
             // AutoTune is complete
             temperatureAutoTuning = false;
             
@@ -1342,12 +1341,96 @@ void ClimateController::updateAutoTune() {
             
             // Reset AutoTune tracking variables
             expectedAutoTuneDuration = 0;
-            currentAutoTuneType = AutoTuneType::NORMAL;} else {
-            // AutoTune is still running, use the output
-            double rawOutput = temperatureAutoTuner->GetOutputStep();
+            currentAutoTuneType = AutoTuneType::NORMAL;
+        } else {
+            // Check for timeout - force completion if expected duration exceeded by 50%
+            unsigned long autoTuneRuntimeMs = currentTime - autoTuneStartTime;
+            bool autoTuneTimedOut = false;
             
-            // Determine if we should heat or cool based on temperature error
-            double error = autoTuneSetpoint - currentTemperature;
+            if (expectedAutoTuneDuration > 0) {
+                unsigned long timeoutThreshold = expectedAutoTuneDuration + (expectedAutoTuneDuration / 2); // 150% of expected duration
+                if (autoTuneRuntimeMs >= timeoutThreshold) {
+                    autoTuneTimedOut = true;
+                    
+                    Serial.println("");
+                    Serial.println("=== AutoTune TIMEOUT - Forcing Completion ===");
+                    Serial.print("Runtime: ");
+                    Serial.print(autoTuneRuntimeMs / 1000);
+                    Serial.print(" seconds (exceeded ");
+                    Serial.print(expectedAutoTuneDuration / 1000);
+                    Serial.println(" second expected duration)");
+                    Serial.println("AutoTune algorithm hasn't converged naturally.");
+                    Serial.println("Using best available parameters...");
+                    Serial.println("============================================");
+                }
+            }
+            
+            if (autoTuneTimedOut) {
+                // Force AutoTune completion with timeout
+                temperatureAutoTuning = false;
+                
+                // Try to get the best available parameters from the AutoTuner
+                double kp = temperatureAutoTuner->GetKp();
+                double ki = temperatureAutoTuner->GetKi();
+                double kd = temperatureAutoTuner->GetKd();
+                
+                // If parameters are invalid/zero, use reasonable defaults based on current config
+                ClimateConfig& climateConfig = ClimateConfig::getInstance();
+                if (kp <= 0.0 || ki <= 0.0 || kd < 0.0) {
+                    // Use current PID parameters as fallback
+                    kp = climateConfig.getTemperatureKp();
+                    ki = climateConfig.getTemperatureKi();
+                    kd = climateConfig.getTemperatureKd();
+                    
+                    Serial.println("WARNING: AutoTune parameters invalid - using current config values");
+                    Serial.print("Fallback Kp: ");
+                    Serial.println(kp, 4);
+                    Serial.print("Fallback Ki: ");
+                    Serial.println(ki, 4);
+                    Serial.print("Fallback Kd: ");
+                    Serial.println(kd, 4);
+                } else {
+                    // Apply the partial AutoTune results
+                    temperaturePID->SetTunings(kp, ki, kd);
+                    
+                    // Update ClimateConfig with new parameters
+                    climateConfig.setTemperaturePID(kp, ki, kd);
+                    
+                    // Save AutoTune results with timeout flag
+                    climateConfig.setAutoTuneResults(kp, ki, kd);
+                    climateConfig.saveSettings();
+                    
+                    // Also update the JSON file
+                    climateConfig.updateJsonFile("/data/ClimateConfig.json");
+                    
+                    Serial.println("=== Temperature AutoTune Complete (TIMEOUT) ===");
+                    Serial.print("Partial Kp: ");
+                    Serial.println(kp, 4);
+                    Serial.print("Partial Ki: ");
+                    Serial.println(ki, 4);
+                    Serial.print("Partial Kd: ");
+                    Serial.println(kd, 4);
+                    Serial.println("WARNING: Results may be suboptimal due to timeout");
+                    Serial.println("Consider running AutoTune again for better results");
+                    Serial.println("==============================================");
+                }
+                
+                // Return PID to automatic mode
+                temperaturePID->SetMode(AUTOMATIC);
+                
+                // Clean up
+                delete temperatureAutoTuner;
+                temperatureAutoTuner = nullptr;
+                
+                // Reset AutoTune tracking variables
+                expectedAutoTuneDuration = 0;
+                currentAutoTuneType = AutoTuneType::NORMAL;
+            } else {
+                // AutoTune is still running, use the output
+                double rawOutput = temperatureAutoTuner->GetOutputStep();
+                
+                // Determine if we should heat or cool based on temperature error
+                double error = autoTuneSetpoint - currentTemperature;
             
             if (error > 0) {
                 // Temperature is below setpoint, heating needed (positive output)
