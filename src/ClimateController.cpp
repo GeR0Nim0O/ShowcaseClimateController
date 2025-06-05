@@ -358,7 +358,7 @@ void ClimateController::updateTemperatureControl() {
             coolingPower = coolingActive ? constrain(-tempOutput, 0.0, 100.0) : 0.0;
             break;
               case ClimateMode::AUTO:
-            if (tempOutput > 0.1) { // Very small deadband for precise control
+            if (tempOutput > 0.1) // Very small deadband for precise control
                 heatingActive = true;
                 coolingActive = false;
                 heatingPower = constrain(tempOutput, 0.0, 100.0);
@@ -1491,7 +1491,7 @@ void ClimateController::printAutoTuneStatus() {
         }
         Serial.println();
         
-                // Show AutoTune mode
+        // Show AutoTune mode
         const char* autoTuneTypeName = "Unknown";
         switch (currentAutoTuneType) {
             case AutoTuneType::NORMAL: autoTuneTypeName = "Normal"; break;
@@ -1517,9 +1517,18 @@ void ClimateController::printAutoTuneStatus() {
             unsigned long remainingMinutes = remainingMs / (60 * 1000);
             Serial.print("Estimated Time Remaining: ");
             Serial.print(remainingMinutes);
-            Serial.println(" minutes");
+            Serial.println(" min");
         }
-        
+
+        // Display current Kp, Ki, Kd values from the autotuner if available
+        if (temperatureAutoTuner != nullptr) {
+            double kp = temperatureAutoTuner->GetKp();
+            double ki = temperatureAutoTuner->GetKi();
+            double kd = temperatureAutoTuner->GetKd();
+            Serial.print("Current AutoTune Kp: "); Serial.println(kp, 4);
+            Serial.print("Current AutoTune Ki: "); Serial.println(ki, 4);
+            Serial.print("Current AutoTune Kd: "); Serial.println(kd, 4);
+        }
         Serial.println("==================================");
     } else {
         Serial.println("No AutoTune currently running");
