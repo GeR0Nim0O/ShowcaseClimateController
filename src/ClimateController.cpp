@@ -1170,13 +1170,14 @@ bool ClimateController::startTemperatureAutoTune(double targetSetpoint, double o
     autoTuneSetpoint = targetSetpoint;
     autoTuneOutputStep = outputStep;
     tempSetpoint = targetSetpoint;
-    
-    // Switch PID to manual mode for autotuning
+      // Switch PID to manual mode for autotuning
     temperaturePID->SetMode(MANUAL);
     
     // Start autotuning
     temperatureAutoTuning = true;
     autoTuneStartTime = millis();
+    currentAutoTuneType = AutoTuneType::NORMAL;
+    expectedAutoTuneDuration = 3 * 60 * 60 * 1000; // 3 hours in milliseconds (middle of 2-4 hour range)
     
     Serial.println("=== Temperature PID AutoTune Started ===");
     Serial.print("Target Setpoint: ");
