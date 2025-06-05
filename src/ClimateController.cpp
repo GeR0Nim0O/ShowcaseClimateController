@@ -1458,10 +1458,11 @@ bool ClimateController::startTemperatureAutoTuneUltraFast(double targetSetpoint)
     
     // Switch PID to manual mode for autotuning
     temperaturePID->SetMode(MANUAL);
-    
-    // Start autotuning
+      // Start autotuning
     temperatureAutoTuning = true;
     autoTuneStartTime = millis();
+    currentAutoTuneType = AutoTuneType::ULTRA_FAST;
+    expectedAutoTuneDuration = 7.5 * 60 * 1000; // 7.5 minutes in milliseconds (middle of 5-10 minute range)
     
     Serial.println("=== ULTRA-FAST Temperature PID AutoTune Started (IMMEDIATE TESTING) ===");
     Serial.print("Target Setpoint: ");
