@@ -1107,6 +1107,17 @@ bool ClimateController::startTemperatureAutoTune(double targetSetpoint, double o
         targetSetpoint = temperatureSetpoint;
     }
     
+    // Set default parameters optimized for slow-responding climate system
+    if (outputStep == 0.0) {
+        outputStep = 30.0;  // Reduced from 50% to 30% for gentler control
+    }
+    if (noiseband == 0.0) {
+        noiseband = 0.3;    // Reduced from default for better precision
+    }
+    if (lookBack == 0) {
+        lookBack = 1800;    // Increased to 30 minutes (1800 sec) for slow thermal response
+    }
+    
     // Create new AutoTuner
     temperatureAutoTuner = new PID_ATune(&tempInput, &tempOutput);
     if (temperatureAutoTuner == nullptr) {
@@ -1137,13 +1148,14 @@ bool ClimateController::startTemperatureAutoTune(double targetSetpoint, double o
     Serial.println("°C");
     Serial.print("Output Step: ");
     Serial.print(outputStep);
-    Serial.println("%");
+    Serial.println("% (optimized for slow thermal response)");
     Serial.print("Noise Band: ");
     Serial.print(noiseband);
     Serial.println("°C");
     Serial.print("Look Back: ");
     Serial.print(lookBack);
-    Serial.println(" seconds");
+    Serial.println(" seconds (30 minutes for thermal lag)");
+    Serial.println("Expected duration: 2-4 hours for complete analysis");
     Serial.println("======================================");
     
     return true;
