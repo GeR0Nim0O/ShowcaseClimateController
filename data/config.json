@@ -65,6 +65,24 @@
     "control_parameters": {
       "temperature_hysteresis": 0.1,
       "humidity_hysteresis": 0.5
+    },
+    "autotune_parameters": {
+      "temperature": {
+        "enabled": false,
+        "target_oscillation_amplitude": 1.0,
+        "test_duration_minutes": 30,
+        "output_step_percent": 50,
+        "noise_band": 0.5,
+        "lookback_seconds": 20
+      },
+      "humidity": {
+        "enabled": false,
+        "target_oscillation_amplitude": 2.0,
+        "test_duration_minutes": 45,
+        "output_step_percent": 40,
+        "noise_band": 1.0,
+        "lookback_seconds": 30
+      }
     }
   },
   "display": {
