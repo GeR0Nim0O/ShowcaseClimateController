@@ -1310,8 +1310,7 @@ void ClimateController::updateAutoTune() {
             
             // Apply the new parameters
             temperaturePID->SetTunings(kp, ki, kd);
-            temperaturePID->SetMode(AUTOMATIC);
-              // Update ClimateConfig with new parameters
+            temperaturePID->SetMode(AUTOMATIC);            // Update ClimateConfig with new parameters
             ClimateConfig& climateConfig = ClimateConfig::getInstance();
             climateConfig.setTemperaturePID(kp, ki, kd);
             
@@ -1319,8 +1318,18 @@ void ClimateController::updateAutoTune() {
             climateConfig.setAutoTuneResults(kp, ki, kd);
             climateConfig.saveSettings();
             
-            // Also update the JSON file
+            // Update all JSON configuration files with the new AutoTune results
+            // SPIFFS files
             climateConfig.updateJsonFile("/data/ClimateConfig.json");
+            climateConfig.updateJsonFile("/data/config.json");
+            
+            // SD card files if SD is available
+            if (SD.begin()) {
+                climateConfig.updateJsonFile("/sd/ClimateConfig.json");
+                climateConfig.updateJsonFile("/sd/config.json");
+                Serial.println("AutoTune results saved to SD card files");
+                SD.end();
+            }
             
             Serial.println("=== Temperature AutoTune Complete ===");
             Serial.print("Optimized Kp: ");
