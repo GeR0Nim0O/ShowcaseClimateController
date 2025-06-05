@@ -23,21 +23,25 @@ bool ClimateConfig::begin() {
         Serial.println("Failed to initialize EEPROM");
         return false;
     }
+      // Priority order: SPIFFS ClimateConfig.json -> SPIFFS config.json -> SD ClimateConfig.json -> EEPROM -> Defaults
+    // Try SPIFFS dedicated ClimateConfig.json first (highest priority for climate-specific settings with auto-tune results)
+    Serial.println("DEBUG: ClimateConfig::begin() - Attempting to load from SPIFFS ClimateConfig.json");
+    if (loadFromJsonFile()) {
+        Serial.println("DEBUG: ClimateConfig - Successfully loaded from SPIFFS ClimateConfig.json");
+        saveSettings(); // Save to EEPROM as backup
+        return true;
+    }
     
-    // Try to load settings from main config.json first, then dedicated ClimateConfig.json, then EEPROM
-    Serial.println("DEBUG: ClimateConfig::begin() - Attempting to load from main config.json");
+    // Try SPIFFS main config.json as fallback
+    Serial.println("DEBUG: ClimateConfig::begin() - SPIFFS ClimateConfig.json failed, trying main config.json");
     if (loadFromJsonFile("/data/config.json")) {
         Serial.println("DEBUG: ClimateConfig - Successfully loaded from main config.json");
         saveSettings(); // Save to EEPROM as backup
         return true;
     }
     
-    Serial.println("DEBUG: ClimateConfig::begin() - Main config.json failed, trying dedicated ClimateConfig.json");
-    if (loadFromJsonFile()) {
-        Serial.println("DEBUG: ClimateConfig - Successfully loaded from ClimateConfig.json");
-        saveSettings(); // Save to EEPROM as backup
-        return true;
-    }
+    // Note: SD card ClimateConfig.json loading would need SDHandler integration
+    // For now, SD card access is handled at the main.cpp level
       Serial.println("No valid JSON file found, trying EEPROM");
     if (!loadSettings()) {
         Serial.println("No valid settings found in EEPROM, loading defaults");
