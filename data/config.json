@@ -53,21 +53,32 @@
       "temperature": {
         "kp": 2.0,
         "ki": 0.5,
-        "kd": 0.1
+        "kd": 0.1,
+        "auto_tuned": false,
+        "tuned_timestamp": "",
+        "normal_autotune": {
+          "enabled": false,
+          "target_oscillation_amplitude": 1.0,
+          "test_duration_minutes": 30,
+          "output_step_percent": 50,
+          "noise_band": 0.5,
+          "lookback_seconds": 20
+        },
+        "fast_autotune": {
+          "output_step_percent": 70.0,
+          "description": "Higher values create stronger oscillations for faster tuning"
+        },
+        "autotune_results": {
+          "has_results": false,
+          "kp": 0.0,
+          "ki": 0.0,
+          "kd": 0.0
+        }
       }
     },
     "control_parameters": {
       "temperature_hysteresis": 0.1,
       "humidity_hysteresis": 0.5
-    },    "autotune_parameters": {
-      "temperature": {
-        "enabled": false,
-        "target_oscillation_amplitude": 1.0,
-        "test_duration_minutes": 30,
-        "output_step_percent": 50,
-        "noise_band": 0.5,
-        "lookback_seconds": 20
-      }
     }
   },
   "display": {
