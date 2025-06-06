@@ -37,10 +37,15 @@
           "kd": 0.0
         }
       }
-    },    
-    "control_parameters": {
+    },      "control_parameters": {
       "temperature_hysteresis": 0.05,
       "humidity_hysteresis": 0.1
+    },
+    "dew_point_compensation": {
+      "enabled": true,
+      "safety_margin_celsius": 2.0,
+      "update_interval_ms": 1000,
+      "min_cooling_temperature_celsius": 5.0
     },
     "fan_settings": {
       "interior_fan_enabled": true,
