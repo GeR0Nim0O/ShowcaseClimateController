@@ -253,7 +253,8 @@
         "IO7": {
           "Name": "IO7",
           "Threshold": 1.0
-        }      }    },      
+        }      
+        }    },      
     
     "GP8403": {
       "Type": "DAC",
