@@ -39,21 +39,7 @@ bool ClimateConfig::begin() {
     Serial.println("No valid JSON file found, loading defaults");
     loadDefaults();
     saveToJsonFile("/data/ClimateConfig.json");
-    return true;
-        createDefaultJsonFile(); // Create default JSON file
-    } else {
-        Serial.print("DEBUG: ClimateConfig - EEPROM updateInterval loaded as: ");
-        Serial.println(settings.updateInterval);
-        
-        // Check if the loaded value looks corrupted (outside reasonable range)
-        if (settings.updateInterval < 100 || settings.updateInterval > 10000) {
-            Serial.println("DEBUG: ClimateConfig - EEPROM data appears corrupted, clearing and reloading");
-            clearEEPROM();
-        }
-    }
-    
-    return true;
-}
+    return true;}
 
 void ClimateConfig::loadDefaults() {
     Serial.println("DEBUG: ClimateConfig::loadDefaults() called");
