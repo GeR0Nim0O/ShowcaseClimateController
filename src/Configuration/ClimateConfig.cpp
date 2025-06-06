@@ -425,15 +425,16 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         Serial.print("  Update Interval: "); Serial.print(settings.dewPointUpdateInterval); Serial.println("ms");
         Serial.print("  Min Cooling Temperature: "); Serial.print(settings.minCoolingTemperature); Serial.println("°C");
     } else {
-        // No dew point compensation in JSON - use defaults
-        settings.dewPointCompensationEnabled = false;
+        // No dew point compensation in JSON - use defaults        settings.dewPointCompensationEnabled = false;
         settings.dewPointSafetyMargin = 2.0;
         settings.dewPointUpdateInterval = 1000;
         settings.minCoolingTemperature = 5.0;
         Serial.println("No dew point compensation settings found - using defaults");
     }
 
-    // ...existing code...
+    file.close();
+    Serial.println("Climate settings loaded from JSON file successfully");
+    return true;
 }
 
 bool ClimateConfig::saveToJsonFile(const String& filePath) {
