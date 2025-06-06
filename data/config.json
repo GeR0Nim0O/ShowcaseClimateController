@@ -55,7 +55,7 @@
         "normal_autotune": {
           "enabled": false,
           "target_oscillation_amplitude": 1.0,
-          "test_duration_minutes": 30,
+          "test_duration_minutes": 20,
           "output_step_percent": 100,
           "noise_band": 0.05,
           "lookback_seconds": 200
