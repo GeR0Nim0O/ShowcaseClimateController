@@ -104,7 +104,14 @@ public:
     void setHumidityMode(const String& mode) { strncpy(settings.humidityMode, mode.c_str(), 15); settings.humidityMode[15] = '\0'; }    void setAutoFanControl(bool enabled) { settings.autoFanControl = enabled; }
     void setTemperatureHysteresis(float value) { settings.temperatureHysteresis = value; }
     void setHumidityHysteresis(float value) { settings.humidityHysteresis = value; }
-      // AutoTune getters and setters
+    
+    // Dew point compensation setters
+    void setDewPointCompensationEnabled(bool enabled) { settings.dewPointCompensationEnabled = enabled; }
+    void setDewPointSafetyMargin(float margin) { settings.dewPointSafetyMargin = margin; }
+    void setDewPointUpdateInterval(uint16_t interval) { settings.dewPointUpdateInterval = interval; }
+    void setMinCoolingTemperature(float temp) { settings.minCoolingTemperature = temp; }
+    
+    // AutoTune getters and setters
     bool hasAutoTuneResults() const { return settings.hasAutoTuneResults; }
     float getAutoTuneKp() const { return settings.autoTuneKp; }
     float getAutoTuneKi() const { return settings.autoTuneKi; }
