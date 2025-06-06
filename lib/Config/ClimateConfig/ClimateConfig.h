@@ -24,10 +24,15 @@ struct ClimateSettings {
     float maxHumidity;
     float minHumidity;
     char climateMode[16];     // String storage for mode settings
-    char humidityMode[16];    // String storage for mode settings
-    bool autoFanControl;
+    char humidityMode[16];    // String storage for mode settings    bool autoFanControl;
     float temperatureHysteresis;
     float humidityHysteresis;
+    
+    // Dew point compensation settings
+    bool dewPointCompensationEnabled;
+    float dewPointSafetyMargin;          // Safety margin in Celsius above dew point
+    uint16_t dewPointUpdateInterval;     // Update interval in milliseconds
+    float minCoolingTemperature;         // Minimum allowed cooling temperature
     
     // AutoTune results
     bool hasAutoTuneResults;
