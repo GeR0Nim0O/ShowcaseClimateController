@@ -747,13 +747,9 @@ void initializeClimateController() {
                 
                 // Save the configuration to ClimateConfig.json for future use
                 if (climateConfig.createDefaultJsonFile("/data/ClimateConfig.json")) {
-                    Serial.println("Created default ClimateConfig.json from main config values");
-                } else {
+                    Serial.println("Created default ClimateConfig.json from main config values");                } else {
                     Serial.println("Warning: Could not create ClimateConfig.json file");
                 }
-                
-                // Also save to EEPROM
-                climateConfig.saveSettings();
             }
             
             // Get final configuration values from ClimateConfig
