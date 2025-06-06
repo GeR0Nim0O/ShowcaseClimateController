@@ -784,9 +784,33 @@ void ClimateController::printClimateStatus() {
         
         Serial.print("External Humidity: ");
         Serial.print(externalData["H"].toFloat(), 1);
-        Serial.println("%");
-    } else {
+        Serial.println("%");    } else {
         Serial.println("External Conditions: [Sensor not available]");
+    }
+    
+    // Print radiator sensor and dew point compensation information
+    if (radiatorSensor != nullptr && radiatorSensor->isInitialized()) {
+        Serial.print("Radiator Temperature: ");
+        Serial.print(getCurrentRadiatorTemperature(), 2);
+        Serial.println("°C");
+        
+        if (isDewPointCompensationEnabled()) {
+            Serial.print("Dew Point: ");
+            Serial.print(getDewPoint(), 2);
+            Serial.print("°C, Min Cooling Temp: ");
+            Serial.print(getMinAllowedCoolingTemperature(), 2);
+            Serial.println("°C");
+            
+            if (getCurrentRadiatorTemperature() <= getMinAllowedCoolingTemperature()) {
+                Serial.println("⚠️  Dew Point Protection: COOLING LIMITED");
+            } else {
+                Serial.println("✓ Dew Point Protection: OK");
+            }
+        } else {
+            Serial.println("Dew Point Compensation: DISABLED");
+        }
+    } else {
+        Serial.println("Radiator Sensor: [Not available - dew point compensation disabled]");
     }
     
     // Print control status
