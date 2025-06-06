@@ -395,10 +395,9 @@ void ClimateController::updateTemperatureControl() {
                 } else if (tempOutput < -temperatureHysteresis) {
                     heatingActive = false;
                     coolingActive = true;
-                    heatingPower = 0.0;
-                    coolingPower = constrain(-tempOutput, 0.0, 100.0);  // Convert negative to positive percentage
+                    heatingPower = 0.0;                    coolingPower = constrain(-tempOutput, 0.0, 100.0);  // Convert negative to positive percentage
                     // Apply dew point compensation to cooling power
-                    limitCoolingOutputForDewPoint(coolingPower);
+                    coolingPower = limitCoolingOutputForDewPoint(coolingPower);
                     // Update cooling active state based on compensated power
                     coolingActive = (coolingPower > 0.0);
                 } else {
