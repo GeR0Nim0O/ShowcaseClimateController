@@ -34,7 +34,7 @@
   },  
   "climate_controller": {
     "enabled": true,
-    "temperature_setpoint": 19.00,
+    "temperature_setpoint": 19.0,
     "humidity_setpoint": 40.0,    
     "climate_mode": "AUTO",
     "humidity_mode": "AUTO",
