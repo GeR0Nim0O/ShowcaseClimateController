@@ -269,6 +269,9 @@ void ClimateController::update() {    unsigned long currentTime = millis();
         // Update AutoTune if active
         updateAutoTune();
         
+        // Update dew point compensation if enabled
+        updateDewPointCompensation();
+        
         // Update control logic (normal PID or AutoTune output)
         updateTemperatureControl();
         updateHumidityControl();
