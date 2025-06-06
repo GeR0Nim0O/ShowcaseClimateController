@@ -372,12 +372,17 @@ void ClimateController::updateTemperatureControl() {
             tempControlEnabled = heatingActive;
             heatingPower = heatingActive ? constrain(tempOutput, 0.0, 100.0) : 0.0;
             coolingPower = 0.0;
-            break;
-        case ClimateMode::COOLING:
+            break;        case ClimateMode::COOLING:
             heatingActive = false;
             coolingActive = (tempOutput < 0);
             tempControlEnabled = coolingActive;
-            heatingPower = 0.0;            coolingPower = coolingActive ? constrain(-tempOutput, 0.0, 100.0) : 0.0;
+            heatingPower = 0.0;
+            coolingPower = coolingActive ? constrain(-tempOutput, 0.0, 100.0) : 0.0;
+            // Apply dew point compensation to cooling power
+            limitCoolingOutputForDewPoint(coolingPower);
+            // Update cooling active state based on compensated power
+            coolingActive = (coolingPower > 0.0);
+            tempControlEnabled = coolingActive;
             break;
         case ClimateMode::AUTO:
             {
@@ -392,6 +397,10 @@ void ClimateController::updateTemperatureControl() {
                     coolingActive = true;
                     heatingPower = 0.0;
                     coolingPower = constrain(-tempOutput, 0.0, 100.0);  // Convert negative to positive percentage
+                    // Apply dew point compensation to cooling power
+                    limitCoolingOutputForDewPoint(coolingPower);
+                    // Update cooling active state based on compensated power
+                    coolingActive = (coolingPower > 0.0);
                 } else {
                     heatingActive = false;
                     coolingActive = false;
