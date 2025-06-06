@@ -360,11 +360,10 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         if (!tempPid["ki"]) settings.temperatureKi = 0.5;
         
         settings.temperatureKd = tempPid["kd"].as<double>();
-        if (!tempPid["kd"]) settings.temperatureKd = 0.1;
-          // Load normal autotune configuration
+        if (!tempPid["kd"]) settings.temperatureKd = 0.1;        // Load normal autotune configuration
         JsonObject normalAutoTune = tempPid["normal_autotune"];
         if (normalAutoTune) {
-            if (normalAutoTune["output_step_percent"].is<double>()) {
+            if (normalAutoTune["output_step_percent"].is<double>() || normalAutoTune["output_step_percent"].is<int>()) {
                 settings.autoTuneOutputStep = normalAutoTune["output_step_percent"].as<double>();
             } else {
                 settings.autoTuneOutputStep = 50.0;
