@@ -1312,20 +1312,18 @@ void ClimateController::updateAutoTune() {
             temperaturePID->SetMode(AUTOMATIC);            // Update ClimateConfig with new parameters
             ClimateConfig& climateConfig = ClimateConfig::getInstance();
             climateConfig.setTemperaturePID(kp, ki, kd);
-            
-            // Save AutoTune results separately for future use
+              // Save AutoTune results separately for future use
             climateConfig.setAutoTuneResults(kp, ki, kd);
-            climateConfig.saveSettings();
             
             // Update all JSON configuration files with the new AutoTune results
             // SPIFFS files
-            climateConfig.updateJsonFile("/data/ClimateConfig.json");
-            climateConfig.updateJsonFile("/data/config.json");
+            climateConfig.saveToJsonFile("/data/ClimateConfig.json");
+            climateConfig.saveToJsonFile("/data/config.json");
             
             // SD card files if SD is available
             if (SD.begin()) {
-                climateConfig.updateJsonFile("/sd/ClimateConfig.json");
-                climateConfig.updateJsonFile("/sd/config.json");
+                climateConfig.saveToJsonFile("/sd/ClimateConfig.json");
+                climateConfig.saveToJsonFile("/sd/config.json");
                 Serial.println("AutoTune results saved to SD card files");
                 SD.end();
             }
