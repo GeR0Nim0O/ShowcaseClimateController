@@ -1078,6 +1078,38 @@ void handleSerialCommands() {
         config.saveToJsonFile("/data/config.json");
         Serial.println("✓ AutoTune results cleared. Default PID parameters will be used.");
     }
+    else if (command == "config check") {
+        Serial.println("========================================");
+        Serial.println("    CHECKING SPIFFS CONFIG FILES");
+        Serial.println("========================================");
+        
+        ClimateConfig& config = ClimateConfig::getInstance();
+        
+        Serial.println("Current AutoTune settings in memory:");
+        Serial.print("Normal AutoTune: ");
+        Serial.print(config.getAutoTuneOutputStep());
+        Serial.println("%");
+        Serial.print("Fast AutoTune: ");
+        Serial.print(config.getFastAutoTuneOutputStep());
+        Serial.println("%");
+        
+        Serial.println("\nSPIFFS file contents:");
+        
+        // Check ClimateConfig.json
+        if (SPIFFS.exists("/data/ClimateConfig.json")) {
+            File file = SPIFFS.open("/data/ClimateConfig.json", "r");
+            if (file) {
+                Serial.println("--- /data/ClimateConfig.json ---");
+                String content = file.readString();
+                Serial.println(content);
+                file.close();
+            }
+        } else {
+            Serial.println("❌ /data/ClimateConfig.json does not exist");
+        }
+        
+        Serial.println("========================================");
+    }
     else if (command == "config reset") {
         Serial.println("========================================");
         Serial.println("      RESETTING CLIMATE CONFIG");
