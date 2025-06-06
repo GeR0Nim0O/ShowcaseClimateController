@@ -253,8 +253,7 @@
         "IO7": {
           "Name": "IO7",
           "Threshold": 1.0
-        }
-      }    },      "GP8403": {
+        }      }    },      "GP8403": {
       "Type": "DAC",
       "TypeNumber": "GP8403",
       "Address": "0x5F",
@@ -262,6 +261,30 @@
       "Channels": {
         "DAC_A": {
           "Name": "TemperaturePower"
+        }
+      }
+    },
+    "Relay4Ch": {
+      "Type": "Relay",
+      "TypeNumber": "Relay4Ch",
+      "Address": "0x26",
+      "Label": "Controller",
+      "Channels": {
+        "RLY0": {
+          "Name": "Relay1",
+          "Threshold": 1.0
+        },
+        "RLY1": {
+          "Name": "Relay2",
+          "Threshold": 1.0
+        },
+        "RLY2": {
+          "Name": "Relay3",
+          "Threshold": 1.0
+        },
+        "RLY3": {
+          "Name": "Relay4",
+          "Threshold": 1.0
         }
       }
     },
