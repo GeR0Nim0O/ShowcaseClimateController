@@ -218,6 +218,21 @@ void ClimateConfig::printSettings() {    Serial.println("\n=== Climate Controlle
     Serial.print(settings.maxHumidity);
     Serial.println("%");
     
+    Serial.println("Dew Point Compensation:");
+    Serial.print("  Enabled: ");
+    Serial.println(settings.dewPointCompensationEnabled ? "ON" : "OFF");
+    if (settings.dewPointCompensationEnabled) {
+        Serial.print("  Safety Margin: ");
+        Serial.print(settings.dewPointSafetyMargin);
+        Serial.println("°C");
+        Serial.print("  Update Interval: ");
+        Serial.print(settings.dewPointUpdateInterval);
+        Serial.println("ms");
+        Serial.print("  Min Cooling Temperature: ");
+        Serial.print(settings.minCoolingTemperature);
+        Serial.println("°C");
+    }
+    
     Serial.println("===============================");
 }
 
