@@ -215,6 +215,11 @@ private:
     void applyHumidityControl();
     void applyFanControl();         // Add fan application method
     
+    // Dew point compensation methods
+    void updateDewPointCompensation();
+    void updateRadiatorSensorReading();
+    float limitCoolingOutputForDewPoint(float coolingOutput);
+    
     // DAC control method
     void applyDACControls();
     
