@@ -42,16 +42,12 @@ struct ClimateSettings {
 class ClimateConfig {
 public:
     static ClimateConfig& getInstance();
-    
-    bool begin();
+      bool begin();
     void loadDefaults();
-    bool saveSettings();
-    bool loadSettings();
     
     // JSON file operations
     bool loadFromJsonFile(const String& filePath = "/data/ClimateConfig.json");
     bool saveToJsonFile(const String& filePath = "/data/ClimateConfig.json");
-    bool updateJsonFile(const String& filePath = "/data/ClimateConfig.json");
     bool createDefaultJsonFile(const String& filePath = "/data/ClimateConfig.json");
     
     // Getters
