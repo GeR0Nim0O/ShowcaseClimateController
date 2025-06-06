@@ -69,10 +69,9 @@ void ClimateConfig::loadDefaults() {
     settings.hasAutoTuneResults = false;
     settings.autoTuneKp = 0.0;
     settings.autoTuneKi = 0.0;
-    settings.autoTuneKd = 0.0;
-      // Initialize AutoTune configuration
-    settings.autoTuneOutputStep = 50.0;      // Default to 50% output step for normal AutoTune
-    settings.fastAutoTuneOutputStep = 75.0;  // Default to 75% output step for fast AutoTune
+    settings.autoTuneKd = 0.0;    // Initialize AutoTune configuration
+    settings.autoTuneOutputStep = 100.0;      // Default to 100% output step for normal AutoTune
+    settings.fastAutoTuneOutputStep = 100.0;  // Default to 100% output step for fast AutoTune
     
     Serial.print("DEBUG: ClimateConfig::loadDefaults() - updateInterval set to: ");
     Serial.println(settings.updateInterval);
