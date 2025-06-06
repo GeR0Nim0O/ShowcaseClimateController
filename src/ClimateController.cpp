@@ -1664,3 +1664,125 @@ void ClimateController::setFastTestingMode(bool enabled) {
         Serial.println("==================================");
     }
 }
+
+// Dew Point Compensation Implementation
+
+bool ClimateController::isDewPointCompensationEnabled() const {
+    if (radiatorSensor == nullptr) {
+        return false; // Cannot enable without radiator sensor
+    }
+    
+    ClimateConfig& climateConfig = ClimateConfig::getInstance();
+    return climateConfig.getDewPointCompensationEnabled();
+}
+
+float ClimateController::calculateDewPoint(float temperature, float humidity) const {
+    // Magnus formula for dew point calculation
+    // Accurate for temperature range -40°C to +50°C and humidity 1% to 100%
+    
+    // Constants for Magnus formula
+    const float a = 17.27;
+    const float b = 237.7;
+    
+    // Calculate gamma
+    float gamma = (a * temperature) / (b + temperature) + log(humidity / 100.0);
+    
+    // Calculate dew point
+    float dewPoint = (b * gamma) / (a - gamma);
+    
+    return dewPoint;
+}
+
+void ClimateController::updateDewPointCompensation() {
+    if (!isDewPointCompensationEnabled()) {
+        return; // Dew point compensation is disabled
+    }
+    
+    unsigned long currentTime = millis();
+    ClimateConfig& climateConfig = ClimateConfig::getInstance();
+    
+    // Check if it's time to update dew point calculation
+    if (currentTime - lastDewPointUpdate < climateConfig.getDewPointUpdateInterval()) {
+        return; // Not time to update yet
+    }
+    
+    // Update radiator sensor reading
+    updateRadiatorSensorReading();
+    
+    // Calculate dew point using interior temperature and humidity
+    dewPoint = calculateDewPoint(currentTemperature, currentHumidity);
+    
+    // Calculate minimum allowed cooling temperature based on dew point and safety margin
+    float safetyMargin = climateConfig.getDewPointSafetyMargin();
+    float minCoolingTemp = climateConfig.getMinCoolingTemperature();
+    
+    // Use the higher of: (dew point + safety margin) or minimum cooling temperature
+    minAllowedCoolingTemperature = max(dewPoint + safetyMargin, minCoolingTemp);
+    
+    lastDewPointUpdate = currentTime;
+    
+    // Debug output for dew point compensation
+    static unsigned long lastDebugPrint = 0;
+    if (currentTime - lastDebugPrint >= 30000) { // Print debug every 30 seconds
+        Serial.println("\n=== Dew Point Compensation Status ===");
+        Serial.print("Interior Temp: "); Serial.print(currentTemperature, 2); Serial.println("°C");
+        Serial.print("Interior Humidity: "); Serial.print(currentHumidity, 1); Serial.println("%");
+        Serial.print("Radiator Temp: "); Serial.print(currentRadiatorTemperature, 2); Serial.println("°C");
+        Serial.print("Calculated Dew Point: "); Serial.print(dewPoint, 2); Serial.println("°C");
+        Serial.print("Safety Margin: "); Serial.print(safetyMargin, 1); Serial.println("°C");
+        Serial.print("Min Allowed Cooling Temp: "); Serial.print(minAllowedCoolingTemperature, 2); Serial.println("°C");
+        
+        if (currentRadiatorTemperature <= minAllowedCoolingTemperature) {
+            Serial.println("WARNING: Cooling limited due to dew point protection!");
+        } else {
+            Serial.println("Cooling operating normally");
+        }
+        Serial.println("=====================================");
+        lastDebugPrint = currentTime;
+    }
+}
+
+void ClimateController::updateRadiatorSensorReading() {
+    if (radiatorSensor == nullptr || !radiatorSensor->isInitialized()) {
+        currentRadiatorTemperature = 0.0; // Invalid reading
+        return;
+    }
+    
+    // Update the radiator sensor and get temperature reading
+    radiatorSensor->update();
+    currentRadiatorTemperature = radiatorSensor->getTemperature();
+    
+    // Validate the reading
+    if (currentRadiatorTemperature < -50.0 || currentRadiatorTemperature > 100.0) {
+        Serial.println("Warning: Invalid radiator temperature reading");
+        currentRadiatorTemperature = 0.0; // Mark as invalid
+    }
+}
+
+void ClimateController::limitCoolingOutputForDewPoint(float& coolingOutput) {
+    if (!isDewPointCompensationEnabled() || radiatorSensor == nullptr) {
+        return; // No dew point compensation
+    }
+    
+    // Check if radiator temperature is approaching the dew point limit
+    if (currentRadiatorTemperature <= minAllowedCoolingTemperature) {
+        // Radiator is at or below the safe cooling temperature
+        // Gradually reduce or stop cooling to prevent condensation
+        
+        float temperatureDifference = minAllowedCoolingTemperature - currentRadiatorTemperature;
+        
+        if (temperatureDifference >= 1.0) {
+            // Radiator is significantly below safe temperature - stop cooling immediately
+            coolingOutput = 0.0;
+            Serial.println("Dew Point Protection: Cooling STOPPED - radiator too cold");
+        } else if (temperatureDifference >= 0.5) {
+            // Radiator is approaching unsafe temperature - reduce cooling significantly
+            coolingOutput *= 0.2; // Reduce to 20% of original output
+            Serial.println("Dew Point Protection: Cooling REDUCED to 20%");
+        } else {
+            // Radiator is slightly below safe temperature - reduce cooling moderately
+            coolingOutput *= 0.5; // Reduce to 50% of original output
+            Serial.println("Dew Point Protection: Cooling REDUCED to 50%");
+        }
+    }
+}
