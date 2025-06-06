@@ -255,7 +255,7 @@
           "Threshold": 1.0
         }      }    },      
     
-        "GP8403": {
+    "GP8403": {
       "Type": "DAC",
       "TypeNumber": "GP8403",
       "Address": "0x5F",
