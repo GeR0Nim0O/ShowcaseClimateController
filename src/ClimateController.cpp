@@ -809,10 +809,9 @@ void ClimateController::printClimateStatus() {
       // Print AutoTune status with detailed information
     Serial.println("");
     Serial.println("--- PID Control & AutoTune Status ---");
-    
-    // Always show current setpoints
+      // Always show current setpoints
     Serial.print("Current Setpoints: Temp ");
-    Serial.print(getTemperatureSetpoint(), 1);
+    Serial.print(getTemperatureSetpoint(), 2);
     Serial.print("°C, Humidity ");
     Serial.print(getHumiditySetpoint(), 1);
     Serial.println("%");
