@@ -477,17 +477,8 @@ bool ClimateConfig::saveToJsonFile(const String& filePath) {
         return false;
     }
     
-    file.close();
-    Serial.println("Climate settings saved to JSON file successfully");
+    file.close();    Serial.println("Climate settings saved to JSON file successfully");
     return true;
-}
-
-bool ClimateConfig::updateJsonFile(const String& filePath) {
-    // Save current settings and also update EEPROM
-    bool jsonSuccess = saveToJsonFile(filePath);
-    bool eepromSuccess = saveSettings();
-    
-    return jsonSuccess && eepromSuccess;
 }
 
 bool ClimateConfig::createDefaultJsonFile(const String& filePath) {
