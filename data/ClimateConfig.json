@@ -22,7 +22,7 @@
           "enabled": false,
           "target_oscillation_amplitude": 1.0,
           "test_duration_minutes": 30,
-          "output_step_percent": 50,
+          "output_step_percent": 100,
           "noise_band": 0.05,
           "lookback_seconds": 20
         },
