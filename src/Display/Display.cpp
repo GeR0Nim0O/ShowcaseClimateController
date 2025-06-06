@@ -317,13 +317,12 @@ void Display::displayClimateStatus(float temp, float hum, float tempSetpoint, fl
     if (!displayInitialized) return;
     
     clear();
-    
-    // Line 1: Temperature info
+      // Line 1: Temperature info
     setCursor(0, 0);
     print("T:");
-    print(temp, 1);
+    print(temp, 2);
     print("C S:");
-    print(tempSetpoint, 1);
+    print(tempSetpoint, 2);
     
     // Line 2: Humidity info
     setCursor(0, 1);
