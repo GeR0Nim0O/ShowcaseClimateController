@@ -377,10 +377,9 @@ void ClimateController::updateTemperatureControl() {
             heatingActive = false;
             coolingActive = (tempOutput < 0);
             tempControlEnabled = coolingActive;
-            heatingPower = 0.0;
-            coolingPower = coolingActive ? constrain(-tempOutput, 0.0, 100.0) : 0.0;
+            heatingPower = 0.0;            coolingPower = coolingActive ? constrain(-tempOutput, 0.0, 100.0) : 0.0;
             // Apply dew point compensation to cooling power
-            limitCoolingOutputForDewPoint(coolingPower);
+            coolingPower = limitCoolingOutputForDewPoint(coolingPower);
             // Update cooling active state based on compensated power
             coolingActive = (coolingPower > 0.0);
             tempControlEnabled = coolingActive;
