@@ -1,9 +1,11 @@
 #include "../../../lib/Config/ClimateConfig/ClimateConfig.h"  // Use relative path to find the header in lib directory
 #include <Arduino.h>
-#include <EEPROM.h>
 #include <ArduinoJson.h>
 #include <FS.h>
 #include <SPIFFS.h>
+
+// Debug print helper
+#define DEBUG_PRINTLN(x) Serial.println(x)
 
 // Singleton instance
 ClimateConfig& ClimateConfig::getInstance() {
