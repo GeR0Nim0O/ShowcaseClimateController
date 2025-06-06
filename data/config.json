@@ -223,38 +223,30 @@
       "Mode": "OUTPUT",
       "Label": "Controller",      "Channels": {
         "IO0": {
-          "Name": "FanExterior",
-          "Threshold": 1.0
+          "Name": "FanExterior"
         },
         "IO1": {
-          "Name": "Humidify",
-          "Threshold": 1.0
+          "Name": "Humidify"
         },
         "IO2": {
-          "Name": "Dehumidify",
-          "Threshold": 1.0
+          "Name": "Dehumidify"
         },
         "IO3": {
-          "Name": "FanInterior",
-          "Threshold": 1.0
+          "Name": "FanInterior"
         },
         "IO4": {
-          "Name": "TemperatureEnable",
-          "Threshold": 1.0
+          "Name": "TemperatureEnable"
         },
         "IO5": {
-          "Name": "TemperatureCool",
-          "Threshold": 1.0
+          "Name": "TemperatureCool"
         },
         "IO6": {
-          "Name": "TemperatureHeat",
-          "Threshold": 1.0
+          "Name": "TemperatureHeat"
         },
         "IO7": {
-          "Name": "IO7",
-          "Threshold": 1.0
+          "Name": "IO7"
         }      
-      }    
+      }
     },      
     "GP8403": {
       "Type": "DAC",
