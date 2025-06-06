@@ -61,7 +61,8 @@ void ClimateConfig::loadDefaults() {
     strncpy(settings.climateMode, "AUTO", 15);
     settings.climateMode[15] = '\0';
     strncpy(settings.humidityMode, "AUTO", 15);
-    settings.humidityMode[15] = '\0';    settings.autoFanControl = true;
+    settings.humidityMode[15] = '\0';    
+    settings.autoFanControl = true;
     settings.temperatureHysteresis = 0.5;
     settings.humidityHysteresis = 2.0;
     
@@ -69,10 +70,19 @@ void ClimateConfig::loadDefaults() {
     settings.hasAutoTuneResults = false;
     settings.autoTuneKp = 0.0;
     settings.autoTuneKi = 0.0;
-    settings.autoTuneKd = 0.0;    // Initialize AutoTune configuration
+    settings.autoTuneKd = 0.0;    
+    
+    // Initialize AutoTune configuration
     settings.autoTuneOutputStep = 100.0;      // Default to 100% output step for normal AutoTune
     settings.fastAutoTuneOutputStep = 100.0;  // Default to 100% output step for fast AutoTune
-      Serial.print("DEBUG: ClimateConfig::loadDefaults() - updateInterval set to: ");
+    
+    // Initialize dew point compensation defaults
+    settings.dewPointCompensationEnabled = false;
+    settings.dewPointSafetyMargin = 2.0;
+    settings.dewPointUpdateInterval = 1000;
+    settings.minCoolingTemperature = 5.0;
+    
+    Serial.print("DEBUG: ClimateConfig::loadDefaults() - updateInterval set to: ");
     Serial.println(settings.updateInterval);
 }
 
