@@ -817,10 +817,9 @@ void ClimateController::printClimateStatus() {
     Serial.println("%");
       Serial.print("PID AutoTune: ");    if (temperatureAutoTuning) {
         Serial.println("ACTIVE");
-        
-        // Show AutoTune progress information with percentage
+          // Show AutoTune progress information with percentage
         Serial.print("  → Target: ");
-        Serial.print(autoTuneSetpoint, 1);
+        Serial.print(autoTuneSetpoint, 2);
         Serial.print("°C, Runtime: ");
         unsigned long autoTuneRuntime = millis() - autoTuneStartTime;
         Serial.print(autoTuneRuntime / 60000);
