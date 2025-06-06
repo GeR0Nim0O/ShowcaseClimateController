@@ -58,7 +58,7 @@
           "test_duration_minutes": 30,
           "output_step_percent": 100,
           "noise_band": 0.05,
-          "lookback_seconds": 20
+          "lookback_seconds": 200
         },
         "fast_autotune": {
           "output_step_percent": 100.0,
