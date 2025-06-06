@@ -76,10 +76,16 @@ public:
     float getMaxHumidity() const { return settings.maxHumidity; }
     float getMinHumidity() const { return settings.minHumidity; }    String getClimateMode() const { return String(settings.climateMode); }
     String getHumidityMode() const { return String(settings.humidityMode); }
-    bool getAutoFanControl() const { return settings.autoFanControl; }
-    float getTemperatureHysteresis() const { return settings.temperatureHysteresis; }
+    bool getAutoFanControl() const { return settings.autoFanControl; }    float getTemperatureHysteresis() const { return settings.temperatureHysteresis; }
     float getHumidityHysteresis() const { return settings.humidityHysteresis; }
-      // Setters
+    
+    // Dew point compensation getters
+    bool getDewPointCompensationEnabled() const { return settings.dewPointCompensationEnabled; }
+    float getDewPointSafetyMargin() const { return settings.dewPointSafetyMargin; }
+    uint16_t getDewPointUpdateInterval() const { return settings.dewPointUpdateInterval; }
+    float getMinCoolingTemperature() const { return settings.minCoolingTemperature; }
+    
+    // Setters
     void setTemperatureSetpoint(float value) { settings.temperatureSetpoint = value; }
     void setHumiditySetpoint(float value) { settings.humiditySetpoint = value; }
     void setTemperaturePID(float kp, float ki, float kd) { 
