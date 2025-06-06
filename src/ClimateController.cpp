@@ -69,6 +69,19 @@ ClimateController* ClimateController::createFromDeviceRegistry() {
                         controller->setAutoFanControl(true);
                         Serial.println("Automatic fan control enabled");
                         
+                        // Look for radiator sensor for dew point compensation
+                        SHTsensor* radiatorSensor = (SHTsensor*)registry.getDeviceByTypeAndLabel("TemperatureHumidity", "Radiator");
+                        if (radiatorSensor != nullptr) {
+                            controller->setRadiatorSensor(radiatorSensor);
+                            Serial.println("Found RADIATOR sensor for dew point compensation");
+                            Serial.print("Using radiator sensor: ");
+                            Serial.print(radiatorSensor->getDeviceName());
+                            Serial.print(" with label: ");
+                            Serial.println(radiatorSensor->getDeviceLabel());
+                        } else {
+                            Serial.println("No Radiator labeled sensor found - dew point compensation disabled");
+                        }
+                        
                         return controller;
                     } else {
                         Serial.println("Failed to initialize climate controller");
