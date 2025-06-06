@@ -18,37 +18,26 @@ bool ClimateConfig::begin() {
         return false;
     }
     
-    // Initialize EEPROM if needed
-    if (!EEPROM.begin(EEPROM_SIZE)) {
-        Serial.println("Failed to initialize EEPROM");
-        return false;
-    }
-      // Priority order: SPIFFS ClimateConfig.json -> SPIFFS config.json -> SD ClimateConfig.json -> EEPROM -> Defaults
-    // Try SPIFFS dedicated ClimateConfig.json first (highest priority for climate-specific settings with auto-tune results)
-    Serial.println("DEBUG: ClimateConfig::begin() - Attempting to load from SPIFFS ClimateConfig.json");
+    // NO MORE EEPROM - JSON FILES ONLY
+    DEBUG_PRINTLN("ClimateConfig::begin() - Attempting to load from SPIFFS ClimateConfig.json");
+    
+    // First try to load from SPIFFS ClimateConfig.json
     if (loadFromJsonFile()) {
-        Serial.println("DEBUG: ClimateConfig - Successfully loaded from SPIFFS ClimateConfig.json");
-        saveSettings(); // Save to EEPROM as backup
+        DEBUG_PRINTLN("ClimateConfig - Successfully loaded from SPIFFS ClimateConfig.json");
         return true;
     }
     
-    // Try SPIFFS main config.json as fallback
-    Serial.println("DEBUG: ClimateConfig::begin() - SPIFFS ClimateConfig.json failed, trying main config.json");
+    DEBUG_PRINTLN("ClimateConfig::begin() - SPIFFS ClimateConfig.json failed, trying main config.json");
+    // If that fails, try main config.json
     if (loadFromJsonFile("/data/config.json")) {
-        Serial.println("DEBUG: ClimateConfig - Successfully loaded from main config.json");
-        saveSettings(); // Save to EEPROM as backup
         return true;
     }
     
-    // Note: SD card ClimateConfig.json loading would need SDHandler integration
-    // For now, SD card access is handled at the main.cpp level
-      Serial.println("No valid JSON file found, trying EEPROM");
-    if (!loadSettings()) {
-        Serial.println("No valid settings found in EEPROM, loading defaults");
-        loadDefaults();
-        Serial.print("DEBUG: ClimateConfig - Default updateInterval set to: ");
-        Serial.println(settings.updateInterval);
-        saveSettings(); // Save the defaults to EEPROM
+    // If both JSON files fail, load defaults and save them to JSON
+    Serial.println("No valid JSON file found, loading defaults");
+    loadDefaults();
+    saveToJsonFile("/data/ClimateConfig.json");
+    return true;
         createDefaultJsonFile(); // Create default JSON file
     } else {
         Serial.print("DEBUG: ClimateConfig - EEPROM updateInterval loaded as: ");
