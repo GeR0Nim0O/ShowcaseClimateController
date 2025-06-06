@@ -779,11 +779,10 @@ void initializeClimateController() {
             
             // Configure all parameters at once
             climateController->configure(temperatureSetpoint, humiditySetpoint, climateEnum, humidityEnum);
-            
-            // Print loaded configuration
+              // Print loaded configuration
             Serial.println("Climate Controller configured with:");
             Serial.print("  Temperature Setpoint: ");
-            Serial.print(temperatureSetpoint);
+            Serial.print(temperatureSetpoint, 2);
             Serial.println("°C");
             Serial.print("  Humidity Setpoint: ");
             Serial.print(humiditySetpoint);
