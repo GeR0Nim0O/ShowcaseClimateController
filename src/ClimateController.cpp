@@ -2,6 +2,7 @@
 #include "DeviceRegistry/DeviceRegistry.h"
 #include "../lib/Config/ClimateConfig/ClimateConfig.h"
 #include <SD.h>  // Include SD card library for saving to SD card
+#include <math.h> // Include math library for dew point calculations
 
 // Static factory method for automatic device discovery and initialization
 ClimateController* ClimateController::createFromDeviceRegistry() {
