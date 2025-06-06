@@ -727,12 +727,11 @@ void ClimateController::printClimateStatus() {
         Serial.println("==================================");
         return;
     }
-    
-    // Print current readings with external sensor info
+      // Print current readings with external sensor info
     Serial.print("Interior Temperature: ");
-    Serial.print(getCurrentTemperature(), 1);
+    Serial.print(getCurrentTemperature(), 2);
     Serial.print("°C (setpoint: ");
-    Serial.print(getTemperatureSetpoint(), 1);
+    Serial.print(getTemperatureSetpoint(), 2);
     Serial.println("°C)");
     
     Serial.print("Interior Humidity: ");
@@ -748,7 +747,7 @@ void ClimateController::printClimateStatus() {
         auto externalData = externalSensor->readData();
         
         Serial.print("External Temperature: ");
-        Serial.print(externalData["T"].toFloat(), 1);
+        Serial.print(externalData["T"].toFloat(), 2);
         Serial.println("°C");
         
         Serial.print("External Humidity: ");
