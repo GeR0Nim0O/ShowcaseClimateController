@@ -114,11 +114,9 @@ public:
         settings.autoTuneKp = 0.0;
         settings.autoTuneKi = 0.0;
         settings.autoTuneKd = 0.0;
-    }
-      // Utility
+    }    // Utility
     void printSettings();
     bool validateSettings();
-    void clearEEPROM(); // Clear EEPROM and force reload from JSON
 
 private:
     ClimateConfig() = default;
@@ -127,11 +125,6 @@ private:
     ClimateConfig& operator=(const ClimateConfig&) = delete;
     
     ClimateSettings settings;
-    static const int EEPROM_SIZE = 512;
-    static const int SETTINGS_ADDRESS = 0;
-    
-    uint32_t calculateChecksum();
-    bool isValidChecksum();
 };
 
 #endif // CLIMATE_CONFIG_H
