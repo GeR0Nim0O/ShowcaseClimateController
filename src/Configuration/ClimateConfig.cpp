@@ -72,69 +72,8 @@ void ClimateConfig::loadDefaults() {
     settings.autoTuneKd = 0.0;    // Initialize AutoTune configuration
     settings.autoTuneOutputStep = 100.0;      // Default to 100% output step for normal AutoTune
     settings.fastAutoTuneOutputStep = 100.0;  // Default to 100% output step for fast AutoTune
-    
-    Serial.print("DEBUG: ClimateConfig::loadDefaults() - updateInterval set to: ");
+      Serial.print("DEBUG: ClimateConfig::loadDefaults() - updateInterval set to: ");
     Serial.println(settings.updateInterval);
-}
-
-bool ClimateConfig::saveSettings() {
-    // Calculate checksum before saving
-    settings.checksum = calculateChecksum();
-    
-    // Write settings to EEPROM
-    EEPROM.put(SETTINGS_ADDRESS, settings);
-    if (!EEPROM.commit()) {
-        Serial.println("Failed to commit settings to EEPROM");
-        return false;
-    }
-    
-    Serial.println("Settings saved to EEPROM");
-    return true;
-}
-
-bool ClimateConfig::loadSettings() {
-    // Read settings from EEPROM
-    EEPROM.get(SETTINGS_ADDRESS, settings);
-    
-    // Validate settings with checksum
-    if (!isValidChecksum()) {
-        Serial.println("Checksum validation failed");
-        return false;
-    }
-      // Validate that values are within reasonable ranges
-    if (!validateSettings()) {
-        Serial.println("Settings validation failed");
-        Serial.print("DEBUG: ClimateConfig - updateInterval value during validation failure: ");
-        Serial.println(settings.updateInterval);
-        return false;
-    }
-    
-    Serial.println("Settings loaded from EEPROM");
-    Serial.print("DEBUG: ClimateConfig - Final updateInterval after EEPROM load: ");
-    Serial.println(settings.updateInterval);
-    return true;
-}
-
-uint32_t ClimateConfig::calculateChecksum() {
-    // Simple checksum calculation
-    uint32_t checksum = 0;
-    uint8_t* ptr = (uint8_t*)&settings;
-    
-    // Skip the checksum field itself
-    for (size_t i = 0; i < sizeof(ClimateSettings) - sizeof(uint32_t); i++) {
-        checksum += ptr[i];
-    }
-    
-    return checksum;
-}
-
-bool ClimateConfig::isValidChecksum() {
-    uint32_t storedChecksum = settings.checksum;
-    settings.checksum = 0;
-    uint32_t calculatedChecksum = calculateChecksum();
-    settings.checksum = storedChecksum;
-    
-    return storedChecksum == calculatedChecksum;
 }
 
 bool ClimateConfig::validateSettings() {
