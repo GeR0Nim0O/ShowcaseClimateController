@@ -810,9 +810,8 @@ void showTemperatureAndHumidity() {
     if (climateController != nullptr) {
         float currentTemperature = climateController->getCurrentTemperature();
         float currentHumidity = climateController->getCurrentHumidity();
-        
-        Serial.print("Current Temperature: ");
-        Serial.print(currentTemperature);
+          Serial.print("Current Temperature: ");
+        Serial.print(currentTemperature, 2);
         Serial.println(" °C");
         Serial.print("Current Humidity: ");
         Serial.print(currentHumidity);
