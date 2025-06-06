@@ -22,9 +22,9 @@ struct ClimateSettings {
     float maxTemperature;
     float minTemperature;
     float maxHumidity;
-    float minHumidity;
-    char climateMode[16];     // String storage for mode settings
-    char humidityMode[16];    // String storage for mode settings    bool autoFanControl;
+    float minHumidity;    char climateMode[16];     // String storage for mode settings
+    char humidityMode[16];    // String storage for mode settings
+    bool autoFanControl;
     float temperatureHysteresis;
     float humidityHysteresis;
     
