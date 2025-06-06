@@ -124,6 +124,13 @@ private:
     SHTsensor* sensor;
     GP8403dac* dac;  // Add DAC device pointer
     
+    // Dew point compensation
+    SHTsensor* radiatorSensor;
+    float dewPoint;
+    float currentRadiatorTemperature;
+    float minAllowedCoolingTemperature;
+    unsigned long lastDewPointUpdate;
+    
     // Setpoints
     float temperatureSetpoint;
     float humiditySetpoint;
