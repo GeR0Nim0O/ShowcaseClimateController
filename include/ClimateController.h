@@ -109,6 +109,15 @@ public:
     bool hasSignificantStateChange();
     bool hasSignificantSensorChange();
     void updateStatusPrintTracking();
+    
+    // Dew point compensation
+    void setRadiatorSensor(SHTsensor* radiatorSensor) { this->radiatorSensor = radiatorSensor; }
+    bool hasDewPointCompensation() const { return radiatorSensor != nullptr && isDewPointCompensationEnabled(); }
+    bool isDewPointCompensationEnabled() const;
+    float calculateDewPoint(float temperature, float humidity) const;
+    float getDewPoint() const { return dewPoint; }
+    float getCurrentRadiatorTemperature() const { return currentRadiatorTemperature; }
+    float getMinAllowedCoolingTemperature() const { return minAllowedCoolingTemperature; }
 
 private:
     PCF8574gpio* gpio;
