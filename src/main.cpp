@@ -1072,11 +1072,10 @@ void handleSerialCommands() {
             Serial.println("Run 'autotune start' to generate optimal PID parameters.");
         }
     }    else if (command == "autotune clear") {
-        Serial.println("Clearing saved AutoTune results...");
-        ClimateConfig& config = ClimateConfig::getInstance();
+        Serial.println("Clearing saved AutoTune results...");        ClimateConfig& config = ClimateConfig::getInstance();
         config.clearAutoTuneResults();
-        config.saveSettings();
-        config.saveToJsonFile();
+        config.saveToJsonFile("/data/ClimateConfig.json");
+        config.saveToJsonFile("/data/config.json");
         Serial.println("✓ AutoTune results cleared. Default PID parameters will be used.");
     }
     else if (command == "status") {
