@@ -1793,9 +1793,9 @@ void ClimateController::updateRadiatorSensorReading() {
     }
 }
 
-void ClimateController::limitCoolingOutputForDewPoint(float& coolingOutput) {
+float ClimateController::limitCoolingOutputForDewPoint(float coolingOutput) {
     if (!isDewPointCompensationEnabled() || radiatorSensor == nullptr) {
-        return; // No dew point compensation
+        return coolingOutput; // No dew point compensation, return original value
     }
     
     // Check if radiator temperature is approaching the dew point limit
@@ -1807,16 +1807,18 @@ void ClimateController::limitCoolingOutputForDewPoint(float& coolingOutput) {
         
         if (temperatureDifference >= 1.0) {
             // Radiator is significantly below safe temperature - stop cooling immediately
-            coolingOutput = 0.0;
             Serial.println("Dew Point Protection: Cooling STOPPED - radiator too cold");
+            return 0.0;
         } else if (temperatureDifference >= 0.5) {
             // Radiator is approaching unsafe temperature - reduce cooling significantly
-            coolingOutput *= 0.2; // Reduce to 20% of original output
             Serial.println("Dew Point Protection: Cooling REDUCED to 20%");
+            return coolingOutput * 0.2; // Reduce to 20% of original output
         } else {
             // Radiator is slightly below safe temperature - reduce cooling moderately
-            coolingOutput *= 0.5; // Reduce to 50% of original output
             Serial.println("Dew Point Protection: Cooling REDUCED to 50%");
+            return coolingOutput * 0.5; // Reduce to 50% of original output
         }
     }
+    
+    return coolingOutput; // No adjustment needed
 }
