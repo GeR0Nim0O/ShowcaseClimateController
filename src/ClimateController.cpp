@@ -116,10 +116,17 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
       lastPrintedHumidifyingActive(false), lastPrintedDehumidifyingActive(false),
       lastPrintedFanInteriorActive(false), lastPrintedFanExteriorActive(false),      lastPrintedClimateMode(ClimateMode::AUTO), lastPrintedHumidityMode(HumidityMode::AUTO),
       temperatureThreshold(Configuration::getTemperatureHysteresis()), humidityThreshold(Configuration::getHumidityHysteresis()) {
-    
-    // Safely assign the device pointers
-    this->gpio = gpioExpander;    this->sensor = tempHumSensor;
+      // Safely assign the device pointers
+    this->gpio = gpioExpander;
+    this->sensor = tempHumSensor;
     this->dac = dac;
+    
+    // Initialize dew point compensation
+    this->radiatorSensor = nullptr;
+    this->dewPoint = 0.0;
+    this->currentRadiatorTemperature = 0.0;
+    this->minAllowedCoolingTemperature = 0.0;
+    this->lastDewPointUpdate = 0;
     
     // Initialize with default pin mappings - will be updated in begin()
     pinFanExterior = 0;
