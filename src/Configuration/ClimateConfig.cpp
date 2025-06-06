@@ -376,11 +376,10 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
             settings.autoTuneOutputStep = 50.0;
             Serial.println("Using default Normal AutoTune output step: 50%");
         }
-        
-        // Load fast autotune configuration
+          // Load fast autotune configuration
         JsonObject fastAutoTune = tempPid["fast_autotune"];
         if (fastAutoTune) {
-            if (fastAutoTune["output_step_percent"].is<double>()) {
+            if (fastAutoTune["output_step_percent"].is<double>() || fastAutoTune["output_step_percent"].is<int>()) {
                 settings.fastAutoTuneOutputStep = fastAutoTune["output_step_percent"].as<double>();
             } else {
                 settings.fastAutoTuneOutputStep = 75.0;
