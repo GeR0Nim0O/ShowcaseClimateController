@@ -348,7 +348,6 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
             settings.autoTuneKp = autoTune["kp"].as<double>();
             settings.autoTuneKi = autoTune["ki"].as<double>();
             settings.autoTuneKd = autoTune["kd"].as<double>();
-            
             Serial.println("AutoTune results loaded from JSON:");
             Serial.print("  Kp: "); Serial.println(settings.autoTuneKp, 4);
             Serial.print("  Ki: "); Serial.println(settings.autoTuneKi, 4);
@@ -360,38 +359,38 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         settings.autoTuneKp = 0.0;
         settings.autoTuneKi = 0.0;
         settings.autoTuneKd = 0.0;
-    }      // Load AutoTune configuration (fallback for legacy config files)
-    JsonObject autoTuneConfig = climate["autotune_config"];
-    if (autoTuneConfig) {
-        // Only use this if we didn't already load from PID parameters section
-        JsonObject tempPid = climate["pid_parameters"]["temperature"];
-        JsonObject normalAutoTune = tempPid["normal_autotune"];
-        JsonObject fastAutoTune = tempPid["fast_autotune"];
+    }
+    
+    // Load dew point compensation settings
+    JsonObject dewPoint = climate["dew_point_compensation"];
+    if (dewPoint) {
+        settings.dewPointCompensationEnabled = dewPoint["enabled"].as<bool>();
+        if (!dewPoint["enabled"]) settings.dewPointCompensationEnabled = false;
         
-        // Only apply legacy config if new format doesn't exist
-        if (!tempPid || (!normalAutoTune && !fastAutoTune)) {
-            settings.autoTuneOutputStep = autoTuneConfig["output_step"].as<double>();
-            if (!autoTuneConfig["output_step"]) settings.autoTuneOutputStep = 50.0;
-            
-            Serial.print("Legacy AutoTune output step loaded from JSON: ");
-            Serial.print(settings.autoTuneOutputStep);
-            Serial.println("% (applied to both normal and fast)");
-            
-            // For legacy configs, use same value for fast autotune
-            settings.fastAutoTuneOutputStep = settings.autoTuneOutputStep;
-        } else {
-            Serial.println("Skipping legacy AutoTune config - new format already loaded");
-        }
+        settings.dewPointSafetyMargin = dewPoint["safety_margin_celsius"].as<double>();
+        if (!dewPoint["safety_margin_celsius"]) settings.dewPointSafetyMargin = 2.0;
+        
+        settings.dewPointUpdateInterval = dewPoint["update_interval_ms"].as<int>();
+        if (!dewPoint["update_interval_ms"]) settings.dewPointUpdateInterval = 1000;
+        
+        settings.minCoolingTemperature = dewPoint["min_cooling_temperature"].as<double>();
+        if (!dewPoint["min_cooling_temperature"]) settings.minCoolingTemperature = 5.0;
+        
+        Serial.println("Dew point compensation settings loaded from JSON:");
+        Serial.print("  Enabled: "); Serial.println(settings.dewPointCompensationEnabled ? "true" : "false");
+        Serial.print("  Safety Margin: "); Serial.print(settings.dewPointSafetyMargin); Serial.println("°C");
+        Serial.print("  Update Interval: "); Serial.print(settings.dewPointUpdateInterval); Serial.println("ms");
+        Serial.print("  Min Cooling Temperature: "); Serial.print(settings.minCoolingTemperature); Serial.println("°C");
+    } else {
+        // No dew point compensation in JSON - use defaults
+        settings.dewPointCompensationEnabled = false;
+        settings.dewPointSafetyMargin = 2.0;
+        settings.dewPointUpdateInterval = 1000;
+        settings.minCoolingTemperature = 5.0;
+        Serial.println("No dew point compensation settings found - using defaults");
     }
-    
-    // Validate loaded settings
-    if (!validateSettings()) {
-        Serial.println("Loaded climate settings failed validation");
-        return false;
-    }
-    
-    Serial.println("Climate settings loaded from JSON file successfully");
-    return true;
+
+    // ...existing code...
 }
 
 bool ClimateConfig::saveToJsonFile(const String& filePath) {
