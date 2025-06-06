@@ -221,7 +221,8 @@
       "TypeNumber": "PCF8574",
       "Address": "0x20",
       "Mode": "OUTPUT",
-      "Label": "Controller",      "Channels": {
+      "Label": "Controller",      
+      "Channels": {
         "IO0": {
           "Name": "FanExterior"
         },
