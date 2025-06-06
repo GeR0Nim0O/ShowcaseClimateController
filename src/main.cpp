@@ -1109,37 +1109,75 @@ void handleSerialCommands() {
         }
         
         Serial.println("========================================");
-    }
-    else if (command == "config reset") {
+    }    else if (command == "config reset") {
         Serial.println("========================================");
-        Serial.println("      RESETTING CLIMATE CONFIG");
+        Serial.println("    SMART CLIMATE CONFIG RESET");
         Serial.println("========================================");
-        Serial.println("Deleting old SPIFFS climate configuration files...");
         
-        // Delete old files
-        if (SPIFFS.exists("/data/ClimateConfig.json")) {
-            SPIFFS.remove("/data/ClimateConfig.json");
-            Serial.println("✓ Deleted /data/ClimateConfig.json");
-        }
-        
-        if (SPIFFS.exists("/data/config.json")) {
-            SPIFFS.remove("/data/config.json"); 
-            Serial.println("✓ Deleted /data/config.json");
-        }
-        
-        Serial.println("Loading defaults and creating new files...");
         ClimateConfig& config = ClimateConfig::getInstance();
-        config.loadDefaults();
+        bool needsUpdate = false;
         
-        // Force save with 100% values
-        config.saveToJsonFile("/data/ClimateConfig.json");
-        config.saveToJsonFile("/data/config.json");
+        // Check current AutoTune values
+        float currentNormal = config.getAutoTuneOutputStep();
+        float currentFast = config.getFastAutoTuneOutputStep();
         
-        Serial.println("========================================");
-        Serial.println("✓ Climate configuration reset complete!");
-        Serial.println("✓ New files created with 100% AutoTune values");
-        Serial.println("Please restart the device to apply changes.");
-        Serial.println("========================================");
+        Serial.print("Current Normal AutoTune: ");
+        Serial.print(currentNormal);
+        Serial.println("%");
+        Serial.print("Current Fast AutoTune: ");
+        Serial.print(currentFast);
+        Serial.println("%");
+        Serial.print("Expected values: Normal=100%, Fast=100%");
+        Serial.println();
+        
+        // Check if values need updating
+        if (currentNormal != 100.0 || currentFast != 100.0) {
+            needsUpdate = true;
+            Serial.println("❌ AutoTune values are incorrect - update needed");
+        } else {
+            Serial.println("✅ AutoTune values are already correct");
+        }
+        
+        if (needsUpdate) {
+            Serial.println("Updating configuration files...");
+            
+            // Delete old files
+            if (SPIFFS.exists("/data/ClimateConfig.json")) {
+                SPIFFS.remove("/data/ClimateConfig.json");
+                Serial.println("✓ Deleted old /data/ClimateConfig.json");
+            }
+            
+            if (SPIFFS.exists("/data/config.json")) {
+                SPIFFS.remove("/data/config.json"); 
+                Serial.println("✓ Deleted old /data/config.json");
+            }
+            
+            // Load defaults (which have 100% values)
+            config.loadDefaults();
+            
+            // Save new files with correct values
+            if (config.saveToJsonFile("/data/ClimateConfig.json")) {
+                Serial.println("✓ Created new ClimateConfig.json with 100% values");
+            } else {
+                Serial.println("❌ Failed to create ClimateConfig.json");
+            }
+            
+            if (config.saveToJsonFile("/data/config.json")) {
+                Serial.println("✓ Created new config.json with 100% values");
+            } else {
+                Serial.println("❌ Failed to create config.json");
+            }
+            
+            Serial.println("========================================");
+            Serial.println("✅ Configuration updated successfully!");
+            Serial.println("Please restart the device to apply changes.");
+            Serial.println("========================================");
+        } else {
+            Serial.println("========================================");
+            Serial.println("ℹ️  No configuration changes needed.");
+            Serial.println("AutoTune values are already correct.");
+            Serial.println("========================================");
+        }
     }
     else if (command == "status") {
         Serial.println();
