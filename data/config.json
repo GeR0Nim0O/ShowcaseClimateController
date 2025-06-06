@@ -204,13 +204,9 @@
       "TypeNumber": "PCF8574",
       "Address": "0x20",
       "Mode": "OUTPUT",
-      "Label": "Controller",
-      "Channels": {        "IO0": {
-          "Name": "FanExterior",
-          "Threshold": 1.0
-        },
+      "Label": "Controller",      "Channels": {
         "IO0": {
-          "Name": "FanInterior",
+          "Name": "FanExterior",
           "Threshold": 1.0
         },
         "IO1": {
@@ -219,6 +215,10 @@
         },
         "IO2": {
           "Name": "Dehumidify",
+          "Threshold": 1.0
+        },
+        "IO3": {
+          "Name": "FanInterior",
           "Threshold": 1.0
         },
         "IO4": {
