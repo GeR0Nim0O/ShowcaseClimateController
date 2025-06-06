@@ -213,10 +213,9 @@ bool ClimateConfig::validateSettings() {
     return true;
 }
 
-void ClimateConfig::printSettings() {
-    Serial.println("\n=== Climate Controller Settings ===");
+void ClimateConfig::printSettings() {    Serial.println("\n=== Climate Controller Settings ===");
     Serial.print("Temperature Setpoint: ");
-    Serial.print(settings.temperatureSetpoint);
+    Serial.print(settings.temperatureSetpoint, 2);
     Serial.println("°C");
     
     Serial.print("Humidity Setpoint: ");
