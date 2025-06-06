@@ -47,12 +47,11 @@ public:
     void initializeRelays(); // Initialize all relays to OFF
     void refreshRelayState();
     
-private:
-    uint8_t _address;
+private:    uint8_t _address;
     uint8_t _relayState;    // Current relay state (bits 0-3 for relays 1-4)
     uint8_t _ledState;      // Current LED state (bits 0-3 for LEDs 1-4)
     Relay4ChMode _mode;
-    std::map<std::string, float> lastSensorValues;
+    std::map<std::string, bool> lastRelayStates;  // Store boolean states for relays
     
     // Low-level I2C communication
     bool write1Byte(uint8_t register_address, uint8_t data);
