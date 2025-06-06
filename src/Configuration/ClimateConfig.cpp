@@ -465,6 +465,14 @@ bool ClimateConfig::saveToJsonFile(const String& filePath) {
     JsonObject fans = climate["fan_settings"].to<JsonObject>();
     fans["interior_fan_enabled"] = settings.fanInteriorEnabled;
     fans["exterior_fan_enabled"] = settings.fanExteriorEnabled;
+    
+    // Dew point compensation settings
+    JsonObject dewPoint = climate["dew_point_compensation"].to<JsonObject>();
+    dewPoint["enabled"] = settings.dewPointCompensationEnabled;
+    dewPoint["safety_margin_celsius"] = settings.dewPointSafetyMargin;
+    dewPoint["update_interval_ms"] = settings.dewPointUpdateInterval;
+    dewPoint["min_cooling_temperature"] = settings.minCoolingTemperature;
+    dewPoint["description"] = "Prevents condensation by limiting cooling below dew point";
       
     // Metadata
     JsonObject metadata = doc["metadata"].to<JsonObject>();
