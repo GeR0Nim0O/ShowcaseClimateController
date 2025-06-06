@@ -2,7 +2,6 @@
 #define CLIMATE_CONFIG_H
 
 #include <Arduino.h>
-#include <EEPROM.h>
 #include <ArduinoJson.h>
 #include <FS.h>
 #include <SPIFFS.h>
@@ -24,8 +23,8 @@ struct ClimateSettings {
     float minTemperature;
     float maxHumidity;
     float minHumidity;
-    char climateMode[16];     // Changed to char array for EEPROM compatibility
-    char humidityMode[16];    // Changed to char array for EEPROM compatibility
+    char climateMode[16];     // String storage for mode settings
+    char humidityMode[16];    // String storage for mode settings
     bool autoFanControl;
     float temperatureHysteresis;
     float humidityHysteresis;
@@ -38,8 +37,6 @@ struct ClimateSettings {
       // AutoTune configuration
     float autoTuneOutputStep;      // Output step size percentage (0-100) for Normal AutoTune
     float fastAutoTuneOutputStep;  // Output step size percentage (0-100) for Fast AutoTune
-    
-    uint32_t checksum;
 };
 
 class ClimateConfig {
