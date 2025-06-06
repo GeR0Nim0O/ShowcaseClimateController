@@ -61,7 +61,7 @@
           "lookback_seconds": 20
         },
         "fast_autotune": {
-          "output_step_percent": 75.0,
+          "output_step_percent": 100.0,
           "description": "Higher values create stronger oscillations for faster tuning"
         },
         "autotune_results": {
