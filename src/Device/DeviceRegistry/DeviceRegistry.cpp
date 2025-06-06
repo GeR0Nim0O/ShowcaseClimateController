@@ -331,14 +331,19 @@ namespace {    bool registeredSHT = DeviceRegistry::registerDeviceType("Sensor",
         [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
            const std::map<String, String>& channels, int deviceIndex) {
         return new SCALESsensor(wire, address, tcaPort, threshold, channels, deviceIndex);
-    });
-
-    bool registeredPCF8574 = DeviceRegistry::registerDeviceType("GPIO", "PCF8574", 
+    });    bool registeredPCF8574 = DeviceRegistry::registerDeviceType("GPIO", "PCF8574", 
         [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
            const std::map<String, String>& channels, int deviceIndex) {
         // Note: This basic registration doesn't handle mode parameter
         // For full mode support, the factory pattern would need extension
         return new PCF8574gpio(wire, address, tcaPort, threshold, channels, deviceIndex, PCF8574Mode::OUTPUT_MODE);
+    });
+
+    bool registeredRelay4Ch = DeviceRegistry::registerDeviceType("Relay", "Relay4Ch", 
+        [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
+           const std::map<String, String>& channels, int deviceIndex) {
+        // Default to SYNC mode for relay control
+        return new Relay4Ch(wire, address, tcaPort, threshold, channels, deviceIndex, Relay4ChMode::SYNC);
     });
 
     bool registeredGP8403 = DeviceRegistry::registerDeviceType("DAC", "GP8403", 
