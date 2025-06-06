@@ -44,7 +44,7 @@ private:
     uint8_t _address;
     uint8_t _gpioState;
     PCF8574Mode _mode;
-    std::map<std::string, float> lastSensorValues; // Ensure lastSensorValues is declared
+    std::map<std::string, bool> lastGpioStates; // Store boolean states for GPIO pins
 };
 
 #endif // PCF8574GPIO_H
