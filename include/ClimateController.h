@@ -3,6 +3,10 @@
 
 #include <Arduino.h>
 #include <PID_v1.h>
+// Undefine LIBRARY_VERSION to prevent redefinition warning from PID_AutoTune_v0.h
+#ifdef LIBRARY_VERSION
+#undef LIBRARY_VERSION
+#endif
 #include <PID_AutoTune_v0.h>
 #include "PCF8574gpio.h"
 #include "SHTsensor.h"
