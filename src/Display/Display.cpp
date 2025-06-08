@@ -355,7 +355,7 @@ void Display::expanderWrite(uint8_t data) {
     uint8_t error = wire->endTransmission();
     
     if (error != 0) {
-        Serial.print("Warning: I2C transmission error during LCD write: ");
+        Serial.print("LCD I2C error: ");
         Serial.println(error);
     }
 }
