@@ -331,7 +331,7 @@ void ClimateController::updateSensorReadings() {
 }
 
 void ClimateController::updateTemperatureControl() {
-    if (climateMode == ClimateMode::OFF) {
+    if (!temperatureControlEnabled) {
         tempControlEnabled = false;
         heatingActive = false;
         coolingActive = false;
@@ -346,58 +346,29 @@ void ClimateController::updateTemperatureControl() {
         temperaturePID->Compute();
     }
     
-    switch (climateMode) {
-        case ClimateMode::HEATING:
-            heatingActive = (tempOutput > 0);
-            coolingActive = false;
-            tempControlEnabled = heatingActive;
-            heatingPower = heatingActive ? constrain(tempOutput, 0.0, 100.0) : 0.0;
-            coolingPower = 0.0;
-            break;        case ClimateMode::COOLING:
-            heatingActive = false;
-            coolingActive = (tempOutput < 0);
-            tempControlEnabled = coolingActive;
-            heatingPower = 0.0;            coolingPower = coolingActive ? constrain(-tempOutput, 0.0, 100.0) : 0.0;
-            // Apply dew point compensation to cooling power
-            coolingPower = limitCoolingOutputForDewPoint(coolingPower);
-            // Update cooling active state based on compensated power
-            coolingActive = (coolingPower > 0.0);
-            tempControlEnabled = coolingActive;
-            break;
-        case ClimateMode::AUTO:
-            {
-                const float temperatureHysteresis = Configuration::getTemperatureHysteresis();
-                if (tempOutput > temperatureHysteresis) {
-                    heatingActive = true;
-                    coolingActive = false;
-                    heatingPower = constrain(tempOutput, 0.0, 100.0);
-                    coolingPower = 0.0;
-                } else if (tempOutput < -temperatureHysteresis) {
-                    heatingActive = false;
-                    coolingActive = true;
-                    heatingPower = 0.0;                    coolingPower = constrain(-tempOutput, 0.0, 100.0);  // Convert negative to positive percentage
-                    // Apply dew point compensation to cooling power
-                    coolingPower = limitCoolingOutputForDewPoint(coolingPower);
-                    // Update cooling active state based on compensated power
-                    coolingActive = (coolingPower > 0.0);
-                } else {
-                    heatingActive = false;
-                    coolingActive = false;
-                    heatingPower = 0.0;
-                    coolingPower = 0.0;
-                }
-                tempControlEnabled = (heatingActive || coolingActive);
-            }
-            break;
-        case ClimateMode::OFF:
-        default:
-            tempControlEnabled = false;
-            heatingActive = false;
-            coolingActive = false;
-            heatingPower = 0.0;
-            coolingPower = 0.0;
-            break;
+    // AUTO mode logic - can switch between heating and cooling based on PID output
+    const float temperatureHysteresis = Configuration::getTemperatureHysteresis();
+    if (tempOutput > temperatureHysteresis) {
+        heatingActive = true;
+        coolingActive = false;
+        heatingPower = constrain(tempOutput, 0.0, 100.0);
+        coolingPower = 0.0;
+    } else if (tempOutput < -temperatureHysteresis) {
+        heatingActive = false;
+        coolingActive = true;
+        heatingPower = 0.0;
+        coolingPower = constrain(-tempOutput, 0.0, 100.0);  // Convert negative to positive percentage
+        // Apply dew point compensation to cooling power
+        coolingPower = limitCoolingOutputForDewPoint(coolingPower);
+        // Update cooling active state based on compensated power
+        coolingActive = (coolingPower > 0.0);
+    } else {
+        heatingActive = false;
+        coolingActive = false;
+        heatingPower = 0.0;
+        coolingPower = 0.0;
     }
+    tempControlEnabled = (heatingActive || coolingActive);
 }
 
 void ClimateController::updateHumidityControl() {
