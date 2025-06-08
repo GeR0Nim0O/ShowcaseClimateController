@@ -274,21 +274,7 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         if (!labelVariant.isNull() && labelVariant.is<const char*>()) {
             deviceLabel = labelVariant.as<String>();
         }
-        
-        // Debug extracted values
-        Serial.print("DEBUG: Extracted values for ");
-        Serial.print(deviceKey);
-        Serial.print(" - Type: '");
-        Serial.print(deviceType);
-        Serial.print("', TypeNumber: '");
-        Serial.print(deviceTypeNumber);
-        Serial.print("', Address: '");
-        Serial.print(addressStr);
-        Serial.print("', Label: '");
-        Serial.print(deviceLabel);
-        Serial.print("', Mode: '");
-        Serial.print(deviceMode);
-        Serial.println("'");
+          // Configuration loaded
         
         if (deviceType.isEmpty() || deviceTypeNumber.isEmpty() || addressStr.isEmpty()) {
             Serial.print("Missing required fields for device: ");
