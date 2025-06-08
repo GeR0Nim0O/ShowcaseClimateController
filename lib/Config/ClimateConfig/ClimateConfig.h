@@ -52,15 +52,11 @@ public:
     bool saveToJsonFile(const String& filePath = "/data/ClimateConfig.json");
     bool createDefaultJsonFile(const String& filePath = "/data/ClimateConfig.json");
     
-    // Getters
-    float getTemperatureSetpoint() const { return settings.temperatureSetpoint; }
+    // Getters    float getTemperatureSetpoint() const { return settings.temperatureSetpoint; }
     float getHumiditySetpoint() const { return settings.humiditySetpoint; }
     float getTemperatureKp() const { return settings.temperatureKp; }
     float getTemperatureKi() const { return settings.temperatureKi; }
     float getTemperatureKd() const { return settings.temperatureKd; }
-    float getHumidityKp() const { return settings.humidityKp; }
-    float getHumidityKi() const { return settings.humidityKi; }
-    float getHumidityKd() const { return settings.humidityKd; }
     bool getFanInteriorEnabled() const { return settings.fanInteriorEnabled; }
     bool getFanExteriorEnabled() const { return settings.fanExteriorEnabled; }
     uint16_t getUpdateInterval() const { 
