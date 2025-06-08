@@ -549,7 +549,6 @@ void printCreatedSensors() {
 // Function to initialize the climate controller
 void initializeClimateController() {
     if (Configuration::isClimateControllerEnabled()) {
-        Serial.println("Initializing Climate Controller...");
         climateController = ClimateController::createFromDeviceRegistry();
         
         if (climateController != nullptr) {
@@ -559,24 +558,21 @@ void initializeClimateController() {
                 Serial.println("Failed to initialize ClimateConfig EEPROM");
                 return;
             }
-              // Try to load from ClimateConfig.json first
+            
+            // Try to load from ClimateConfig.json first
             bool configLoadedFromFile = false;
             
             // First try SPIFFS (priority for climate-specific settings with auto-tune results)
             if (climateConfig.loadFromJsonFile("/data/ClimateConfig.json")) {
-                Serial.println("Climate configuration loaded from SPIFFS ClimateConfig.json");
                 configLoadedFromFile = true;
             }
             // Then try SD card if SPIFFS failed (fallback to default settings)
             else if (climateConfig.loadFromJsonFile("/ClimateConfig.json")) {
-                Serial.println("Climate configuration loaded from SD card ClimateConfig.json");
                 configLoadedFromFile = true;
             }
             
             // If ClimateConfig.json doesn't exist or is incomplete, fall back to main config.json
             if (!configLoadedFromFile) {
-                Serial.println("ClimateConfig.json not found or incomplete, using values from main config.json");
-                
                 // Get values from main Configuration class
                 float temperatureSetpoint = Configuration::getClimateTemperatureSetpoint();
                 float humiditySetpoint = Configuration::getClimateHumiditySetpoint();
@@ -590,10 +586,7 @@ void initializeClimateController() {
                 climateConfig.setHumidityMode(humidityMode);
                 
                 // Save the configuration to ClimateConfig.json for future use
-                if (climateConfig.createDefaultJsonFile("/data/ClimateConfig.json")) {
-                    Serial.println("Created default ClimateConfig.json from main config values");                } else {
-                    Serial.println("Warning: Could not create ClimateConfig.json file");
-                }
+                climateConfig.createDefaultJsonFile("/data/ClimateConfig.json");
             }
             
             // Get final configuration values from ClimateConfig
@@ -601,12 +594,14 @@ void initializeClimateController() {
             float humiditySetpoint = climateConfig.getHumiditySetpoint();
             String climateMode = climateConfig.getClimateMode();
             String humidityMode = climateConfig.getHumidityMode();
-              // Convert string modes to boolean flags
+            
+            // Convert string modes to boolean flags
             bool temperatureEnabled = (climateMode != "OFF");
             bool humidityEnabled = (humidityMode != "OFF");
-              // Configure all parameters at once
+            
+            // Configure all parameters at once
             climateController->configure(temperatureSetpoint, humiditySetpoint, temperatureEnabled, humidityEnabled);
-              // Configuration loaded
+            
             Serial.print("Climate Controller: T=");
             Serial.print(temperatureSetpoint, 1);
             Serial.print("°C, H=");
@@ -614,10 +609,10 @@ void initializeClimateController() {
             Serial.println("%");
             
         } else {
-            Serial.println("Failed to initialize climate controller from DeviceRegistry");
+            Serial.println("Failed to initialize climate controller");
         }
     } else {
-        Serial.println("Climate controller disabled in configuration");
+        Serial.println("Climate controller disabled");
     }
 }
 
