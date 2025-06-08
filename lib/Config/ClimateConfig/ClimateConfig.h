@@ -19,7 +19,8 @@ struct ClimateSettings {
     float maxTemperature;
     float minTemperature;
     float maxHumidity;
-    float minHumidity;char climateMode[16];     // String storage for mode settings
+    float minHumidity;
+    char climateMode[16];     // String storage for mode settings
     char humidityMode[16];    // String storage for mode settings
     bool autoFanControl;
     float temperatureHysteresis;
@@ -36,7 +37,8 @@ struct ClimateSettings {
     float autoTuneKp;
     float autoTuneKi;
     float autoTuneKd;
-      // AutoTune configuration
+    
+    // AutoTune configuration
     float autoTuneOutputStep;      // Output step size percentage (0-100) for Normal AutoTune
     float fastAutoTuneOutputStep;  // Output step size percentage (0-100) for Fast AutoTune
 };
@@ -44,7 +46,7 @@ struct ClimateSettings {
 class ClimateConfig {
 public:
     static ClimateConfig& getInstance();
-      bool begin();
+    bool begin();
     void loadDefaults();
     
     // JSON file operations
@@ -69,7 +71,8 @@ public:
     float getMinTemperature() const { return settings.minTemperature; }
     float getMaxHumidity() const { return settings.maxHumidity; }
     float getMinHumidity() const { return settings.minHumidity; }
-    String getClimateMode() const { return String(settings.climateMode); }    String getHumidityMode() const { return String(settings.humidityMode); }
+    String getClimateMode() const { return String(settings.climateMode); }
+    String getHumidityMode() const { return String(settings.humidityMode); }
     bool getAutoFanControl() const { return settings.autoFanControl; }
     float getTemperatureHysteresis() const { return settings.temperatureHysteresis; }
     float getHumidityHysteresis() const { return settings.humidityHysteresis; }
@@ -79,7 +82,8 @@ public:
     float getDewPointSafetyMargin() const { return settings.dewPointSafetyMargin; }
     uint16_t getDewPointUpdateInterval() const { return settings.dewPointUpdateInterval; }
     float getMinCoolingTemperature() const { return settings.minCoolingTemperature; }
-      // Setters
+    
+    // Setters
     void setTemperatureSetpoint(float value) { settings.temperatureSetpoint = value; }
     void setHumiditySetpoint(float value) { settings.humiditySetpoint = value; }
     void setTemperaturePID(float kp, float ki, float kd) {
@@ -87,7 +91,8 @@ public:
         settings.temperatureKi = ki; 
         settings.temperatureKd = kd; 
     }
-    void setFanInteriorEnabled(bool enabled) { settings.fanInteriorEnabled = enabled; }    void setFanExteriorEnabled(bool enabled) { settings.fanExteriorEnabled = enabled; }
+    void setFanInteriorEnabled(bool enabled) { settings.fanInteriorEnabled = enabled; }
+    void setFanExteriorEnabled(bool enabled) { settings.fanExteriorEnabled = enabled; }
     void setUpdateInterval(uint16_t interval) { settings.updateInterval = interval; }
     void setClimateMode(const String& mode) { strncpy(settings.climateMode, mode.c_str(), 15); settings.climateMode[15] = '\0'; }
     void setHumidityMode(const String& mode) { strncpy(settings.humidityMode, mode.c_str(), 15); settings.humidityMode[15] = '\0'; }
@@ -116,7 +121,8 @@ public:
         settings.autoTuneKp = kp; 
         settings.autoTuneKi = ki; 
         settings.autoTuneKd = kd; 
-    }    void clearAutoTuneResults() { 
+    }
+    void clearAutoTuneResults() { 
         settings.hasAutoTuneResults = false;
         settings.autoTuneKp = 0.0;
         settings.autoTuneKi = 0.0;
