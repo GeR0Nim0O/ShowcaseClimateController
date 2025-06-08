@@ -725,20 +725,14 @@ void initializeClimateController() {
               // Convert string modes to boolean flags
             bool temperatureEnabled = (climateMode != "OFF");
             bool humidityEnabled = (humidityMode != "OFF");
-            
-            // Configure all parameters at once
+              // Configure all parameters at once
             climateController->configure(temperatureSetpoint, humiditySetpoint, temperatureEnabled, humidityEnabled);
-              // Print loaded configuration
-            Serial.println("Climate Controller configured with:");
-            Serial.print("  Temperature Setpoint: ");
-            Serial.print(temperatureSetpoint, 2);
-            Serial.println("°C");
-            Serial.print("  Humidity Setpoint: ");
-            Serial.print(humiditySetpoint);
-            Serial.println("%");            Serial.print("  Temperature Control: ");
-            Serial.println(temperatureEnabled ? "ENABLED" : "DISABLED");
-            Serial.print("  Humidity Control: ");
-            Serial.println(humidityEnabled ? "ENABLED" : "DISABLED");
+              // Configuration loaded
+            Serial.print("Climate Controller: T=");
+            Serial.print(temperatureSetpoint, 1);
+            Serial.print("°C, H=");
+            Serial.print(humiditySetpoint, 0);
+            Serial.println("%");
             
         } else {
             Serial.println("Failed to initialize climate controller from DeviceRegistry");
