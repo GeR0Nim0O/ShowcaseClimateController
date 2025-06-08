@@ -343,33 +343,23 @@ void WifiMqttHandler::keepAlive(PubSubClient &client, WiFiClientSecure &espClien
 }
 
 void WifiMqttHandler::printConnectionStatus(PubSubClient &client) {
-    Serial.println("\n=== Connection Status ===");
-    
-    // WiFi Status
-    Serial.print("WiFi Status: ");
+    Serial.print("WiFi: ");
     if (WiFi.status() == WL_CONNECTED) {
-        Serial.print("Connected to ");
-        Serial.println(WiFi.SSID());
-        Serial.print("IP Address: ");
-        Serial.println(WiFi.localIP());
-        Serial.print("Signal Strength: ");
+        Serial.print("Connected (");
         Serial.print(WiFi.RSSI());
-        Serial.println(" dBm");
+        Serial.println(" dBm)");
     } else {
         Serial.println("Disconnected");
     }
     
-    // MQTT Status
-    Serial.print("MQTT Status: ");
+    Serial.print("MQTT: ");
     if (client.connected()) {
         Serial.println("Connected");
     } else {
-        Serial.print("Disconnected (State: ");
+        Serial.print("Disconnected (");
         Serial.print(client.state());
         Serial.println(")");
     }
-    
-    Serial.println("===========================");
 }
 
 // WiFi scanning and debugging functions
