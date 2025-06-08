@@ -302,19 +302,7 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
                 matchingDevices.push_back(scannedDevice);
             }
         }
-        
-        Serial.print("DEBUG: Found ");
-        Serial.print(matchingDevices.size());
-        Serial.println(" matching devices with that address");
-        
-        for (size_t i = 0; i < matchingDevices.size(); i++) {
-            Serial.print("  Device ");
-            Serial.print(i);
-            Serial.print(": address 0x");
-            Serial.print(matchingDevices[i].first, HEX);
-            Serial.print(" on TCA port ");
-            Serial.println(matchingDevices[i].second);
-        }
+          // Devices located
         
         if (matchingDevices.empty()) {
             Serial.print("No scanned device found with address 0x");
