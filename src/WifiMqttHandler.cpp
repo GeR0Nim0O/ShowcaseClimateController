@@ -364,45 +364,16 @@ void WifiMqttHandler::printConnectionStatus(PubSubClient &client) {
 
 // WiFi scanning and debugging functions
 void WifiMqttHandler::scanAndDisplayNetworks() {
-    Serial.println("=== WiFi Network Scan ===");
     int networkCount = WiFi.scanNetworks();
     
-    if (networkCount == 0) {
-        Serial.println("No networks found!");
-    } else {
-        Serial.print("Found ");
-        Serial.print(networkCount);
-        Serial.println(" networks:");
-        
-        for (int i = 0; i < networkCount; i++) {
-            String ssid = WiFi.SSID(i);
-            int32_t rssi = WiFi.RSSI(i);
-            wifi_auth_mode_t encryptionType = WiFi.encryptionType(i);
-            
-            Serial.print("  ");
-            Serial.print(i + 1);
-            Serial.print(": ");
-            Serial.print(ssid);
-            Serial.print(" (");
-            Serial.print(rssi);
-            Serial.print(" dBm) ");
-            
-            switch(encryptionType) {
-                case WIFI_AUTH_OPEN: Serial.print("[OPEN]"); break;
-                case WIFI_AUTH_WEP: Serial.print("[WEP]"); break;
-                case WIFI_AUTH_WPA_PSK: Serial.print("[WPA_PSK]"); break;
-                case WIFI_AUTH_WPA2_PSK: Serial.print("[WPA2_PSK]"); break;
-                case WIFI_AUTH_WPA_WPA2_PSK: Serial.print("[WPA_WPA2_PSK]"); break;
-                case WIFI_AUTH_WPA2_ENTERPRISE: Serial.print("[WPA2_ENTERPRISE]"); break;
-                case WIFI_AUTH_WPA3_PSK: Serial.print("[WPA3_PSK]"); break;
-                case WIFI_AUTH_WPA2_WPA3_PSK: Serial.print("[WPA2_WPA3_PSK]"); break;
-                default: Serial.print("[UNKNOWN]"); break;
-            }
-            
-            Serial.println();
-        }
+    if (networkCount <= 0) {
+        Serial.println("No networks found");
+        return;
     }
-    Serial.println("=========================");
+    
+    Serial.print("Found ");
+    Serial.print(networkCount);
+    Serial.println(" networks");
 }
 
 bool WifiMqttHandler::isNetworkAvailable(const String& ssid) {
@@ -418,62 +389,24 @@ bool WifiMqttHandler::isNetworkAvailable(const String& ssid) {
 
 // Enhanced WiFi scanning and analysis functions
 void WifiMqttHandler::scanAndAnalyzeNetworks() {
-    Serial.println("╔══════════════════════════════════════════════════════════╗");
-    Serial.println("║                 WiFi Network Analysis                    ║");
-    Serial.println("╚══════════════════════════════════════════════════════════╝");
-    
-    // Ensure WiFi is in station mode and properly initialized
     WiFi.mode(WIFI_STA);
-    delay(1000); // Give WiFi time to initialize
+    delay(1000);
     
-    Serial.println("Scanning for WiFi networks...");
-    int networkCount = WiFi.scanNetworks(false, true); // Show hidden networks
+    int networkCount = WiFi.scanNetworks(false, true);
     
     if (networkCount < 0) {
-        Serial.println("❌ Network scan failed!");
-        Serial.print("   Error code: ");
-        Serial.println(networkCount);
-        Serial.println("   Possible causes:");
-        Serial.println("   • WiFi radio is off or malfunctioning");
-        Serial.println("   • ESP32 antenna issue");
-        Serial.println("   • WiFi driver error");
-        Serial.println("   Retrying scan...");
-        
-        // Try again with a different approach
-        delay(2000);
-        networkCount = WiFi.scanNetworks(false, false); // Try without hidden networks
-        
-        if (networkCount < 0) {
-            Serial.println("❌ Second scan also failed!");
-            Serial.println("   WiFi hardware may be faulty or interference present");
-            return;
-        }
-    }
-    
-    if (networkCount == 0) {
-        Serial.println("❌ No networks found!");
-        Serial.println("   Possible causes:");
-        Serial.println("   • No access points in range");
-        Serial.println("   • All networks may be hidden");
-        Serial.println("   • Move closer to router");
+        Serial.println("Network scan failed");
         return;
     }
     
-    Serial.println("┌────────────────────────────────────────────────────────────┐");
-    Serial.printf("│ Found %d networks:                                        │\n", networkCount);
-    Serial.println("└────────────────────────────────────────────────────────────┘");
-    Serial.println();
-    
-    // Sort networks by signal strength
-    int sortedIndices[networkCount];
-    for (int i = 0; i < networkCount; i++) {
-        sortedIndices[i] = i;
+    if (networkCount == 0) {
+        Serial.println("No networks found");
+        return;
     }
     
-    // Simple bubble sort by RSSI (strongest first)
-    for (int i = 0; i < networkCount - 1; i++) {
-        for (int j = 0; j < networkCount - i - 1; j++) {
-            if (WiFi.RSSI(sortedIndices[j]) < WiFi.RSSI(sortedIndices[j + 1])) {
+    Serial.print("Found ");
+    Serial.print(networkCount);
+    Serial.println(" networks");
                 int temp = sortedIndices[j];
                 sortedIndices[j] = sortedIndices[j + 1];
                 sortedIndices[j + 1] = temp;
