@@ -164,22 +164,13 @@ void ClimateConfig::printSettings() {    Serial.println("\n=== Climate Controlle
     
     Serial.print("Auto Fan Control: ");
     Serial.println(settings.autoFanControl ? "ON" : "OFF");
-    
-    Serial.println("Temperature PID:");
+      Serial.println("Temperature PID:");
     Serial.print("  Kp: ");
     Serial.println(settings.temperatureKp);
     Serial.print("  Ki: ");
     Serial.println(settings.temperatureKi);
     Serial.print("  Kd: ");
     Serial.println(settings.temperatureKd);
-    
-    Serial.println("Humidity PID:");
-    Serial.print("  Kp: ");
-    Serial.println(settings.humidityKp);
-    Serial.print("  Ki: ");
-    Serial.println(settings.humidityKi);
-    Serial.print("  Kd: ");
-    Serial.println(settings.humidityKd);
     
     Serial.print("Temperature Hysteresis: ");
     Serial.print(settings.temperatureHysteresis);
