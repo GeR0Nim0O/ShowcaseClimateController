@@ -1459,24 +1459,20 @@ void ClimateController::updateDewPointCompensation() {
     minAllowedCoolingTemperature = max(dewPoint + safetyMargin, minCoolingTemp);
     
     lastDewPointUpdate = currentTime;
-    
-    // Debug output for dew point compensation
+      // Debug output for dew point compensation
     static unsigned long lastDebugPrint = 0;
     if (currentTime - lastDebugPrint >= 30000) { // Print debug every 30 seconds
-        Serial.println("\n=== Dew Point Compensation Status ===");
-        Serial.print("Interior Temp: "); Serial.print(currentTemperature, 2); Serial.println("°C");
-        Serial.print("Interior Humidity: "); Serial.print(currentHumidity, 1); Serial.println("%");
-        Serial.print("Radiator Temp: "); Serial.print(currentRadiatorTemperature, 2); Serial.println("°C");
-        Serial.print("Calculated Dew Point: "); Serial.print(dewPoint, 2); Serial.println("°C");
-        Serial.print("Safety Margin: "); Serial.print(safetyMargin, 1); Serial.println("°C");
-        Serial.print("Min Allowed Cooling Temp: "); Serial.print(minAllowedCoolingTemperature, 2); Serial.println("°C");
-        
+        Serial.print("DewPoint: ");
+        Serial.print(dewPoint, 1);
+        Serial.print("°C, MinCool: ");
+        Serial.print(minAllowedCoolingTemperature, 1);
+        Serial.print("°C, Radiator: ");
+        Serial.print(currentRadiatorTemperature, 1);
+        Serial.print("°C");
         if (currentRadiatorTemperature <= minAllowedCoolingTemperature) {
-            Serial.println("WARNING: Cooling limited due to dew point protection!");
-        } else {
-            Serial.println("Cooling operating normally");
+            Serial.print(" [COOLING LIMITED]");
         }
-        Serial.println("=====================================");
+        Serial.println();
         lastDebugPrint = currentTime;
     }
 }
