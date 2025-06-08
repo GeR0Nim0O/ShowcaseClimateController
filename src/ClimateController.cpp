@@ -1055,17 +1055,8 @@ void ClimateController::reloadConfiguration() {
                     climateConfig.getTemperatureKd()
                 );
             }
-            Serial.println("Temperature PID parameters updated from ClimateConfig");
-        }
+            Serial.println("Temperature PID parameters updated from ClimateConfig");        }
         
-        if (humidityPID != nullptr) {
-            humidityPID->SetTunings(
-                climateConfig.getHumidityKp(),
-                climateConfig.getHumidityKi(),
-                climateConfig.getHumidityKd()
-            );
-            Serial.println("Humidity PID parameters updated from ClimateConfig");
-        }
     } else {
         Serial.println("Failed to load from ClimateConfig, falling back to Configuration class");
         
