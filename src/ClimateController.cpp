@@ -731,23 +731,12 @@ void ClimateController::printClimateStatus() {
     } else {
         Serial.println("Radiator Sensor: [Not available - dew point compensation disabled]");
     }
+      // Print control status
+    Serial.print("Temperature Control: ");
+    Serial.println(temperatureControlEnabled ? "ENABLED" : "DISABLED");
     
-    // Print control status
-    Serial.print("Climate Mode: ");
-    switch (climateMode) {
-        case ClimateMode::AUTO: Serial.println("AUTO"); break;
-        case ClimateMode::HEATING: Serial.println("HEATING ONLY"); break;
-        case ClimateMode::COOLING: Serial.println("COOLING ONLY"); break;
-        case ClimateMode::OFF: Serial.println("OFF"); break;
-    }
-    
-    Serial.print("Humidity Mode: ");
-    switch (humidityMode) {
-        case HumidityMode::AUTO: Serial.println("AUTO"); break;
-        case HumidityMode::HUMIDIFYING: Serial.println("HUMIDIFYING ONLY"); break;
-        case HumidityMode::DEHUMIDIFYING: Serial.println("DEHUMIDIFYING ONLY"); break;
-        case HumidityMode::OFF: Serial.println("OFF"); break;
-    }
+    Serial.print("Humidity Control: ");
+    Serial.println(humidityControlEnabled ? "ENABLED" : "DISABLED");
     
     // Print active controls
     Serial.print("Temperature Control: ");
