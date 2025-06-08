@@ -326,16 +326,7 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
           // Get the device at the specified positional index
         uint8_t deviceAddress = matchingDevices[typeIndex].first;
         uint8_t tcaPort = matchingDevices[typeIndex].second;
-        
-        Serial.print("DEBUG: Selected device at index ");
-        Serial.print(typeIndex);
-        Serial.print(" -> address 0x");
-        Serial.print(deviceAddress, HEX);
-        Serial.print(" on TCA port ");
-        Serial.print(tcaPort);
-        Serial.print(", label before device creation: '");
-        Serial.print(deviceLabel);
-        Serial.println("'");
+          // Device selected
         
         Serial.print("Creating device from JSON: ");
         Serial.print(deviceKey);
