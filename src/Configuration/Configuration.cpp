@@ -293,13 +293,7 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         String typeKey = deviceTypeNumber;
         int typeIndex = deviceTypeCounters[typeKey];
         deviceTypeCounters[typeKey]++;
-        
-        Serial.print("DEBUG: Looking for device type '");
-        Serial.print(typeKey);
-        Serial.print("' at positional index ");
-        Serial.print(typeIndex);
-        Serial.print(" with address 0x");
-        Serial.println(expectedAddress, HEX);
+          // Find matching devices
         
         // Find devices of the same type in scan results
         std::vector<std::pair<uint8_t, uint8_t>> matchingDevices;
