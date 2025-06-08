@@ -745,15 +745,11 @@ void Configuration::parseClimateControllerConfig(const JsonObject& config) {
             climateControllerConfig["temp_kp"] = String(2.0);
             climateControllerConfig["temp_ki"] = String(0.5);
             climateControllerConfig["temp_kd"] = String(0.1);
-        }
-    } else {
+        }    } else {
         // Default PID values if pid_parameters section is missing
         climateControllerConfig["temp_kp"] = String(2.0);
         climateControllerConfig["temp_ki"] = String(0.5);
         climateControllerConfig["temp_kd"] = String(0.1);
-        climateControllerConfig["hum_kp"] = String(1.0);
-        climateControllerConfig["hum_ki"] = String(0.2);
-        climateControllerConfig["hum_kd"] = String(0.05);
     }
       // Parse control parameters
     if (config["control_parameters"].is<JsonObject>()) {
