@@ -153,19 +153,16 @@ bool ClimateController::begin() {
     ClimateConfig& climateConfig = ClimateConfig::getInstance();
     updateInterval = climateConfig.getUpdateInterval();
     temperatureSetpoint = climateConfig.getTemperatureSetpoint();
-    humiditySetpoint = climateConfig.getHumiditySetpoint();
-      // Initialize DAC if available
+    humiditySetpoint = climateConfig.getHumiditySetpoint();      // Initialize DAC if available
     if (dac != nullptr) {
         // Check if DAC is already initialized (to avoid double initialization)
         if (dac->isInitialized()) {
             // Set DAC to 5V during setup to indicate system is initializing
             dac->setChannelVoltage(0, 5.0);
-            Serial.println("DAC set to 5V during setup initialization");
         } else {
             if (dac->begin()) {
                 // Set DAC to 5V during setup to indicate system is initializing
                 dac->setChannelVoltage(0, 5.0);
-                Serial.println("DAC initialized and set to 5V during setup");
             }
         }
     }
