@@ -26,21 +26,11 @@ ClimateController* ClimateController::createFromDeviceRegistry() {
                 return nullptr;
             }
         }
-        
-        // Get DAC from DeviceRegistry - using proper DeviceRegistry access pattern
+          // Get DAC from DeviceRegistry - using proper DeviceRegistry access pattern
         GP8403dac* climateDac = (GP8403dac*)registry.getDeviceByType("DAC", 0);
-        if (climateDac != nullptr) {
-            Serial.print("Found DAC device via DeviceRegistry: ");
-            Serial.print(climateDac->getType());
-            Serial.print(" with name: ");
-            Serial.println(climateDac->getDeviceName());
-        } else {
-            Serial.println("No DAC found in DeviceRegistry");
-        }
         
         // Create climate controller if we found the required devices
         if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
-            Serial.println("Creating climate controller with discovered devices");
             
             try {
                 Serial.println("Allocating climate controller...");
