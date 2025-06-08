@@ -146,8 +146,6 @@ ClimateController::~ClimateController() {
         delete temperatureAutoTuner;
         temperatureAutoTuner = nullptr;
     }
-    
-    Serial.println("ClimateController destroyed, resources cleaned up");
 }
 
 bool ClimateController::begin() {
