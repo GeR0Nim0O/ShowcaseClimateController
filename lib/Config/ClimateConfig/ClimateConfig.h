@@ -79,10 +79,10 @@ public:
     float getDewPointSafetyMargin() const { return settings.dewPointSafetyMargin; }
     uint16_t getDewPointUpdateInterval() const { return settings.dewPointUpdateInterval; }
     float getMinCoolingTemperature() const { return settings.minCoolingTemperature; }
-    
-    // Setters
+      // Setters
     void setTemperatureSetpoint(float value) { settings.temperatureSetpoint = value; }
-    void setHumiditySetpoint(float value) { settings.humiditySetpoint = value; }    void setTemperaturePID(float kp, float ki, float kd) { 
+    void setHumiditySetpoint(float value) { settings.humiditySetpoint = value; }
+    void setTemperaturePID(float kp, float ki, float kd) {
         settings.temperatureKp = kp; 
         settings.temperatureKi = ki; 
         settings.temperatureKd = kd; 
