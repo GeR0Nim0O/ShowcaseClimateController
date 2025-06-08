@@ -489,11 +489,10 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
             success = false;
         }
         
-        delay(100);
+    delay(100);
     }
     
     Serial.println("Device initialization complete");
-}
 }
 
 // Parse configuration sections
