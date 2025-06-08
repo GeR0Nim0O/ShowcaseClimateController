@@ -119,21 +119,17 @@ bool ClimateConfig::validateSettings() {
         humidityMode != "HUMIDIFY" && humidityMode != "DEHUMIDIFY") {
         return false;
     }
-    
-    // Validate dew point compensation settings if enabled
+      // Validate dew point compensation settings if enabled
     if (settings.dewPointCompensationEnabled) {
         if (settings.dewPointSafetyMargin < 0.5 || settings.dewPointSafetyMargin > 10.0) {
-            Serial.println("DEBUG: ClimateConfig::validateSettings() - dewPointSafetyMargin validation failed!");
             return false;
         }
         
         if (settings.dewPointUpdateInterval < 500 || settings.dewPointUpdateInterval > 10000) {
-            Serial.println("DEBUG: ClimateConfig::validateSettings() - dewPointUpdateInterval validation failed!");
             return false;
         }
         
         if (settings.minCoolingTemperature < 0.0 || settings.minCoolingTemperature > 15.0) {
-            Serial.println("DEBUG: ClimateConfig::validateSettings() - minCoolingTemperature validation failed!");
             return false;
         }
     }
