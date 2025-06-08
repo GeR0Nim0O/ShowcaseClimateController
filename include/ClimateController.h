@@ -122,10 +122,9 @@ private:
     // Current values
     float currentTemperature;
     float currentHumidity;
-    
-    // Control modes
-    ClimateMode climateMode;
-    HumidityMode humidityMode;      // PID controllers
+      // Control modes - simplified to boolean enable flags
+    bool temperatureControlEnabled;
+    bool humidityControlEnabled;// PID controllers
     PID* temperaturePID;
       // PID AutoTune controllers - Temperature only (humidity uses digital control)
     PID_ATune* temperatureAutoTuner;
