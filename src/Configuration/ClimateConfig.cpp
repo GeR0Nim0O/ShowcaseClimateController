@@ -456,13 +456,9 @@ bool ClimateConfig::saveToJsonFile(const String& filePath) {
     } else {
         autoTuneResults["kp"] = 0.0;
         autoTuneResults["ki"] = 0.0;
-        autoTuneResults["kd"] = 0.0;
-    }    
-    JsonObject humPid = pid["humidity"].to<JsonObject>();
-    humPid["kp"] = settings.humidityKp;
-    humPid["ki"] = settings.humidityKi;
-    humPid["kd"] = settings.humidityKd;
-      // Control parameters
+        autoTuneResults["kd"] = 0.0;    }    
+    
+    // Control parameters
     JsonObject control = climate["control_parameters"].to<JsonObject>();
     control["temperature_hysteresis"] = settings.temperatureHysteresis;
     control["humidity_hysteresis"] = settings.humidityHysteresis;    // Fan settings
