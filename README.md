@@ -655,17 +655,11 @@ setHeatingPower(75.0);  // 75% heating power = 3.75V output
   "modes": {
     "climate_mode": "AUTO",
     "humidity_mode": "AUTO"
-  },
-  "pid_parameters": {
+  },  "pid_parameters": {
     "temperature": {
       "kp": 2.0,
       "ki": 0.5,
       "kd": 0.1
-    },
-    "humidity": {
-      "kp": 1.0,
-      "ki": 0.2,
-      "kd": 0.05
     }
   }
 }
