@@ -372,7 +372,7 @@ void ClimateController::updateTemperatureControl() {
 }
 
 void ClimateController::updateHumidityControl() {
-    if (humidityMode == HumidityMode::OFF) {
+    if (!humidityControlEnabled) {
         humidifyingActive = false;
         dehumidifyingActive = false;
         return;
@@ -382,51 +382,20 @@ void ClimateController::updateHumidityControl() {
     // Use hysteresis control instead of PID AutoTune
     const float hysteresis = Configuration::getHumidityHysteresis();
     
-    switch (humidityMode) {
-        case HumidityMode::HUMIDIFYING:
-            // Only humidifying mode
-            if (currentHumidity < humiditySetpoint - hysteresis) {
-                humidifyingActive = true;  // Turn on humidifier
-            } else if (currentHumidity > humiditySetpoint) {
-                humidifyingActive = false; // Turn off humidifier
-            }
-            // Otherwise keep previous state (hysteresis)
-            dehumidifyingActive = false;   // Ensure dehumidifier is off
-            break;
-            
-        case HumidityMode::DEHUMIDIFYING:
-            // Only dehumidifying mode
-            if (currentHumidity > humiditySetpoint + hysteresis) {
-                dehumidifyingActive = true;  // Turn on dehumidifier
-            } else if (currentHumidity < humiditySetpoint) {
-                dehumidifyingActive = false; // Turn off dehumidifier
-            }
-            // Otherwise keep previous state (hysteresis)
-            humidifyingActive = false;      // Ensure humidifier is off
-            break;
-              case HumidityMode::AUTO:
-            // Auto mode - can switch between humidifying and dehumidifying
-            if (currentHumidity < humiditySetpoint - hysteresis) {
-                humidifyingActive = true;
-                dehumidifyingActive = false;
-            } else if (currentHumidity > humiditySetpoint + hysteresis) {
-                humidifyingActive = false;
-                dehumidifyingActive = true;
-            } else if (currentHumidity >= humiditySetpoint - hysteresis && 
-                      currentHumidity <= humiditySetpoint + hysteresis) {
-                // Within humidity hysteresis of setpoint, turn everything off
-                humidifyingActive = false;
-                dehumidifyingActive = false;
-            }
-            // Otherwise keep previous state (hysteresis)
-            break;
-            
-        case HumidityMode::OFF:
-        default:
-            humidifyingActive = false;
-            dehumidifyingActive = false;
-            break;
+    // AUTO mode - can switch between humidifying and dehumidifying
+    if (currentHumidity < humiditySetpoint - hysteresis) {
+        humidifyingActive = true;
+        dehumidifyingActive = false;
+    } else if (currentHumidity > humiditySetpoint + hysteresis) {
+        humidifyingActive = false;
+        dehumidifyingActive = true;
+    } else if (currentHumidity >= humiditySetpoint - hysteresis && 
+              currentHumidity <= humiditySetpoint + hysteresis) {
+        // Within humidity hysteresis of setpoint, turn everything off
+        humidifyingActive = false;
+        dehumidifyingActive = false;
     }
+    // Otherwise keep previous state (hysteresis)
 }
 
 void ClimateController::updateFanControl() {
