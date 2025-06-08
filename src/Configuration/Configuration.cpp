@@ -367,9 +367,9 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         } else {
             Serial.println("FAILED");
         }
-    }
-      Serial.print("Created ");    Serial.print(devices.size());
-    Serial.println(" devices from JSON configuration");
+    }    Serial.print("Created ");
+    Serial.print(devices.size());
+    Serial.println(" devices");
     
     return devices;
 }
