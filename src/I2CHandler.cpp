@@ -90,11 +90,10 @@ void I2CHandler::selectTCA(uint8_t i) {
             }
         }
     }
-    
-    if (!success) {
+      if (!success) {
         Serial.print("TCA Port ");
         Serial.print(i);
-        Serial.println(" selection failed after all retries");
+        Serial.println(" selection failed");
         lastSelectedPort = 255; // Reset on failure
     }
 }
