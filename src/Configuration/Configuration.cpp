@@ -348,20 +348,11 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         // Create the device
         Device* createdDevice = DeviceRegistry::getInstance().createDeviceWithThresholds(
             &Wire, deviceType, deviceTypeNumber, deviceAddress, tcaPort, 
-            channelThresholds, channelNames, deviceIndex, deviceMode
-        );        if (createdDevice != nullptr) {
-            Serial.print("Device created successfully. Setting label from JSON: '");
-            Serial.print(deviceLabel);
-            Serial.println("'");
-            
+            channelThresholds, channelNames, deviceIndex, deviceMode        );
+        
+        if (createdDevice != nullptr) {
             // Apply the label from JSON configuration
             createdDevice->setDeviceLabel(deviceLabel);
-            
-            // Verify the label was set correctly
-            String actualLabel = createdDevice->getDeviceLabel();
-            Serial.print("Device label after setting: '");
-            Serial.print(actualLabel);
-            Serial.println("'");
             
             // Handle special case for RTC
             if (deviceType.equalsIgnoreCase("RTC") && deviceTypeNumber.equalsIgnoreCase("DS3231")) {
@@ -372,13 +363,9 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             devices.push_back(createdDevice);
             deviceIndex++;
             
-            Serial.print("Successfully created device: ");
-            Serial.print(deviceKey);
-            Serial.print(" with final label: ");
-            Serial.println(actualLabel);
+            Serial.println("OK");
         } else {
-            Serial.print("Failed to create device: ");
-            Serial.println(deviceKey);
+            Serial.println("FAILED");
         }
     }
       Serial.print("Created ");    Serial.print(devices.size());
