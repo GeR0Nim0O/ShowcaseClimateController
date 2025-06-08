@@ -163,17 +163,12 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
             Serial.println("Temperature PID initialized successfully");
         }
   
-    }
-    catch (...) {
+    }    catch (...) {
         Serial.println("Exception during PID controller initialization");
         // Clean up if an exception occurs
         if (temperaturePID != nullptr) {
             delete temperaturePID;
             temperaturePID = nullptr;
-        }
-        if (humidityPID != nullptr) {
-            delete humidityPID;
-            humidityPID = nullptr;
         }
     }
     
