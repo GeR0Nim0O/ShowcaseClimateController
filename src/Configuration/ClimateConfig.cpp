@@ -332,20 +332,7 @@ bool ClimateConfig::loadFromJsonFile(const String& filePath) {
         } else {
             settings.fastAutoTuneOutputStep = 75.0;
             Serial.println("Using default Fast AutoTune output step: 75%");
-        }
-    }
-    
-    JsonObject humPid = climate["pid_parameters"]["humidity"];
-    if (humPid) {
-        settings.humidityKp = humPid["kp"].as<double>();
-        if (!humPid["kp"]) settings.humidityKp = 1.0;
-        
-        settings.humidityKi = humPid["ki"].as<double>();
-        if (!humPid["ki"]) settings.humidityKi = 0.2;
-        
-        settings.humidityKd = humPid["kd"].as<double>();
-        if (!humPid["kd"]) settings.humidityKd = 0.05;
-    }
+        }    }
     
     // Load control parameters
     JsonObject control = climate["control_parameters"];
