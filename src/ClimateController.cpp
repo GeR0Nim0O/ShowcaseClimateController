@@ -125,17 +125,13 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
             temperaturePID->SetMode(AUTOMATIC);
             temperaturePID->SetOutputLimits(-100, 100); // -100 = full cooling, +100 = full heating
         }
-  
     }catch (...) {
-        Serial.println("Exception during PID controller initialization");
         // Clean up if an exception occurs
         if (temperaturePID != nullptr) {
             delete temperaturePID;
             temperaturePID = nullptr;
         }
     }
-    
-    Serial.println("ClimateController constructor completed successfully");
 }
 
 ClimateController::~ClimateController() {
