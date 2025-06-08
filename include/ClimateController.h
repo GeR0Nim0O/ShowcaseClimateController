@@ -32,12 +32,11 @@ public:
     void setHumiditySetpoint(float hum) { humiditySetpoint = hum; }
     float getTemperatureSetpoint() const { return temperatureSetpoint; }
     float getHumiditySetpoint() const { return humiditySetpoint; }
-    
-    // Mode control
-    void setClimateMode(ClimateMode mode) { climateMode = mode; }
-    void setHumidityMode(HumidityMode mode) { humidityMode = mode; }
-    ClimateMode getClimateMode() const { return climateMode; }
-    HumidityMode getHumidityMode() const { return humidityMode; }
+      // Control enable/disable
+    void setTemperatureControlEnabled(bool enabled) { temperatureControlEnabled = enabled; }
+    void setHumidityControlEnabled(bool enabled) { humidityControlEnabled = enabled; }
+    bool isTemperatureControlEnabled() const { return temperatureControlEnabled; }
+    bool isHumidityControlEnabled() const { return humidityControlEnabled; }
     
     // Current readings
     float getCurrentTemperature() const { return currentTemperature; }
