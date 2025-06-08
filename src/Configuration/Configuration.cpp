@@ -462,33 +462,21 @@ bool Configuration::validateDeviceObject(Device* device) {
 }
 
 void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
-    Serial.println("\n=== Starting Device Initialization ===");
+    Serial.println("Initializing devices...");
     
     // Remove any null devices that might have been accidentally added
     auto it = std::remove_if(devices.begin(), devices.end(), [](Device* d) { return d == nullptr; });
     if (it != devices.end()) {
-        int removedCount = std::distance(it, devices.end());
         devices.erase(it, devices.end());
-        Serial.print("Removed ");
-        Serial.print(removedCount);
-        Serial.println(" null device pointers from vector");
     }
     
-    Serial.print("Total devices to initialize: ");
-    Serial.println(devices.size());
-    Serial.print("Free heap at start: ");
-    Serial.println(ESP.getFreeHeap());
-    
     if (devices.empty()) {
-        Serial.println("WARNING: No devices to initialize!");
+        Serial.println("No devices to initialize!");
         return;
     }
     
     for (size_t i = 0; i < devices.size(); i++) {
         Device* device = devices[i];
-        
-        Serial.print("\n--- Initializing Device ");
-        Serial.print(i);
         Serial.println(" ---");
         
         // Double check for null pointers
