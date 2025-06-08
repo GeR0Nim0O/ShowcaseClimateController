@@ -404,10 +404,10 @@ void ClimateController::updateFanControl() {
     }
     
     // Determine if ANY climate control is active
-    bool tempControlActive = (climateMode != ClimateMode::OFF) && 
+    bool tempControlActive = temperatureControlEnabled && 
                             (tempControlEnabled || heatingActive || coolingActive);
     
-    bool humidityControlActive = (humidityMode != HumidityMode::OFF) && 
+    bool humidityControlActive = humidityControlEnabled && 
                                 (humidifyingActive || dehumidifyingActive);
     
     bool climateControlActive = tempControlActive || humidityControlActive;
