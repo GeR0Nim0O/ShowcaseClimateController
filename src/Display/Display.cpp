@@ -86,27 +86,21 @@ void Display::update() {
 }
 
 void Display::initializeDisplay() {
-    Serial.println("Initializing LCD display sequence for PCF8574T...");
     selectTCAChannel(tcaChannel);
     
     // PCF8574T specific initialization - longer delays for stability
     delay(250); // Extended power-up delay for PCF8574T
     
     // First, ensure all pins are in known state
-    Serial.println("Resetting PCF8574T pins...");
     expanderWrite(0x00); // All pins low
     delay(50);
     
     // Set backlight on and establish baseline
-    Serial.println("Setting backlight on...");
     expanderWrite(LCD_BACKLIGHT);
     delay(150); // Allow backlight to stabilize
     
     // PCF8574T requires more careful timing for HD44780 initialization
-    Serial.println("Starting HD44780 initialization sequence for PCF8574T...");
-    
     // Initial reset sequence - send 0x30 three times with proper timing
-    Serial.println("Sending initial reset commands...");
     
     // First 0x30 command - must wait >15ms after power on
     write4bits(0x30);
@@ -121,42 +115,33 @@ void Display::initializeDisplay() {
     delay(2); // Wait more than 100us
     
     // Now switch to 4-bit mode
-    Serial.println("Setting 4-bit mode...");
     write4bits(0x20);
     delay(2); // Allow mode switch to complete
     
     // From here on, use normal 4-bit commands
     // Function set: 4-bit mode, 2 lines, 5x8 dots
-    Serial.println("Configuring function set...");
     command(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_2LINE | LCD_5x8DOTS);
     delay(2);
     
     // Display control: display off initially
-    Serial.println("Setting display control off...");
     command(LCD_DISPLAYCONTROL | LCD_DISPLAYOFF | LCD_CURSOROFF | LCD_BLINKOFF);
     delay(2);
     
     // Clear display
-    Serial.println("Clearing display...");
     command(LCD_CLEARDISPLAY);
     delay(5); // Clear command needs more time
     
     // Entry mode: left to right, no shift
-    Serial.println("Setting entry mode...");
     command(LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT);
     delay(2);
     
     // Finally turn display on
-    Serial.println("Turning display on...");
     command(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
     delay(2);
     
     // Return home
-    Serial.println("Returning home...");
     command(LCD_RETURNHOME);
     delay(5); // Home command needs more time
-    
-    Serial.println("PCF8574T LCD initialization sequence complete");
 }
 
 void Display::clear() {
