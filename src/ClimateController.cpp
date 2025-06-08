@@ -925,29 +925,12 @@ void ClimateController::reloadConfiguration() {
         // Update setpoints from ClimateConfig
         setTemperatureSetpoint(climateConfig.getTemperatureSetpoint());
         setHumiditySetpoint(climateConfig.getHumiditySetpoint());
-        
-        // Update control modes
+          // Update control modes - convert from strings to boolean flags
         String climateMode = climateConfig.getClimateMode();
-        if (climateMode == "HEATING") {
-            setClimateMode(ClimateMode::HEATING);
-        } else if (climateMode == "COOLING") {
-            setClimateMode(ClimateMode::COOLING);
-        } else if (climateMode == "OFF") {
-            setClimateMode(ClimateMode::OFF);
-        } else {
-            setClimateMode(ClimateMode::AUTO);
-        }
+        setTemperatureControlEnabled(climateMode != "OFF");
         
         String humidityMode = climateConfig.getHumidityMode();
-        if (humidityMode == "HUMIDIFY") {
-            setHumidityMode(HumidityMode::HUMIDIFYING);
-        } else if (humidityMode == "DEHUMIDIFY") {
-            setHumidityMode(HumidityMode::DEHUMIDIFYING);
-        } else if (humidityMode == "OFF") {
-            setHumidityMode(HumidityMode::OFF);
-        } else {
-            setHumidityMode(HumidityMode::AUTO);
-        }
+        setHumidityControlEnabled(humidityMode != "OFF");
         
         // Update auto fan control
         setAutoFanControl(climateConfig.getAutoFanControl());
