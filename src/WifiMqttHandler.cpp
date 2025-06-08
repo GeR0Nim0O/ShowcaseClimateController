@@ -49,72 +49,32 @@ void WifiMqttHandler::connectToWiFi(const char* ssid, const char* password) {
         const unsigned long attemptTimeout = 15000; // 15 seconds timeout
         
         while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < attemptTimeout) {
-            delay(500);
+                        delay(500);
             Serial.print(".");
             
             // Check for specific error conditions
             if (WiFi.status() == WL_CONNECT_FAILED) {
-                Serial.println();
-                Serial.println("Connection failed - likely wrong password");
+                Serial.println(" Connection failed - wrong password?");
                 break;
             } else if (WiFi.status() == WL_NO_SSID_AVAIL) {
-                Serial.println();
-                Serial.println("SSID not available - network not found");
+                Serial.println(" SSID not available");
                 break;
             }
         }
         Serial.println();
         
-        // Print detailed status information
-        wl_status_t status = WiFi.status();
-        Serial.print("WiFi Status: ");
-        switch(status) {
-            case WL_IDLE_STATUS: Serial.println("WL_IDLE_STATUS"); break;
-            case WL_NO_SSID_AVAIL: Serial.println("WL_NO_SSID_AVAIL (Network not found)"); break;
-            case WL_SCAN_COMPLETED: Serial.println("WL_SCAN_COMPLETED"); break;
-            case WL_CONNECTED: Serial.println("WL_CONNECTED"); break;
-            case WL_CONNECT_FAILED: Serial.println("WL_CONNECT_FAILED (Wrong password?)"); break;
-            case WL_CONNECTION_LOST: Serial.println("WL_CONNECTION_LOST"); break;
-            case WL_DISCONNECTED: Serial.println("WL_DISCONNECTED"); break;
-            default: Serial.println("Unknown status: " + String(status)); break;
-        }
-        
         if (WiFi.status() != WL_CONNECTED && attempts < maxAttempts) {
-            Serial.println("Connection failed, trying again...");
             WiFi.disconnect();
-            delay(3000); // Increased delay between attempts
-        }    }
+            delay(3000);
+        }
+    }
     
     // Final connection status
     if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("=== WiFi Connection Successful ===");
-        Serial.print("Connected to: ");
-        Serial.println(WiFi.SSID());
-        Serial.print("IP Address: ");
-        Serial.println(WiFi.localIP());
-        Serial.print("Signal Strength (RSSI): ");
-        Serial.print(WiFi.RSSI());
-        Serial.println(" dBm");
-        Serial.print("Gateway: ");
-        Serial.println(WiFi.gatewayIP());
-        Serial.print("DNS: ");
-        Serial.println(WiFi.dnsIP());
-        Serial.print("MAC Address: ");
-        Serial.println(WiFi.macAddress());
-        Serial.println("==================================");
+        Serial.println("WiFi connected to " + WiFi.SSID());
+        Serial.println("IP: " + WiFi.localIP().toString());
     } else {
-        Serial.println("=== WiFi Connection Failed ===");
-        Serial.print("Failed to connect to WiFi after ");
-        Serial.print(maxAttempts);
-        Serial.println(" attempts.");
-        Serial.println("Troubleshooting steps:");
-        Serial.println("1. Verify the WiFi network is active and broadcasting");
-        Serial.println("2. Check the SSID spelling (case-sensitive)");
-        Serial.println("3. Verify the WiFi password is correct");
-        Serial.println("4. Ensure the ESP32 is within range of the router");
-        Serial.println("5. Try restarting the router if needed");
-        Serial.println("6. Consider checking for MAC address filtering");
-        Serial.println("==============================");
+        Serial.println("WiFi connection failed after " + String(maxAttempts) + " attempts");
     }
 }
 
