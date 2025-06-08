@@ -1009,24 +1009,11 @@ void ClimateController::updateClimateConfigFile() {
     climateConfig.setHumiditySetpoint(humiditySetpoint);
     climateConfig.setAutoFanControl(autoFanControlEnabled);
     climateConfig.setUpdateInterval(updateInterval);
-    
-    // Convert enums to strings and set modes
-    String climateMode;
-    switch (this->climateMode) {
-        case ClimateMode::HEATING: climateMode = "HEATING"; break;
-        case ClimateMode::COOLING: climateMode = "COOLING"; break;
-        case ClimateMode::OFF: climateMode = "OFF"; break;
-        default: climateMode = "AUTO"; break;
-    }
+      // Convert boolean flags to strings and set modes
+    String climateMode = temperatureControlEnabled ? "AUTO" : "OFF";
     climateConfig.setClimateMode(climateMode);
     
-    String humidityMode;
-    switch (this->humidityMode) {
-        case HumidityMode::HUMIDIFYING: humidityMode = "HUMIDIFY"; break;
-        case HumidityMode::DEHUMIDIFYING: humidityMode = "DEHUMIDIFY"; break;
-        case HumidityMode::OFF: humidityMode = "OFF"; break;
-                default: humidityMode = "AUTO"; break;
-    }
+    String humidityMode = humidityControlEnabled ? "AUTO" : "OFF";
     climateConfig.setHumidityMode(humidityMode);
       // Save to JSON file
     if (climateConfig.saveToJsonFile("/data/ClimateConfig.json")) {
