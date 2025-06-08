@@ -52,7 +52,8 @@ public:
     bool saveToJsonFile(const String& filePath = "/data/ClimateConfig.json");
     bool createDefaultJsonFile(const String& filePath = "/data/ClimateConfig.json");
     
-    // Getters    float getTemperatureSetpoint() const { return settings.temperatureSetpoint; }
+    // Getters
+    float getTemperatureSetpoint() const { return settings.temperatureSetpoint; }
     float getHumiditySetpoint() const { return settings.humiditySetpoint; }
     float getTemperatureKp() const { return settings.temperatureKp; }
     float getTemperatureKi() const { return settings.temperatureKi; }
