@@ -407,30 +407,8 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             Serial.println(deviceKey);
         }
     }
-      Serial.print("Created ");
-    Serial.print(devices.size());
+      Serial.print("Created ");    Serial.print(devices.size());
     Serial.println(" devices from JSON configuration");
-    
-    // Debug: Show all created devices and their labels
-    Serial.println("\n=== Final Device Summary ===");
-    for (size_t i = 0; i < devices.size(); i++) {
-        Device* device = devices[i];
-        Serial.print("Device ");
-        Serial.print(i);
-        Serial.print(": ");
-        Serial.print(device->getDeviceName());
-        Serial.print(" (");
-        Serial.print(device->getType());
-        Serial.print("/");
-        Serial.print(device->getTypeNumber());
-        Serial.print(") - Label: '");
-        Serial.print(device->getDeviceLabel());
-        Serial.print("', Address: 0x");
-        Serial.print(device->getI2CAddress(), HEX);
-        Serial.print(", TCA: ");
-        Serial.println(device->getTCAChannel());
-    }
-    Serial.println("==============================\n");
     
     return devices;
 }
