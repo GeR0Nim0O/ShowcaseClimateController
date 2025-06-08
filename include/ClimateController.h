@@ -152,10 +152,8 @@ private:
     enum class AutoTuneType { NORMAL, FAST };
     AutoTuneType currentAutoTuneType;
     unsigned long expectedAutoTuneDuration; // in milliseconds
-    
-    // PID variables
+      // PID variables
     double tempInput, tempOutput, tempSetpoint;
-    double humInput, humOutput, humSetpoint;
     
     // Control states
     bool heatingActive;
