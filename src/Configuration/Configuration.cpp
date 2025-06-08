@@ -478,33 +478,20 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
     for (size_t i = 0; i < devices.size(); i++) {
         Device* device = devices[i];
         Serial.println(" ---");
-        
-        // Double check for null pointers
+          // Check for null pointers
         if (!device) {
-            Serial.println("ERROR: Null device pointer found, skipping");
             continue;
         }
-        
-        // Skip vtable validation as it's causing issues
-        Serial.print("Device Address: 0x");
-        Serial.println((uint32_t)device, HEX);
-        
-        // Add memory integrity checks before calling virtual methods
-        Serial.println("Performing memory integrity checks...");
         
         // Check if device pointer is in valid memory range
         if ((uint32_t)device < 0x3F800000 || (uint32_t)device > 0x3FFFFFFF) {
-            Serial.println("ERROR: Device pointer is outside valid ESP32 memory range");
             continue;
         }
 
-        // Force initialize device regardless of vtable validation
+        // Initialize device
         bool success = false;
         try {
-            // Apply a direct approach to device initialization
-            // Each specific device type has its own initialization requirements
             if (device->getType().equalsIgnoreCase("PCF8574GPIO")) {
-                Serial.println("Initializing PCF8574 GPIO expander with direct method");
                 I2CHandler::selectTCA(device->getTCAChannel());
                 Wire.beginTransmission(device->getI2CAddress());
                 int error = Wire.endTransmission();
