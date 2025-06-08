@@ -662,24 +662,9 @@ void createSensors() {
 }
 
 void printCreatedSensors() {
-  Serial.println("Created sensors:");
-  for (Device* device : devices) {
-    Serial.print("Type: ");
-    Serial.println(device->getType());
-    Serial.print("Device Name: ");
-    Serial.println(device->getDeviceName());
-    Serial.print("Device Label: ");
-    Serial.println(device->getDeviceLabel().length() > 0 ? device->getDeviceLabel() : "No Label");
-    Serial.print("Address: 0x");
-    Serial.println(device->getI2CAddress(), HEX);
-    Serial.print("TCA Channel: ");
-    Serial.println(device->getTCAChannel());
-    Serial.print("Device Index: ");
-    Serial.println(device->getDeviceIndex());
-    Serial.print("Initialized: ");
-    Serial.println(device->isInitialized() ? "Yes" : "No");
-    Serial.println();
-  }
+  Serial.print("Created ");
+  Serial.print(devices.size());
+  Serial.println(" devices");
 }
 
 // Function to initialize the climate controller
