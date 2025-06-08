@@ -502,10 +502,8 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
                     Wire.write(0x00); // Set all pins to LOW (off)
                     Wire.endTransmission();
                     success = true;
-                }
-            } 
+                }            } 
             else if (device->getType().equalsIgnoreCase("GP8403dac")) {
-                Serial.println("Initializing GP8403 DAC with direct method");
                 I2CHandler::selectTCA(device->getTCAChannel());
                 Wire.beginTransmission(device->getI2CAddress());
                 int error = Wire.endTransmission();
@@ -515,7 +513,6 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
                 }
             }            else if (device->getType().equalsIgnoreCase("SHTSensor") || 
                      device->getType().equalsIgnoreCase("Sensor")) {
-                Serial.println("Initializing SHT sensor with direct method");
                 I2CHandler::selectTCA(device->getTCAChannel());
                 Wire.beginTransmission(device->getI2CAddress());
                 int error = Wire.endTransmission();
@@ -525,7 +522,6 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
                 }
             }
             else if (device->getType().equalsIgnoreCase("Display")) {
-                Serial.println("Initializing Display device with direct method");
                 I2CHandler::selectTCA(device->getTCAChannel());
                 Wire.beginTransmission(device->getI2CAddress());
                 int error = Wire.endTransmission();
