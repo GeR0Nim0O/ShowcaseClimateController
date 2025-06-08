@@ -93,12 +93,8 @@ bool ClimateConfig::validateSettings() {
     if (settings.temperatureKp <= 0 || settings.temperatureKi < 0 || settings.temperatureKd < 0) {
         return false;
     }
-    
-    // Check update interval is reasonable
-    Serial.print("DEBUG: ClimateConfig::validateSettings() - updateInterval value: ");
-    Serial.println(settings.updateInterval);
+      // Check update interval is reasonable
     if (settings.updateInterval < 100 || settings.updateInterval > 10000) {
-        Serial.println("DEBUG: ClimateConfig::validateSettings() - updateInterval validation failed!");
         return false;
     }
     
