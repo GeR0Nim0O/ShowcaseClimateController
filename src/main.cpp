@@ -128,20 +128,17 @@ void setup()
   if (!SDHandler::initializeSDCardAndConfig()) {
     Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
   }
-    // Handle configuration loading with priority for project config
+  // Handle configuration loading with priority for project config
   bool configLoaded = false;
   String sdWifiSSID = "";
   String projectWifiSSID = "";
   
   // First, always try to load the project configuration from SPIFFS (uploaded data folder)
-  Serial.println("→ Loading project configuration from SPIFFS...");
   if (Configuration::loadConfigFromCodebase()) {
-    Serial.println("✓ Project configuration loaded successfully");
     projectWifiSSID = Configuration::getWiFiSSID();
     configLoaded = true;
     
     // Now check if SD card has different config
-    Serial.println("→ Checking SD card configuration...");
     JsonDocument sdConfig;
     File sdFile = SD.open("/config.json", FILE_READ);
     if (sdFile) {
