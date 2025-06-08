@@ -82,11 +82,8 @@ bool WifiMqttHandler::connectToWiFiWithCheck(const String& ssid, const String& p
     if (ssid.isEmpty() || password.isEmpty()) {
         Serial.println("Error: SSID or password is empty");
         return false;
-    }
-
-    connectToWiFi(ssid.c_str(), password.c_str());
+    }    connectToWiFi(ssid.c_str(), password.c_str());
     return (WiFi.status() == WL_CONNECTED);
-}
 }
 
 void WifiMqttHandler::setupSecureClient(WiFiClientSecure &espClient, const char* rootCACertificate) {
