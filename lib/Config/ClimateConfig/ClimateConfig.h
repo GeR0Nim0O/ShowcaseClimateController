@@ -113,13 +113,14 @@ public:
         settings.autoTuneKp = kp; 
         settings.autoTuneKi = ki; 
         settings.autoTuneKd = kd; 
-    }
-    void clearAutoTuneResults() { 
+    }    void clearAutoTuneResults() { 
         settings.hasAutoTuneResults = false;
         settings.autoTuneKp = 0.0;
         settings.autoTuneKi = 0.0;
         settings.autoTuneKd = 0.0;
-    }    // Utility
+    }
+
+    // Utility
     void printSettings();
     bool validateSettings();
 
