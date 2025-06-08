@@ -87,22 +87,6 @@ bool WifiMqttHandler::connectToWiFiWithCheck(const String& ssid, const String& p
     connectToWiFi(ssid.c_str(), password.c_str());
     return (WiFi.status() == WL_CONNECTED);
 }
-        
-        wl_status_t status = WiFi.status();
-        switch(status) {
-            case WL_IDLE_STATUS: Serial.println("IDLE"); break;
-            case WL_NO_SSID_AVAIL: Serial.println("NETWORK NOT FOUND"); break;
-            case WL_SCAN_COMPLETED: Serial.println("SCAN COMPLETED"); break;
-            case WL_CONNECTED: Serial.println("CONNECTED (should not see this)"); break;
-            case WL_CONNECT_FAILED: Serial.println("CONNECTION FAILED (wrong password?)"); break;
-            case WL_CONNECTION_LOST: Serial.println("CONNECTION LOST"); break;
-            case WL_DISCONNECTED: Serial.println("DISCONNECTED"); break;
-            default: Serial.println("UNKNOWN STATUS: " + String(status)); break;
-        }
-    }
-    
-    Serial.println("===============================");
-    return isConnected;
 }
 
 void WifiMqttHandler::setupSecureClient(WiFiClientSecure &espClient, const char* rootCACertificate) {
