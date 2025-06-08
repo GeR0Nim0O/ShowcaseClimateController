@@ -88,16 +88,10 @@ public:    // Static member variables
     static float getMinTemperature();
     static float getMaxHumidity();
     static float getMinHumidity();
-    
-    // Temperature PID parameters
+      // Temperature PID parameters
     static float getTemperatureKp();
     static float getTemperatureKi();
     static float getTemperatureKd();
-    
-    // Humidity PID parameters
-    static float getHumidityKp();
-    static float getHumidityKi();
-    static float getHumidityKd();
     
     // Control parameters
     static float getTemperatureHysteresis();
