@@ -322,12 +322,9 @@ void ClimateController::updateSensorReadings() {
     
     currentTemperature = sensor->getTemperature();
     currentHumidity = sensor->getHumidity();
-    
-    // Update PID inputs
+      // Update PID inputs
     tempInput = currentTemperature;
     tempSetpoint = temperatureSetpoint;
-    humInput = currentHumidity;
-    humSetpoint = humiditySetpoint;
 }
 
 void ClimateController::updateTemperatureControl() {
