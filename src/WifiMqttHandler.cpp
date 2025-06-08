@@ -383,13 +383,9 @@ void WifiMqttHandler::scanAndAnalyzeNetworks() {
     if (networkCount == 0) {
         Serial.println("No networks found");
         return;
-    }
-    
-    Serial.print("Found ");
+        Serial.print("Found ");
     Serial.print(networkCount);
     Serial.println(" networks");
-}
-    }
     
     Serial.println("┌────────────────────────────────────────────────────────────┐");
     Serial.println("│ Signal Strength Guide:                                    │");
