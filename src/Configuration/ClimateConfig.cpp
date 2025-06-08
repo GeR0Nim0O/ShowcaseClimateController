@@ -42,15 +42,11 @@ bool ClimateConfig::begin() {
     return true;}
 
 void ClimateConfig::loadDefaults() {
-    Serial.println("DEBUG: ClimateConfig::loadDefaults() called");
-    settings.temperatureSetpoint = 0.0; // Will be set from config file
+    Serial.println("DEBUG: ClimateConfig::loadDefaults() called");    settings.temperatureSetpoint = 0.0; // Will be set from config file
     settings.humiditySetpoint = 0.0;    // Will be set from config file
     settings.temperatureKp = 2.0;
     settings.temperatureKi = 0.5;
     settings.temperatureKd = 0.1;
-    settings.humidityKp = 1.0;
-    settings.humidityKi = 0.2;
-    settings.humidityKd = 0.05;
     settings.fanInteriorEnabled = true;
     settings.fanExteriorEnabled = false;
     settings.updateInterval = 500; // Fix: Use 500ms like config.json
