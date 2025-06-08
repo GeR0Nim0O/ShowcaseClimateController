@@ -16,22 +16,12 @@ ClimateController* ClimateController::createFromDeviceRegistry() {
             Serial.println("ERROR: No GPIO expander found");
             return nullptr;
         }
-        
-        // Get temperature/humidity sensor from DeviceRegistry - specifically look for Interior labeled sensor
+          // Get temperature/humidity sensor from DeviceRegistry - specifically look for Interior labeled sensor
         SHTsensor* climateTemperatureSensor = (SHTsensor*)registry.getDeviceByTypeAndLabel("TemperatureHumidity", "Interior");
-        if (climateTemperatureSensor != nullptr) {
-            Serial.println("Found INTERIOR temperature/humidity sensor for climate control via DeviceRegistry");
-            Serial.print("Using sensor: ");
-            Serial.print(climateTemperatureSensor->getDeviceName());
-            Serial.print(" with label: ");
-            Serial.println(climateTemperatureSensor->getDeviceLabel());
-        } else {
+        if (climateTemperatureSensor == nullptr) {
             // Fallback to first available sensor if no Interior labeled sensor found
-            Serial.println("No Interior labeled sensor found, using first available temperature/humidity sensor");
             climateTemperatureSensor = (SHTsensor*)registry.getDeviceByType("TemperatureHumidity", 0);
-            if (climateTemperatureSensor != nullptr) {
-                Serial.println("Found temperature/humidity sensor for climate control via DeviceRegistry (fallback)");
-            } else {
+            if (climateTemperatureSensor == nullptr) {
                 Serial.println("No temperature/humidity sensor found in DeviceRegistry");
                 return nullptr;
             }
