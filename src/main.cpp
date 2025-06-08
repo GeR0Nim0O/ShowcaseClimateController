@@ -639,15 +639,11 @@ void showTemperatureAndHumidity() {
 
 // Function to initialize the display device
 void initializeDisplayDevice() {
-    Serial.println("Initializing Display Device...");
-    
     // Get Display device from DeviceRegistry
     DeviceRegistry& registry = DeviceRegistry::getInstance();
     displayDevice = (Display*)registry.getDeviceByType("Display", 0);
     
     if (displayDevice != nullptr && displayDevice->isInitialized()) {
-        Serial.println("Display device found and initialized successfully");
-        
         // Show initial startup message
         displayDevice->clear();
         displayDevice->setCursor(0, 0);
@@ -656,7 +652,6 @@ void initializeDisplayDevice() {
         displayDevice->print("Initializing...");
         delay(2000);
     } else {
-        Serial.println("Display device not found or not initialized");
         displayDevice = nullptr;
     }
 }
