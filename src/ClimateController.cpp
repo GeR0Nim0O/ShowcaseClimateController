@@ -31,32 +31,21 @@ ClimateController* ClimateController::createFromDeviceRegistry() {
         
         // Create climate controller if we found the required devices
         if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
-            
-            try {
-                Serial.println("Allocating climate controller...");
+              try {
                 ClimateController* controller = new ClimateController(gpioExpander, climateTemperatureSensor, climateDac);
                 
                 if (controller != nullptr) {
-                    Serial.println("Climate controller allocated, calling begin()");
-                    
                     if (controller->begin()) {
                         Serial.println("Climate controller initialized successfully");
                         
                         // Enable automatic fan control by default
                         controller->setAutoFanControl(true);
-                        Serial.println("Automatic fan control enabled");
                         
                         // Look for radiator sensor for dew point compensation
                         SHTsensor* radiatorSensor = (SHTsensor*)registry.getDeviceByTypeAndLabel("TemperatureHumidity", "Radiator");
                         if (radiatorSensor != nullptr) {
                             controller->setRadiatorSensor(radiatorSensor);
                             Serial.println("Found RADIATOR sensor for dew point compensation");
-                            Serial.print("Using radiator sensor: ");
-                            Serial.print(radiatorSensor->getDeviceName());
-                            Serial.print(" with label: ");
-                            Serial.println(radiatorSensor->getDeviceLabel());
-                        } else {
-                            Serial.println("No Radiator labeled sensor found - dew point compensation disabled");
                         }
                         
                         return controller;
