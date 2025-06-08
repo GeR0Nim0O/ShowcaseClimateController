@@ -9,19 +9,7 @@
 #include "GP8403dac.h"
 #include "Configuration.h"
 
-enum class ClimateMode {
-    OFF,
-    HEATING,
-    COOLING,
-    AUTO
-};
-
-enum class HumidityMode {
-    OFF,
-    HUMIDIFYING,
-    DEHUMIDIFYING,
-    AUTO
-};
+// Removed ClimateMode and HumidityMode enums - using simple boolean enable flags
 
 class ClimateController {
 public:
