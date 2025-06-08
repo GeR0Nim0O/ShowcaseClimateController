@@ -757,24 +757,12 @@ void initializeClimateController() {
             float humiditySetpoint = climateConfig.getHumiditySetpoint();
             String climateMode = climateConfig.getClimateMode();
             String humidityMode = climateConfig.getHumidityMode();
-            
-            // Convert string modes to enums
-            ClimateMode climateEnum = ClimateMode::AUTO;
-            if (climateMode == "HEATING") {
-                climateEnum = ClimateMode::HEATING;
-            } else if (climateMode == "COOLING") {
-                climateEnum = ClimateMode::COOLING;
-            }
-            
-            HumidityMode humidityEnum = HumidityMode::AUTO;
-            if (humidityMode == "HUMIDIFY") {
-                humidityEnum = HumidityMode::HUMIDIFYING;
-            } else if (humidityMode == "DEHUMIDIFY") {
-                humidityEnum = HumidityMode::DEHUMIDIFYING;
-            }
+              // Convert string modes to boolean flags
+            bool temperatureEnabled = (climateMode != "OFF");
+            bool humidityEnabled = (humidityMode != "OFF");
             
             // Configure all parameters at once
-            climateController->configure(temperatureSetpoint, humiditySetpoint, climateEnum, humidityEnum);
+            climateController->configure(temperatureSetpoint, humiditySetpoint, temperatureEnabled, humidityEnabled);
               // Print loaded configuration
             Serial.println("Climate Controller configured with:");
             Serial.print("  Temperature Setpoint: ");
