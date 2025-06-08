@@ -169,10 +169,9 @@ private:
     bool lastPrintedCoolingActive;
     bool lastPrintedHumidifyingActive;
     bool lastPrintedDehumidifyingActive;
-    bool lastPrintedFanInteriorActive;
-    bool lastPrintedFanExteriorActive;
-    ClimateMode lastPrintedClimateMode;
-    HumidityMode lastPrintedHumidityMode;
+    bool lastPrintedFanInteriorActive;    bool lastPrintedFanExteriorActive;
+    bool lastPrintedTemperatureControlEnabled;
+    bool lastPrintedHumidityControlEnabled;
     float temperatureThreshold;
     float humidityThreshold;
     
