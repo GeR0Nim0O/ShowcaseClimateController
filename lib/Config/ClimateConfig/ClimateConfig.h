@@ -80,16 +80,10 @@ public:
     
     // Setters
     void setTemperatureSetpoint(float value) { settings.temperatureSetpoint = value; }
-    void setHumiditySetpoint(float value) { settings.humiditySetpoint = value; }
-    void setTemperaturePID(float kp, float ki, float kd) { 
+    void setHumiditySetpoint(float value) { settings.humiditySetpoint = value; }    void setTemperaturePID(float kp, float ki, float kd) { 
         settings.temperatureKp = kp; 
         settings.temperatureKi = ki; 
         settings.temperatureKd = kd; 
-    }
-    void setHumidityPID(float kp, float ki, float kd) { 
-        settings.humidityKp = kp; 
-        settings.humidityKi = ki; 
-        settings.humidityKd = kd; 
     }
     void setFanInteriorEnabled(bool enabled) { settings.fanInteriorEnabled = enabled; }
     void setFanExteriorEnabled(bool enabled) { settings.fanExteriorEnabled = enabled; }
