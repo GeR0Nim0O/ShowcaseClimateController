@@ -13,16 +13,13 @@ struct ClimateSettings {
     float temperatureKp;
     float temperatureKi;
     float temperatureKd;
-    float humidityKp;
-    float humidityKi;
-    float humidityKd;
     bool fanInteriorEnabled;
     bool fanExteriorEnabled;
     uint16_t updateInterval;
     float maxTemperature;
     float minTemperature;
     float maxHumidity;
-    float minHumidity;    char climateMode[16];     // String storage for mode settings
+    float minHumidity;char climateMode[16];     // String storage for mode settings
     char humidityMode[16];    // String storage for mode settings
     bool autoFanControl;
     float temperatureHysteresis;
