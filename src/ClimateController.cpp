@@ -847,9 +847,8 @@ bool ClimateController::hasSignificantStateChange() {
            (humidifyingActive != lastPrintedHumidifyingActive) ||
            (dehumidifyingActive != lastPrintedDehumidifyingActive) ||
            (fanInteriorActive != lastPrintedFanInteriorActive) ||
-           (fanExteriorActive != lastPrintedFanExteriorActive) ||
-           (climateMode != lastPrintedClimateMode) ||
-           (humidityMode != lastPrintedHumidityMode);
+           (fanExteriorActive != lastPrintedFanExteriorActive) ||           (lastPrintedTemperatureControlEnabled != temperatureControlEnabled) ||
+           (lastPrintedHumidityControlEnabled != humidityControlEnabled);
 }
 
 // Check if there are significant sensor value changes
