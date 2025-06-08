@@ -389,8 +389,7 @@ bool Configuration::validateDeviceObject(Device* device) {
         Serial.println(" is outside valid ESP32 memory range");
         return false;
     }
-    
-    // Try to read the vtable pointer (first 4 bytes of object) with improved safety
+      // Try to read the vtable pointer (first 4 bytes of object) with improved safety
     try {
         // More defensive approach to check vtable
         volatile uint8_t* rawPtr = (volatile uint8_t*)device;
@@ -398,20 +397,12 @@ bool Configuration::validateDeviceObject(Device* device) {
         volatile uint8_t testByte = *rawPtr;
         (void)testByte; // Avoid unused variable warning
         
-        // Print device address for debugging
-        Serial.print("Device memory accessible at 0x");
-        Serial.println(deviceAddr, HEX);
-        
         // Wait for any pending interrupts to complete
         yield();
         
         // ESP32's DRAM region is typically in this range
         if (deviceAddr >= 0x3F800000 && deviceAddr <= 0x3FFFFFFF) {
-            // This is likely a valid object, try initializing it
-            Serial.println("Device pointer in valid memory range, proceeding with initialization");
             return true;
-        } else {
-            Serial.println("Device pointer outside expected memory range");
         }
     } catch (...) {
         Serial.println("Exception while accessing device memory");
