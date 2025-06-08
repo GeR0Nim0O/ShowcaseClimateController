@@ -894,11 +894,11 @@ void ClimateController::updateControllerWithTiming(ClimateController* controller
 }
 
 // Configuration method for setting all parameters at once
-void ClimateController::configure(float tempSetpoint, float humSetpoint, ClimateMode climateMode, HumidityMode humidityMode) {
+void ClimateController::configure(float tempSetpoint, float humSetpoint, bool enableTemperatureControl, bool enableHumidityControl) {
     setTemperatureSetpoint(tempSetpoint);
     setHumiditySetpoint(humSetpoint);
-    setClimateMode(climateMode);
-    setHumidityMode(humidityMode);
+    setTemperatureControlEnabled(enableTemperatureControl);
+    setHumidityControlEnabled(enableHumidityControl);
     
     Serial.println("Climate controller configured:");
     Serial.print("Temperature setpoint: ");
@@ -907,20 +907,10 @@ void ClimateController::configure(float tempSetpoint, float humSetpoint, Climate
     Serial.print("Humidity setpoint: ");
     Serial.print(humSetpoint);
     Serial.println("%");
-    Serial.print("Climate mode: ");
-    switch (climateMode) {
-        case ClimateMode::AUTO: Serial.println("AUTO"); break;
-        case ClimateMode::HEATING: Serial.println("HEATING"); break;
-        case ClimateMode::COOLING: Serial.println("COOLING"); break;
-        case ClimateMode::OFF: Serial.println("OFF"); break;
-    }
-    Serial.print("Humidity mode: ");
-    switch (humidityMode) {
-        case HumidityMode::AUTO: Serial.println("AUTO"); break;
-        case HumidityMode::HUMIDIFYING: Serial.println("HUMIDIFYING"); break;
-        case HumidityMode::DEHUMIDIFYING: Serial.println("DEHUMIDIFYING"); break;
-        case HumidityMode::OFF: Serial.println("OFF"); break;
-    }
+    Serial.print("Temperature control: ");
+    Serial.println(enableTemperatureControl ? "ENABLED" : "DISABLED");
+    Serial.print("Humidity control: ");
+    Serial.println(enableHumidityControl ? "ENABLED" : "DISABLED");
 }
 
 // Reload configuration from Configuration class and ClimateConfig
