@@ -308,29 +308,17 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
             Serial.print(" found) for device: ");
             Serial.println(deviceKey);
             continue;
-        }
-          // Get the device at the specified positional index
+        }        // Get the device at the specified positional index
         uint8_t deviceAddress = matchingDevices[typeIndex].first;
         uint8_t tcaPort = matchingDevices[typeIndex].second;
-          // Device selected
         
-        Serial.print("Creating device from JSON: ");
+        Serial.print("Creating ");
         Serial.print(deviceKey);
-        Serial.print(" (");
-        Serial.print(deviceType);
-        Serial.print("/");
-        Serial.print(deviceTypeNumber);
-        Serial.print(") at address 0x");
+        Serial.print(" (0x");
         Serial.print(deviceAddress, HEX);
-        Serial.print(" on TCA port ");
+        Serial.print(", Port ");
         Serial.print(tcaPort);
-        if (!deviceLabel.isEmpty()) {
-            Serial.print(" with label: ");
-            Serial.print(deviceLabel);
-        } else {
-            Serial.print(" (no label specified)");
-        }
-        Serial.println();
+        Serial.println(")");
         
         // Parse channels and thresholds
         std::map<String, String> channelNames;
