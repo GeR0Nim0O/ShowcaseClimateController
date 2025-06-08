@@ -525,40 +525,23 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
                 I2CHandler::selectTCA(device->getTCAChannel());
                 Wire.beginTransmission(device->getI2CAddress());
                 int error = Wire.endTransmission();
-                
-                if (error == 0) {
-                    Serial.println("Display device I2C communication test passed");
+                  if (error == 0) {
                     success = true;
-                } else {
-                    Serial.print("Display device I2C communication failed with error: ");
-                    Serial.println(error);
                 }
             }
             
             if (success) {
-                Serial.println("Device direct initialization: SUCCESS");
-                // Instead of setting initialized state directly, call begin() to properly initialize
                 device->begin();
-                
-                // Check if the initialization was successful
-                if (device->isInitialized()) {
-                    Serial.println("Device is now properly initialized");
-                } else {
-                    Serial.println("Device still not initialized after begin()");
-                }
-            } else {
-                Serial.println("Device direct initialization: FAILED");
             }
         } catch (...) {
-            Serial.println("ERROR: Exception during direct device initialization");
             success = false;
         }
         
-        // Safety delay between device initializations
         delay(100);
     }
     
-    Serial.println("\n=== Device Initialization Complete ===");
+    Serial.println("Device initialization complete");
+}
 }
 
 // Parse configuration sections
