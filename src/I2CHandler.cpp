@@ -76,8 +76,7 @@ void I2CHandler::selectTCA(uint8_t i) {
         WIRE.beginTransmission(TCAADDR);
         WIRE.write(1 << i);
         uint8_t error = WIRE.endTransmission();
-        
-        if (error == 0) {
+          if (error == 0) {
             success = true;
             lastSelectedPort = i;
             lastSelectionTime = currentTime;
@@ -86,12 +85,6 @@ void I2CHandler::selectTCA(uint8_t i) {
             // Small delay to ensure TCA stabilizes
             delayMicroseconds(100);
         } else {
-            Serial.print("Failed to select TCA Port ");
-            Serial.print(i);
-            Serial.print(" (attempt ");
-            Serial.print(attempt + 1);
-            Serial.print("): Error ");
-            Serial.println(error);
             if (attempt < retries - 1) {
                 delay(2); // Shorter delay before retry
             }
