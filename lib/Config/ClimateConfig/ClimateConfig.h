@@ -61,10 +61,7 @@ public:
     float getTemperatureKi() const { return settings.temperatureKi; }
     float getTemperatureKd() const { return settings.temperatureKd; }
     bool getFanInteriorEnabled() const { return settings.fanInteriorEnabled; }
-    bool getFanExteriorEnabled() const { return settings.fanExteriorEnabled; }
-    uint16_t getUpdateInterval() const { 
-        Serial.print("DEBUG: ClimateConfig::getUpdateInterval() returning: ");
-        Serial.println(settings.updateInterval);
+    bool getFanExteriorEnabled() const { return settings.fanExteriorEnabled; }    uint16_t getUpdateInterval() const { 
         return settings.updateInterval; 
     }
     float getMaxTemperature() const { return settings.maxTemperature; }
