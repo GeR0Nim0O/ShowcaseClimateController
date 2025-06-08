@@ -112,11 +112,9 @@ void tcaSelect(uint8_t i) {
 
 std::map<uint8_t, std::vector<uint8_t>> I2CHandler::TCAScanner() {
     std::map<uint8_t, std::vector<uint8_t>> tcaScanResults;
-    Serial.println("\nTCAScanner ready!");
+    
     for (uint8_t t = 0; t < 8; t++) {
         I2CHandler::selectTCA(t);
-        Serial.print("TCA Port #");
-        Serial.println(t);
 
         for (uint8_t addr = 0; addr <= 127; addr++) {
             if (addr == TCAADDR)
@@ -129,7 +127,6 @@ std::map<uint8_t, std::vector<uint8_t>> I2CHandler::TCAScanner() {
             }
         }
     }
-    Serial.println("\nDone scanning TCA ports.");
     return tcaScanResults;
 }
 
