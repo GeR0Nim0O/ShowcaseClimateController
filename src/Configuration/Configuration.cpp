@@ -204,20 +204,6 @@ void Configuration::printConfigValues() {
 
 std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vector<uint8_t>>& tcaScanResults, DS3231rtc*& rtc) {
     std::vector<Device*> devices;
-    
-    // Debug TCA scan results
-    Serial.println("\nTCA scan results:");
-    for (const auto& result : tcaScanResults) {
-        Serial.print("TCA Port ");
-        Serial.print(result.first);
-        Serial.print(": ");
-        for (const auto& address : result.second) {
-            Serial.print("0x");
-            Serial.print(address, HEX);
-            Serial.print(" ");
-        }
-        Serial.println();
-    }
 
     // Check if JSON configuration is available
     if (devicesConfig.isNull()) {
