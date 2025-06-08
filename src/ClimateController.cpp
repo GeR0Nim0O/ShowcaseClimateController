@@ -495,14 +495,10 @@ void ClimateController::initializePinMappings() {
 }
 
 uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
-    Serial.print("ClimateController: Getting pin for channel: ");
-    Serial.println(channelName);
-    
     JsonObject devicesConfig = Configuration::getDevicesConfig();
     
     // Add null/empty check for devicesConfig
     if (devicesConfig.isNull() || devicesConfig.size() == 0) {
-        Serial.printf("Warning: devicesConfig is null or empty for %s, using default\n", channelName.c_str());
         // Use default mapping
         if (channelName == "FanExterior") return 0;
         if (channelName == "FanInterior") return 1;
@@ -514,13 +510,9 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
         return 0;
     }
     
-    Serial.println("ClimateController: devicesConfig is valid, checking PCF8574 section");
-    
     if (devicesConfig["PCF8574"].is<JsonObject>()) {
-        Serial.println("ClimateController: Found PCF8574 section");
         JsonObject pcfConfig = devicesConfig["PCF8574"];
         if (pcfConfig["Channels"].is<JsonObject>()) {
-            Serial.println("ClimateController: Found Channels section");
             JsonObject channels = pcfConfig["Channels"];
             
             // Search through all IO channels to find the one with matching name
@@ -532,19 +524,13 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
                     String channelKey = channel.key().c_str();
                     if (channelKey.startsWith("IO")) {
                         uint8_t pin = channelKey.substring(2).toInt();
-                        Serial.printf("ClimateController: Found pin %d for channel %s\n", pin, channelName.c_str());
                         return pin;
                     }
                 }
             }
-        } else {
-            Serial.println("ClimateController: No Channels section found in PCF8574");
         }
-    } else {
-        Serial.println("ClimateController: No PCF8574 section found in devicesConfig");
     }
       // Return default pin if not found in configuration
-    Serial.printf("Warning: Pin mapping not found for %s, using default\n", channelName.c_str());
     if (channelName == "FanExterior") return 0;
     if (channelName == "FanInterior") return 1;
     if (channelName == "Humidify") return 2;
