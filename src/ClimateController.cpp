@@ -162,18 +162,7 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
             temperaturePID->SetOutputLimits(-100, 100); // -100 = full cooling, +100 = full heating
             Serial.println("Temperature PID initialized successfully");
         }
-        
-        Serial.println("Initializing Humidity PID controller");
-        humidityPID = new PID(&humInput, &humOutput, &humSetpoint,
-                             Configuration::getHumidityKp(), 
-                             Configuration::getHumidityKi(), 
-                             Configuration::getHumidityKd(), DIRECT);
-        
-        if (humidityPID != nullptr) {
-            humidityPID->SetMode(AUTOMATIC);
-            humidityPID->SetOutputLimits(-100, 100); // -100 = full dehumidify, +100 = full humidify
-            Serial.println("Humidity PID initialized successfully");
-        }
+  
     }
     catch (...) {
         Serial.println("Exception during PID controller initialization");
