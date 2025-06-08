@@ -119,17 +119,12 @@ void setup()
 {
   Serial.begin(115200);
   delay(5000);
-  
-  Serial.println("========================================");
-  Serial.println("  Showcase Climate Controller");
-  Serial.println("========================================");
-  Serial.println();
+    Serial.println("=== Showcase Climate Controller ===");
   
   // Test PSRAM first
   testPSRAM();
   
   // Initialize SD card and handle configuration early
-  Serial.println("1. Initializing SD card and configuration...");
   if (!SDHandler::initializeSDCardAndConfig()) {
     Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
   }
