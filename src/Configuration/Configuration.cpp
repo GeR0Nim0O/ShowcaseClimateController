@@ -999,19 +999,6 @@ float Configuration::getTemperatureKd() {
     return climateControllerConfig["temp_kd"].toFloat();
 }
 
-// Humidity PID parameters
-float Configuration::getHumidityKp() {
-    return climateControllerConfig["hum_kp"].toFloat();
-}
-
-float Configuration::getHumidityKi() {
-    return climateControllerConfig["hum_ki"].toFloat();
-}
-
-float Configuration::getHumidityKd() {
-    return climateControllerConfig["hum_kd"].toFloat();
-}
-
 // Control parameters
 float Configuration::getTemperatureHysteresis() {
     return climateControllerConfig["temperature_hysteresis"].toFloat();
