@@ -735,8 +735,7 @@ void Configuration::parseClimateControllerConfig(const JsonObject& config) {
       // Parse PID parameters
     if (config["pid_parameters"].is<JsonObject>()) {
         JsonObject pidParams = config["pid_parameters"];
-        
-        // Temperature PID
+          // Temperature PID
         if (pidParams["temperature"].is<JsonObject>()) {
             JsonObject tempPid = pidParams["temperature"];
             climateControllerConfig["temp_kp"] = String(tempPid["kp"].as<double>());
@@ -746,18 +745,6 @@ void Configuration::parseClimateControllerConfig(const JsonObject& config) {
             climateControllerConfig["temp_kp"] = String(2.0);
             climateControllerConfig["temp_ki"] = String(0.5);
             climateControllerConfig["temp_kd"] = String(0.1);
-        }
-        
-        // Humidity PID
-        if (pidParams["humidity"].is<JsonObject>()) {
-            JsonObject humPid = pidParams["humidity"];
-            climateControllerConfig["hum_kp"] = String(humPid["kp"].as<double>());
-            climateControllerConfig["hum_ki"] = String(humPid["ki"].as<double>());
-            climateControllerConfig["hum_kd"] = String(humPid["kd"].as<double>());
-        } else {
-            climateControllerConfig["hum_kp"] = String(1.0);
-            climateControllerConfig["hum_ki"] = String(0.2);
-            climateControllerConfig["hum_kd"] = String(0.05);
         }
     } else {
         // Default PID values if pid_parameters section is missing
