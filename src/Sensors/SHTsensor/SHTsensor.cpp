@@ -42,20 +42,13 @@ bool SHTsensor::begin() {
     bool success = setMeasurementMode(0x2C06); // High repeatability, clock stretching disabled
     if (!success) {
         Serial.println("Failed to set measurement mode");
-        return false;
-    }
+        return false;    }
     
     // Disable heater
     setHeater(false);
     
-    // Get serial number for debugging
-    Serial.print("SHT Serial Number: ");
-    Serial.println(getSerialNumber());
-    
     // Set initialized flag
     initialized = true;
-    
-    Serial.println("SHT sensor initialized successfully");
     
     return true;
 }
