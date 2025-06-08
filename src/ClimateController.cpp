@@ -121,9 +121,8 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
       temperaturePID(nullptr),      temperatureAutoTuner(nullptr),
       temperatureAutoTuning(false),
       autoTuneSetpoint(0.0), autoTuneOutputStep(0.0), autoTuneStartTime(0),
-      currentAutoTuneType(AutoTuneType::NORMAL), expectedAutoTuneDuration(0),// Will be loaded from ClimateConfig
+      currentAutoTuneType(AutoTuneType::NORMAL), expectedAutoTuneDuration(0),      // Will be loaded from ClimateConfig
       tempInput(0.0), tempOutput(0.0), tempSetpoint(0.0),
-      humInput(0.0), humOutput(0.0), humSetpoint(0.0),
       lastStatusPrint(0), statusPrintInterval(10000), // Print status every 10 seconds
       lastPrintedTemperature(0.0), lastPrintedHumidity(0.0),
       lastPrintedHeatingActive(false), lastPrintedCoolingActive(false),
