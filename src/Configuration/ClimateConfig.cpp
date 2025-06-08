@@ -155,12 +155,11 @@ void ClimateConfig::printSettings() {    Serial.println("\n=== Climate Controlle
     
     Serial.print("Humidity Setpoint: ");
     Serial.print(settings.humiditySetpoint);
-    Serial.println("%");
-      Serial.print("Climate Mode: ");
-    Serial.println(settings.climateMode);
+    Serial.println("%");      Serial.print("Temperature Control: ");
+    Serial.println(String(settings.climateMode) != "OFF" ? "ENABLED" : "DISABLED");
     
-    Serial.print("Humidity Mode: ");
-    Serial.println(settings.humidityMode);
+    Serial.print("Humidity Control: ");
+    Serial.println(String(settings.humidityMode) != "OFF" ? "ENABLED" : "DISABLED");
     
     Serial.print("Auto Fan Control: ");
     Serial.println(settings.autoFanControl ? "ON" : "OFF");
