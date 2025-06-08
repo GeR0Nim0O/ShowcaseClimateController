@@ -182,11 +182,7 @@ ClimateController::~ClimateController() {
         temperaturePID = nullptr;
     }
     
-    if (humidityPID != nullptr) {
-        delete humidityPID;
-        humidityPID = nullptr;
-    }
-      // Clean up AutoTune controllers
+    // Clean up AutoTune controllers
     if (temperatureAutoTuner != nullptr) {
         delete temperatureAutoTuner;
         temperatureAutoTuner = nullptr;
