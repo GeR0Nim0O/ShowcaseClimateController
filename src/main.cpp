@@ -770,11 +770,10 @@ void initializeClimateController() {
             Serial.println("°C");
             Serial.print("  Humidity Setpoint: ");
             Serial.print(humiditySetpoint);
-            Serial.println("%");
-            Serial.print("  Climate Mode: ");
-            Serial.println(climateMode);
-            Serial.print("  Humidity Mode: ");
-            Serial.println(humidityMode);
+            Serial.println("%");            Serial.print("  Temperature Control: ");
+            Serial.println(temperatureEnabled ? "ENABLED" : "DISABLED");
+            Serial.print("  Humidity Control: ");
+            Serial.println(humidityEnabled ? "ENABLED" : "DISABLED");
             
         } else {
             Serial.println("Failed to initialize climate controller from DeviceRegistry");
