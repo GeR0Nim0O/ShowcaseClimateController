@@ -7,17 +7,13 @@
 // Static factory method for automatic device discovery and initialization
 ClimateController* ClimateController::createFromDeviceRegistry() {
     try {
-        Serial.println("Initializing ClimateController from DeviceRegistry...");
-        
         // Use DeviceRegistry to get devices instead of manual searching
         DeviceRegistry& registry = DeviceRegistry::getInstance();
         
         // Get GPIO expander from DeviceRegistry
         PCF8574gpio* gpioExpander = (PCF8574gpio*)registry.getDeviceByType("GPIO", 0);
-        if (gpioExpander != nullptr) {
-            Serial.println("Found GPIO expander for climate control via DeviceRegistry");
-        } else {
-            Serial.println("No GPIO expander found in DeviceRegistry");
+        if (gpioExpander == nullptr) {
+            Serial.println("ERROR: No GPIO expander found");
             return nullptr;
         }
         
