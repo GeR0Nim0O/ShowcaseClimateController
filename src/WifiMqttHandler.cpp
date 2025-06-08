@@ -7,74 +7,26 @@ void WifiMqttHandler::connectToWiFi(const char* ssid, const char* password) {
         return;
     }
     
-    Serial.println("=== WiFi Connection Debug ===");
-    Serial.print("Target SSID: ");
-    Serial.println(ssid);
-    Serial.print("Password length: ");
-    Serial.println(strlen(password));
-      // Scan for available networks first
-    Serial.println("Scanning for available WiFi networks...");
+    // Scan for available networks first
     int networkCount = WiFi.scanNetworks();
     
     if (networkCount < 0) {
-        Serial.print("Network scan failed with error code: ");
-        Serial.println(networkCount);
-        Serial.println("Retrying scan...");
+        Serial.println("Network scan failed, retrying...");
         delay(2000);
-        networkCount = WiFi.scanNetworks(false, false); // Try without hidden networks
-    }
-    
-    Serial.print("Found ");
-    Serial.print(networkCount);
-    Serial.println(" networks:");
-    
-    if (networkCount <= 0) {
-        Serial.println("WARNING: No networks detected or scan failed!");
-        Serial.println("Proceeding with connection attempt anyway...");
+        networkCount = WiFi.scanNetworks(false, false);
     }
     
     bool targetNetworkFound = false;
     for (int i = 0; i < networkCount; i++) {
-        String networkSSID = WiFi.SSID(i);
-        int32_t networkRSSI = WiFi.RSSI(i);
-        wifi_auth_mode_t encryptionType = WiFi.encryptionType(i);
-        
-        Serial.print("  ");
-        Serial.print(i + 1);
-        Serial.print(": ");
-        Serial.print(networkSSID);
-        Serial.print(" (");
-        Serial.print(networkRSSI);
-        Serial.print(" dBm) ");
-        
-        switch(encryptionType) {
-            case WIFI_AUTH_OPEN: Serial.print("[OPEN]"); break;
-            case WIFI_AUTH_WEP: Serial.print("[WEP]"); break;
-            case WIFI_AUTH_WPA_PSK: Serial.print("[WPA_PSK]"); break;
-            case WIFI_AUTH_WPA2_PSK: Serial.print("[WPA2_PSK]"); break;
-            case WIFI_AUTH_WPA_WPA2_PSK: Serial.print("[WPA_WPA2_PSK]"); break;
-            case WIFI_AUTH_WPA2_ENTERPRISE: Serial.print("[WPA2_ENTERPRISE]"); break;
-            case WIFI_AUTH_WPA3_PSK: Serial.print("[WPA3_PSK]"); break;
-            case WIFI_AUTH_WPA2_WPA3_PSK: Serial.print("[WPA2_WPA3_PSK]"); break;
-            default: Serial.print("[UNKNOWN]"); break;
-        }
-        
-        if (networkSSID.equals(ssid)) {
+        if (WiFi.SSID(i).equals(ssid)) {
             targetNetworkFound = true;
-            Serial.print(" *** TARGET NETWORK ***");
+            break;
         }
-        Serial.println();
     }
     
-    if (!targetNetworkFound) {
-        Serial.println("WARNING: Target network not found in scan!");
-        Serial.println("Please check:");
-        Serial.println("1. Network name (SSID) is correct");
-        Serial.println("2. Router is powered on and broadcasting");
-        Serial.println("3. ESP32 is within range of the router");
+    if (!targetNetworkFound && networkCount > 0) {
+        Serial.println("WARNING: Target network not found in scan");
     }
-    
-    Serial.println("============================");
     
     // Clean up any existing connection
     WiFi.disconnect(true);
@@ -86,16 +38,15 @@ void WifiMqttHandler::connectToWiFi(const char* ssid, const char* password) {
     
     while (attempts < maxAttempts && WiFi.status() != WL_CONNECTED) {
         attempts++;
-        Serial.print("WiFi connection attempt ");
+        Serial.print("WiFi attempt ");
         Serial.print(attempts);
         Serial.print("/");
         Serial.println(maxAttempts);
         
-        // More robust connection attempt
         WiFi.begin(ssid, password);
         
         unsigned long startAttemptTime = millis();
-        const unsigned long attemptTimeout = 15000; // Increased timeout to 15 seconds
+        const unsigned long attemptTimeout = 15000; // 15 seconds timeout
         
         while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < attemptTimeout) {
             delay(500);
