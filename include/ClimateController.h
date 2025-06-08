@@ -1,4 +1,4 @@
-t#ifndef CLIMATE_CONTROLLER_H
+#ifndef CLIMATE_CONTROLLER_H
 #define CLIMATE_CONTROLLER_H
 
 #include <Arduino.h>
