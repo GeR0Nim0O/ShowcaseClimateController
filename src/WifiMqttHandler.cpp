@@ -388,17 +388,7 @@ void WifiMqttHandler::scanAndAnalyzeNetworks() {
     Serial.print("Found ");
     Serial.print(networkCount);
     Serial.println(" networks");
-                int temp = sortedIndices[j];
-                sortedIndices[j] = sortedIndices[j + 1];
-                sortedIndices[j + 1] = temp;
-            }
-        }
-    }
-    
-    // Display networks with enhanced information
-    for (int i = 0; i < networkCount; i++) {
-        displayNetworkDetails(sortedIndices[i]);
-        Serial.println();
+}
     }
     
     Serial.println("┌────────────────────────────────────────────────────────────┐");
