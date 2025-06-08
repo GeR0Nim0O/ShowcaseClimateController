@@ -42,7 +42,7 @@ bool ClimateConfig::begin() {
     return true;}
 
 void ClimateConfig::loadDefaults() {
-    Serial.println("DEBUG: ClimateConfig::loadDefaults() called");    settings.temperatureSetpoint = 0.0; // Will be set from config file
+    settings.temperatureSetpoint = 0.0; // Will be set from config file
     settings.humiditySetpoint = 0.0;    // Will be set from config file
     settings.temperatureKp = 2.0;
     settings.temperatureKi = 0.5;
@@ -77,9 +77,6 @@ void ClimateConfig::loadDefaults() {
     settings.dewPointSafetyMargin = 2.0;
     settings.dewPointUpdateInterval = 1000;
     settings.minCoolingTemperature = 5.0;
-    
-    Serial.print("DEBUG: ClimateConfig::loadDefaults() - updateInterval set to: ");
-    Serial.println(settings.updateInterval);
 }
 
 bool ClimateConfig::validateSettings() {
