@@ -1106,21 +1106,6 @@ void ClimateController::setTemperaturePID(double kp, double ki, double kd) {
     }
 }
 
-// Set humidity PID parameters
-void ClimateController::setHumidityPID(double kp, double ki, double kd) {
-    if (humidityPID != nullptr) {
-        humidityPID->SetTunings(kp, ki, kd);
-        Serial.print("Humidity PID updated - Kp: ");
-        Serial.print(kp);
-        Serial.print(", Ki: ");
-        Serial.print(ki);
-        Serial.print(", Kd: ");
-        Serial.println(kd);
-    } else {
-        Serial.println("Error: Humidity PID controller not initialized");
-    }
-}
-
 // Update ClimateConfig JSON file with current controller settings
 void ClimateController::updateClimateConfigFile() {
     Serial.println("Updating ClimateConfig JSON file with current settings...");
