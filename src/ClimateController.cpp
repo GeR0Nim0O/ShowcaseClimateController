@@ -867,10 +867,9 @@ void ClimateController::updateStatusPrintTracking() {
     lastPrintedCoolingActive = coolingActive;
     lastPrintedHumidifyingActive = humidifyingActive;
     lastPrintedDehumidifyingActive = dehumidifyingActive;
-    lastPrintedFanInteriorActive = fanInteriorActive;
-    lastPrintedFanExteriorActive = fanExteriorActive;
-    lastPrintedClimateMode = climateMode;
-    lastPrintedHumidityMode = humidityMode;
+    lastPrintedFanInteriorActive = fanInteriorActive;    lastPrintedFanExteriorActive = fanExteriorActive;
+    lastPrintedTemperatureControlEnabled = temperatureControlEnabled;
+    lastPrintedHumidityControlEnabled = humidityControlEnabled;
 }
 
 // Static method for controlled update with timing management
