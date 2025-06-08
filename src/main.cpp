@@ -475,20 +475,10 @@ void readAndSendDataFromDevices() {
     bool anyThresholdExceeded = false;
     
     for (size_t i = 0; i < devices.size(); i++) {
-        Device* device = devices[i];
-        if (device == nullptr) {
-            Serial.print("Error: Null device pointer at index ");
-            Serial.println(i);
+        Device* device = devices[i];        if (device == nullptr) {
             continue;
         }
         if (!device->isInitialized()) {
-            Serial.print("Error: Uninitialized device at index ");
-            Serial.print(i);
-            Serial.print(", Type: ");
-            Serial.print(device->getType());
-            Serial.print(", Address: 0x");
-            Serial.println(device->getI2CAddress(), HEX);
-            delay(100);
             continue;
         }
         
