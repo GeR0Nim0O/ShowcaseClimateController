@@ -111,7 +111,7 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
     : gpio(nullptr), sensor(nullptr), dac(nullptr),
       temperatureSetpoint(0.0), humiditySetpoint(0.0),
       currentTemperature(0.0), currentHumidity(0.0),
-      climateMode(ClimateMode::AUTO), humidityMode(HumidityMode::AUTO),
+      temperatureControlEnabled(true), humidityControlEnabled(true),
       heatingActive(false), coolingActive(false), 
       humidifyingActive(false), dehumidifyingActive(false),
       tempControlEnabled(false),      fanInteriorActive(false), fanExteriorActive(false),  // Initialize fan states
