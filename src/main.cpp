@@ -420,11 +420,7 @@ void readAndPrintInitialSensorData() {
     if (device == nullptr || !device->isInitialized()) {
       continue;
     }
-    
-    String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
-    Serial.print("\n--- Initial readings for ");
-    Serial.print(deviceName);
-    Serial.println(" ---");
+      String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
     
     I2CHandler::selectTCA(device->getTCAChannel());
     auto data = device->readData();
@@ -436,16 +432,8 @@ void readAndPrintInitialSensorData() {
       
       // Store initial value in lastSensorValues to establish baseline
       lastSensorValues[key] = value;
-      
-      Serial.print(channelKey);
-      Serial.print(": ");
-      Serial.print(value);
-      Serial.print(" (");
-      Serial.print(channel.second);
-      Serial.println(")");
     }
   }
-  Serial.println("===========================\n");
 }
 
 void sendSensorDataOverMQTT(const SensorData& data) {
