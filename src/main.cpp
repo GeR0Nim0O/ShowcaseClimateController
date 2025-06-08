@@ -119,7 +119,7 @@ void setup()
 {
   Serial.begin(115200);
   delay(5000);
-    Serial.println("=== Showcase Climate Controller ===");
+  Serial.println("=== Showcase Climate Controller ===");
   
   // Test PSRAM first
   testPSRAM();
@@ -128,6 +128,7 @@ void setup()
   if (!SDHandler::initializeSDCardAndConfig()) {
     Serial.println("WARNING: Failed to initialize SD card. Continuing with fallback configuration.");
   }
+  
   // Handle configuration loading with priority for project config
   bool configLoaded = false;
   String sdWifiSSID = "";
@@ -148,227 +149,115 @@ void setup()
       DeserializationError error = deserializeJson(sdConfig, sdConfigContent);
       if (!error && !sdConfig["wifi"]["ssid"].isNull()) {
         sdWifiSSID = sdConfig["wifi"]["ssid"].as<String>();
-        Serial.print("SD WiFi SSID: '");
-        Serial.print(sdWifiSSID);
-        Serial.println("'");
-        Serial.print("Project WiFi SSID: '");
-        Serial.print(projectWifiSSID);
-        Serial.println("'");
         
         if (sdWifiSSID != projectWifiSSID) {
-          Serial.println();
-          Serial.println("========================================");
-          Serial.println("   CONFIGURATION MISMATCH DETECTED");
-          Serial.println("========================================");
-          Serial.println("The SD card has different WiFi settings than your project.");
-          Serial.println("The system will use PROJECT settings and update SD card.");
-          Serial.println();
-          Serial.print("→ Updating SD card configuration... ");
+          Serial.println("Config mismatch detected - updating SD card");
           if (SDHandler::forceUpdateSDConfig()) {
-            Serial.println("SUCCESS!");
-            Serial.println("✓ SD card now matches project configuration");
+            Serial.println("SD card updated successfully");
           } else {
-            Serial.println("FAILED!");
-            Serial.println("⚠️  Continuing with project configuration anyway");
+            Serial.println("SD update failed - continuing with project config");
           }
-          Serial.println("========================================");
-          Serial.println();
-        } else {
-          Serial.println("✓ SD card and project configurations match");
         }
-      } else {
-        Serial.println("⚠️  SD card config invalid or missing WiFi settings");
       }
-    } else {
-      Serial.println("⚠️  No SD card configuration found");
     }
   } else {
     // Fallback to SD card config if project config fails
-    Serial.println("⚠️  Project config failed, trying SD card fallback...");
     if (Configuration::loadConfigFromSD("/config.json")) {
-      Serial.println("✓ SD card configuration loaded successfully");
+      Serial.println("SD card configuration loaded");
       configLoaded = true;
     }
   }
   
   if (!configLoaded) {
-    Serial.println("ERROR: Both project and SD card config.json failed!");
-    Serial.println("System cannot continue without configuration.");
-    while(1) { delay(1000); } // Halt system
+    Serial.println("ERROR: Configuration loading failed!");
+    while(1) { delay(1000); }
   }  
-  // Now continue with normal initialization
-  Serial.println("2. Initializing I2C bus...");
-  I2CHandler::initializeI2C();
   
-  Serial.println("3. Printing configuration values...");
-  Configuration::printConfigValues();
-
-  Serial.println("4. Scanning I2C devices...");
-  // Get connected I2C devices with their addresses and TCA ports
+  // Initialize I2C and devices
+  I2CHandler::initializeI2C();
   tcaScanResults = I2CHandler::TCAScanner();
-
-  // Print TCA scan results
   I2CHandler::printTCAScanResults(tcaScanResults);
   
-  Serial.println("5. Initializing devices...");
-  // Initialize devices based on configuration
   devices = Configuration::initializeDevices(tcaScanResults, rtc);
-
-  // Initialize each device
   Configuration::initializeEachDevice(devices);
-
-  // Remove nullptr entries from devices vector
   devices.erase(std::remove(devices.begin(), devices.end(), nullptr), devices.end());
   
-  Serial.print("✓ Initialized ");
+  Serial.print("Initialized ");
   Serial.print(devices.size());
-  Serial.println(" devices successfully");
+  Serial.println(" devices");
   
-  // Print created sensors for debugging
-  printCreatedSensors();  Serial.println("6. Initializing climate controller...");
   // Initialize climate controller
   initializeClimateController();
-    // Prompt for AutoTune if climate controller is enabled
+  
+  // Prompt for AutoTune if climate controller is enabled
   AutoTuneMode autoTuneMode = AutoTuneMode::SKIP;
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
     autoTuneMode = promptForAutoTune();
-    if (autoTuneMode != AutoTuneMode::SKIP) {
-      Serial.println("→ AutoTune will be started after WiFi/MQTT setup");
-    }
   }
-    Serial.println("7. Initializing display...");
+  
   // Initialize display device
   initializeDisplayDevice();
-  Serial.println("8. Reading initial sensor data...");
-  // Read and print initial sensor values after initialization
+  
+  // Read initial sensor data
   readAndPrintInitialSensorData();
   
-  Serial.println("9. Setting up MQTT client ID and topic...");
+  // Setup MQTT identifiers
   clientId = Configuration::getProjectNumber() + "_" + Configuration::getShowcaseId();
   topic = Configuration::getDeviceName() + "/" + Configuration::getProjectNumber() + "/" + Configuration::getShowcaseId();
-    // Print debugging information
-  printDebugInfo();  Serial.println("10. Attempting WiFi connection ONCE during setup...");
-  Serial.println("=== SINGLE SETUP WiFi CONNECTION ATTEMPT ===");
-  Serial.print("WiFi SSID: '");
-  Serial.print(Configuration::getWiFiSSID());
-  Serial.println("'");
-  Serial.print("WiFi Password: '");
-  Serial.print(Configuration::getWiFiPassword());
-  Serial.println("'");  Serial.print("WiFi Password Length: ");
-  Serial.println(Configuration::getWiFiPassword().length());
-  Serial.println("NOTE: After flash erase, password should now be read correctly from config.json");
   
+  // Print debugging information
+  printDebugInfo();
+  
+  // WiFi connection attempt
+  Serial.println("Attempting WiFi connection...");
   bool wifiConnected = WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword());
-    if (!wifiConnected) {
-    Serial.println();
-    Serial.println("========================================");
-    Serial.println("        WiFi Connection Failed");
-    Serial.println("========================================");
-    Serial.println("WiFi connection failed during setup. Troubleshooting information:");
-    Serial.println();
-    Serial.println("1. NETWORK ANALYSIS:");
-    WifiMqttHandler::scanAndAnalyzeNetworks();
-    Serial.println();
-    Serial.println("2. CURRENT CONFIG:");
-    Serial.print("   SSID: '");
-    Serial.print(Configuration::getWiFiSSID());
-    Serial.println("'");
-    Serial.print("   Password: '");
-    Serial.print(Configuration::getWiFiPassword());
-    Serial.println("'");
-    Serial.print("   Password length: ");
-    Serial.println(Configuration::getWiFiPassword().length());
-    Serial.println();    Serial.println("3. TROUBLESHOOTING TIPS:");
-    Serial.println("   • Verify network name (case-sensitive)");
-    Serial.println("   • Check WiFi password matches your config.json");
-    Serial.println("   • Ensure router is powered and broadcasting");
-    Serial.println("   • Move ESP32 closer to router");
-    Serial.println("   • Check for MAC filtering on router");
-    Serial.println();
-    Serial.println("→ System will retry WiFi connection every 60 seconds in main loop");
-    Serial.println("→ This aligns with the global status timer for efficient operation");
-    Serial.println("========================================");
-    Serial.println();
+  
+  if (!wifiConnected) {
+    Serial.println("WiFi connection failed - running in offline mode");
     offlineMode = true;
   } else {
-    Serial.println("✓ WiFi connected successfully during setup!");
+    Serial.println("WiFi connected");
     offlineMode = false;
     
-    Serial.println("11. Initializing time synchronization...");
-    // Connect to TimeAPI and NTP only if WiFi is connected
-    // Only fetch time from RTC if RTC is connected and initialized
+    // Initialize time synchronization
     if (rtc && rtc->isInitialized()) {
       TimeHandler::fetchTime(*rtc);
-    } else {
-      Serial.println("RTC not connected or not initialized. Skipping RTC time fetch.");
     }
 
-    Serial.println("12. Attempting MQTT connection...");
-    // Try to connect to MQTT broker only if WiFi is connected
+    // Attempt MQTT connection
     if (!WifiMqttHandler::connectToMqttBrokerWithCheck(client, espClient, 
         Configuration::getMqttsServer(), rootCACertificate, 
         Configuration::getMqttsPort(), clientId, topic,
         Configuration::getFlespiToken())) {
-      Serial.println("Failed to connect to MQTT broker - will retry in main loop");
+      Serial.println("MQTT connection failed - will retry in main loop");
     } else {
-      Serial.println("✓ MQTT connected successfully!");
+      Serial.println("MQTT connected");
     }
   }
-    Serial.println();
-  Serial.println("========================================");
-  Serial.println("      SETUP COMPLETE");
-  Serial.println("========================================");
+  
+  Serial.println("Setup complete");
   
   // Turn off DAC now that setup is complete
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
-    Serial.println("Turning off DAC - setup complete");    // Get DAC device and set it to 1V (0% power in 1-5V range)
     DeviceRegistry& registry = DeviceRegistry::getInstance();
     GP8403dac* dac = (GP8403dac*)registry.getDeviceByType("DAC", 0);
     if (dac != nullptr && dac->isInitialized()) {
       dac->setChannelVoltage(0, 1.0);
-      Serial.println("✓ DAC set to 1V (0% power) - setup finished");
     }
   }
   
   delay(500);
-  setupComplete = true; // Indicate that setup is complete
-  Serial.println("System ready! Setup complete: " + String(setupComplete ? "YES" : "NO"));
-    // Start AutoTune if requested
+  setupComplete = true;
+  
+  // Start AutoTune if requested
   if (autoTuneMode != AutoTuneMode::SKIP && Configuration::isClimateControllerEnabled() && climateController != nullptr) {
-    Serial.println();
-    Serial.println("========================================");
-    Serial.println("       STARTING PID AutoTune");
-    Serial.println("========================================");
+    Serial.println("Starting PID AutoTune...");
     
     if (autoTuneMode == AutoTuneMode::NORMAL) {
-      Serial.println("Normal AutoTune process will now begin...");
-      Serial.println("This may take 2-4 hours to complete.");
-      Serial.println("Temperature will fluctuate during calibration.");
-      Serial.println("========================================");
-      Serial.println();
-      
       climateController->startTemperatureAutoTune();
     } else if (autoTuneMode == AutoTuneMode::FAST) {
-      Serial.println("Fast AutoTune process will now begin...");
-      Serial.println("This may take 15-30 minutes to complete.");
-      Serial.println("Temperature will fluctuate during calibration.");
-      Serial.println("WARNING: Results may be less accurate than normal mode!");
-      Serial.println("========================================");
-      Serial.println();
-      
       climateController->startTemperatureAutoTuneFast();
     }
-  }
-  
-  // Configure MQTT throttling from configuration
-  Serial.print("MQTT throttling: ");
-  Serial.print(Configuration::isMqttThrottlingEnabled() ? "enabled" : "disabled");
-  if (Configuration::isMqttThrottlingEnabled()) {
-    Serial.print(" (");
-    Serial.print(Configuration::getMqttThrottlingInterval() / 1000);
-    Serial.println(" second intervals)");
-  } else {
-    Serial.println();
   }
 }
 
