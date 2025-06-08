@@ -139,10 +139,8 @@ private:
     
     // Control modes
     ClimateMode climateMode;
-    HumidityMode humidityMode;
-      // PID controllers
+    HumidityMode humidityMode;      // PID controllers
     PID* temperaturePID;
-    PID* humidityPID;
       // PID AutoTune controllers - Temperature only (humidity uses digital control)
     PID_ATune* temperatureAutoTuner;
     bool temperatureAutoTuning;
