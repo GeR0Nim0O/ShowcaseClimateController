@@ -79,35 +79,14 @@ void WifiMqttHandler::connectToWiFi(const char* ssid, const char* password) {
 }
 
 bool WifiMqttHandler::connectToWiFiWithCheck(const String& ssid, const String& password) {
-    // Check for null pointers
     if (ssid.isEmpty() || password.isEmpty()) {
         Serial.println("Error: SSID or password is empty");
         return false;
     }
 
-    Serial.println("=== WiFi Connection Check ===");
-    Serial.print("Attempting to connect to: ");
-    Serial.println(ssid);
-    
-    // Connect to WiFi
     connectToWiFi(ssid.c_str(), password.c_str());
-
-    // The connectToWiFi function handles its own connection logic and timing
-    // Just check the final status after it completes
-    bool isConnected = (WiFi.status() == WL_CONNECTED);
-    
-    if (isConnected) {
-        Serial.println("✓ WiFi connection check: SUCCESS");
-        Serial.print("Connected to: ");
-        Serial.println(WiFi.SSID());
-        Serial.print("IP Address: ");
-        Serial.println(WiFi.localIP());
-        Serial.print("Signal: ");
-        Serial.print(WiFi.RSSI());
-        Serial.println(" dBm");
-    } else {
-        Serial.println("✗ WiFi connection check: FAILED");
-        Serial.print("Final status: ");
+    return (WiFi.status() == WL_CONNECTED);
+}
         
         wl_status_t status = WiFi.status();
         switch(status) {
