@@ -69,9 +69,9 @@ public:
     float getMinTemperature() const { return settings.minTemperature; }
     float getMaxHumidity() const { return settings.maxHumidity; }
     float getMinHumidity() const { return settings.minHumidity; }
-    String getClimateMode() const { return String(settings.climateMode); }
-    String getHumidityMode() const { return String(settings.humidityMode); }
-    bool getAutoFanControl() const { return settings.autoFanControl; }    float getTemperatureHysteresis() const { return settings.temperatureHysteresis; }
+    String getClimateMode() const { return String(settings.climateMode); }    String getHumidityMode() const { return String(settings.humidityMode); }
+    bool getAutoFanControl() const { return settings.autoFanControl; }
+    float getTemperatureHysteresis() const { return settings.temperatureHysteresis; }
     float getHumidityHysteresis() const { return settings.humidityHysteresis; }
     
     // Dew point compensation getters
