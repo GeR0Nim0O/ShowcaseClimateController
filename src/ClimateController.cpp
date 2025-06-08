@@ -1069,18 +1069,7 @@ void ClimateController::reloadConfiguration() {
                 Configuration::getTemperatureKp(),
                 Configuration::getTemperatureKi(),
                 Configuration::getTemperatureKd()
-            );
-            Serial.println("Temperature PID parameters updated from Configuration");
-        }
-        
-        // Update PID parameters for humidity controller
-        if (humidityPID != nullptr) {
-            humidityPID->SetTunings(
-                Configuration::getHumidityKp(),
-                Configuration::getHumidityKi(),
-                Configuration::getHumidityKd()
-            );
-            Serial.println("Humidity PID parameters updated from Configuration");
+            );            Serial.println("Temperature PID parameters updated from Configuration");
         }
     }
     
