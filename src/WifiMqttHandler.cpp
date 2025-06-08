@@ -383,18 +383,11 @@ void WifiMqttHandler::scanAndAnalyzeNetworks() {
     if (networkCount == 0) {
         Serial.println("No networks found");
         return;
-        Serial.print("Found ");
+    }
+    
+    Serial.print("Found ");
     Serial.print(networkCount);
     Serial.println(" networks");
-    
-    Serial.println("┌────────────────────────────────────────────────────────────┐");
-    Serial.println("│ Signal Strength Guide:                                    │");
-    Serial.println("│ ████████ Excellent (-30 to -50 dBm)                       │");
-    Serial.println("│ ██████   Good      (-50 to -60 dBm)                       │");
-    Serial.println("│ ████     Fair      (-60 to -70 dBm)                       │");
-    Serial.println("│ ██       Poor      (-70 to -80 dBm)                       │");
-    Serial.println("│ ▌        Very Poor (-80 to -90 dBm)                       │");
-    Serial.println("└────────────────────────────────────────────────────────────┘");
 }
 
 void WifiMqttHandler::displayNetworkDetails(int networkIndex) {
