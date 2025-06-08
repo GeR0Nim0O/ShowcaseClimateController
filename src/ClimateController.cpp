@@ -114,10 +114,8 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
     pinDehumidify = 3;
     pinTemperatureEnable = 4;
     pinTemperatureCool = 5;
-    pinTemperatureHeat = 6;
-      // Initialize PID controllers - with safety checks
+    pinTemperatureHeat = 6;      // Initialize PID controllers - with safety checks
     try {
-        Serial.println("Initializing Temperature PID controller");
         temperaturePID = new PID(&tempInput, &tempOutput, &tempSetpoint, 
                                 Configuration::getTemperatureKp(), 
                                 Configuration::getTemperatureKi(), 
@@ -126,10 +124,9 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
         if (temperaturePID != nullptr) {
             temperaturePID->SetMode(AUTOMATIC);
             temperaturePID->SetOutputLimits(-100, 100); // -100 = full cooling, +100 = full heating
-            Serial.println("Temperature PID initialized successfully");
         }
   
-    }    catch (...) {
+    }catch (...) {
         Serial.println("Exception during PID controller initialization");
         // Clean up if an exception occurs
         if (temperaturePID != nullptr) {
