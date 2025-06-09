@@ -387,7 +387,7 @@ String Interface::formatHumidityStatus() {
 }
 
 String Interface::formatAutoTuneStatus() {
-    return "PIDtune";
+    return "AutoTune";
 }
 
 void Interface::updateActivity() {
