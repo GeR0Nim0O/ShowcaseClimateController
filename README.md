@@ -335,10 +335,11 @@ Upon first startup, monitor the serial output for device discovery:
 [INFO] Starting I2C device discovery...
 [INFO] Scanning PCA9548A Channel 0... Found: PCF8574 GPIO (0x20)
 [INFO] Scanning PCA9548A Channel 1... Found: SHT31 Sensor (0x44)
-[INFO] Scanning PCA9548A Channel 2... Found: SSD1306 Display (0x3C)
-[INFO] Scanning PCA9548A Channel 3... Found: GP8403 DAC (0x5F)
-[INFO] Scanning PCA9548A Channel 4... Found: BH1705 Light (0x23)
-[INFO] Scanning PCA9548A Channel 5... No device found
+[INFO] Scanning PCA9548A Channel 2... Found: LCD2x16 Display (0x27)
+[INFO] Scanning PCA9548A Channel 3... Found: RotaryEncoder (0x30)
+[INFO] Scanning PCA9548A Channel 4... Found: GP8403 DAC (0x5F)
+[INFO] Scanning PCA9548A Channel 5... Found: BH1705 Light (0x23)
+[INFO] Scanning PCA9548A Channel 6... No device found
 [INFO] Scanning PCA9548A Channel 6... No device found
 [INFO] Scanning PCA9548A Channel 7... No device found
 [INFO] Device Registry: 5 devices successfully initialized
