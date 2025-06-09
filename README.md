@@ -726,7 +726,7 @@ interface.begin();
 
 ### Configuration Management
 - **ClimateConfig**: Singleton configuration manager
-- **EEPROM Storage**: Persistent settings with checksum validation
+- **Persistent Storage**: Settings saved to SD card and SPIFFS
 - **Default Values**: Automatic fallback to safe defaults
 
 ### Control Logic
