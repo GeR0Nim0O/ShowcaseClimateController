@@ -36,7 +36,7 @@ The interface provides a cyclical menu system with the following screens:
 3. **Humidity Setpoint** (Menu 2)
    - Allows adjustment of humidity setpoint (30-90%)
    - Encoder rotation adjusts value in 1% steps
-   - Format: `Humidity Setpt:` / `65.0% ADJUST`
+   - Format: `Humidity Setpt:` / `65% ADJUST`
 
 4. **Temperature Control Enable** (Menu 3)
    - Toggle temperature control on/off
