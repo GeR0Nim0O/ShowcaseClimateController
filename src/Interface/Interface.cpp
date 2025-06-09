@@ -185,8 +185,16 @@ void Interface::displayDefault() {
     float currentTemp = climateController->getCurrentTemperature();
     float currentHum = climateController->getCurrentHumidity();
     
-    // Check if AutoTune is active
-    bool autoTuneActive = climateController->isAutoTuning();
+    // Check AutoTune status and handle state transitions
+    bool currentAutoTuneActive = climateController->isAutoTuning();
+    
+    // Detect AutoTune completion
+    if (previousAutoTuneActive && !currentAutoTuneActive) {
+        // AutoTune just completed
+        showingAutoTuneComplete = true;
+        autoTuneCompleteTime = millis();
+    }
+    previousAutoTuneActive = currentAutoTuneActive;
     
     // Line 1: Current temperature and humidity
     display->clear();
@@ -195,11 +203,20 @@ void Interface::displayDefault() {
     display->setCursor(8, 0);
     display->print("RH:" + formatHumidity(currentHum));
     
-    // Line 2: Show AutoTune status if active, otherwise show control status
+    // Line 2: Show AutoTune status, completion message, or normal control status
     display->setCursor(0, 1);
-    if (autoTuneActive) {
+    
+    if (showingAutoTuneComplete) {
+        // Show completion message for 3 seconds
+        display->print("AutoTune Complete");
+        if (millis() - autoTuneCompleteTime > 3000) {
+            showingAutoTuneComplete = false;
+        }
+    } else if (currentAutoTuneActive) {
+        // Show AutoTune in progress
         display->print(formatAutoTuneStatus());
     } else {
+        // Show normal control status
         String tempStatus = formatTemperatureStatus();
         String humStatus = formatHumidityStatus();
         display->print("T:" + tempStatus + " RH:" + humStatus);
