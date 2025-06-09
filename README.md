@@ -140,9 +140,6 @@ Supported Device Types:
 ### GPIO Pin Configuration
 ```
 ESP32-S3 Pin Assignments:
-├── GPIO 4: Rotary Encoder Channel A
-├── GPIO 5: Rotary Encoder Channel B
-├── GPIO 6: Rotary Encoder Button
 ├── GPIO 17: I2C SDA (System Bus)
 └── GPIO 16: I2C SCL (System Bus)
 
