@@ -266,10 +266,9 @@ void Interface::adjustCurrentSetting(int direction) {
     
     bool settingChanged = false;
     
-    switch (currentMenu) {
-        case MENU_TEMP_SETPOINT: {
+    switch (currentMenu) {        case MENU_TEMP_SETPOINT: {
             float current = climateController->getTemperatureSetpoint();
-            float newValue = current + (direction * adjustmentStep);
+            float newValue = current + (direction * 0.1);  // 0.1°C steps for temperature
             // Clamp to reasonable limits
             newValue = constrain(newValue, 10.0f, 40.0f);
             if (newValue != current) {
@@ -283,7 +282,7 @@ void Interface::adjustCurrentSetting(int direction) {
         
         case MENU_HUMIDITY_SETPOINT: {
             float current = climateController->getHumiditySetpoint();
-            float newValue = current + (direction * adjustmentStep);
+            float newValue = current + (direction * 1.0);  // 1% steps for humidity
             // Clamp to reasonable limits
             newValue = constrain(newValue, 30.0f, 90.0f);
             if (newValue != current) {
