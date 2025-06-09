@@ -184,6 +184,13 @@ The Interface can be configured via JSON configuration files:
       "model": "I2C",
       "address": "0x61", 
       "tcaPort": 1,      "label": "Main Encoder"
+    },
+    {
+      "type": "Interface",
+      "model": "",
+      "address": "0x00",
+      "tcaPort": 0,
+      "label": "Main Interface"
     }
   ]
 }
