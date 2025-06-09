@@ -367,18 +367,13 @@ namespace {    bool registeredSHT = DeviceRegistry::registerDeviceType("Sensor",
            const std::map<String, String>& channels, int deviceIndex) {
         String deviceName = "LCD_Display_" + String(deviceIndex);
         return new Display(wire, address, tcaPort, deviceName, deviceIndex);
-    });
-
-    bool registeredRotaryEncoder = DeviceRegistry::registerDeviceType("RotaryEncoder", "I2C", 
+    });    bool registeredRotaryEncoder = DeviceRegistry::registerDeviceType("RotaryEncoder", "I2C", 
         [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
            const std::map<String, String>& channels, int deviceIndex) {
         String deviceName = "RotaryEncoder_" + String(deviceIndex);
         return new RotaryEncoder(wire, address, tcaPort, deviceName, deviceIndex);
     });
 
-    bool registeredInterface = DeviceRegistry::registerDeviceType("Interface", "", 
-        [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
-           const std::map<String, String>& channels, int deviceIndex) {
-        return new Interface(wire, address, tcaPort, channels, deviceIndex);
-    });
+    // Note: Interface is no longer a Device - it's a coordination class
+    // Interface is created manually and coordinates the registered Display and RotaryEncoder devices
 }
