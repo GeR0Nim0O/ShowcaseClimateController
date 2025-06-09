@@ -602,14 +602,19 @@ This comprehensive setup process ensures a smooth installation and configuration
 
 ### Advanced Features
 
-#### PID Tuning
+#### Temperature PID AutoTune
 ```cpp
-// Access via serial commands or configuration file
-climateController->setTemperaturePID(2.0, 0.5, 0.1);  // Kp, Ki, Kd
+// Automatic PID parameter optimization
+climateController->startTemperatureAutoTune(22.0, 50.0);
+// Target: 22°C, Output step: 50%
+// Duration: 2-4 hours for complete analysis
+```
 
-// Humidity uses digital on/off control (no PID)
-// Configure humidity hysteresis instead:
-// humidity_hysteresis: 0.5  // in configuration file
+#### Humidity Control
+```cpp
+// Digital on/off hysteresis control for humidity devices
+// No PID - uses configurable deadband for stable operation
+setHumidityHysteresis(0.5);  // ±0.5% deadband around setpoint
 ```
 
 #### Power Control
