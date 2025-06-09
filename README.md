@@ -27,10 +27,11 @@
 ## Features
 
 ### Core Climate Control
-- **Dual PID Controllers** for temperature and humidity with configurable parameters
+- **Temperature PID Controller** with AutoTune capability and configurable parameters
+- **Humidity Hysteresis Control** using digital on/off switching with configurable deadband
 - **Analog Power Management** via GP8403 DAC (0-100% power control)
 - **Multi-mode Operation** (AUTO/HEATING/COOLING/HUMIDIFYING/DEHUMIDIFYING/OFF)
-- **Hysteresis Control** for stable operation
+- **Dew Point Compensation** to prevent condensation during cooling cycles
 
 ### Hardware Integration
 - **ESP32-S3 Box** with 16MB Flash and PSRAM support
