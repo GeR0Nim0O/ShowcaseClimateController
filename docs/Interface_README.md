@@ -81,7 +81,8 @@ Menu Navigation Flow:
              │           │T:22.5  RH:65   │ ← AutoTune Complete
              │           │AutoTune Complete│
              │           └────────────────┘
-             │ [BUTTON PRESS]┌────────▼───────┐
+             │ [BUTTON PRESS]
+             ┌────────▼───────┐
     │Temp Setpoint:  │ ← TEMPERATURE SETPOINT (Menu 1)
     │22.5 C    ADJUST│   [ROTATE = ±0.1°C, Range: 10-40°C]
     └────────┬───────┘
