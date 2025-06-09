@@ -8,7 +8,7 @@ The Interface system provides a user-friendly menu-driven interface for the Clim
 
 ### Interface Class
 - **Location**: `lib/Interface/Interface.h`, `src/Interface/Interface.cpp`
-- **Type**: Device (inherits from Device base class)
+- **Type**: Menu coordination class (NOT a device)
 - **Purpose**: Coordinates Display and RotaryEncoder devices to provide menu navigation
 
 ### Dependencies
