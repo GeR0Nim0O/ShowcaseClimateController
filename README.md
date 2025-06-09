@@ -24,7 +24,6 @@
 - [Development Notes](#development-notes)
 - [Testing](#testing)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
