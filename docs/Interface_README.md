@@ -53,7 +53,7 @@ The interface provides a cyclical menu system with the following screens:
 
 ### Configuration
 - **Timeout Duration**: Configurable (default 10 seconds)
-- **Adjustment Step**: Configurable (default 0.5°C or 0.5%)
+- **Adjustment Steps**: Temperature 0.1°C, Humidity 1% (hardcoded)
 - **Value Limits**: Temperature (10-40°C), Humidity (30-90%)
 
 ### Display Layout Flowchart (2x16 LCD)
