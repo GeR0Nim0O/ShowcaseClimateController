@@ -124,7 +124,7 @@ void Interface::handleEncoderButton() {
 void Interface::handleEncoderRotation() {
     if (!encoder || !encoder->isConnected()) return;
     
-    int currentValue = encoder->getEncoderValue();
+    int currentValue = encoder->getPosition();
     int delta = currentValue - lastEncoderValue;
     
     if (delta != 0) {
