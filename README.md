@@ -516,7 +516,7 @@ Monitor system status via serial terminal:
 ```
 [DEBUG] Device Registry Status: 5/8 channels active
 [DEBUG] Temperature PID: Setpoint=22.0°C, Current=21.5°C, Output=25%
-[DEBUG] Humidity PID: Setpoint=50%, Current=48%, Output=15%
+[DEBUG] Humidity Control: Setpoint=50%, Current=48%, Hysteresis=±0.5%
 [DEBUG] GPIO States: Heat=ON, Cool=OFF, Fan=AUTO
 ```
 
