@@ -1,21 +1,27 @@
 /*
  * Interface Usage Example
  * 
- * This example demonstrates how to use the Interface class to create a 
- * menu-driven display system for the climate controller.
+ * This example demonstrates how to use the Interface class as a coordination
+ * class to create a menu-driven display system for the climate controller.
  * 
- * The Interface coordinates a Display device and RotaryEncoder device to provide:
+ * The Interface coordinates registered Display and RotaryEncoder devices to provide:
  * - Default screen showing current temperature/humidity and control status
  * - Menu navigation via encoder button press
- * - Setpoint adjustment via encoder rotation
+ * - Setpoint adjustment via encoder rotation (0.1°C steps, 1% humidity steps)
  * - Automatic timeout back to default screen after 10 seconds of inactivity
+ * - AutoTune status display when PID tuning is active
  * 
  * Menu structure:
- * 0. Default Screen (T: 22.5°C H: 65.0% / Status)
- * 1. Temperature Setpoint (adjustable 10-40°C)
- * 2. Humidity Setpoint (adjustable 30-90%)
+ * 0. Default Screen (T: 22.5°C RH: 65% / Status)
+ * 1. Temperature Setpoint (adjustable 10-40°C in 0.1°C steps)
+ * 2. Humidity Setpoint (adjustable 30-90% in 1% steps)
  * 3. Temperature Control Enable/Disable
  * 4. Humidity Control Enable/Disable
+ * 
+ * Status displays:
+ * - Temperature: HEAT/COOL/OK/OFF
+ * - Humidity: HUM/DEHUM/OK/OFF
+ * - AutoTune: "PIDtune" when active, "Tuning Done" on completion
  * 
  * Hardware requirements:
  * - ESP32 with I2C
