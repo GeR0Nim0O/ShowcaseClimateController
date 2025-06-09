@@ -81,10 +81,9 @@ void setupInterfaceExample() {
     std::map<String, String> encoderChannels;
     encoderChannels["encoder"] = "main";
     encoderChannels["button"] = "select";
-    
-    Device* encoderDevice = registry.createDevice(
+      Device* encoderDevice = registry.createDevice(
         "RotaryEncoder", "I2C",
-        &Wire, ENCODER_I2C_ADDRESS, ENCODER_TCA_CHANNEL,
+        &Wire, ENCODER_I2C_ADDRESS, 0,
         0.0, encoderChannels, 0
     );
     
