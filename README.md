@@ -435,7 +435,7 @@ The climate-specific configuration contains:
 1. **OLED Display**: Verify temperature/humidity readings
 2. **Rotary Encoder**: Test setpoint adjustment (0.1°C/1% increments)
 3. **Button Functions**:
-   - **Short Press**: Save settings to EEPROM
+   - **Short Press**: Save settings to configuration
    - **Long Press**: Enter configuration mode
 
 #### 6.2 Climate Control Testing
