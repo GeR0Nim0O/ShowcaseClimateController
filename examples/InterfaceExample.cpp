@@ -43,11 +43,6 @@
 #define ENCODER_I2C_ADDRESS     0x30  // i2cEncoderLibV2 address
 #define SHT_SENSOR_ADDRESS      0x44  // SHT40/SHT45 sensor address
 
-// TCA9548A multiplexer channels (if using multiplexer)
-#define DISPLAY_TCA_CHANNEL     0
-#define ENCODER_TCA_CHANNEL     1
-#define SENSOR_TCA_CHANNEL      2
-
 void setupInterfaceExample() {
     Serial.begin(115200);
     Serial.println("Interface Example Starting...");
