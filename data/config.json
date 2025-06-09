@@ -289,8 +289,7 @@
           "Threshold": 0.0
         }
       }
-    },
-    "RotaryEncoder": {
+    },    "RotaryEncoder": {
       "Type": "RotaryEncoder",
       "TypeNumber": "I2C",
       "Address": "0x30",
@@ -298,11 +297,11 @@
       "Channels": {
         "Encoder": {
           "Name": "MenuEncoder",
-          "Threshold": 0.0
+          "Threshold": 1.0
         },
         "Button": {
           "Name": "MenuButton",
-          "Threshold": 0.0
+          "Threshold": 1.0
         }
       }
     }
