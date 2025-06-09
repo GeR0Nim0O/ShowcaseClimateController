@@ -54,6 +54,61 @@ The interface provides a cyclical menu system with the following screens:
 - **Adjustment Step**: Configurable (default 0.5°C or 0.5%)
 - **Value Limits**: Temperature (10-40°C), Humidity (30-90%)
 
+### Display Layout Flowchart (2x16 LCD)
+
+The following flowchart shows the actual display content as it appears on a 2x16 character LCD:
+
+```
+Display Format (2 rows × 16 characters):
+┌────────────────┐
+│1234567890123456│ ← Row 1
+│1234567890123456│ ← Row 2  
+└────────────────┘
+
+Menu Navigation Flow:
+
+    ┌────────────────┐
+    │T:22.5  H:65.0  │ ← DEFAULT SCREEN (Menu 0)
+    │T:ON    H:OFF   │   Live sensor readings & control status
+    └────────┬───────┘
+             │ [BUTTON PRESS]
+    ┌────────▼───────┐
+    │Temp Setpoint:  │ ← TEMPERATURE SETPOINT (Menu 1)
+    │22.5 C    ADJUST│   [ROTATE = ±0.5°C, Range: 10-40°C]
+    └────────┬───────┘
+             │ [BUTTON PRESS]
+    ┌────────▼───────┐
+    │RH Setpoint:    │ ← HUMIDITY SETPOINT (Menu 2)
+    │65.0%     ADJUST│   [ROTATE = ±0.5%, Range: 30-90%]
+    └────────┬───────┘
+             │ [BUTTON PRESS]
+    ┌────────▼───────┐
+    │Temp Control:   │ ← TEMPERATURE CONTROL (Menu 3)
+    │ON        TOGGLE│   [ROTATE = Toggle ON/OFF]
+    └────────┬───────┘
+             │ [BUTTON PRESS]
+    ┌────────▼───────┐
+    │RH Control:     │ ← HUMIDITY CONTROL (Menu 4)
+    │OFF       TOGGLE│   [ROTATE = Toggle ON/OFF]
+    └────────┬───────┘
+             │ [BUTTON PRESS]
+             └────────────► (Return to DEFAULT SCREEN)
+
+Error/Fallback Display:
+    ┌────────────────┐
+    │No Climate Ctrl │ ← Shown when ClimateController unavailable
+    │Available       │
+    └────────────────┘
+
+Key Features:
+- Automatic timeout: Returns to DEFAULT after 10 seconds of inactivity
+- Real-time updates: Sensor values refresh continuously on DEFAULT screen
+- Auto-save: Settings changes are immediately saved to configuration
+- Character optimization: Abbreviations used to fit 16-character width
+  * T: = Temperature, H:/RH = Humidity
+  * ADJUST/TOGGLE = Action indicators
+```
+
 ## Device Registration
 
 The Interface system registers three device types in the DeviceRegistry:
