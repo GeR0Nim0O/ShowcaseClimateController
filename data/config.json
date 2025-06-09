@@ -278,8 +278,7 @@
           "Name": "Relay4"
         }
       }
-    },
-    "LCD_Display": {
+    },    "LCD_Display": {
       "Type": "Display",
       "TypeNumber": "LCD2x16",
       "Address": "0x27",
@@ -288,7 +287,23 @@
         "Display": {
           "Name": "ClimateDisplay",
           "Threshold": 0.0
-        }on
+        }
+      }
+    },
+    "RotaryEncoder": {
+      "Type": "RotaryEncoder",
+      "TypeNumber": "I2C",
+      "Address": "0x30",
+      "Label": "Interface",
+      "Channels": {
+        "Encoder": {
+          "Name": "MenuEncoder",
+          "Threshold": 0.0
+        },
+        "Button": {
+          "Name": "MenuButton",
+          "Threshold": 0.0
+        }
       }
     }
   },
