@@ -149,11 +149,11 @@ void setup() {
     
     // Initialize all devices
     registry.initializeAllDevices();
-    
-    // Set up interface with climate controller
+      // Set up interface with climate controller
     Interface* interface = static_cast<Interface*>(registry.getDeviceByType("Interface"));
     ClimateController* controller = ClimateController::createFromDeviceRegistry();
-      interface->setClimateController(controller);
+    
+    interface->setClimateController(controller);
     interface->setTimeoutMs(10000);      // 10 second timeout
     // Note: Temperature adjusts in 0.1°C steps, Humidity in 1% steps (hardcoded)
 }
