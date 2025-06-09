@@ -770,8 +770,7 @@ To automatically commit and push changes on every file save:
 - **Performance Validation**: Monitor system behavior under varying environmental conditions
 - **PID Parameter Optimization**: Determine optimal start values for different environments:
   - Temperature control PID parameters (Kp, Ki, Kd)
-  - Humidity control PID parameters
-  - Hysteresis thresholds for stable operation
+  - Humidity hysteresis thresholds for stable operation
 - **Load Testing**: Verify system performance under continuous operation
 - **Power Consumption Analysis**: Measure and optimize energy usage
 
