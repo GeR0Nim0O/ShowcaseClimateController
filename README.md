@@ -450,8 +450,8 @@ For optimal performance, adjust PID parameters:
 // Temperature PID tuning via serial commands
 setTemperaturePID(2.0, 0.5, 0.1);  // Kp, Ki, Kd
 
-// Humidity PID tuning
-setHumidityPID(1.0, 0.2, 0.05);    // Kp, Ki, Kd
+// Humidity uses hysteresis control (no PID)
+// Adjust humidity hysteresis in configuration if needed
 ```
 
 ### Phase 7: Advanced Configuration
