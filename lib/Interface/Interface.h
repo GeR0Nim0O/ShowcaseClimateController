@@ -53,10 +53,14 @@ private:
     unsigned long lastActivityTime;
     unsigned long timeoutMs;
     bool menuActive;
-    
-    // Encoder state tracking
+      // Encoder state tracking
     int lastEncoderValue;
     bool lastButtonState;
+    
+    // AutoTune state tracking
+    bool previousAutoTuneActive;
+    unsigned long autoTuneCompleteTime;
+    bool showingAutoTuneComplete;
     
     // Adjustment parameters
     float adjustmentStep;
