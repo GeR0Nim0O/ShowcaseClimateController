@@ -76,6 +76,7 @@ private:
     String formatOnOff(bool state);
     String formatTemperatureStatus();
     String formatHumidityStatus();
+    String formatAutoTuneStatus();
     void updateActivity();
     
     // Device validation
