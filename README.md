@@ -3,7 +3,9 @@
 [![PlatformIO CI](https://img.shields.io/badge/PlatformIO-passing-brightgreen.svg)](https://platformio.org/)
 [![ESP32-S3](https://img.shields.io/badge/ESP32--S3-supported-blue.svg)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/)
 [![Arduino Framework](https://img.shields.io/badge/Arduino-Framework-00979C.svg)](https://www.arduino.cc/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/Licen4. **Button Functions**:
+   - **Short Press**: Save settings to configuration
+   - **Long Press**: Enter configuration modeMIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > A professional climate control system for ESP32-S3 featuring temperature PID control with AutoTune, humidity hysteresis control, multi-screen LCD interface, and comprehensive device management through I2C multiplexing.
 
