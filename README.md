@@ -882,10 +882,6 @@ class MLPredictor {
 - Advanced connectivity features
 - Mobile and web applications
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Author
 
 Ron Groenen - Educational project for Fontys University of Applied Sciences
