@@ -95,7 +95,7 @@ Menu Navigation Flow:    ┌────────────────┐
 Error/Fallback Display:
     ┌────────────────┐
     │No Climate Ctrl │ ← Shown when ClimateController unavailable
-    │Available       │
+    │Control Available       │
     └────────────────┘
 
 Key Features:
