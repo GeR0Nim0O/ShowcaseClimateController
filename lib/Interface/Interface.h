@@ -71,11 +71,11 @@ private:
     // Menu navigation
     void nextMenu();
     void adjustCurrentSetting(int direction);
-    
-    // Utility methods
+      // Utility methods
     String formatTemperature(float temp);
     String formatHumidity(float humidity);
     String formatOnOff(bool state);
+    String formatTemperatureStatus();
     void updateActivity();
     
     // Device validation
