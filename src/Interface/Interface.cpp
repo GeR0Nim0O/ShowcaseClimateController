@@ -404,6 +404,10 @@ String Interface::formatHumidityStatus() {
     }
 }
 
+String Interface::formatAutoTuneStatus() {
+    return "AutoTune Active";
+}
+
 void Interface::updateActivity() {
     lastActivityTime = millis();
 }
