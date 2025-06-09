@@ -889,4 +889,4 @@ class MLPredictor {
 
 ## Author
 
-Ron Groenen - Educational project for Fontys University of Applied Sciences
+Ron Groenen - 
