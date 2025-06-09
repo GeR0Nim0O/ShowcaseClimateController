@@ -23,8 +23,8 @@ The interface provides a cyclical menu system with the following screens:
 
 1. **Default Screen** (Menu 0)
    - Shows current temperature and humidity readings
-   - Shows temperature and humidity control status (ON/OFF)
-   - Format: `T:22.5 H:65.0` / `T:ON H:OFF`
+   - Shows temperature control status (HEAT/COOL/OK/OFF) and humidity control status (ON/OFF)
+   - Format: `T:22.5 H:65.0` / `T:HEAT H:OFF`
 
 2. **Temperature Setpoint** (Menu 1)
    - Allows adjustment of temperature setpoint (10-40°C)
