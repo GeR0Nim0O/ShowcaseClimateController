@@ -190,7 +190,7 @@ void Interface::displayDefault() {
     // Line 2: Show AutoTune status, completion message, or normal control status
     display->setCursor(0, 1);    if (showingAutoTuneComplete) {
         // Show completion message for 3 seconds
-        display->print("Tuning Done");
+        display->print("AutoTune");
         if (millis() - autoTuneCompleteTime > 3000) {
             showingAutoTuneComplete = false;
         }
