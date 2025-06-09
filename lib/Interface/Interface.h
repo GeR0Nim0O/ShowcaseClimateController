@@ -80,6 +80,9 @@ private:
     
     // Device validation
     bool validateDevices();
+    
+    // Configuration persistence
+    void saveSettingsToConfig();
 };
 
 #endif // INTERFACE_H
