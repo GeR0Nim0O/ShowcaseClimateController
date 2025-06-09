@@ -177,14 +177,13 @@ The Interface can be configured via JSON configuration files:
       "type": "Display",
       "model": "LCD2x16", 
       "address": "0x27",
-      "tcaPort": 0,
       "label": "Main Display"
     },
     {
       "type": "RotaryEncoder",
       "model": "I2C",
-      "address": "0x61", 
-      "tcaPort": 1,      "label": "Main Encoder"
+      "address": "0x30", 
+      "label": "Main Encoder"
     }
   ]
 }
