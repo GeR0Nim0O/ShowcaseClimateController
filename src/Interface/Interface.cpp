@@ -204,10 +204,9 @@ void Interface::displayDefault() {
     display->print("RH:" + formatHumidity(currentHum));
     
     // Line 2: Show AutoTune status, completion message, or normal control status
-    display->setCursor(0, 1);
-      if (showingAutoTuneComplete) {
+    display->setCursor(0, 1);    if (showingAutoTuneComplete) {
         // Show completion message for 3 seconds
-        display->print("Tune Complete");
+        display->print("Tuning Done");
         if (millis() - autoTuneCompleteTime > 3000) {
             showingAutoTuneComplete = false;
         }
