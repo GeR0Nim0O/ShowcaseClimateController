@@ -649,7 +649,7 @@ float minCoolingTemp = climateController->getMinAllowedCoolingTemperature();
 
 #### Interface System
 ```cpp
-// 5-screen LCD interface with rotary encoder navigation
+// Multi-screen LCD interface with rotary encoder navigation
 // Screens: Status, Temperature, Humidity, System Info, Settings
 Interface interface(lcd, encoder, climateController);
 interface.begin();
