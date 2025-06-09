@@ -205,10 +205,9 @@ void Interface::displayDefault() {
     
     // Line 2: Show AutoTune status, completion message, or normal control status
     display->setCursor(0, 1);
-    
-    if (showingAutoTuneComplete) {
+      if (showingAutoTuneComplete) {
         // Show completion message for 3 seconds
-        display->print("AutoTune Complete");
+        display->print("Tune Complete");
         if (millis() - autoTuneCompleteTime > 3000) {
             showingAutoTuneComplete = false;
         }
