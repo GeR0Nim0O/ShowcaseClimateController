@@ -602,7 +602,7 @@ This comprehensive setup process ensures a smooth installation and configuration
    - **Humidity Setpoint**: Adjustable 30-90% in 1% steps  
    - **Temperature Control**: Enable/Disable temperature control
    - **Humidity Control**: Enable/Disable humidity control
-   - **AutoTune Status**: Shows "PIDtune" when active, "Tuning Done" on completion
+   - **AutoTune Status**: Shows "AutoTune" when active, "AutoTune" on completion
 
 3. **Setting Adjustment**
    - **Temperature setpoints**: Adjustable in 0.1°C increments
