@@ -104,6 +104,8 @@ Key Features:
 - Auto-save: Settings changes are immediately saved to configuration
 - Character optimization: Abbreviations used to fit 16-character width
   * T: = Temperature, H:/RH = Humidity
+  * Temperature status: HEAT (heating), COOL (cooling), OK (standby), OFF (disabled)
+  * Humidity status: ON (active), OFF (disabled)
   * ADJUST/TOGGLE = Action indicators
 ```
 
