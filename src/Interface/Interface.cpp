@@ -188,10 +188,9 @@ void Interface::displayDefault() {
     display->print("T:" + formatTemperature(currentTemp));
     display->setCursor(8, 0);
     display->print("H:" + formatHumidity(currentHum));
-    
-    // Line 2: Setpoints and status
+      // Line 2: Setpoints and status
     display->setCursor(0, 1);
-    String tempStatus = climateController->isTemperatureControlEnabled() ? "ON" : "OFF";
+    String tempStatus = formatTemperatureStatus();
     String humStatus = climateController->isHumidityControlEnabled() ? "ON" : "OFF";
     display->print("T:" + tempStatus + " H:" + humStatus);
 }
