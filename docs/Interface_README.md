@@ -23,9 +23,9 @@ The interface provides a cyclical menu system with the following screens:
 
 1. **Default Screen** (Menu 0)
    - Shows current temperature and humidity readings
-   - Shows temperature control status (HEAT/COOL/OK/OFF) and humidity control status (HUM/DEHUM/OK/OFF)   - Shows AutoTune status when active ("Tune Active")
-   - Shows completion message ("Tune Complete") for 3 seconds when AutoTune finishes
-   - Format: `T:22.5 RH:65` / `T:HEAT RH:OFF` or `Tune Active`
+   - Shows temperature control status (HEAT/COOL/OK/OFF) and humidity control status (HUM/DEHUM/OK/OFF)   - Shows AutoTune status when active ("PIDtune")
+   - Shows completion message ("Tuning Done") for 3 seconds when AutoTune finishes
+   - Format: `T:22.5 RH:65` / `T:HEAT RH:OFF` or `PIDtune`
 
 2. **Temperature Setpoint** (Menu 1)
    - Allows adjustment of temperature setpoint (10-40°C)
