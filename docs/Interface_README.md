@@ -65,11 +65,9 @@ Display Format (2 rows × 16 characters):
 │1234567890123456│ ← Row 2  
 └────────────────┘
 
-Menu Navigation Flow:
-
-    ┌────────────────┐
+Menu Navigation Flow:    ┌────────────────┐
     │T:22.5  H:65.0  │ ← DEFAULT SCREEN (Menu 0)
-    │T:ON    H:OFF   │   Live sensor readings & control status
+    │T:HEAT  H:OFF   │   Live sensor readings & control status
     └────────┬───────┘
              │ [BUTTON PRESS]
     ┌────────▼───────┐
