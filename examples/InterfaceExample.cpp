@@ -40,7 +40,7 @@
 
 // I2C device addresses (adjust based on your hardware)
 #define DISPLAY_I2C_ADDRESS     0x27  // PCF8574 I2C backpack for LCD
-#define ENCODER_I2C_ADDRESS     0x61  // i2cEncoderLibV2 default address
+#define ENCODER_I2C_ADDRESS     0x30  // i2cEncoderLibV2 address
 #define SHT_SENSOR_ADDRESS      0x44  // SHT40/SHT45 sensor address
 
 // TCA9548A multiplexer channels (if using multiplexer)
