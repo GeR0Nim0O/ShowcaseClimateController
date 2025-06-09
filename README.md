@@ -626,9 +626,11 @@ This comprehensive setup process ensures a smooth installation and configuration
    - **Visual feedback**: Real-time display of current vs target values
 
 4. **Mode Selection**
-   - **AUTO**: Automatic heating/cooling based on setpoint
-   - **HEATING**: Heating only mode
-   - **COOLING**: Cooling only mode
+   - **AUTO**: Automatic heating/cooling based on setpoint (temperature uses PID, humidity uses hysteresis)
+   - **HEATING**: Heating only mode with PID control
+   - **COOLING**: Cooling only mode with PID control
+   - **HUMIDIFYING**: Digital humidification control
+   - **DEHUMIDIFYING**: Digital dehumidification control
    - **OFF**: Climate control disabled
 
 ### Advanced Features
