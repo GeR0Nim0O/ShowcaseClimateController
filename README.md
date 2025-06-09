@@ -292,7 +292,8 @@ Connect your I2C devices to **any available** PCA9548A multiplexer channel (0-7)
 |-------------|-------------|----------|------------|
 | PCF8574 GPIO | 0x20 | Digital outputs | Any channel |
 | SHT31 Sensor | 0x44 | Temperature/Humidity | Any channel |
-| SSD1306 OLED | 0x3C | Display interface | Any channel |
+| LCD2x16 Display | 0x27 | Display interface | Any channel |
+| RotaryEncoder | 0x30 | User input | Any channel |
 | GP8403 DAC | 0x5F | Analog power control | Any channel |
 | BH1705 Light | 0x23 | Light measurement | Any channel |
 | Weight Sensor | Custom | Scale measurement | Any channel |
