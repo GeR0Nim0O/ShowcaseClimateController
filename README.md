@@ -89,11 +89,9 @@ graph TB
     N --> P[Humidity PID]
     O --> H
     P --> E
-    
-    Q[DeviceRegistry] --> R[Automatic Discovery & Factory]
+      Q[DeviceRegistry] --> R[Automatic Discovery & Factory]
     S[Configuration] --> T[SD Card]
     S --> U[SPIFFS]
-    S --> V[EEPROM]
 ```
 
 ## Hardware Requirements
