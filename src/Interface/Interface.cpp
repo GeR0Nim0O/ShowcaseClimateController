@@ -4,7 +4,7 @@
 
 Interface::Interface(TwoWire* wire, uint8_t address, uint8_t tcaPort, 
                     const std::map<String, String>& channels, int deviceIndex)
-    : Device(wire, address, tcaPort, channels, deviceIndex, "Interface"),
+    : Device(wire, 0.0, channels, address, tcaPort, deviceIndex),
       climateController(nullptr),
       display(nullptr),
       encoder(nullptr),
@@ -15,6 +15,7 @@ Interface::Interface(TwoWire* wire, uint8_t address, uint8_t tcaPort,
       lastEncoderValue(0),
       lastButtonState(false),
       adjustmentStep(1.0) {
+    type = "Interface";
 }
 
 Interface::~Interface() {
