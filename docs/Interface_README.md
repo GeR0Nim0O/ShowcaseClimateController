@@ -219,11 +219,11 @@ The Interface can be configured via JSON configuration files:
 ## Implementation Details
 
 ### Device Architecture Integration
-The Interface coordinates with the established device architecture:
-- Uses dependency injection pattern for Display and RotaryEncoder device references
-- Accesses devices through DeviceRegistry for automatic discovery and management
-- Does NOT inherit from Device base class - it's a coordination layer
-- Provides menu navigation by coordinating between multiple devices
+The Interface follows the established device architecture:
+- Inherits from Device base class
+- Implements standard device methods (begin, isConnected, update, readData)
+- Registered in DeviceRegistry for automatic discovery and management
+- Uses dependency injection pattern for Display and RotaryEncoder references
 
 ### Error Handling
 - Validates device connections before operation
