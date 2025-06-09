@@ -217,7 +217,7 @@ void Interface::displayHumiditySetpoint() {
     
     display->clear();
     display->setCursor(0, 0);
-    display->print("RG Setpoint:");
+    display->print("RH Setpoint:");
     display->setCursor(0, 1);
     display->print(formatHumidity(setpoint) + "%");
     display->setCursor(10, 1);
