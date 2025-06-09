@@ -642,15 +642,20 @@ float minCoolingTemp = climateController->getMinAllowedCoolingTemperature();
 
 #### Interface System
 ```cpp
-// Multi-screen LCD interface with rotary encoder navigation
-// Screens: Status, Temperature, Humidity, System Info, Settings
-Interface interface(lcd, encoder, climateController);
-interface.begin();
+// LCD interface with rotary encoder navigation coordination class
+// Interface coordinates Display and RotaryEncoder devices from DeviceRegistry
+Interface* interface = new Interface();
+interface->setClimateController(climateController);
+interface->begin();      // Discovers devices from DeviceRegistry
+interface->setTimeoutMs(10000);  // 10 second timeout
 
-// Navigation:
-// - Rotate encoder to navigate between screens
-// - Press encoder to select/adjust values
-// - Automatic settings persistence to ClimateConfig.json
+// Features:
+// - Default screen: T: 22.5°C RH: 65% / Status display
+// - Temperature setpoint: 0.1°C step adjustment (10-40°C)
+// - Humidity setpoint: 1% step adjustment (30-90%)
+// - Status display: HEAT/COOL/OK/OFF, HUM/DEHUM/OK/OFF
+// - AutoTune status: "PIDtune" when active, "Tuning Done" on completion
+// - Automatic return to default screen after timeout
 ```
 
 ## Configuration
