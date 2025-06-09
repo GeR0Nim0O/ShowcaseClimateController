@@ -339,6 +339,26 @@ String Interface::formatOnOff(bool state) {
     return state ? "ON " : "OFF";
 }
 
+String Interface::formatTemperatureStatus() {
+    if (!climateController) {
+        return "---";
+    }
+    
+    if (!climateController->isTemperatureControlEnabled()) {
+        return "OFF";
+    }
+    
+    // Check current heating/cooling status
+    if (climateController->isHeating()) {
+        return "HEAT";
+    } else if (climateController->isCooling()) {
+        return "COOL";
+    } else {
+        // Temperature control is enabled but not actively heating or cooling
+        return "OK";
+    }
+}
+
 void Interface::updateActivity() {
     lastActivityTime = millis();
 }
