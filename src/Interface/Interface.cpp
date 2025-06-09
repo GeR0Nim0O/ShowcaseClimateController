@@ -359,7 +359,7 @@ String Interface::formatTemperature(float temp) {
 
 String Interface::formatHumidity(float humidity) {
     if (isnan(humidity)) return "---";
-    return String(humidity, 1);
+    return String((int)round(humidity));
 }
 
 String Interface::formatOnOff(bool state) {
