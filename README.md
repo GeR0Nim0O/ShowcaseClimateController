@@ -492,7 +492,7 @@ Test emergency shutdown scenarios:
 | **OLED Blank** | No display output | Verify 0x3C address and power |
 | **No Sensor Data** | Zero/invalid readings | Check SHT31 at 0x44 |
 | **Controls Inactive** | No heating/cooling | Verify PCF8574 GPIO at 0x20 |
-| **Config Not Saved** | Settings reset on reboot | Check EEPROM functionality |
+| **Config Not Saved** | Settings reset on reboot | Check configuration file system |
 
 #### Diagnostic Commands
 Monitor system status via serial terminal:
