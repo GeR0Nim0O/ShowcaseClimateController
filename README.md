@@ -665,8 +665,7 @@ interface.begin();
 ### Configuration Hierarchy
 1. **SD Card** (`/config.json`) - Highest priority
 2. **SPIFFS** (`/data/config.json`) - Fallback
-3. **EEPROM** (ClimateConfig) - Persistent settings
-4. **Compiled Defaults** - Last resort
+3. **Compiled Defaults** - Last resort
 
 ### Main Configuration (`config.json`)
 ```json
