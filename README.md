@@ -607,7 +607,19 @@ This comprehensive setup process ensures a smooth installation and configuration
    [INFO] System operational
    ```
 
-2. **Setting Adjustment**
+2. **Interface Navigation**
+   - **Rotate encoder**: Navigate between screens or adjust values
+   - **Press encoder**: Select/confirm choices or enter edit mode
+   - **Long press**: Exit current screen or cancel changes
+   
+   **5-Screen System:**
+   - **Status Screen**: Real-time temperature, humidity, and control status
+   - **Temperature Screen**: View and adjust temperature setpoint
+   - **Humidity Screen**: View and adjust humidity setpoint  
+   - **System Info**: Device status and system information
+   - **Settings Screen**: System configuration options
+
+3. **Setting Adjustment**
    - **Rotate encoder**: Change temperature/humidity setpoints (0.1°C / 1% increments)
    - **Press button**: Save settings to EEPROM
    - **Hold button**: Enter configuration mode
