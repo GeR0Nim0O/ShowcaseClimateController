@@ -103,9 +103,9 @@ Key Features:
 - Real-time updates: Sensor values refresh continuously on DEFAULT screen
 - Auto-save: Settings changes are immediately saved to configuration
 - Character optimization: Abbreviations used to fit 16-character width
-  * T: = Temperature, H:/RH = Humidity
+  * T: = Temperature, RH: = Relative Humidity
   * Temperature status: HEAT (heating), COOL (cooling), OK (standby), OFF (disabled)
-  * Humidity status: ON (active), OFF (disabled)
+  * Humidity status: HUMID (humidifying), DEHUM (dehumidifying), OK (standby), OFF (disabled)
   * ADJUST/TOGGLE = Action indicators
 ```
 
