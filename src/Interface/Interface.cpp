@@ -181,13 +181,12 @@ void Interface::displayDefault() {
     // Get current readings from climate controller
     float currentTemp = climateController->getCurrentTemperature();
     float currentHum = climateController->getCurrentHumidity();
-    
-    // Line 1: Current temperature and humidity
+      // Line 1: Current temperature and humidity
     display->clear();
     display->setCursor(0, 0);
     display->print("T:" + formatTemperature(currentTemp));
     display->setCursor(8, 0);
-    display->print("H:" + formatHumidity(currentHum));    // Line 2: Setpoints and status
+    display->print("RH:" + formatHumidity(currentHum));// Line 2: Setpoints and status
     display->setCursor(0, 1);
     String tempStatus = formatTemperatureStatus();
     String humStatus = formatHumidityStatus();
