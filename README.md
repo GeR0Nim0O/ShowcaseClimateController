@@ -361,12 +361,11 @@ Upon first startup, monitor the serial output for device discovery:
 ### Phase 5: Configuration Management
 
 #### 5.1 Configuration File Hierarchy
-The system uses a **4-tier configuration** system (highest to lowest priority):
+The system uses a **3-tier configuration** system (highest to lowest priority):
 
 1. **SD Card Configuration** (`/config.json`, `/ClimateConfig.json`)
 2. **SPIFFS Flash Storage** (`/data/config.json`, `/data/ClimateConfig.json`)
-3. **EEPROM Settings** (Runtime user adjustments)
-4. **Compiled Defaults** (Safe fallback values)
+3. **Compiled Defaults** (Safe fallback values)
 
 #### 5.2 Configuration Files (Pre-configured)
 
