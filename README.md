@@ -415,6 +415,10 @@ The climate-specific configuration contains:
     "temperature": {
       "kp": 2.0, "ki": 0.5, "kd": 0.1 // ← Fine-tune if needed
     }
+  },
+  "control_parameters": {
+    "temperature_hysteresis": 0.1,     // ← Temperature control deadband
+    "humidity_hysteresis": 0.5         // ← Humidity control deadband
   }
 }
 ```
