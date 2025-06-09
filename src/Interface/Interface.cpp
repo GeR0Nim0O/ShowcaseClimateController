@@ -181,16 +181,26 @@ void Interface::displayDefault() {
     // Get current readings from climate controller
     float currentTemp = climateController->getCurrentTemperature();
     float currentHum = climateController->getCurrentHumidity();
-      // Line 1: Current temperature and humidity
+    
+    // Check if AutoTune is active
+    bool autoTuneActive = climateController->isAutoTuning();
+    
+    // Line 1: Current temperature and humidity
     display->clear();
     display->setCursor(0, 0);
     display->print("T:" + formatTemperature(currentTemp));
     display->setCursor(8, 0);
-    display->print("RH:" + formatHumidity(currentHum));// Line 2: Setpoints and status
+    display->print("RH:" + formatHumidity(currentHum));
+    
+    // Line 2: Show AutoTune status if active, otherwise show control status
     display->setCursor(0, 1);
-    String tempStatus = formatTemperatureStatus();
-    String humStatus = formatHumidityStatus();
-    display->print("T:" + tempStatus + " RH:" + humStatus);
+    if (autoTuneActive) {
+        display->print(formatAutoTuneStatus());
+    } else {
+        String tempStatus = formatTemperatureStatus();
+        String humStatus = formatHumidityStatus();
+        display->print("T:" + tempStatus + " RH:" + humStatus);
+    }
 }
 
 void Interface::displayTempSetpoint() {
