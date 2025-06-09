@@ -431,7 +431,7 @@ The climate-specific configuration contains:
 **Configuration File Deployment:**
 1. **SPIFFS Deployment**: Files are automatically uploaded to ESP32 flash
 2. **SD Card Deployment**: Copy files to SD card root for external configuration
-3. **Runtime Modification**: Use rotary encoder to adjust setpoints (saved to EEPROM)
+3. **Runtime Modification**: Use rotary encoder to adjust setpoints (saved to configuration files)
 
 ### Phase 6: Initial Calibration & Testing
 
