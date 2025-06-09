@@ -84,10 +84,9 @@ Menu Navigation Flow:    ┌────────────────┐
     │Temp Setpoint:  │ ← TEMPERATURE SETPOINT (Menu 1)
     │22.5 C    ADJUST│   [ROTATE = ±0.1°C, Range: 10-40°C]
     └────────┬───────┘
-             │ [BUTTON PRESS]
-    ┌────────▼───────┐
+             │ [BUTTON PRESS]    ┌────────▼───────┐
     │RH Setpoint:    │ ← HUMIDITY SETPOINT (Menu 2)
-    │65.0%     ADJUST│   [ROTATE = ±1%, Range: 30-90%]
+    │65%       ADJUST│   [ROTATE = ±1%, Range: 30-90%]
     └────────┬───────┘
              │ [BUTTON PRESS]
     ┌────────▼───────┐
