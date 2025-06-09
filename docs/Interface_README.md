@@ -69,16 +69,15 @@ Display Format (2 rows × 16 characters):
 Menu Navigation Flow:    
     ┌────────────────┐
     │T:22.5  RH:65   │ ← DEFAULT SCREEN (Menu 0)
-    │T:HEAT  RH:OFF  │   Live sensor readings & control status
-    └────────┬───────┘   Or during AutoTune:
+    │T:HEAT  RH:OFF  │   Live sensor readings & control status    └────────┬───────┘   Or during AutoTune:
              │           ┌────────────────┐
              │           │T:22.5  RH:65   │ ← AutoTune Active
-             │           │AutoTune Active │
+             │           │Tune Active     │
              │           └────────────────┘
              │           Or after AutoTune completion (3 seconds):
              │           ┌────────────────┐
              │           │T:22.5  RH:65   │ ← AutoTune Complete
-             │           │AutoTune Complete│
+             │           │Tune Complete   │
              │           └────────────────┘
              │ [BUTTON PRESS]
     ┌────────▼───────┐
