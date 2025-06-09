@@ -606,7 +606,10 @@ This comprehensive setup process ensures a smooth installation and configuration
 ```cpp
 // Access via serial commands or configuration file
 climateController->setTemperaturePID(2.0, 0.5, 0.1);  // Kp, Ki, Kd
-climateController->setHumidityPID(1.0, 0.2, 0.05);
+
+// Humidity uses digital on/off control (no PID)
+// Configure humidity hysteresis instead:
+// humidity_hysteresis: 0.5  // in configuration file
 ```
 
 #### Power Control
