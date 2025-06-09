@@ -174,21 +174,33 @@ void loopInterfaceExample() {
 /*
  * Integration with main.cpp:
  * 
- * In your main.cpp, you would typically call:
+ * Since Interface is now a coordination class (not a Device), you need to 
+ * manage its lifecycle in your main application:
+ * 
+ * Interface* interface = nullptr;
  * 
  * void setup() {
  *     setupInterfaceExample();
+ *     
+ *     // Get the interface instance (you'd need to store it globally)
+ *     // interface = getGlobalInterfaceInstance();
  * }
  * 
  * void loop() {
  *     loopInterfaceExample();
+ *     
+ *     // Update interface manually
+ *     if (interface) {
+ *         interface->update();
+ *     }
  * }
- * 
- * Or integrate the device creation into your existing setup routine.
  */
 
 /*
  * Configuration file example (config.json):
+ * 
+ * Note: Interface is no longer registered as a Device in the DeviceRegistry.
+ * Only the hardware devices (Display and RotaryEncoder) are registered.
  * 
  * {
  *   "devices": [
@@ -212,17 +224,10 @@ void loopInterfaceExample() {
  *         "button": "select"
  *       },
  *       "label": "Main Encoder"
- *     },
- *     {
- *       "type": "Interface",
- *       "model": "",
- *       "address": "0x00",
- *       "tcaPort": 0,
- *       "channels": {
- *         "interface": "main"
- *       },
- *       "label": "Main Interface"
  *     }
  *   ]
  * }
+ * 
+ * The Interface coordination class is created separately and coordinates
+ * the registered Display and RotaryEncoder devices.
  */
