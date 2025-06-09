@@ -114,7 +114,7 @@ Key Features:
 - Character optimization: Abbreviations used to fit 16-character width
   * T: = Temperature, RH: = Relative Humidity
   * Temperature status: HEAT (heating), COOL (cooling), OK (standby), OFF (disabled)
-  * Humidity status: HUMID (humidifying), DEHUM (dehumidifying), OK (standby), OFF (disabled)
+  * Humidity status: HUM (humidifying), DEHUM (dehumidifying), OK (standby), OFF (disabled)
   * ADJUST/TOGGLE = Action indicators
 ```
 
