@@ -57,13 +57,8 @@ bool Interface::begin() {
     
     // Initialize display
     resetToDefault();
-    
-    Serial.println("Interface: Initialized successfully");
+      Serial.println("Interface: Initialized successfully");
     return true;
-}
-
-bool Interface::isConnected() {
-    return validateDevices();
 }
 
 void Interface::update() {
@@ -86,14 +81,6 @@ void Interface::update() {
     
     // Update display
     updateDisplay();
-}
-
-std::map<String, String> Interface::readData() {
-    std::map<String, String> data;
-    data["menu_state"] = String(static_cast<int>(currentMenu));
-    data["menu_active"] = menuActive ? "1" : "0";
-    data["last_activity"] = String(millis() - lastActivityTime);
-    return data;
 }
 
 void Interface::setClimateController(ClimateController* controller) {
