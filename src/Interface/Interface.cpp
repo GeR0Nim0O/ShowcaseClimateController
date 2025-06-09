@@ -408,12 +408,3 @@ void Interface::saveSettingsToConfig() {
     Serial.println("Interface: Saving settings to configuration file...");
     climateController->updateClimateConfigFile();
 }
-
-// Device factory registration
-bool registerInterfaceDevice() {
-    return DeviceRegistry::registerDeviceType("Interface", "",
-        [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
-           const std::map<String, String>& channels, int deviceIndex) -> Device* {
-            return new Interface(wire, address, tcaPort, channels, deviceIndex);
-        });
-}
