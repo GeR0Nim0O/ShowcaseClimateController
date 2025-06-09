@@ -118,7 +118,8 @@ The system automatically scans all PCA9548A multiplexer channels (0-7) during st
 Supported Device Types:
 ├── PCF8574 GPIO Expander (I2C: 0x20) - Any available channel
 ├── SHT31 Temperature/Humidity (I2C: 0x44) - Any available channel
-├── SSD1306 OLED Display (I2C: 0x3C) - Any available channel
+├── LCD2x16 Display (I2C: 0x27) - Any available channel
+├── RotaryEncoder (I2C: 0x30) - Any available channel
 ├── GP8403 DAC Controller (I2C: 0x5F) - Any available channel
 ├── BH1705 Light Sensor (I2C: 0x23) - Any available channel
 ├── Weight/Scale Sensor (custom I2C) - Any available channel
