@@ -658,7 +658,7 @@ interface->setTimeoutMs(10000);  // 10 second timeout
 // - Temperature setpoint: 0.1°C step adjustment (10-40°C)
 // - Humidity setpoint: 1% step adjustment (30-90%)
 // - Status display: HEAT/COOL/OK/OFF, HUM/DEHUM/OK/OFF
-// - AutoTune status: "PIDtune" when active, "Tuning Done" on completion
+// - AutoTune status: "AutoTune" when active, "AutoTune" on completion
 // - Automatic return to default screen after timeout
 ```
 
