@@ -200,7 +200,7 @@ The Interface can be configured via JSON configuration files:
 ### Rotary Encoder  
 - **Type**: i2cEncoderLibV2 compatible encoder
 - **Interface**: I2C
-- **Address**: Configurable (default 0x61)
+- **Address**: Configurable (default 0x30)
 - **Features**: Position sensing, button press detection
 - **Wiring**: SDA, SCL, VCC (3.3V), GND
 
