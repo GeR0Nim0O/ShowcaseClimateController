@@ -267,15 +267,20 @@ void Interface::nextMenu() {
 void Interface::adjustCurrentSetting(int direction) {
     if (!climateController) return;
     
+    bool settingChanged = false;
+    
     switch (currentMenu) {
         case MENU_TEMP_SETPOINT: {
             float current = climateController->getTemperatureSetpoint();
             float newValue = current + (direction * adjustmentStep);
             // Clamp to reasonable limits
             newValue = constrain(newValue, 10.0f, 40.0f);
-            climateController->setTemperatureSetpoint(newValue);
-            Serial.print("Interface: Temperature setpoint adjusted to ");
-            Serial.println(newValue);
+            if (newValue != current) {
+                climateController->setTemperatureSetpoint(newValue);
+                settingChanged = true;
+                Serial.print("Interface: Temperature setpoint adjusted to ");
+                Serial.println(newValue);
+            }
             break;
         }
         
@@ -284,15 +289,19 @@ void Interface::adjustCurrentSetting(int direction) {
             float newValue = current + (direction * adjustmentStep);
             // Clamp to reasonable limits
             newValue = constrain(newValue, 30.0f, 90.0f);
-            climateController->setHumiditySetpoint(newValue);
-            Serial.print("Interface: Humidity setpoint adjusted to ");
-            Serial.println(newValue);
+            if (newValue != current) {
+                climateController->setHumiditySetpoint(newValue);
+                settingChanged = true;
+                Serial.print("Interface: Humidity setpoint adjusted to ");
+                Serial.println(newValue);
+            }
             break;
         }
         
         case MENU_TEMP_CONTROL_ENABLE: {
             bool current = climateController->isTemperatureControlEnabled();
             climateController->setTemperatureControlEnabled(!current);
+            settingChanged = true;
             Serial.print("Interface: Temperature control ");
             Serial.println(!current ? "enabled" : "disabled");
             break;
@@ -301,6 +310,7 @@ void Interface::adjustCurrentSetting(int direction) {
         case MENU_HUMIDITY_CONTROL_ENABLE: {
             bool current = climateController->isHumidityControlEnabled();
             climateController->setHumidityControlEnabled(!current);
+            settingChanged = true;
             Serial.print("Interface: Humidity control ");
             Serial.println(!current ? "enabled" : "disabled");
             break;
@@ -308,6 +318,11 @@ void Interface::adjustCurrentSetting(int direction) {
         
         default:
             break;
+    }
+    
+    // Save changes to configuration file
+    if (settingChanged) {
+        saveSettingsToConfig();
     }
 }
 
