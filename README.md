@@ -620,11 +620,12 @@ This comprehensive setup process ensures a smooth installation and configuration
    - **Settings Screen**: System configuration options
 
 3. **Setting Adjustment**
-   - **Rotate encoder**: Change temperature/humidity setpoints (0.1°C / 1% increments)
-   - **Press button**: Save settings to EEPROM
-   - **Hold button**: Enter configuration mode
+   - **Temperature setpoints**: Adjustable in 0.1°C increments
+   - **Humidity setpoints**: Adjustable in 1% increments  
+   - **Automatic saving**: Settings automatically persist to ClimateConfig.json
+   - **Visual feedback**: Real-time display of current vs target values
 
-3. **Mode Selection**
+4. **Mode Selection**
    - **AUTO**: Automatic heating/cooling based on setpoint
    - **HEATING**: Heating only mode
    - **COOLING**: Cooling only mode
