@@ -71,15 +71,14 @@ Menu Navigation Flow:    ┌────────────────┐
     │T:22.5  RH:65.0 │ ← DEFAULT SCREEN (Menu 0)
     │T:HEAT  RH:OFF  │   Live sensor readings & control status
     └────────┬───────┘
-             │ [BUTTON PRESS]
-    ┌────────▼───────┐
+             │ [BUTTON PRESS]    ┌────────▼───────┐
     │Temp Setpoint:  │ ← TEMPERATURE SETPOINT (Menu 1)
-    │22.5 C    ADJUST│   [ROTATE = ±0.5°C, Range: 10-40°C]
+    │22.5 C    ADJUST│   [ROTATE = ±0.1°C, Range: 10-40°C]
     └────────┬───────┘
              │ [BUTTON PRESS]
     ┌────────▼───────┐
     │RH Setpoint:    │ ← HUMIDITY SETPOINT (Menu 2)
-    │65.0%     ADJUST│   [ROTATE = ±0.5%, Range: 30-90%]
+    │65.0%     ADJUST│   [ROTATE = ±1%, Range: 30-90%]
     └────────┬───────┘
              │ [BUTTON PRESS]
     ┌────────▼───────┐
@@ -97,7 +96,7 @@ Menu Navigation Flow:    ┌────────────────┐
 Error/Fallback Display:
     ┌────────────────┐
     │No Climate Ctrl │ ← Shown when ClimateController unavailable
-    │Control Available       │
+    │Available       │
     └────────────────┘
 
 Key Features:
