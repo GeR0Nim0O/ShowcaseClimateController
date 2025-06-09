@@ -24,16 +24,18 @@ The interface provides a cyclical menu system with the following screens:
 1. **Default Screen** (Menu 0)
    - Shows current temperature and humidity readings
    - Shows temperature control status (HEAT/COOL/OK/OFF) and humidity control status (HUMID/DEHUM/OK/OFF)
-   - Format: `T:22.5 RH:65.0` / `T:HEAT RH:OFF`
+   - Shows AutoTune status when active ("AutoTune Active")
+   - Shows completion message ("AutoTune Complete") for 3 seconds when AutoTune finishes
+   - Format: `T:22.5 RH:65.0` / `T:HEAT RH:OFF` or `AutoTune Active`
 
 2. **Temperature Setpoint** (Menu 1)
    - Allows adjustment of temperature setpoint (10-40°C)
-   - Encoder rotation adjusts value in configurable steps
+   - Encoder rotation adjusts value in 0.1°C steps
    - Format: `Temp Setpoint:` / `22.5 C ADJUST`
 
 3. **Humidity Setpoint** (Menu 2)
    - Allows adjustment of humidity setpoint (30-90%)
-   - Encoder rotation adjusts value in configurable steps
+   - Encoder rotation adjusts value in 1% steps
    - Format: `Humidity Setpt:` / `65.0% ADJUST`
 
 4. **Temperature Control Enable** (Menu 3)
