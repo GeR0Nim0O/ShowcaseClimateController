@@ -9,7 +9,7 @@
 #include "Display.h"
 #include "Relay4Ch.h"
 #include "RotaryEncoder.h"
-#include "Interface.h"
+// Note: Interface.h removed - Interface is no longer a Device
 
 // Initialize the static factory registry
 std::map<std::pair<String, String>, 
