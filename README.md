@@ -5,7 +5,7 @@
 [![Arduino Framework](https://img.shields.io/badge/Arduino-Framework-00979C.svg)](https://www.arduino.cc/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> An object-oriented climate control system for ESP32-S3 featuring PID controllers, analog power management, and comprehensive device management through I2C multiplexing.
+> A professional climate control system for ESP32-S3 featuring temperature PID control with AutoTune, humidity hysteresis control, 5-screen LCD interface, and comprehensive device management through I2C multiplexing.
 
 ## Table of Contents
 
