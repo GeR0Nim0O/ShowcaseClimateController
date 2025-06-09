@@ -590,15 +590,17 @@ This comprehensive setup process ensures a smooth installation and configuration
    ```
 
 2. **Interface Navigation**
-   - **Rotate encoder**: Navigate between screens or adjust values
-   - **Press encoder**: Select/confirm choices or enter edit mode
-   - **Long press**: Exit current screen or cancel changes
-     **Multi-Screen System:**
-   - **Status Screen**: Real-time temperature, humidity, and control status
-   - **Temperature Screen**: View and adjust temperature setpoint
-   - **Humidity Screen**: View and adjust humidity setpoint  
-   - **System Info**: Device status and system information
-   - **Settings Screen**: System configuration options
+   - **Rotate encoder**: Navigate between menus or adjust values
+   - **Press encoder**: Cycle through menu screens
+   - **Automatic timeout**: Returns to default screen after 10 seconds
+   
+   **Menu System:**
+   - **Default Screen**: T: 22.5°C RH: 65% / Status (HEAT/COOL/HUM/DEHUM/OK/OFF)
+   - **Temperature Setpoint**: Adjustable 10-40°C in 0.1°C steps
+   - **Humidity Setpoint**: Adjustable 30-90% in 1% steps  
+   - **Temperature Control**: Enable/Disable temperature control
+   - **Humidity Control**: Enable/Disable humidity control
+   - **AutoTune Status**: Shows "PIDtune" when active, "Tuning Done" on completion
 
 3. **Setting Adjustment**
    - **Temperature setpoints**: Adjustable in 0.1°C increments
