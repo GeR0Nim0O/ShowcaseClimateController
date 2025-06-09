@@ -245,7 +245,7 @@ void Interface::displayHumidityControlEnable() {
     
     display->clear();
     display->setCursor(0, 0);
-    display->print("Hum Contrl:");
+    display->print("Hum Control:");
     display->setCursor(0, 1);
     display->print(formatOnOff(enabled));
     display->setCursor(10, 1);
