@@ -14,6 +14,9 @@ Interface::Interface(TwoWire* wire, uint8_t address, uint8_t tcaPort,
       menuActive(false),
       lastEncoderValue(0),
       lastButtonState(false),
+      previousAutoTuneActive(false),
+      autoTuneCompleteTime(0),
+      showingAutoTuneComplete(false),
       adjustmentStep(1.0) {
     type = "Interface";
 }
