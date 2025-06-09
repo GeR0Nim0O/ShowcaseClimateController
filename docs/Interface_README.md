@@ -67,7 +67,8 @@ Display Format (2 rows × 16 characters):
 │1234567890123456│ ← Row 2  
 └────────────────┘
 
-Menu Navigation Flow:    ┌────────────────┐
+Menu Navigation Flow:    
+┌────────────────┐
     │T:22.5  RH:65   │ ← DEFAULT SCREEN (Menu 0)
     │T:HEAT  RH:OFF  │   Live sensor readings & control status
     └────────┬───────┘   Or during AutoTune:
