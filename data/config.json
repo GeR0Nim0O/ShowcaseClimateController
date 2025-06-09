@@ -283,7 +283,7 @@
       "Type": "Display",
       "TypeNumber": "LCD2x16",
       "Address": "0x27",
-      "Label": "Controller",
+      "Label": "D",
       "Channels": {
         "Display": {
           "Name": "ClimateDisplay",
