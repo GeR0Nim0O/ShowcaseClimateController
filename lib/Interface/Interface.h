@@ -72,10 +72,10 @@ private:
     void nextMenu();
     void adjustCurrentSetting(int direction);
       // Utility methods
-    String formatTemperature(float temp);
-    String formatHumidity(float humidity);
+    String formatTemperature(float temp);    String formatHumidity(float humidity);
     String formatOnOff(bool state);
     String formatTemperatureStatus();
+    String formatHumidityStatus();
     void updateActivity();
     
     // Device validation
