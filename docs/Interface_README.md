@@ -22,10 +22,9 @@ The Interface system provides a user-friendly menu-driven interface for the Clim
 The interface provides a cyclical menu system with the following screens:
 
 1. **Default Screen** (Menu 0)
-   - Shows current temperature and humidity readings
-   - Shows temperature control status (HEAT/COOL/OK/OFF) and humidity control status (HUM/DEHUM/OK/OFF)   - Shows AutoTune status when active ("PIDtune")
-   - Shows completion message ("Tuning Done") for 3 seconds when AutoTune finishes
-   - Format: `T:22.5 RH:65` / `T:HEAT RH:OFF` or `PIDtune`
+   - Shows current temperature and humidity readings   - Shows temperature control status (HEAT/COOL/OK/OFF) and humidity control status (HUM/DEHUM/OK/OFF)   - Shows AutoTune status when active ("AutoTune")
+   - Shows completion message ("AutoTune") for 3 seconds when AutoTune finishes
+   - Format: `T:22.5 RH:65` / `T:HEAT RH:OFF` or `AutoTune`
 
 2. **Temperature Setpoint** (Menu 1)
    - Allows adjustment of temperature setpoint (10-40°C)
