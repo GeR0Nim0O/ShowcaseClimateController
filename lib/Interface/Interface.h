@@ -37,8 +37,7 @@ public:
     
     // Configuration
     void setTimeoutMs(unsigned long timeout) { timeoutMs = timeout; }
-    void setAdjustmentStep(float step) { adjustmentStep = step; }
-    
+    void setAdjustmentStep(float step) { adjustmentStep = step; }    
 private:
     // Device references
     ClimateController* climateController;
@@ -50,7 +49,8 @@ private:
     unsigned long lastActivityTime;
     unsigned long timeoutMs;
     bool menuActive;
-      // Encoder state tracking
+    
+    // Encoder state tracking
     int lastEncoderValue;
     bool lastButtonState;
     
