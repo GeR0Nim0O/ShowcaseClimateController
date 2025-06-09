@@ -131,9 +131,10 @@ Supported Device Types:
 ```
 [INFO] Scanning PCA9548A Channel 0... Found: PCF8574 (0x20)
 [INFO] Scanning PCA9548A Channel 1... Found: SHT31 (0x44)
-[INFO] Scanning PCA9548A Channel 2... Found: SSD1306 (0x3C)
-[INFO] Scanning PCA9548A Channel 3... Found: GP8403 (0x5F)
-[INFO] Device Registry: 4 devices initialized
+[INFO] Scanning PCA9548A Channel 2... Found: LCD2x16 (0x27)
+[INFO] Scanning PCA9548A Channel 3... Found: RotaryEncoder (0x30)
+[INFO] Scanning PCA9548A Channel 4... Found: GP8403 (0x5F)
+[INFO] Device Registry: 5 devices initialized
 ```
 
 ### GPIO Pin Configuration
