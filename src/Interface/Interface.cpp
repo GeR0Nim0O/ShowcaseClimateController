@@ -2,10 +2,8 @@
 #include "DeviceRegistry/DeviceRegistry.h"
 #include <Arduino.h>
 
-Interface::Interface(TwoWire* wire, uint8_t address, uint8_t tcaPort, 
-                    const std::map<String, String>& channels, int deviceIndex)
-    : Device(wire, 0.0, channels, address, tcaPort, deviceIndex),
-      climateController(nullptr),
+Interface::Interface()
+    : climateController(nullptr),
       display(nullptr),
       encoder(nullptr),
       currentMenu(MENU_DEFAULT),
@@ -18,7 +16,6 @@ Interface::Interface(TwoWire* wire, uint8_t address, uint8_t tcaPort,
       autoTuneCompleteTime(0),
       showingAutoTuneComplete(false),
       adjustmentStep(1.0) {
-    type = "Interface";
 }
 
 Interface::~Interface() {
