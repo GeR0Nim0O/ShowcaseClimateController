@@ -161,7 +161,8 @@ void setup() {
 
 void loop() {
     DeviceRegistry& registry = DeviceRegistry::getInstance();
-    registry.updateAllDevices();  // Updates Interface automatically
+    registry.updateAllDevices();  // Updates Display and RotaryEncoder devices
+    interface->update();          // Updates Interface coordination logic
     delay(50);
 }
 ```
