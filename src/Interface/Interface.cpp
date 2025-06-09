@@ -1,5 +1,5 @@
 #include "Interface.h"
-#include "DeviceRegistry.h"
+#include "DeviceRegistry/DeviceRegistry.h"
 #include <Arduino.h>
 
 Interface::Interface(TwoWire* wire, uint8_t address, uint8_t tcaPort, 
