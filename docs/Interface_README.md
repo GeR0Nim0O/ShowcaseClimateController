@@ -77,7 +77,7 @@ Menu Navigation Flow:
              │           Or after AutoTune completion (3 seconds):
              │           ┌────────────────┐
              │           │T:22.5  RH:65   │ ← AutoTune Complete
-             │           │Tune Complete   │
+             │           │PID Tune Complete   │
              │           └────────────────┘
              │ [BUTTON PRESS]
     ┌────────▼───────┐
