@@ -619,6 +619,19 @@ climateController->setTemperaturePID(2.0, 0.5, 0.1);  // Kp, Ki, Kd
 setHeatingPower(75.0);  // 75% heating power = 3.75V output
 ```
 
+#### Interface System
+```cpp
+// 5-screen LCD interface with rotary encoder navigation
+// Screens: Status, Temperature, Humidity, System Info, Settings
+Interface interface(lcd, encoder, climateController);
+interface.begin();
+
+// Navigation:
+// - Rotate encoder to navigate between screens
+// - Press encoder to select/adjust values
+// - Automatic settings persistence to ClimateConfig.json
+```
+
 ## Configuration
 
 ### Configuration Hierarchy
