@@ -70,8 +70,17 @@ Display Format (2 rows × 16 characters):
 Menu Navigation Flow:    ┌────────────────┐
     │T:22.5  RH:65.0 │ ← DEFAULT SCREEN (Menu 0)
     │T:HEAT  RH:OFF  │   Live sensor readings & control status
-    └────────┬───────┘
-             │ [BUTTON PRESS]    ┌────────▼───────┐
+    └────────┬───────┘   Or during AutoTune:
+             │           ┌────────────────┐
+             │           │T:22.5  RH:65.0 │ ← AutoTune Active
+             │           │AutoTune Active │
+             │           └────────────────┘
+             │           Or after AutoTune completion (3 seconds):
+             │           ┌────────────────┐
+             │           │T:22.5  RH:65.0 │ ← AutoTune Complete
+             │           │AutoTune Complete│
+             │           └────────────────┘
+             │ [BUTTON PRESS]┌────────▼───────┐
     │Temp Setpoint:  │ ← TEMPERATURE SETPOINT (Menu 1)
     │22.5 C    ADJUST│   [ROTATE = ±0.1°C, Range: 10-40°C]
     └────────┬───────┘
