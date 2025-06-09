@@ -817,8 +817,6 @@ class MLPredictor {
 
 ### Medium-Priority Features
 
-
-
 #### Advanced Connectivity
 - **OTA Updates**: Over-the-air firmware updates
 - **Web Dashboard**: Real-time monitoring and control interface
