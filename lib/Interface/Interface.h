@@ -1,0 +1,85 @@
+#ifndef INTERFACE_H
+#define INTERFACE_H
+
+#include <Arduino.h>
+#include "Device.h"
+#include "Display.h"
+#include "RotaryEncoder.h"
+#include "ClimateController.h"
+
+class Interface : public Device {
+public:
+    // Device interface implementation
+    Interface(TwoWire* wire, uint8_t address, uint8_t tcaPort, 
+              const std::map<String, String>& channels, int deviceIndex);
+    ~Interface();
+      bool begin() override;
+    bool isConnected() override;
+    void update() override;
+    std::map<String, String> readData() override;
+    
+    // Interface-specific methods
+    void setClimateController(ClimateController* controller);
+    void setDisplay(Display* display);
+    void setEncoder(RotaryEncoder* encoder);
+    
+    // Menu system
+    enum MenuState {
+        MENU_DEFAULT = 0,
+        MENU_TEMP_SETPOINT,
+        MENU_HUMIDITY_SETPOINT,
+        MENU_TEMP_CONTROL_ENABLE,
+        MENU_HUMIDITY_CONTROL_ENABLE,
+        MENU_COUNT // Keep this last for menu cycling
+    };
+    
+    void handleEncoderButton();
+    void handleEncoderRotation();
+    void updateDisplay();
+    void resetToDefault();
+    
+    // Configuration
+    void setTimeoutMs(unsigned long timeout) { timeoutMs = timeout; }
+    void setAdjustmentStep(float step) { adjustmentStep = step; }
+    
+private:
+    // Device references
+    ClimateController* climateController;
+    Display* display;
+    RotaryEncoder* encoder;
+    
+    // Menu system state
+    MenuState currentMenu;
+    unsigned long lastActivityTime;
+    unsigned long timeoutMs;
+    bool menuActive;
+    
+    // Encoder state tracking
+    int lastEncoderValue;
+    bool lastButtonState;
+    
+    // Adjustment parameters
+    float adjustmentStep;
+    
+    // Display helpers
+    void displayDefault();
+    void displayTempSetpoint();
+    void displayHumiditySetpoint();
+    void displayTempControlEnable();
+    void displayHumidityControlEnable();
+    
+    // Menu navigation
+    void nextMenu();
+    void adjustCurrentSetting(int direction);
+    
+    // Utility methods
+    String formatTemperature(float temp);
+    String formatHumidity(float humidity);
+    String formatOnOff(bool state);
+    void updateActivity();
+    
+    // Device validation
+    bool validateDevices();
+};
+
+#endif // INTERFACE_H
