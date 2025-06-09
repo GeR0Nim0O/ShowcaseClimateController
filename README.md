@@ -849,7 +849,7 @@ class MLPredictor {
 - **Long-term Stability**: Extended operation testing (24/7 operation cycles)
 - **Environmental Range Testing**: Validate operation across temperature/humidity extremes
 - **Hardware Reliability**: Stress testing of I2C multiplexer and sensors
-- **Configuration Persistence**: Verify EEPROM reliability under power cycles
+- **Configuration Persistence**: Verify configuration file reliability under power cycles
 
 #### Documentation Completion
 - **Installation Manual**: Step-by-step hardware assembly guide
