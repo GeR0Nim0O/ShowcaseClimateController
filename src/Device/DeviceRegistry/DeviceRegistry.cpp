@@ -8,6 +8,8 @@
 #include "DS3231rtc.h"
 #include "Display.h"
 #include "Relay4Ch.h"
+#include "RotaryEncoder.h"
+#include "Interface.h"
 
 // Initialize the static factory registry
 std::map<std::pair<String, String>, 
