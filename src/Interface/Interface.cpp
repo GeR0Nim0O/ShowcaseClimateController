@@ -48,10 +48,9 @@ bool Interface::begin() {
         Serial.println("Interface: Device validation failed");
         return false;
     }
-    
-    // Initialize encoder state
+      // Initialize encoder state
     if (encoder->isConnected()) {
-        lastEncoderValue = encoder->getEncoderValue();
+        lastEncoderValue = encoder->getPosition();
         lastButtonState = encoder->isButtonPressed();
     }
     
