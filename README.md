@@ -100,8 +100,8 @@ graph TB
 | **GPIO Expander** | PCF8574 | 8 digital outputs | 0x20 |
 | **Temp/Humidity** | SHT31/SHT40 | Environmental sensing | 0x44 |
 | **DAC** | GP8403 | Analog power control | 0x5F |
-| **Display** | SSD1306 OLED | User interface | 0x3C |
-| **User Input** | Rotary Encoder | Setting adjustment | GPIO 4,5,6 |
+| **Display** | LCD2x16 | User interface | 0x27 |
+| **User Input** | Rotary Encoder | Setting adjustment | 0x30 |
 
 ### I2C Device Mapping (Automatically Discovered)
 
