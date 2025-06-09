@@ -98,25 +98,6 @@ void setupInterfaceExample() {
         return;
     }
     
-    // Create and register Interface device (coordinates display and encoder)
-    std::map<String, String> interfaceChannels;
-    interfaceChannels["interface"] = "main";
-    
-    Device* interfaceDevice = registry.createDevice(
-        "Interface", "",
-        &Wire, 0x00, 0, // Interface doesn't need I2C address
-        0.0, interfaceChannels, 0
-    );
-    
-    if (interfaceDevice) {
-        interfaceDevice->setDeviceLabel("Main Interface");
-        registry.registerDevice(interfaceDevice);
-        Serial.println("Interface device registered");
-    } else {
-        Serial.println("Failed to create Interface device");
-        return;
-    }
-    
     // Initialize all devices
     bool initSuccess = registry.initializeAllDevices();
     if (!initSuccess) {
@@ -131,22 +112,24 @@ void setupInterfaceExample() {
         return;
     }
     
-    // Set up the interface with climate controller
-    Interface* interface = static_cast<Interface*>(registry.getDeviceByType("Interface"));
+    // Create Interface coordination class (not a Device)
+    Interface* interface = new Interface();
     if (interface) {
+        // Set up the interface with climate controller
         interface->setClimateController(climateController);
         
         // Configure interface settings
         interface->setTimeoutMs(10000);      // 10 second timeout
-        interface->setAdjustmentStep(0.5);   // 0.5 degree/percent steps
         
-        Serial.println("Interface setup complete!");
+        Serial.println("Interface coordination class created!");
         Serial.println("\nUsage:");
         Serial.println("- Press encoder button to cycle through menus");
         Serial.println("- Rotate encoder to adjust values in setting menus");
+        Serial.println("- Temperature: 0.1°C steps, Humidity: 1% steps");
         Serial.println("- Interface returns to default screen after 10 seconds");
+        Serial.println("- AutoTune status shows when PID tuning is active");
     } else {
-        Serial.println("Failed to get Interface device");
+        Serial.println("Failed to create Interface coordination class");
     }
     
     // Print device status
