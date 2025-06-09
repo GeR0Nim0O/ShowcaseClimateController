@@ -49,9 +49,9 @@
 
 ### Advanced Control Features
 - **Temperature PID AutoTune** with automatic parameter optimization and relay feedback tuning
-- **5-Screen LCD Interface** with rotary encoder navigation and automatic settings persistence
+- **Multi-Screen LCD Interface** with rotary encoder navigation and automatic settings persistence
 - **Dew Point Compensation** with automatic cooling limitation to prevent condensation
-- **Multi-tier Configuration** with SD card, SPIFFS, EEPROM, and default fallback
+- **Multi-tier Configuration** with SD card, SPIFFS, and default fallback
 - **Automatic Device Discovery** with I2C scanning and factory-based instantiation
 
 ### Connectivity & Communication
