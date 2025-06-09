@@ -617,11 +617,13 @@ climateController->startTemperatureAutoTune(22.0, 50.0);
 setHumidityHysteresis(0.5);  // ±0.5% deadband around setpoint
 ```
 
-#### Power Control
+#### Dew Point Compensation
 ```cpp
-// DAC provides 0-5V output for variable power
-// 0V = 0% power, 5V = 100% power
-setHeatingPower(75.0);  // 75% heating power = 3.75V output
+// Automatic cooling limitation to prevent condensation
+// Requires radiator temperature sensor
+bool isDewPointEnabled = climateController->isDewPointCompensationEnabled();
+float dewPoint = climateController->getDewPoint();
+float minCoolingTemp = climateController->getMinAllowedCoolingTemperature();
 ```
 
 #### Interface System
