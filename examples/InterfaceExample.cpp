@@ -140,7 +140,7 @@ void loopInterfaceExample() {
     // Get device registry and update all devices
     DeviceRegistry& registry = DeviceRegistry::getInstance();
     
-    // Update all devices (including Interface)
+    // Update all devices (Display and RotaryEncoder)
     registry.updateAllDevices();
     
     // Update climate controller if it exists
@@ -155,6 +155,16 @@ void loopInterfaceExample() {
     
     if (climateController) {
         ClimateController::updateControllerWithTiming(climateController);
+    }
+    
+    // Update interface coordination class
+    static Interface* interface = nullptr;
+    if (!interface) {
+        // This would be stored globally in a real application
+        // For this example, you'd need to pass it from setup or store globally
+        Serial.println("Warning: Interface instance not available in loop");
+    } else {
+        interface->update();
     }
     
     // Small delay to prevent overwhelming the system
