@@ -72,7 +72,7 @@ Menu Navigation Flow:
     │T:HEAT  RH:OFF  │   Live sensor readings & control status    └────────┬───────┘   Or during AutoTune:
              │           ┌────────────────┐
              │           │T:22.5  RH:65   │ ← AutoTune Active
-             │           │PIDtune Active        │
+             │           │PIDtune Active  │
              │           └────────────────┘
              │           Or after AutoTune completion (3 seconds):
              │           ┌────────────────┐
