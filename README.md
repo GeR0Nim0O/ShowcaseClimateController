@@ -889,4 +889,4 @@ class MLPredictor {
 
 ## Author
 
-Ron Groenen - 
+Ron Groenen
