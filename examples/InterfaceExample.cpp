@@ -62,10 +62,9 @@ void setupInterfaceExample() {
     // Create and register Display device
     std::map<String, String> displayChannels;
     displayChannels["display"] = "main";
-    
-    Device* displayDevice = registry.createDevice(
+      Device* displayDevice = registry.createDevice(
         "Display", "LCD2x16", 
-        &Wire, DISPLAY_I2C_ADDRESS, DISPLAY_TCA_CHANNEL, 
+        &Wire, DISPLAY_I2C_ADDRESS, 0, 
         0.0, displayChannels, 0
     );
     
