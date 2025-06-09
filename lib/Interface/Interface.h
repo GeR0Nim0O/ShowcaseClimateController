@@ -2,21 +2,18 @@
 #define INTERFACE_H
 
 #include <Arduino.h>
-#include "Device.h"
 #include "Display.h"
 #include "RotaryEncoder.h"
 #include "ClimateController.h"
 
-class Interface : public Device {
+class Interface {
 public:
-    // Device interface implementation
-    Interface(TwoWire* wire, uint8_t address, uint8_t tcaPort, 
-              const std::map<String, String>& channels, int deviceIndex);
+    // Interface coordination methods
+    Interface();
     ~Interface();
-      bool begin() override;
-    bool isConnected() override;
-    void update() override;
-    std::map<String, String> readData() override;
+    
+    bool begin();
+    void update();
     
     // Interface-specific methods
     void setClimateController(ClimateController* controller);
