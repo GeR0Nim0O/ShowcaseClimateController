@@ -42,10 +42,11 @@
 
 ### Professional Architecture
 - **Factory Pattern** for device instantiation
-- **Device Registry** with automatic discovery
+- **Device Registry** with automatic discovery and labeling system
 - **Modular Configuration** (JSON-based with multiple sources)
 - **EEPROM Persistence** with checksum validation
 - **Error Recovery** and fallback mechanisms
+- **Interface System** with screen management and rotary encoder navigation
 
 ### Connectivity & Communication
 - **WiFi & MQTT** with throttling and reconnection
