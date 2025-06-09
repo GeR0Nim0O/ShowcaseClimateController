@@ -231,7 +231,7 @@ lib/                              # Library headers and configurations
 ├── ClimateController/          # Main control logic
 │   └── ClimateController.h     # PID-based climate control
 └── Config/                     # Configuration management
-    └── ClimateConfig/          # EEPROM-based settings storage
+    └── ClimateConfig/          # JSON-based settings storage
 ```
 
 ### Device Hierarchy
