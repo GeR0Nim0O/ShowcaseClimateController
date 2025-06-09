@@ -349,6 +349,16 @@ bool Interface::validateDevices() {
             encoder && encoder->isConnected());
 }
 
+void Interface::saveSettingsToConfig() {
+    if (!climateController) {
+        Serial.println("Interface: Cannot save settings - no ClimateController available");
+        return;
+    }
+    
+    Serial.println("Interface: Saving settings to configuration file...");
+    climateController->updateClimateConfigFile();
+}
+
 // Device factory registration
 bool registerInterfaceDevice() {
     return DeviceRegistry::registerDeviceType("Interface", "",
