@@ -600,8 +600,7 @@ This comprehensive setup process ensures a smooth installation and configuration
    - **Rotate encoder**: Navigate between screens or adjust values
    - **Press encoder**: Select/confirm choices or enter edit mode
    - **Long press**: Exit current screen or cancel changes
-   
-   **5-Screen System:**
+     **Multi-Screen System:**
    - **Status Screen**: Real-time temperature, humidity, and control status
    - **Temperature Screen**: View and adjust temperature setpoint
    - **Humidity Screen**: View and adjust humidity setpoint  
