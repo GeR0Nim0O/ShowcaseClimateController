@@ -146,14 +146,15 @@ void setup() {
     
     // Create devices (see InterfaceExample.cpp for full example)
     // ...device creation code...
-    
-    // Initialize all devices
+      // Initialize all devices
     registry.initializeAllDevices();
-      // Set up interface with climate controller
-    Interface* interface = static_cast<Interface*>(registry.getDeviceByType("Interface"));
+    
+    // Create interface coordination class
+    Interface* interface = new Interface();
     ClimateController* controller = ClimateController::createFromDeviceRegistry();
     
     interface->setClimateController(controller);
+    interface->begin();  // Initialize interface with devices from registry
     interface->setTimeoutMs(10000);      // 10 second timeout
     // Note: Temperature adjusts in 0.1°C steps, Humidity in 1% steps (hardcoded)
 }
