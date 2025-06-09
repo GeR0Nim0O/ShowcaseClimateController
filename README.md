@@ -549,14 +549,14 @@ This comprehensive setup process ensures a smooth installation and configuration
    - Identifies devices by their unique I2C addresses
    - Creates appropriate device instances using the DeviceRegistry factory pattern
    - No manual channel configuration required - devices can be connected to any available channel
-   - Serial output shows real-time discovery process:
-     ```
+   - Serial output shows real-time discovery process:     ```
      [INFO] Starting I2C device discovery...
      [INFO] Scanning Channel 0: Found PCF8574 GPIO (0x20)
      [INFO] Scanning Channel 1: Found SHT31 Sensor (0x44)
-     [INFO] Scanning Channel 2: Found SSD1306 Display (0x3C)
-     [INFO] Scanning Channel 3: Found GP8403 DAC (0x5F)
-     [INFO] Discovery complete: 4 devices registered
+     [INFO] Scanning Channel 2: Found LCD2x16 Display (0x27)
+     [INFO] Scanning Channel 3: Found RotaryEncoder (0x30)
+     [INFO] Scanning Channel 4: Found GP8403 DAC (0x5F)
+     [INFO] Discovery complete: 5 devices registered
      ```
 
 2. **Configuration Files**
