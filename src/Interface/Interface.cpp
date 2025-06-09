@@ -350,9 +350,28 @@ String Interface::formatTemperatureStatus() {
     if (climateController->isHeating()) {
         return "HEAT";
     } else if (climateController->isCooling()) {
-        return "COOL";
-    } else {
+        return "COOL";    } else {
         // Temperature control is enabled but not actively heating or cooling
+        return "OK";
+    }
+}
+
+String Interface::formatHumidityStatus() {
+    if (!climateController) {
+        return "---";
+    }
+    
+    if (!climateController->isHumidityControlEnabled()) {
+        return "OFF";
+    }
+    
+    // Check current humidifying/dehumidifying status
+    if (climateController->isHumidifying()) {
+        return "HUMID";  // Shortened to fit display
+    } else if (climateController->isDehumidifying()) {
+        return "DEHUM";  // Shortened to fit display
+    } else {
+        // Humidity control is enabled but not actively humidifying or dehumidifying
         return "OK";
     }
 }
