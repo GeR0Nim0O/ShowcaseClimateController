@@ -21,7 +21,7 @@
  * Status displays:
  * - Temperature: HEAT/COOL/OK/OFF
  * - Humidity: HUM/DEHUM/OK/OFF
- * - AutoTune: "PIDtune" when active, "Tuning Done" on completion
+ * - AutoTune: "AutoTune" when active, "AutoTune" on completion
  * 
  * Hardware requirements:
  * - ESP32 with I2C
