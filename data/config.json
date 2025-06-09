@@ -288,7 +288,7 @@
         "Display": {
           "Name": "ClimateDisplay",
           "Threshold": 0.0
-        }
+        }on
       }
     }
   },
