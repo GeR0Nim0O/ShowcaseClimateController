@@ -26,7 +26,7 @@ The interface provides a cyclical menu system with the following screens:
    - Shows temperature control status (HEAT/COOL/OK/OFF) and humidity control status (HUMID/DEHUM/OK/OFF)
    - Shows AutoTune status when active ("AutoTune Active")
    - Shows completion message ("AutoTune Complete") for 3 seconds when AutoTune finishes
-   - Format: `T:22.5 RH:65.0` / `T:HEAT RH:OFF` or `AutoTune Active`
+   - Format: `T:22.5 RH:65` / `T:HEAT RH:OFF` or `AutoTune Active`
 
 2. **Temperature Setpoint** (Menu 1)
    - Allows adjustment of temperature setpoint (10-40°C)
