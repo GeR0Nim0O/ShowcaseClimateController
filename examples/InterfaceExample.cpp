@@ -186,8 +186,7 @@ void loopInterfaceExample() {
  * }
  */
 
-/*
- * Configuration file example (config.json):
+/* * Configuration file example (config.json):
  * 
  * Note: Interface is no longer registered as a Device in the DeviceRegistry.
  * Only the hardware devices (Display and RotaryEncoder) are registered.
@@ -198,7 +197,6 @@ void loopInterfaceExample() {
  *       "type": "Display",
  *       "model": "LCD2x16",
  *       "address": "0x27",
- *       "tcaPort": 0,
  *       "channels": {
  *         "display": "main"
  *       },
@@ -207,8 +205,7 @@ void loopInterfaceExample() {
  *     {
  *       "type": "RotaryEncoder", 
  *       "model": "I2C",
- *       "address": "0x61",
- *       "tcaPort": 1,
+ *       "address": "0x30",
  *       "channels": {
  *         "encoder": "main",
  *         "button": "select"
