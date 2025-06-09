@@ -121,7 +121,7 @@ Key Features:
 
 ## Device Registration
 
-The Interface system registers three device types in the DeviceRegistry:
+The Interface system registers two device types in the DeviceRegistry:
 
 ```cpp
 // Display device
@@ -130,8 +130,7 @@ DeviceRegistry::registerDeviceType("Display", "LCD2x16", ...);
 // Rotary encoder device  
 DeviceRegistry::registerDeviceType("RotaryEncoder", "I2C", ...);
 
-// Interface coordinator device
-DeviceRegistry::registerDeviceType("Interface", "", ...);
+// Note: Interface itself is NOT a device - it's a coordination class
 ```
 
 ## Usage Example
