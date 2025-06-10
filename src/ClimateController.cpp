@@ -1478,25 +1478,9 @@ void ClimateController::updateDewPointCompensation() {
 }
 
 void ClimateController::updateRadiatorSensorReading() {
-    if (radiatorSensor == nullptr || !radiatorSensor->isInitialized()) {
-        currentRadiatorTemperature = 0.0; // Invalid reading
-        Serial.println("Radiator sensor: nullptr or not initialized");
-        return;
-    }
-    
-    // Update the radiator sensor and get temperature reading
-    radiatorSensor->update();
-    currentRadiatorTemperature = radiatorSensor->getTemperature();
-    
-    // Debug: Print what the radiator sensor is reading
-    Serial.print("Radiator sensor raw reading: ");
-    Serial.print(currentRadiatorTemperature);
-    Serial.println("°C");
-    
-    // Validate the reading
-    if (currentRadiatorTemperature < -50.0 || currentRadiatorTemperature > 100.0) {
-        Serial.println("Warning: Invalid radiator temperature reading");
-        currentRadiatorTemperature = 0.0; // Mark as invalid
+    if (radiatorSensor) {
+        radiatorSensor->update();
+        radiatorTemperature = radiatorSensor->getTemperature();
     }
 }
 
