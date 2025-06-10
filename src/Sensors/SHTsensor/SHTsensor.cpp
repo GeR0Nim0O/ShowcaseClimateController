@@ -57,11 +57,11 @@ bool SHTsensor::readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity)
 {
     // Make sure to select the TCA channel before communication
     I2CHandler::selectTCA(getTCAChannel());
-    
-    // Send measurement command - high repeatability, clock stretching disabled
+      // Send measurement command - high repeatability, clock stretching disabled
     if (!writeCommand(0x2C06))
     {
-        Serial.println("SHT readRawData: writeCommand error");
+        Serial.print("SHT readRawData: writeCommand error on TCA");
+        Serial.println(getTCAChannel());
         return false;
     }
 
@@ -72,11 +72,23 @@ bool SHTsensor::readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity)
     uint8_t data[6];
     if (!readBytes(data, 6))
     {
-        Serial.println("SHT readRawData: readBytes error");
+        Serial.print("SHT readRawData: readBytes error on TCA");
+        Serial.println(getTCAChannel());
         return false;
     }    // Extract raw temperature and humidity values from received bytes
     rawTemperature = (data[0] << 8) | data[1];
     rawHumidity = (data[3] << 8) | data[4];
+
+    // Debug output for TCA port 4 (radiator sensor)
+    if (getTCAChannel() == 4) {
+        Serial.print("Radiator sensor TCA4 - Raw temp: ");
+        Serial.print(rawTemperature);
+        Serial.print(", Raw hum: ");
+        Serial.print(rawHumidity);
+        Serial.print(" -> Temp: ");
+        Serial.print(-45.0f + 175.0f * (float(rawTemperature) / 65535.0f));
+        Serial.println("°C");
+    }
 
     return true;
 }
