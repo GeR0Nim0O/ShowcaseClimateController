@@ -79,7 +79,7 @@
       "enabled": true,
       "safety_margin_celsius": 1.0,
       "update_interval_ms": 1000,
-      "min_cooling_temperature": 5.0
+      "min_cooling_temperature":5.0 
     }
   },
   "display": {
