@@ -1,5 +1,6 @@
 #include "Interface.h"
 #include "DeviceRegistry/DeviceRegistry.h"
+#include "DFR0554Display.h"
 #include <Arduino.h>
 
 Interface::Interface()
