@@ -133,7 +133,7 @@ void DFR0554Display::lcdWrite(uint8_t data) {
 
 void DFR0554Display::rgbWrite(uint8_t reg, uint8_t data) {
     I2CHandler::selectTCA(getTCAChannel());
-    wire->beginTransmission(rgbAddress);
+    wire->beginTransmission(address);
     wire->write(reg);
     wire->write(data);
     wire->endTransmission();
