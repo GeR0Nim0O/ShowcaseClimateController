@@ -307,27 +307,27 @@ void Relay4Ch::updateInternalState() {
     if (initialized) {
         uint8_t currentState = read1Byte(UNIT_4RELAY_RELAY_REG);
         
-        Serial.print("Relay4Ch updateInternalState - hardware read: 0x");
-        Serial.print(currentState, HEX);
+        // Serial.print("Relay4Ch updateInternalState - hardware read: 0x");
+        // Serial.print(currentState, HEX);
         
         // Check if hardware read looks valid (not 0xFF which suggests read error or unsupported)
         if (currentState != 0xFF && currentState != 0x00) {
             // Hardware read looks suspicious, stick with our internal tracking
-            Serial.print(" (suspicious - using internal tracking instead: relays=0x");
-            Serial.print(_relayState, HEX);
-            Serial.print(", LEDs=0x");
-            Serial.print(_ledState, HEX);
-            Serial.println(")");
+            // Serial.print(" (suspicious - using internal tracking instead: relays=0x");
+            // Serial.print(_relayState, HEX);
+            // Serial.print(", LEDs=0x");
+            // Serial.print(_ledState, HEX);
+            // Serial.println(")");
         } else {
             // Hardware read looks reasonable, use it
             _relayState = currentState & 0x0F;  // Lower 4 bits are relay states
             _ledState = currentState & 0xF0;    // Upper 4 bits are LED states
             
-            Serial.print(" -> relays=0x");
-            Serial.print(_relayState, HEX);
-            Serial.print(", LEDs=0x");
-            Serial.print(_ledState, HEX);
-            Serial.println(" (updated from hardware)");
+            // Serial.print(" -> relays=0x");
+            // Serial.print(_relayState, HEX);
+            // Serial.print(", LEDs=0x");
+            // Serial.print(_ledState, HEX);
+            // Serial.println(" (updated from hardware)");
         }
     }
 }
