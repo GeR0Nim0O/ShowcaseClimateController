@@ -232,9 +232,11 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
                   if (a.second != b.second) return a.second < b.second;
                   return a.first < b.first;
               });
-    
-    // Create counters for positional indexing by device type
+      // Create counters for positional indexing by device type
     std::map<String, int> deviceTypeCounters;
+    
+    Serial.print("Total devices in JSON: ");
+    Serial.println(devicesConfig.size());
     
     static int deviceIndex = 0;
       // Iterate through each device configuration in the JSON
