@@ -141,7 +141,7 @@ void Interface::handleEncoderRotation() {
 }
 
 void Interface::updateDisplay() {
-    if (!display || !display->isConnected()) return;
+    if (!displayIsConnected()) return;
     
     switch (currentMenu) {
         case MENU_DEFAULT:
