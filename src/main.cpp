@@ -719,18 +719,28 @@ void displayClimateStatusWrapper(float temp, float hum, float tempSetpoint, floa
 void initializeDisplayDevice() {
     // Get Display device from DeviceRegistry
     DeviceRegistry& registry = DeviceRegistry::getInstance();
-    displayDevice = (Display*)registry.getDeviceByType("Display", 0);
+    Device* device = registry.getDeviceByType("Display", 0);
     
-    if (displayDevice != nullptr && displayDevice->isInitialized()) {
+    if (device) {
+        // Try to cast to Display first
+        displayDevice = dynamic_cast<Display*>(device);
+        if (!displayDevice) {
+            // If that fails, check if it's a DFR0554Display
+            dfr0554DisplayDevice = dynamic_cast<DFR0554Display*>(device);
+        }
+    }
+    
+    if (displayIsInitializedWrapper()) {
         // Show initial startup message
-        displayDevice->clear();
-        displayDevice->setCursor(0, 0);
-        displayDevice->print("Climate Control");
-        displayDevice->setCursor(0, 1);
-        displayDevice->print("Initializing...");
+        displayClearWrapper();
+        displaySetCursorWrapper(0, 0);
+        displayPrintWrapper("Climate Control");
+        displaySetCursorWrapper(0, 1);
+        displayPrintWrapper("Initializing...");
         delay(2000);
     } else {
         displayDevice = nullptr;
+        dfr0554DisplayDevice = nullptr;
     }
 }
 
