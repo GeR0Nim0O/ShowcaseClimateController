@@ -284,7 +284,27 @@
           "Name": "Relay4"
         }
       }    
-    },    
+    }, 
+        "Relay4Ch": {
+      "Type": "Relay",
+      "TypeNumber": "Relay4Ch",
+      "Address": "0x26",
+      "Label": "Controller1",
+      "Channels": {
+        "RLY0": {
+          "Name": "Relay1"
+        },
+        "RLY1": {
+          "Name": "Relay2"
+        },
+        "RLY2": {
+          "Name": "Relay3"
+        },
+        "RLY3": {
+          "Name": "Relay4"
+        }
+      }    
+    },     
       "LCD_Display": {
       "Type": "Display",
       "TypeNumber": "DFR0554",
