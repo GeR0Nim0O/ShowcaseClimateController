@@ -371,8 +371,7 @@ void readAndSendDataFromDevices() {
     }
     
     // Track if any threshold was exceeded for climate status printing
-    bool anyThresholdExceeded = false;
-      for (size_t i = 0; i < devices.size(); i++) {
+    bool anyThresholdExceeded = false;    for (size_t i = 0; i < devices.size(); i++) {
         Device* device = devices[i];
         if (device == nullptr) {
             continue;
@@ -381,15 +380,15 @@ void readAndSendDataFromDevices() {
             continue;
         }
         
-        // Only read sensor data if the interval has passed, otherwise skip actual reading
-        std::map<String, String> data;
-        if (shouldReadSensors) {
-            I2CHandler::selectTCA(device->getTCAChannel());
-            data = device->readData();
-        } else {
-            // Skip actual sensor reading, use empty data to prevent processing
-            continue; // Skip this cycle entirely if not time to read sensors
+        // Skip SHT sensors in main loop - let ClimateController handle them to prevent self-heating
+        String deviceType = device->getType();
+        if (deviceType == "SHTSensor") {
+            continue; // Skip SHT sensors - they're read by ClimateController with proper timing
         }
+        
+        // Read other sensors normally
+        I2CHandler::selectTCA(device->getTCAChannel());
+        auto data = device->readData();
         
         for (const auto& channel : device->getChannels()) {
             String channelKey = channel.first;            String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
