@@ -84,6 +84,7 @@ ClimateController* climateController = nullptr;
 
 // Global variables for display
 Display* displayDevice = nullptr;
+DFR0554Display* dfr0554DisplayDevice = nullptr;
 unsigned long lastDisplayUpdate = 0;
 
 // AutoTune mode selection enum
