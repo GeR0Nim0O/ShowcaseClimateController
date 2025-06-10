@@ -631,21 +631,50 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
 
 // Add this implementation of the safeWritePin method we previously added to the header
 bool ClimateController::safeWritePin(uint8_t pin, bool value) {
-    if (!gpio || !gpio->isInitialized()) {
-        return false;
+    // If using PCF8574 GPIO expander
+    if (gpio != nullptr && gpio->isInitialized()) {
+        try {
+            gpio->writePin(pin, value);
+            
+            // Verify the write
+            uint8_t currentState = gpio->getGPIOState();
+            bool actualState = (currentState & (1 << pin)) != 0;
+            
+            return (actualState == value);
+        } catch (...) {
+            return false;
+        }
     }
     
-    try {
-        gpio->writePin(pin, value);
+    // If using Relay4Ch devices
+    if (relay1 != nullptr && relay2 != nullptr && 
+        relay1->isInitialized() && relay2->isInitialized()) {
         
-        // Verify the write
-        uint8_t currentState = gpio->getGPIOState();
-        bool actualState = (currentState & (1 << pin)) != 0;
-        
-        return (actualState == value);
-    } catch (...) {
-        return false;
+        try {
+            // Map pins to relay channels based on configuration
+            if (pin == pinHumidify || pin == pinDehumidify || 
+                pin == pinFanInterior || pin == pinFanExterior) {
+                // Use relay1 for humidity and fan controls
+                uint8_t relayChannel = pin;
+                return relay1->relayWrite(relayChannel, value);
+            } else if (pin == pinTemperatureEnable || pin == pinTemperatureCool || 
+                       pin == pinTemperatureHeat) {
+                // Use relay2 for temperature controls
+                uint8_t relayChannel = pin;
+                if (pin == pinTemperatureEnable) relayChannel = 0;
+                else if (pin == pinTemperatureCool) relayChannel = 1;
+                else if (pin == pinTemperatureHeat) relayChannel = 2;
+                
+                return relay2->relayWrite(relayChannel, value);
+            }
+            return false;
+        } catch (...) {
+            return false;
+        }
     }
+    
+    Serial.println("ERROR: No GPIO control devices available");
+    return false;
 }
 
 void ClimateController::setFanInterior(bool enable) {
