@@ -1,9 +1,9 @@
 #include "DFR0554Display.h"
 #include "I2CHandler.h"
 
-DFR0554Display::DFR0554Display(TwoWire* wire, uint8_t lcdAddress, uint8_t rgbAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(wire, threshold, channels, lcdAddress, tcaChannel, deviceIndex),
-      lcdAddress(lcdAddress), rgbAddress(rgbAddress),
+DFR0554Display::DFR0554Display(TwoWire* wire, uint8_t address, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex)
+    : Device(wire, threshold, channels, address, tcaChannel, deviceIndex),
+      address(address),
       currentCol(0), currentRow(0), displayInitialized(false) {
     type = "DFR0554Display";
 }
