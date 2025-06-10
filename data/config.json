@@ -164,7 +164,7 @@
     "SCALE": {
       "Type": "Sensor",
       "TypeNumber": "SCALES",
-      "Address": "0x29",// "0x26      "Label": "Interior",
+      "Address": "0x29",// "0x26"      "Label": "Interior",
       "Channels": {
         "W": {
           "Name": "Weight",
