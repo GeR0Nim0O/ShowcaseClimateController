@@ -484,9 +484,9 @@ void Configuration::initializeEachDevice(std::vector<Device*>& devices) {
                 
                 if (error == 0) {
                     success = true;
-                }
-            }
-            else if (device->getType().equalsIgnoreCase("Display")) {
+                }            }
+            else if (device->getType().equalsIgnoreCase("Display") || 
+                     device->getType().equalsIgnoreCase("DFR0554Display")) {
                 I2CHandler::selectTCA(device->getTCAChannel());
                 Wire.beginTransmission(device->getI2CAddress());
                 int error = Wire.endTransmission();
