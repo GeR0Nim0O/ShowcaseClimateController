@@ -108,7 +108,7 @@ std::map<uint8_t, std::vector<uint8_t>> I2CHandler::TCAScanner() {
     for (uint8_t t = 0; t < 8; t++) {
         I2CHandler::selectTCA(t);
 
-        for (uint8_t addr = 0; addr <= 127; addr++) {
+        for (uint8_t addr = 1; addr <= 127; addr++) {
             if (addr == TCAADDR)
                 continue;
 
