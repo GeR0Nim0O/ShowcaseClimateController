@@ -197,18 +197,17 @@ void Interface::displayDefault() {
     displaySetCursor(0, 0);
     displayPrint("T:" + formatTemperature(currentTemp));
     displaySetCursor(8, 0);
-    displayPrint("RH:" + formatHumidity(currentHum));
-    
+    displayPrint("RH:" + formatHumidity(currentHum));    
     // Line 2: Show AutoTune status, completion message, or normal control status
-    display->setCursor(0, 1);    if (showingAutoTuneComplete) {
+    displaySetCursor(0, 1);    if (showingAutoTuneComplete) {
         // Show completion message for 3 seconds
-        display->print("AutoTune");
+        displayPrint("AutoTune");
         if (millis() - autoTuneCompleteTime > 3000) {
             showingAutoTuneComplete = false;
         }
     } else if (currentAutoTuneActive) {
         // Show AutoTune in progress
-        display->print(formatAutoTuneStatus());
+        displayPrint(formatAutoTuneStatus());
     } else {
         // Show normal control status
         String tempStatus = formatTemperatureStatus();
