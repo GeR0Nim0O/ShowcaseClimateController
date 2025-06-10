@@ -422,3 +422,45 @@ void Interface::saveSettingsToConfig() {
     Serial.println("Interface: Saving settings to configuration file...");
     climateController->updateClimateConfigFile();
 }
+
+// Display wrapper methods to handle both Display and DFR0554Display
+void Interface::displayClear() {
+    if (display) {
+        display->clear();
+    } else if (dfr0554DisplayPtr) {
+        dfr0554DisplayPtr->clear();
+    }
+}
+
+void Interface::displaySetCursor(int col, int row) {
+    if (display) {
+        display->setCursor(col, row);
+    } else if (dfr0554DisplayPtr) {
+        dfr0554DisplayPtr->setCursor(col, row);
+    }
+}
+
+void Interface::displayPrint(const String& text) {
+    if (display) {
+        display->print(text);
+    } else if (dfr0554DisplayPtr) {
+        dfr0554DisplayPtr->print(text);
+    }
+}
+
+bool Interface::displayIsConnected() {
+    if (display) {
+        return display->isConnected();
+    } else if (dfr0554DisplayPtr) {
+        return dfr0554DisplayPtr->isConnected();
+    }
+    return false;
+}
+
+void Interface::displayUpdate() {
+    if (display) {
+        display->update();
+    } else if (dfr0554DisplayPtr) {
+        dfr0554DisplayPtr->update();
+    }
+}
