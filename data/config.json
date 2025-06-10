@@ -286,7 +286,7 @@
       }    },    "LCD_Display": {
       "Type": "Display",
       "TypeNumber": "DFR0554",
-      "Address": "0x2D",
+      "Address": "0x6B",
       "Label": "Interface",
       "Channels": {
         "Display": {
