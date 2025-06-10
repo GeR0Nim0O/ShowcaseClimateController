@@ -33,10 +33,8 @@ bool DFR0554Display::begin() {
     
     // Set default white color
     setColorWhite();
-    
-    initialized = true;
+      initialized = true;
     displayInitialized = true;
-    Serial.println("DFR0554 Display initialized");
     
     // Show startup message
     clear();
