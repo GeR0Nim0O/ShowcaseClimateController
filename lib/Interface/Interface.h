@@ -43,6 +43,7 @@ private:
     // Device references
     ClimateController* climateController;
     Display* display;
+    DFR0554Display* dfr0554DisplayPtr;
     RotaryEncoder* encoder;
     
     // Menu system state
