@@ -207,12 +207,11 @@ void Interface::displayDefault() {
         }
     } else if (currentAutoTuneActive) {
         // Show AutoTune in progress
-        displayPrint(formatAutoTuneStatus());
-    } else {
+        displayPrint(formatAutoTuneStatus());    } else {
         // Show normal control status
         String tempStatus = formatTemperatureStatus();
         String humStatus = formatHumidityStatus();
-        display->print("T:" + tempStatus + " RH:" + humStatus);
+        displayPrint("T:" + tempStatus + " RH:" + humStatus);
     }
 }
 
