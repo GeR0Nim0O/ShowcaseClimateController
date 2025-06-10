@@ -110,6 +110,8 @@ public:
 
 private:
     PCF8574gpio* gpio;
+    Relay4Ch* relay1;  // For humidity and fan controls
+    Relay4Ch* relay2;  // For temperature controls
     SHTsensor* sensor;
     GP8403dac* dac;  // Add DAC device pointer
     
