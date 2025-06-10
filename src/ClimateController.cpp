@@ -256,12 +256,12 @@ bool ClimateController::begin() {
             }
         }
     }
-    
-    // Initialize pin mappings
+      // Initialize pin mappings
     initializePinMappings();
     
-    // Ensure GPIO is in output mode and all pins start LOW
+    // Initialize GPIO devices
     if (gpio != nullptr) {
+        // PCF8574 GPIO expander
         gpio->forceOutputMode();
         
         // Initialize ALL pins to LOW/false state
@@ -271,6 +271,21 @@ bool ClimateController::begin() {
         
         // Force final state to 0x00
         gpio->writeByte(0x00);
+        Serial.println("ClimateController: PCF8574 GPIO initialized");
+    } else if (relay1 != nullptr && relay2 != nullptr) {
+        // Relay4Ch devices
+        if (relay1->isInitialized() && relay2->isInitialized()) {
+            // Initialize all relays to OFF
+            relay1->relayAll(false);
+            relay2->relayAll(false);
+            Serial.println("ClimateController: Relay4Ch devices initialized");
+        } else {
+            Serial.println("ERROR: Relay4Ch devices not properly initialized");
+            return false;
+        }
+    } else {
+        Serial.println("ERROR: No GPIO control devices available");
+        return false;
     }
     
     return true;
