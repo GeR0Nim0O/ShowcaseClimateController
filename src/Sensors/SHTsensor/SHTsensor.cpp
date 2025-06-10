@@ -79,17 +79,6 @@ bool SHTsensor::readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity)
     rawTemperature = (data[0] << 8) | data[1];
     rawHumidity = (data[3] << 8) | data[4];
 
-    // Debug output for TCA port 4 (radiator sensor)
-    if (getTCAChannel() == 4) {
-        Serial.print("Radiator sensor TCA4 - Raw temp: ");
-        Serial.print(rawTemperature);
-        Serial.print(", Raw hum: ");
-        Serial.print(rawHumidity);
-        Serial.print(" -> Temp: ");
-        Serial.print(-45.0f + 175.0f * (float(rawTemperature) / 65535.0f));
-        Serial.println("°C");
-    }
-
     return true;
 }
 
