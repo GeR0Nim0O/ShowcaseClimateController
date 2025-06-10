@@ -63,13 +63,8 @@ void Relay4Ch::update() {
 std::map<String, String> Relay4Ch::readData() {
     std::map<String, String> result;
     
-    // For relay modules, we should track the state based on what we've written
-    // rather than trying to read it back from hardware (which may not be reliable)
-    // Only update from hardware if we haven't written to any relays yet
-    static bool hasBeenWritten = false;
-    if (!hasBeenWritten) {
-        updateInternalState();
-    }
+    // Don't constantly read from hardware as it may interfere with relay operation
+    // Use our tracked internal state instead
     
     // Convert relay states to a map of channel values based on our tracked state
     for (const auto& channel : channels) {
@@ -77,9 +72,7 @@ std::map<String, String> Relay4Ch::readData() {
         int relayChannel = channel.second.toInt();
         if (validateChannel(relayChannel)) {
             bool state = getRelayState(relayChannel);
-            result[channel.first] = state ? "1.00" : "0.00";
-            // Mark that we've been written to
-            hasBeenWritten = true;
+            result[channel.first] = state ? "1" : "0";
         }
     }
     
