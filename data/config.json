@@ -117,7 +117,7 @@
         }
       }
     },    
-    "SHT_Exterior": {
+    "SHT_Ixterior": {
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
