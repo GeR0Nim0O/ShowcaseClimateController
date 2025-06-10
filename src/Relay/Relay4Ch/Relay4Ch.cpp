@@ -269,15 +269,23 @@ uint8_t Relay4Ch::read1Byte(uint8_t register_address) {
 }
 
 void Relay4Ch::updateInternalState() {
-    // Note: Many relay modules are write-only and don't support reading back relay states
-    // We rely on our internal _relayState tracking instead of reading from hardware
-    // This prevents I2C errors and ensures consistent state tracking
-    
+    // Read current hardware state from the device following M5Stack approach
+    // This matches the original M5Stack library behavior where relayWrite() 
+    // always reads current state before modification
     if (initialized) {
-        // Optional: Try to read from hardware but don't rely on it
-        // Some relay modules return invalid data or don't support read operations
-        Serial.print("Current tracked relay state: 0x");
-        Serial.println(_relayState, HEX);
+        uint8_t currentState = read1Byte(UNIT_4RELAY_RELAY_REG);
+        
+        // Update internal state tracking based on hardware readback
+        _relayState = currentState & 0x0F;  // Lower 4 bits are relay states
+        _ledState = currentState & 0xF0;    // Upper 4 bits are LED states
+        
+        Serial.print("Relay4Ch updateInternalState - read from hardware: 0x");
+        Serial.print(currentState, HEX);
+        Serial.print(" (relays: 0x");
+        Serial.print(_relayState, HEX);
+        Serial.print(", LEDs: 0x");
+        Serial.print(_ledState, HEX);
+        Serial.println(")");
     }
 }
 
