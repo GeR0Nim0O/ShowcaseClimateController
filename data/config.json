@@ -275,7 +275,7 @@
           "Name": "HumdifyRelay"
         },
         "RLY1": {
-          "Name": "Relay2"
+          "Name": "DehumidifyRelay"
         },
         "RLY2": {
           "Name": "Relay3"
