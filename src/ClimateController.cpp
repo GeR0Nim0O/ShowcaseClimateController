@@ -278,16 +278,11 @@ bool ClimateController::begin() {
         Serial.println("ClimateController: PCF8574 GPIO initialized");    } else if (relay1 != nullptr && relay2 != nullptr) {
         // Relay4Ch devices - use M5Stack-compatible initialization
         Serial.println("Initializing Relay4Ch devices...");
-        
-        // Call begin() to establish connection
+          // Call begin() to establish connection and initialize
         bool relay1Connected = relay1->begin();
         bool relay2Connected = relay2->begin();
         
         if (relay1Connected && relay2Connected) {
-            // Call Init() to properly initialize the devices (M5Stack compatible)
-            relay1->Init(1);  // 1 = SYNC mode
-            relay2->Init(1);  // 1 = SYNC mode
-            
             // Check if initialization was successful
             if (relay1->isInitialized() && relay2->isInitialized()) {
                 // Initialize all relays to OFF
@@ -295,7 +290,7 @@ bool ClimateController::begin() {
                 relay2->relayAll(false);
                 Serial.println("ClimateController: Relay4Ch devices initialized successfully");
             } else {
-                Serial.println("ERROR: Relay4Ch devices failed Init() sequence");
+                Serial.println("ERROR: Relay4Ch devices failed initialization sequence");
                 return false;
             }
         } else {
