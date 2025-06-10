@@ -117,7 +117,7 @@ void DFR0554Display::initializeRGB() {
 
 void DFR0554Display::lcdCommand(uint8_t command) {
     I2CHandler::selectTCA(getTCAChannel());
-    wire->beginTransmission(lcdAddress);
+    wire->beginTransmission(address);
     wire->write(0x80); // Command mode
     wire->write(command);
     wire->endTransmission();
@@ -125,7 +125,7 @@ void DFR0554Display::lcdCommand(uint8_t command) {
 
 void DFR0554Display::lcdWrite(uint8_t data) {
     I2CHandler::selectTCA(getTCAChannel());
-    wire->beginTransmission(lcdAddress);
+    wire->beginTransmission(address);
     wire->write(0x40); // Data mode
     wire->write(data);
     wire->endTransmission();
