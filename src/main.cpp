@@ -722,11 +722,12 @@ void initializeDisplayDevice() {
     Device* device = registry.getDeviceByType("Display", 0);
     
     if (device) {
-        // Try to cast to Display first
-        displayDevice = dynamic_cast<Display*>(device);
-        if (!displayDevice) {
-            // If that fails, check if it's a DFR0554Display
-            dfr0554DisplayDevice = dynamic_cast<DFR0554Display*>(device);
+        // Check device type to determine which display type it is
+        String deviceType = device->getType();
+        if (deviceType == "Display") {
+            displayDevice = static_cast<Display*>(device);
+        } else if (deviceType == "DFR0554Display") {
+            dfr0554DisplayDevice = static_cast<DFR0554Display*>(device);
         }
     }
     
