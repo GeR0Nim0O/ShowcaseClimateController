@@ -784,12 +784,11 @@ void ClimateController::updateControllerWithTiming(ClimateController* controller
     if (controller == nullptr) {
         return; // Exit if climate controller is not available
     }
-    
-    // Only update climate controller every few seconds to avoid GPIO conflicts
+      // Only update climate controller every 10 seconds to prevent SHT sensor self-heating
     static unsigned long lastClimateUpdate = 0;
     unsigned long currentTime = millis();
     
-    if (currentTime - lastClimateUpdate >= 5000) { // Update every 5 seconds
+    if (currentTime - lastClimateUpdate >= 10000) { // Update every 10 seconds (10% duty cycle)
         controller->update();
         lastClimateUpdate = currentTime;
     }
