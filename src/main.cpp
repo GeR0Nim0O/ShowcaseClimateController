@@ -357,8 +357,8 @@ void sendSensorDataOverMQTT(const SensorData& data) {
 }
 
 void readAndSendDataFromDevices() {
-    // Flag to determine if we should print data this cycle (only true every 60 seconds)
-    bool shouldPrintData = Configuration::isMqttThrottlingEnabled() && (millis() - lastMqttSendTime >= Configuration::getMqttThrottlingInterval());
+    // Flag to determine if we should print data this cycle (only true every 60 seconds when throttling enabled)
+    bool shouldPrintData = !Configuration::isMqttThrottlingEnabled() || (millis() - lastMqttSendTime >= Configuration::getMqttThrottlingInterval());
     
     // Only print detailed sensor readings if WiFi is connected (don't spam offline mode)
     if (shouldPrintData && WiFi.status() == WL_CONNECTED) {
