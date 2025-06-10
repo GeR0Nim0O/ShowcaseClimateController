@@ -3,7 +3,8 @@
 
 DFR0554Display::DFR0554Display(TwoWire* wire, uint8_t address, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex)
     : Device(wire, threshold, channels, address, tcaChannel, deviceIndex),
-      address(address),
+      lcdAddress(DFR0554_LCD_ADDRESS),  // Use LCD address 0x3E
+      rgbAddress(DFR0554_RGB_ADDRESS),  // Use RGB address 0x2D  
       currentCol(0), currentRow(0), displayInitialized(false) {
     type = "DFR0554Display";
 }
