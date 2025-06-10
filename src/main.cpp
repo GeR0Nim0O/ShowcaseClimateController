@@ -754,8 +754,7 @@ void updateDisplayWithClimateStatus() {
         // Show error message if climate controller is not available
         displayErrorWrapper("No Climate Ctrl");
         return;
-    }
-    
+    }    
     // Get current climate data
     float currentTemp = climateController->getCurrentTemperature();
     float currentHum = climateController->getCurrentHumidity();
@@ -763,7 +762,7 @@ void updateDisplayWithClimateStatus() {
     float humSetpoint = climateController->getHumiditySetpoint();
     
     // Update display with climate status
-    displayDevice->displayClimateStatus(currentTemp, currentHum, tempSetpoint, humSetpoint);
+    displayClimateStatusWrapper(currentTemp, currentHum, tempSetpoint, humSetpoint);
 }
 
 // Function to test PSRAM
