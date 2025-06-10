@@ -298,7 +298,7 @@
           "Name": "TemperatureCoolRelay"
         },
         "RLY2": {
-          "Name": "Temperature"
+          "Name": "TemperatureHeatRelay"
         },
         "RLY3": {
           "Name": "Relay4"
