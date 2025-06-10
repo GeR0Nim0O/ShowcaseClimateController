@@ -665,6 +665,56 @@ void showTemperatureAndHumidity() {
     }
 }
 
+// Display wrapper functions to handle both Display and DFR0554Display
+void displayClearWrapper() {
+    if (displayDevice) {
+        displayDevice->clear();
+    } else if (dfr0554DisplayDevice) {
+        dfr0554DisplayDevice->clear();
+    }
+}
+
+void displaySetCursorWrapper(int col, int row) {
+    if (displayDevice) {
+        displayDevice->setCursor(col, row);
+    } else if (dfr0554DisplayDevice) {
+        dfr0554DisplayDevice->setCursor(col, row);
+    }
+}
+
+void displayPrintWrapper(const String& text) {
+    if (displayDevice) {
+        displayDevice->print(text);
+    } else if (dfr0554DisplayDevice) {
+        dfr0554DisplayDevice->print(text);
+    }
+}
+
+bool displayIsInitializedWrapper() {
+    if (displayDevice) {
+        return displayDevice->isInitialized();
+    } else if (dfr0554DisplayDevice) {
+        return dfr0554DisplayDevice->isInitialized();
+    }
+    return false;
+}
+
+void displayErrorWrapper(const String& error) {
+    if (displayDevice) {
+        displayDevice->displayError(error);
+    } else if (dfr0554DisplayDevice) {
+        dfr0554DisplayDevice->displayError(error);
+    }
+}
+
+void displayClimateStatusWrapper(float temp, float hum, float tempSetpoint, float humSetpoint) {
+    if (displayDevice) {
+        displayDevice->displayClimateStatus(temp, hum, tempSetpoint, humSetpoint);
+    } else if (dfr0554DisplayDevice) {
+        dfr0554DisplayDevice->displayClimateStatus(temp, hum, tempSetpoint, humSetpoint);
+    }
+}
+
 // Function to initialize the display device
 void initializeDisplayDevice() {
     // Get Display device from DeviceRegistry
