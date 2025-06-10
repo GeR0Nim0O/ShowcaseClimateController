@@ -349,8 +349,7 @@ void ClimateController::update() {    unsigned long currentTime = millis();
             lastFanExteriorActive = fanExteriorActive;
         }        
         applyDACControls(); // Apply DAC controls
-        
-        // NEW: Periodically refresh GPIO state to prevent drift
+          // NEW: Periodically refresh GPIO state to prevent drift
         static unsigned long lastGpioRefresh = 0;
         if (currentTime - lastGpioRefresh >= 10000) { // Every 10 seconds
             if (gpio != nullptr) {
@@ -358,9 +357,19 @@ void ClimateController::update() {    unsigned long currentTime = millis();
                 // Force re-apply fan control during refresh
                 if (fanInteriorActive || fanExteriorActive) {
                     applyFanControl();
-                }            }
+                }
+            } else if (relay1 != nullptr && relay2 != nullptr) {
+                // For Relay4Ch devices, refresh state by re-applying current control states
+                if (tempControlEnabled || humidifyingActive || dehumidifyingActive || 
+                    fanInteriorActive || fanExteriorActive) {
+                    // Re-apply all current states to ensure relays are in correct position
+                    applyTemperatureControl();
+                    applyHumidityControl();
+                    applyFanControl();
+                }
+            }
             lastGpioRefresh = currentTime;
-        }        // Enhanced status printing - print on changes or periodically
+        }// Enhanced status printing - print on changes or periodically
         printClimateStatusIfChanged();
         
         lastUpdate = currentTime;
