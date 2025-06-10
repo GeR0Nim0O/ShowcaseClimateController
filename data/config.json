@@ -265,7 +265,7 @@
         }
       }
     },    
-    "Relay4Ch": {
+    "Relay4Ch1": {
       "Type": "Relay",
       "TypeNumber": "Relay4Ch",
       "Address": "0x26",
