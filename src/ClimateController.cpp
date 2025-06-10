@@ -1601,10 +1601,9 @@ void ClimateController::updateDewPointCompensation() {
     // Use the higher of: (dew point + safety margin) or minimum cooling temperature
     minAllowedCoolingTemperature = max(dewPoint + safetyMargin, minCoolingTemp);
     
-    lastDewPointUpdate = currentTime;
-      // Debug output for dew point compensation
+    lastDewPointUpdate = currentTime;      // Debug output for dew point compensation
     static unsigned long lastDebugPrint = 0;
-    if (currentTime - lastDebugPrint >= 30000) // Print debug every 30 seconds
+    if (currentTime - lastDebugPrint >= 30000) { // Print debug every 30 seconds
         Serial.print("DewPoint: ");
         Serial.print(dewPoint, 1);
         Serial.print("°C, MinCool: ");
