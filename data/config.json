@@ -292,7 +292,7 @@
       "Label": "ControllerRelay2",
       "Channels": {
         "RLY0": {
-          "Name": "Relay1"
+          "Name": "EnableTemperatureRelay"
         },
         "RLY1": {
           "Name": "Relay2"
