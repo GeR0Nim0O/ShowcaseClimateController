@@ -63,13 +63,19 @@ private:
     
     // Adjustment parameters
     float adjustmentStep;
-    
-    // Display helpers
+      // Display helpers
     void displayDefault();
     void displayTempSetpoint();
     void displayHumiditySetpoint();
     void displayTempControlEnable();
     void displayHumidityControlEnable();
+    
+    // Display wrapper methods
+    void displayClear();
+    void displaySetCursor(int col, int row);
+    void displayPrint(const String& text);
+    bool displayIsConnected();
+    void displayUpdate();
       // Menu navigation
     void nextMenu();
     void adjustCurrentSetting(int direction);
