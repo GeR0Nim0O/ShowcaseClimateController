@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "Display.h"
+#include "DFR0554Display.h"
 #include "RotaryEncoder.h"
 #include "ClimateController.h"
 
