@@ -11,10 +11,8 @@ DFR0554Display::DFR0554Display(TwoWire* wire, uint8_t address, uint8_t tcaChanne
 
 bool DFR0554Display::begin() {
     I2CHandler::selectTCA(getTCAChannel());
-    
-    // Test LCD communication
+      // Test LCD communication
     if (!testLCDConnection()) {
-        Serial.println("DFR0554: LCD communication failed");
         initialized = false;
         displayInitialized = false;
         return false;
@@ -22,7 +20,6 @@ bool DFR0554Display::begin() {
     
     // Test RGB communication  
     if (!testRGBConnection()) {
-        Serial.println("DFR0554: RGB LED communication failed");
         initialized = false;
         displayInitialized = false;
         return false;
