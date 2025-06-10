@@ -257,18 +257,17 @@ void Interface::displayTempControlEnable() {
     displayPrint("TOGGLE");
 }
 
-void Interface::displayHumidityControlEnable() {
-    if (!climateController) return;
+void Interface::displayHumidityControlEnable() {    if (!climateController) return;
     
     bool enabled = climateController->isHumidityControlEnabled();
     
-    display->clear();
-    display->setCursor(0, 0);
-    display->print("RH Control:");
-    display->setCursor(0, 1);
-    display->print(formatOnOff(enabled));
-    display->setCursor(10, 1);
-    display->print("TOGGLE");
+    displayClear();
+    displaySetCursor(0, 0);
+    displayPrint("RH Control:");
+    displaySetCursor(0, 1);
+    displayPrint(formatOnOff(enabled));
+    displaySetCursor(10, 1);
+    displayPrint("TOGGLE");
 }
 
 void Interface::nextMenu() {
