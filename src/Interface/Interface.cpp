@@ -234,13 +234,13 @@ void Interface::displayHumiditySetpoint() {
     
     float setpoint = climateController->getHumiditySetpoint();
     
-    display->clear();
-    display->setCursor(0, 0);
-    display->print("RH Setpoint:");
-    display->setCursor(0, 1);
-    display->print(formatHumidity(setpoint) + "%");
-    display->setCursor(10, 1);
-    display->print("ADJUST");
+    displayClear();
+    displaySetCursor(0, 0);
+    displayPrint("RH Setpoint:");
+    displaySetCursor(0, 1);
+    displayPrint(formatHumidity(setpoint) + "%");
+    displaySetCursor(10, 1);
+    displayPrint("ADJUST");
 }
 
 void Interface::displayTempControlEnable() {
