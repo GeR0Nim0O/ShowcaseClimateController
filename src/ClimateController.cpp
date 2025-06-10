@@ -150,6 +150,80 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
     }
 }
 
+// New constructor for Relay4Ch devices
+ClimateController::ClimateController(Relay4Ch* relay1, Relay4Ch* relay2, SHTsensor* tempHumSensor, GP8403dac* dac)
+    : gpio(nullptr), relay1(nullptr), relay2(nullptr), sensor(nullptr), dac(nullptr),
+      temperatureSetpoint(0.0), humiditySetpoint(0.0),
+      currentTemperature(0.0), currentHumidity(0.0),
+      temperatureControlEnabled(true), humidityControlEnabled(true),
+      heatingActive(false), coolingActive(false), 
+      humidifyingActive(false), dehumidifyingActive(false),
+      tempControlEnabled(false),
+      fanInteriorActive(false), fanExteriorActive(false),
+      autoFanControlEnabled(true),
+      lastUpdate(0), updateInterval(500),
+      heatingPower(0.0), coolingPower(0.0),
+      humidifierPower(0.0), dehumidifierPower(0.0),
+      temperaturePID(nullptr),
+      temperatureAutoTuner(nullptr),
+      temperatureAutoTuning(false),
+      autoTuneSetpoint(0.0), autoTuneOutputStep(0.0), autoTuneStartTime(0),
+      currentAutoTuneType(AutoTuneType::NORMAL), expectedAutoTuneDuration(0),
+      tempInput(0.0), tempOutput(0.0), tempSetpoint(0.0),
+      lastStatusPrint(0), statusPrintInterval(10000),
+      lastPrintedTemperature(0.0), lastPrintedHumidity(0.0),
+      lastPrintedHeatingActive(false), lastPrintedCoolingActive(false),
+      lastPrintedHumidifyingActive(false), lastPrintedDehumidifyingActive(false),
+      lastPrintedFanInteriorActive(false), lastPrintedFanExteriorActive(false),
+      lastPrintedTemperatureControlEnabled(true), lastPrintedHumidityControlEnabled(true),
+      temperatureThreshold(Configuration::getTemperatureHysteresis()), humidityThreshold(Configuration::getHumidityHysteresis()) {
+      
+    // Safely assign the device pointers
+    this->relay1 = relay1;
+    this->relay2 = relay2;
+    this->sensor = tempHumSensor;
+    this->dac = dac;
+    
+    // Initialize dew point compensation
+    this->radiatorSensor = nullptr;
+    this->dewPoint = 0.0;
+    this->currentRadiatorTemperature = 0.0;
+    this->minAllowedCoolingTemperature = 0.0;
+    this->lastDewPointUpdate = 0;
+    
+    // Initialize with relay mappings based on config.json
+    // Relay1: Humidity/Fan controls, Relay2: Temperature controls
+    pinHumidify = 0;        // Relay1 Channel 0 - HumdifyRelay
+    pinDehumidify = 1;      // Relay1 Channel 1 - DehumidifyRelay  
+    pinFanInterior = 2;     // Relay1 Channel 2 - InteriorFanRelay
+    pinFanExterior = 3;     // Relay1 Channel 3 - ExteriorFanRelay
+    
+    pinTemperatureEnable = 0; // Relay2 Channel 0 - EnableTemperatureRelay
+    pinTemperatureCool = 1;   // Relay2 Channel 1 - TemperatureCoolRelay
+    pinTemperatureHeat = 2;   // Relay2 Channel 2 - TemperatureHeatRelay
+    
+    Serial.println("ClimateController: Using Relay4Ch devices for GPIO control");
+    
+    // Initialize PID controllers - with safety checks
+    try {
+        temperaturePID = new PID(&tempInput, &tempOutput, &tempSetpoint, 
+                                Configuration::getTemperatureKp(), 
+                                Configuration::getTemperatureKi(), 
+                                Configuration::getTemperatureKd(), DIRECT);
+        
+        if (temperaturePID != nullptr) {
+            temperaturePID->SetMode(AUTOMATIC);
+            temperaturePID->SetOutputLimits(-100, 100); // -100 = full cooling, +100 = full heating
+        }
+    } catch (...) {
+        // Clean up if an exception occurs
+        if (temperaturePID != nullptr) {
+            delete temperaturePID;
+            temperaturePID = nullptr;
+        }
+    }
+}
+
 ClimateController::~ClimateController() {
     // Clean up PID controllers
     if (temperaturePID != nullptr) {
@@ -1477,7 +1551,7 @@ void ClimateController::updateDewPointCompensation() {
     lastDewPointUpdate = currentTime;
       // Debug output for dew point compensation
     static unsigned long lastDebugPrint = 0;
-    if (currentTime - lastDebugPrint >= 30000) { // Print debug every 30 seconds
+    if (currentTime - lastDebugPrint >= 30000) // Print debug every 30 seconds
         Serial.print("DewPoint: ");
         Serial.print(dewPoint, 1);
         Serial.print("°C, MinCool: ");
