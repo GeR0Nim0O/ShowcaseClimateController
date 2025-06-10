@@ -1480,7 +1480,7 @@ void ClimateController::updateDewPointCompensation() {
 void ClimateController::updateRadiatorSensorReading() {
     if (radiatorSensor) {
         radiatorSensor->update();
-        radiatorTemperature = radiatorSensor->getTemperature();
+        currentRadiatorTemperature = radiatorSensor->getTemperature();
     }
 }
 
