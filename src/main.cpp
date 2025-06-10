@@ -213,10 +213,12 @@ void setup()
   // WiFi connection attempt
   Serial.println("Attempting WiFi connection...");
   bool wifiConnected = WifiMqttHandler::connectToWiFiWithCheck(Configuration::getWiFiSSID(), Configuration::getWiFiPassword());
-  
-  if (!wifiConnected) {
+    if (!wifiConnected) {
     Serial.println("WiFi connection failed - running in offline mode");
     offlineMode = true;
+    // Disable automatic WiFi reconnection to prevent spam
+    WiFi.setAutoReconnect(false);
+    WiFi.disconnect(true);
   } else {
     Serial.println("WiFi connected");
     offlineMode = false;
