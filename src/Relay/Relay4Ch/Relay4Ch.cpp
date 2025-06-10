@@ -82,19 +82,18 @@ std::map<String, String> Relay4Ch::readData() {
         if (channelKey.startsWith("RLY") && channelKey.length() == 4) {
             relayChannel = channelKey.charAt(3) - '0';  // Extract number from "RLY0", "RLY1", etc.
         }
-        
-        if (validateChannel(relayChannel)) {
+          if (validateChannel(relayChannel)) {
             bool state = getRelayState(relayChannel);
             result[channel.first] = state ? "1.00" : "0.00";  // Fix: return proper float strings
             
-            Serial.print("readData() channel ");
-            Serial.print(relayChannel);
-            Serial.print(" (");
-            Serial.print(channel.first);
-            Serial.print("): state=");
-            Serial.print(state);
-            Serial.print(" -> ");
-            Serial.println(result[channel.first]);
+            // Serial.print("readData() channel ");
+            // Serial.print(relayChannel);
+            // Serial.print(" (");
+            // Serial.print(channel.first);
+            // Serial.print("): state=");
+            // Serial.print(state);
+            // Serial.print(" -> ");
+            // Serial.println(result[channel.first]);
         }
     }
     
