@@ -9,6 +9,7 @@
 #endif
 #include <PID_AutoTune_v0.h>
 #include "PCF8574gpio.h"
+#include "Relay4Ch.h"
 #include "SHTsensor.h"
 #include "GP8403dac.h"
 #include "Configuration.h"
