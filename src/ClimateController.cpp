@@ -276,19 +276,33 @@ bool ClimateController::begin() {
         // Force final state to 0x00
         gpio->writeByte(0x00);
         Serial.println("ClimateController: PCF8574 GPIO initialized");    } else if (relay1 != nullptr && relay2 != nullptr) {
-        // Relay4Ch devices
-        Serial.print("Checking relay initialization - Relay1: ");
-        Serial.print(relay1->isInitialized() ? "initialized" : "not initialized");
-        Serial.print(", Relay2: ");
-        Serial.println(relay2->isInitialized() ? "initialized" : "not initialized");
+        // Relay4Ch devices - use M5Stack-compatible initialization
+        Serial.println("Initializing Relay4Ch devices...");
         
-        if (relay1->isInitialized() && relay2->isInitialized()) {
-            // Initialize all relays to OFF
-            relay1->relayAll(false);
-            relay2->relayAll(false);
-            Serial.println("ClimateController: Relay4Ch devices initialized");
+        // Call begin() to establish connection
+        bool relay1Connected = relay1->begin();
+        bool relay2Connected = relay2->begin();
+        
+        if (relay1Connected && relay2Connected) {
+            // Call Init() to properly initialize the devices (M5Stack compatible)
+            relay1->Init(1);  // 1 = SYNC mode
+            relay2->Init(1);  // 1 = SYNC mode
+            
+            // Check if initialization was successful
+            if (relay1->isInitialized() && relay2->isInitialized()) {
+                // Initialize all relays to OFF
+                relay1->relayAll(false);
+                relay2->relayAll(false);
+                Serial.println("ClimateController: Relay4Ch devices initialized successfully");
+            } else {
+                Serial.println("ERROR: Relay4Ch devices failed Init() sequence");
+                return false;
+            }
         } else {
-            Serial.println("ERROR: Relay4Ch devices not properly initialized");
+            Serial.print("ERROR: Relay4Ch connection failed - Relay1: ");
+            Serial.print(relay1Connected ? "OK" : "FAIL");
+            Serial.print(", Relay2: ");
+            Serial.println(relay2Connected ? "OK" : "FAIL");
             return false;
         }
     } else {
