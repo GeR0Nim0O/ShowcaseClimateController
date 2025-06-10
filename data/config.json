@@ -283,7 +283,9 @@
         "RLY3": {
           "Name": "Relay4"
         }
-      }    },    "LCD_Display": {
+      }    
+    },    
+      "LCD_Display": {
       "Type": "Display",
       "TypeNumber": "DFR0554",
       "Address": "0x3E",
