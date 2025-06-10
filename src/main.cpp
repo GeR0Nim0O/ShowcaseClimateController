@@ -354,7 +354,7 @@ void readAndSendDataFromDevices() {
     bool shouldPrintData = Configuration::isMqttThrottlingEnabled() && (millis() - lastMqttSendTime >= Configuration::getMqttThrottlingInterval());
     
     if (shouldPrintData) {
-        Serial.println("\n=== Sensor Readings (60-second MQTT update, SHT sensors handled by ClimateController) ===");
+        Serial.println("\n=== Sensor Readings (60-second MQTT update, SHT sensors limited to prevent self-heating) ===");
     }
     
     // Track if any threshold was exceeded for climate status printing
