@@ -746,13 +746,13 @@ void initializeDisplayDevice() {
 
 // Function to update the display with current climate status
 void updateDisplayWithClimateStatus() {
-    if (displayDevice == nullptr || !displayDevice->isInitialized()) {
+    if (!displayIsInitializedWrapper()) {
         return; // No display available
     }
     
     if (climateController == nullptr) {
         // Show error message if climate controller is not available
-        displayDevice->displayError("No Climate Ctrl");
+        displayErrorWrapper("No Climate Ctrl");
         return;
     }
     
