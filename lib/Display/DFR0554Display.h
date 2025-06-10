@@ -47,10 +47,10 @@
 #define LCD_5x10DOTS       0x04
 #define LCD_5x8DOTS        0x00
 
-// RGB color registers
-#define RGB_REG_RED        0x04
-#define RGB_REG_GREEN      0x03
-#define RGB_REG_BLUE       0x02
+// RGB color registers for 0x2D hardware
+#define RGB_REG_RED        0x01
+#define RGB_REG_GREEN      0x02
+#define RGB_REG_BLUE       0x03
 #define RGB_MODE1          0x00
 #define RGB_MODE2          0x01
 #define RGB_OUTPUT         0x08
