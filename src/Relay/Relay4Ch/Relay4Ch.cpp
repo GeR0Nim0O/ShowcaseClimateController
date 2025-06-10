@@ -133,8 +133,7 @@ bool Relay4Ch::relayWrite(uint8_t channel, bool state) {
     // Serial.println(currentState, HEX);
     
     // Write to relay control register
-    if (write1Byte(UNIT_4RELAY_RELAY_REG, currentState)) {
-        // Update our internal tracking after successful write
+    if (write1Byte(UNIT_4RELAY_RELAY_REG, currentState)) {        // Update our internal tracking after successful write
         _relayState = currentState & 0x0F;
         _ledState = currentState & 0xF0;
         
