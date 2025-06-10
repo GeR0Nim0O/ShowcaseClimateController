@@ -9,12 +9,23 @@ ClimateController* ClimateController::createFromDeviceRegistry() {
     try {
         // Use DeviceRegistry to get devices instead of manual searching
         DeviceRegistry& registry = DeviceRegistry::getInstance();
-        
-        // Get GPIO expander from DeviceRegistry
+          // Get GPIO expander from DeviceRegistry
         PCF8574gpio* gpioExpander = (PCF8574gpio*)registry.getDeviceByType("GPIO", 0);
+        
+        // If no PCF8574 found, try to use Relay4Ch devices instead
+        Relay4Ch* relay1 = nullptr;
+        Relay4Ch* relay2 = nullptr;
+        
         if (gpioExpander == nullptr) {
-            Serial.println("ERROR: No GPIO expander found");
-            return nullptr;
+            Serial.println("No PCF8574 GPIO found, trying Relay4Ch devices...");
+            relay1 = (Relay4Ch*)registry.getDeviceByType("Relay", 0);
+            relay2 = (Relay4Ch*)registry.getDeviceByType("Relay", 1);
+            
+            if (relay1 == nullptr || relay2 == nullptr) {
+                Serial.println("ERROR: No suitable GPIO control devices found");
+                return nullptr;
+            }
+            Serial.println("Found Relay4Ch devices for GPIO control");
         }
           // Get temperature/humidity sensor from DeviceRegistry - specifically look for Interior labeled sensor
         SHTsensor* climateTemperatureSensor = (SHTsensor*)registry.getDeviceByTypeAndLabel("TemperatureHumidity", "Interior");
