@@ -105,7 +105,8 @@ public:
     void displayError(const String& error);
 
 private:
-    uint8_t address;  // Single I2C address for both LCD and RGB
+    uint8_t lcdAddress;  // LCD I2C address (0x3E)
+    uint8_t rgbAddress;  // RGB I2C address (0x2D)
     int currentCol, currentRow;
     bool displayInitialized;
     
