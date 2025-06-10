@@ -54,13 +54,13 @@ bool DFR0554Display::begin() {
 
 bool DFR0554Display::testLCDConnection() {
     I2CHandler::selectTCA(getTCAChannel());
-    wire->beginTransmission(address);
+    wire->beginTransmission(lcdAddress);
     return (wire->endTransmission() == 0);
 }
 
 bool DFR0554Display::testRGBConnection() {
     I2CHandler::selectTCA(getTCAChannel());
-    wire->beginTransmission(address);
+    wire->beginTransmission(rgbAddress);
     return (wire->endTransmission() == 0);
 }
 
