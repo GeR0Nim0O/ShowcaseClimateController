@@ -338,15 +338,10 @@ void Display::expanderWrite(uint8_t data) {
     if (backlightState) {
         data |= LCD_BACKLIGHT;
     }
-    
-    wire->beginTransmission(i2cAddress);
+      wire->beginTransmission(i2cAddress);
     wire->write(data);
     uint8_t error = wire->endTransmission();
-    
-    if (error != 0) {
-        Serial.print("LCD I2C error: ");
-        Serial.println(error);
-    }
+}
 }
 
 void Display::pulseEnable(uint8_t data) {
