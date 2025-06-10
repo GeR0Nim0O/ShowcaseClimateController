@@ -503,12 +503,12 @@ void readAndSendDataFromDevices() {
                 }
             }
             lastMqttSendTime = millis(); // Update last send time
-            Serial.println("Sent all changed sensor data via MQTT");
-        } else if (WiFi.status() != WL_CONNECTED) {
+            Serial.println("Sent all changed sensor data via MQTT");        } else if (WiFi.status() != WL_CONNECTED) {
             Serial.println("\nSensor data collected - WiFi not connected, data logged to SD only");
         } else if (!client.connected()) {
             Serial.println("\nSensor data collected - MQTT not connected, data logged to SD only");
-        }    }
+        }
+    }
 }
 
 // Global status system functions
