@@ -4,7 +4,7 @@
 #include "Device.h"
 
 // DFRobot DFR0554 Gravity I2C 16x2 LCD with RGB Font Display
-#define DFR0554_LCD_ADDRESS 0x6B  // LCD module address
+#define DFR0554_LCD_ADDRESS 0x3E  // LCD module address (0x7c>>1)
 #define DFR0554_RGB_ADDRESS 0x2D  // RGB LED controller address
 #define LCD_COLS 16
 #define LCD_ROWS 2
