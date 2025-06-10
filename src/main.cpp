@@ -496,9 +496,11 @@ void readAndSendDataFromDevices() {
             }
         }
     }
-    
-    // Check if it's time to send all changed data via MQTT
+      // Check if it's time to send all changed data via MQTT
     if (shouldPrintData) {
+        // Update timer regardless of connection status to prevent flooding
+        lastMqttSendTime = millis();
+        
         if (WiFi.status() == WL_CONNECTED && client.connected()) {
             Serial.println("\nSensor data collected - sending to MQTT...");
             // Send all collected sensor data for this cycle
@@ -509,8 +511,8 @@ void readAndSendDataFromDevices() {
                     data.changed = false; // Reset changed flag
                 }
             }
-            lastMqttSendTime = millis(); // Update last send time
-            Serial.println("Sent all changed sensor data via MQTT");        } else if (WiFi.status() != WL_CONNECTED) {
+            Serial.println("Sent all changed sensor data via MQTT");
+        } else if (WiFi.status() != WL_CONNECTED) {
             Serial.println("\nSensor data collected - WiFi not connected, data logged to SD only");
         } else if (!client.connected()) {
             Serial.println("\nSensor data collected - MQTT not connected, data logged to SD only");
