@@ -74,11 +74,16 @@ std::map<String, String> Relay4Ch::readData() {
         }
         Serial.println(")");
     }
-    
-    // Convert relay states to a map of channel values based on our tracked state
+      // Convert relay states to a map of channel values based on our tracked state
     for (const auto& channel : channels) {
-        // Parse channel number from channel value (e.g., "0", "1", "2", "3")
-        int relayChannel = channel.second.toInt();
+        // Parse channel number from channel key (e.g., "RLY0" -> 0, "RLY1" -> 1, etc.)
+        String channelKey = channel.first;
+        int relayChannel = -1;
+        
+        if (channelKey.startsWith("RLY") && channelKey.length() == 4) {
+            relayChannel = channelKey.charAt(3) - '0';  // Extract number from "RLY0", "RLY1", etc.
+        }
+        
         if (validateChannel(relayChannel)) {
             bool state = getRelayState(relayChannel);
             result[channel.first] = state ? "1.00" : "0.00";  // Fix: return proper float strings
