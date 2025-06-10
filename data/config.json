@@ -125,7 +125,8 @@
           "Name": "Humidity",
           "Threshold": 1.0
         }
-      }    },
+      }    
+    },
     "SHT_Radiator": {
       "Type": "Sensor",
       "TypeNumber": "SHT",
