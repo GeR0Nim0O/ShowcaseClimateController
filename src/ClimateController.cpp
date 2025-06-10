@@ -1159,11 +1159,10 @@ void ClimateController::updateAutoTune() {
                     climateConfig.setTemperaturePID(kp, ki, kd);
                     
                     // Save AutoTune results with timeout flag                    climateConfig.setAutoTuneResults(kp, ki, kd);
-                    
-                    // Update all JSON configuration files with the new AutoTune results
+                      // Update all JSON configuration files with the new AutoTune results
                     // SPIFFS files
-                    climateConfig.saveToJsonFile("/data/ClimateConfig.json");
-                    climateConfig.saveToJsonFile("/data/config.json");
+                    climateConfig.saveToJsonFile("/ClimateConfig.json");
+                    climateConfig.saveToJsonFile("/config.json");
                     
                     // SD card files if SD is available
                     if (SD.begin()) {
