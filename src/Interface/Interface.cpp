@@ -30,16 +30,13 @@ bool Interface::begin() {
     if (!display) {
         Device* displayDevice = registry.getDeviceByType("Display");
         if (displayDevice) {
-            // Try to cast to Display first
-            display = dynamic_cast<Display*>(displayDevice);
-            if (!display) {
-                // If that fails, check if it's a DFR0554Display
-                DFR0554Display* dfr0554Display = dynamic_cast<DFR0554Display*>(displayDevice);
-                if (dfr0554Display) {
-                    Serial.println("Interface: Found DFR0554Display - setting up compatibility");
-                    // Store the DFR0554Display pointer for use
-                    dfr0554DisplayPtr = dfr0554Display;
-                }
+            // Check device type to determine which display type it is
+            String deviceType = displayDevice->getType();
+            if (deviceType == "Display") {
+                display = static_cast<Display*>(displayDevice);
+            } else if (deviceType == "DFR0554Display") {
+                dfr0554DisplayPtr = static_cast<DFR0554Display*>(displayDevice);
+                Serial.println("Interface: Found DFR0554Display - setting up compatibility");
             }
         }
         
