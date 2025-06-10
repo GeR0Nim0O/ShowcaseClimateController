@@ -290,7 +290,7 @@
       "Label": "Interface",
       "Channels": {
         "Display": {
-          "Name": "ClimateDisplay",
+          "Name": "ClimateDisplay"
         }
       }
     },
