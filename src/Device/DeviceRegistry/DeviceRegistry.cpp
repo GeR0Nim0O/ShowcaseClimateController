@@ -264,10 +264,15 @@ bool DeviceRegistry::isTypeMatch(const String& deviceType, const String& searchT
         deviceType.equalsIgnoreCase("SHTSensor")) {
         return true;
     }
-    
-    // Handle Display type matching - both Display and DFR0554Display are compatible
+      // Handle Display type matching - both Display and DFR0554Display are compatible
     if (searchType.equalsIgnoreCase("Display") && 
         (deviceType.equalsIgnoreCase("Display") || deviceType.equalsIgnoreCase("DFR0554Display"))) {
+        return true;
+    }
+    
+    // Handle Relay type matching - Relay4Ch devices can be used as Relay
+    if (searchType.equalsIgnoreCase("Relay") && 
+        deviceType.equalsIgnoreCase("Relay4Ch")) {
         return true;
     }
     
