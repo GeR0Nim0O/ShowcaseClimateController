@@ -6,6 +6,7 @@
 Interface::Interface()
     : climateController(nullptr),
       display(nullptr),
+      dfr0554DisplayPtr(nullptr),
       encoder(nullptr),
       currentMenu(MENU_DEFAULT),
       lastActivityTime(0),
