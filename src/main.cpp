@@ -356,12 +356,18 @@ void sendSensorDataOverMQTT(const SensorData& data) {
 void readAndSendDataFromDevices() {
     // Flag to determine if we should print data this cycle (only true every 60 seconds)
     bool shouldPrintData = Configuration::isMqttThrottlingEnabled() && (millis() - lastMqttSendTime >= Configuration::getMqttThrottlingInterval());
-      // Track timing for MQTT throttling
-    unsigned long currentTime = millis();
-    unsigned long timeSinceLastSend = currentTime - lastMqttSendTime;
     
-    if (shouldPrintData) {
-        Serial.println("\n=== Sensor Readings (60-second update) ===");
+    // Check if it's time to read sensors (every 10 seconds to prevent SHT self-heating)
+    unsigned long currentTime = millis();
+    bool shouldReadSensors = (currentTime - lastSensorReadTime >= SENSOR_READ_INTERVAL);
+    
+    if (shouldReadSensors) {
+        lastSensorReadTime = currentTime;
+        if (shouldPrintData) {
+            Serial.println("\n=== Sensor Readings (10-second sensor update, 60-second MQTT) ===");
+        } else {
+            Serial.println("\n=== Sensor Update (10-second interval) ===");
+        }
     }
     
     // Track if any threshold was exceeded for climate status printing
