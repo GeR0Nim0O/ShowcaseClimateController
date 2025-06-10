@@ -409,7 +409,7 @@ void Interface::updateActivity() {
 }
 
 bool Interface::validateDevices() {
-    return (display && display->isConnected() && 
+    return (displayIsConnected() && 
             encoder && encoder->isConnected());
 }
 
