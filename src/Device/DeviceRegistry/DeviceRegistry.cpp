@@ -265,6 +265,12 @@ bool DeviceRegistry::isTypeMatch(const String& deviceType, const String& searchT
         return true;
     }
     
+    // Handle Display type matching - both Display and DFR0554Display are compatible
+    if (searchType.equalsIgnoreCase("Display") && 
+        (deviceType.equalsIgnoreCase("Display") || deviceType.equalsIgnoreCase("DFR0554Display"))) {
+        return true;
+    }
+    
     return false;
 }
 
