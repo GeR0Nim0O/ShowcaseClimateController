@@ -761,23 +761,36 @@ void initializeDisplayDevice() {
 
 // Function to update the display with current climate status
 void updateDisplayWithClimateStatus() {
+    Serial.println("=== Display Update Debug ===");
+    
     if (!displayIsInitializedWrapper()) {
+        Serial.println("Display wrapper reports NOT initialized - returning");
         return; // No display available
     }
     
     if (climateController == nullptr) {
+        Serial.println("Climate controller is null - showing error");
         // Show error message if climate controller is not available
         displayErrorWrapper("No Climate Ctrl");
         return;
     }    
+    
     // Get current climate data
     float currentTemp = climateController->getCurrentTemperature();
     float currentHum = climateController->getCurrentHumidity();
     float tempSetpoint = climateController->getTemperatureSetpoint();
     float humSetpoint = climateController->getHumiditySetpoint();
     
+    Serial.print("Climate data - Temp: ");
+    Serial.print(currentTemp);
+    Serial.print("°C, Humidity: ");
+    Serial.print(currentHum);
+    Serial.println("%");
+    
     // Update display with climate status
     displayClimateStatusWrapper(currentTemp, currentHum, tempSetpoint, humSetpoint);
+    
+    Serial.println("=== End Display Update Debug ===");
 }
 
 // Function to test PSRAM
