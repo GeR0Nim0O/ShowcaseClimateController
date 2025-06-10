@@ -281,7 +281,7 @@
           "Name": "InteriorFanRelay"
         },
         "RLY3": {
-          "Name": "Relay4"
+          "Name": "ExteriorFanRelay"
         }
       }    
     }, 
