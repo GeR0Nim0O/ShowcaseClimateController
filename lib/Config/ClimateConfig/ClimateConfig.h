@@ -50,7 +50,7 @@ public:
     void loadDefaults();
     
     // JSON file operations
-    bool loadFromJsonFile(const String& filePath = "/data/ClimateConfig.json");
+    bool loadFromJsonFile(const String& filePath = "/ClimateConfig.json");
     bool saveToJsonFile(const String& filePath = "/data/ClimateConfig.json");
     bool createDefaultJsonFile(const String& filePath = "/data/ClimateConfig.json");
     
