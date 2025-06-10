@@ -39,11 +39,18 @@ ClimateController* ClimateController::createFromDeviceRegistry() {
         }
           // Get DAC from DeviceRegistry - using proper DeviceRegistry access pattern
         GP8403dac* climateDac = (GP8403dac*)registry.getDeviceByType("DAC", 0);
-        
-        // Create climate controller if we found the required devices
-        if (gpioExpander != nullptr && climateTemperatureSensor != nullptr) {
+          // Create climate controller if we found the required devices
+        if ((gpioExpander != nullptr || (relay1 != nullptr && relay2 != nullptr)) && climateTemperatureSensor != nullptr) {
               try {
-                ClimateController* controller = new ClimateController(gpioExpander, climateTemperatureSensor, climateDac);
+                ClimateController* controller = nullptr;
+                
+                if (gpioExpander != nullptr) {
+                    // Use PCF8574 GPIO expander
+                    controller = new ClimateController(gpioExpander, climateTemperatureSensor, climateDac);
+                } else {
+                    // Use Relay4Ch devices
+                    controller = new ClimateController(relay1, relay2, climateTemperatureSensor, climateDac);
+                }
                 
                 if (controller != nullptr) {
                     if (controller->begin()) {
