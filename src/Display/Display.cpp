@@ -337,11 +337,9 @@ void Display::expanderWrite(uint8_t data) {
     // Ensure backlight state is always preserved
     if (backlightState) {
         data |= LCD_BACKLIGHT;
-    }
-      wire->beginTransmission(i2cAddress);
+    }    wire->beginTransmission(i2cAddress);
     wire->write(data);
     uint8_t error = wire->endTransmission();
-}
 }
 
 void Display::pulseEnable(uint8_t data) {
