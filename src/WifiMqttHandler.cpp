@@ -263,15 +263,17 @@ void WifiMqttHandler::keepAlive(PubSubClient &client, WiFiClientSecure &espClien
                 WiFi.begin(ssid, password);
                 lastWiFiReconnectAttempt = millis();
                 mqttReconnectAttempts = 0;
-                mqttSkipped = false;
-            } else {
+                mqttSkipped = false;            } else {
                 Serial.println("Max WiFi attempts reached");
                 wifiSkipped = true;
-                static unsigned long wifiResetTime = millis();
+                static unsigned long wifiResetTime = 0;
+                if (wifiResetTime == 0) {
+                    wifiResetTime = millis(); // Set reset time only when first reaching max attempts
+                }
                 if (millis() - wifiResetTime > 300000) { // Reset after 5 minutes
                     wifiReconnectAttempts = 0;
                     wifiSkipped = false;
-                    wifiResetTime = millis();
+                    wifiResetTime = 0; // Reset the timer
                 }
             }
         }
