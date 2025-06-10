@@ -25,8 +25,8 @@ public:
     static void updateControllerWithTiming(ClimateController* controller);
       // Configuration method for setting all parameters at once
     void configure(float tempSetpoint, float humSetpoint, bool enableTemperatureControl, bool enableHumidityControl);
-    
-    ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac = nullptr);
+      ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac = nullptr);
+    ClimateController(Relay4Ch* relay1, Relay4Ch* relay2, SHTsensor* tempHumSensor, GP8403dac* dac = nullptr);
     ~ClimateController();
     
     bool begin();
