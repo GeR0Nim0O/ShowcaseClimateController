@@ -15,11 +15,15 @@ ClimateController* ClimateController::createFromDeviceRegistry() {
         // If no PCF8574 found, try to use Relay4Ch devices instead
         Relay4Ch* relay1 = nullptr;
         Relay4Ch* relay2 = nullptr;
-        
-        if (gpioExpander == nullptr) {
+          if (gpioExpander == nullptr) {
             Serial.println("No PCF8574 GPIO found, trying Relay4Ch devices...");
             relay1 = (Relay4Ch*)registry.getDeviceByType("Relay", 0);
             relay2 = (Relay4Ch*)registry.getDeviceByType("Relay", 1);
+            
+            Serial.print("Relay1: ");
+            Serial.println(relay1 ? "Found" : "Not found");
+            Serial.print("Relay2: ");
+            Serial.println(relay2 ? "Found" : "Not found");
             
             if (relay1 == nullptr || relay2 == nullptr) {
                 Serial.println("ERROR: No suitable GPIO control devices found");
