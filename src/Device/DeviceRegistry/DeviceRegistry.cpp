@@ -7,6 +7,7 @@
 #include "GP8403dac.h"
 #include "DS3231rtc.h"
 #include "Display.h"
+#include "DFR0554Display.h"
 #include "Relay4Ch.h"
 #include "RotaryEncoder.h"
 // Note: Interface.h removed - Interface is no longer a Device
