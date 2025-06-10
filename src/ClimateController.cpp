@@ -89,7 +89,7 @@ ClimateController* ClimateController::createFromDeviceRegistry() {
 }
 
 ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempHumSensor, GP8403dac* dac)
-    : gpio(nullptr), sensor(nullptr), dac(nullptr),
+    : gpio(nullptr), relay1(nullptr), relay2(nullptr), sensor(nullptr), dac(nullptr),
       temperatureSetpoint(0.0), humiditySetpoint(0.0),
       currentTemperature(0.0), currentHumidity(0.0),
       temperatureControlEnabled(true), humidityControlEnabled(true),
