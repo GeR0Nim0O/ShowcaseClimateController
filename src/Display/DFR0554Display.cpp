@@ -86,13 +86,19 @@ void DFR0554Display::initializeDisplay() {
     
     delay(50); // Power-up delay
     
-    // Function set: 8-bit mode, 2 lines, 5x8 dots
-    lcdCommand(LCD_FUNCTIONSET | LCD_8BITMODE | LCD_2LINE | LCD_5x8DOTS);
+    // Function set: 4-bit mode, 2 lines, 5x8 dots (following official library)
+    lcdCommand(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_2LINE | LCD_5x8DOTS);
     delay(5);
+    
+    // Second try (following HD44780 initialization)
+    lcdCommand(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_2LINE | LCD_5x8DOTS);
+    delay(5);
+    
+    // Third try
+    lcdCommand(LCD_FUNCTIONSET | LCD_4BITMODE | LCD_2LINE | LCD_5x8DOTS);
     
     // Display control: display on, cursor off, blink off
     lcdCommand(LCD_DISPLAYCONTROL | LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF);
-    delay(2);
     
     // Clear display
     lcdCommand(LCD_CLEARDISPLAY);
@@ -100,7 +106,6 @@ void DFR0554Display::initializeDisplay() {
     
     // Entry mode: left to right, no shift
     lcdCommand(LCD_ENTRYMODESET | LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT);
-    delay(2);
     
     // Return home
     lcdCommand(LCD_RETURNHOME);
