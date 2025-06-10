@@ -295,18 +295,7 @@
         }
       }
     },
-    "LCD_RGB": {
-      "Type": "RGB",
-      "TypeNumber": "DFR0554_RGB",
-      "Address": "0x2D",
-      "Label": "Interface",
-      "Channels": {
-        "RGB": {
-          "Name": "DisplayRGB",
-          "Threshold": 0.0
-        }
-      }
-    },"RotaryEncoder": {
+    "RotaryEncoder": {
       "Type": "RotaryEncoder",
       "TypeNumber": "I2C",
       "Address": "0x30",
