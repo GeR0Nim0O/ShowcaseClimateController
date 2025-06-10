@@ -291,23 +291,32 @@ uint8_t Relay4Ch::read1Byte(uint8_t register_address) {
 }
 
 void Relay4Ch::updateInternalState() {
-    // Read current hardware state from the device following M5Stack approach
-    // This matches the original M5Stack library behavior where relayWrite() 
-    // always reads current state before modification
+    // Try to read current hardware state, but handle unreliable hardware gracefully
     if (initialized) {
         uint8_t currentState = read1Byte(UNIT_4RELAY_RELAY_REG);
         
-        // Update internal state tracking based on hardware readback
-        _relayState = currentState & 0x0F;  // Lower 4 bits are relay states
-        _ledState = currentState & 0xF0;    // Upper 4 bits are LED states
-        
-        Serial.print("Relay4Ch updateInternalState - read from hardware: 0x");
+        Serial.print("Relay4Ch updateInternalState - hardware read: 0x");
         Serial.print(currentState, HEX);
-        Serial.print(" (relays: 0x");
-        Serial.print(_relayState, HEX);
-        Serial.print(", LEDs: 0x");
-        Serial.print(_ledState, HEX);
-        Serial.println(")");
+        
+        // Check if hardware read looks valid (not 0xFF which suggests read error or unsupported)
+        if (currentState != 0xFF && currentState != 0x00) {
+            // Hardware read looks suspicious, stick with our internal tracking
+            Serial.print(" (suspicious - using internal tracking instead: relays=0x");
+            Serial.print(_relayState, HEX);
+            Serial.print(", LEDs=0x");
+            Serial.print(_ledState, HEX);
+            Serial.println(")");
+        } else {
+            // Hardware read looks reasonable, use it
+            _relayState = currentState & 0x0F;  // Lower 4 bits are relay states
+            _ledState = currentState & 0xF0;    // Upper 4 bits are LED states
+            
+            Serial.print(" -> relays=0x");
+            Serial.print(_relayState, HEX);
+            Serial.print(", LEDs=0x");
+            Serial.print(_ledState, HEX);
+            Serial.println(" (updated from hardware)");
+        }
     }
 }
 
