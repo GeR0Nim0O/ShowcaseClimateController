@@ -28,17 +28,16 @@ bool ClimateConfig::begin() {
         DEBUG_PRINTLN("ClimateConfig - Successfully loaded from SPIFFS ClimateConfig.json");
         return true;
     }
-    
-    DEBUG_PRINTLN("ClimateConfig::begin() - SPIFFS ClimateConfig.json failed, trying main config.json");
+      DEBUG_PRINTLN("ClimateConfig::begin() - SPIFFS ClimateConfig.json failed, trying main config.json");
     // If that fails, try main config.json
-    if (loadFromJsonFile("/data/config.json")) {
+    if (loadFromJsonFile("/config.json")) {
         return true;
     }
     
     // If both JSON files fail, load defaults and save them to JSON
     Serial.println("No valid JSON file found, loading defaults");
     loadDefaults();
-    saveToJsonFile("/data/ClimateConfig.json");
+    saveToJsonFile("/ClimateConfig.json");
     return true;}
 
 void ClimateConfig::loadDefaults() {
