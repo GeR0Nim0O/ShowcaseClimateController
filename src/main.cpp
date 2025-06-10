@@ -558,12 +558,11 @@ void initializeClimateController() {
                 Serial.println("Failed to initialize ClimateConfig EEPROM");
                 return;
             }
-            
-            // Try to load from ClimateConfig.json first
+              // Try to load from ClimateConfig.json first
             bool configLoadedFromFile = false;
             
             // First try SPIFFS (priority for climate-specific settings with auto-tune results)
-            if (climateConfig.loadFromJsonFile("/data/ClimateConfig.json")) {
+            if (climateConfig.loadFromJsonFile("/ClimateConfig.json")) {
                 configLoadedFromFile = true;
             }
             // Then try SD card if SPIFFS failed (fallback to default settings)
