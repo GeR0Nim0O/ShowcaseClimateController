@@ -719,30 +719,18 @@ void initializeDisplayDevice() {
     DeviceRegistry& registry = DeviceRegistry::getInstance();
     Device* device = registry.getDeviceByType("Display", 0);
     
-    Serial.println("=== Display Initialization Debug ===");
-    
     if (device) {
         // Check device type to determine which display type it is
         String deviceType = device->getType();
-        Serial.print("Found device with type: ");
-        Serial.println(deviceType);
         
         if (deviceType == "Display") {
             displayDevice = static_cast<Display*>(device);
-            Serial.println("Set displayDevice pointer");
         } else if (deviceType == "DFR0554Display") {
             dfr0554DisplayDevice = static_cast<DFR0554Display*>(device);
-            Serial.println("Set dfr0554DisplayDevice pointer");
         }
-        
-        Serial.print("Device initialized status: ");
-        Serial.println(device->isInitialized() ? "true" : "false");
-    } else {
-        Serial.println("No Display device found in registry");
     }
     
     if (displayIsInitializedWrapper()) {
-        Serial.println("Display wrapper reports initialized - showing startup message");
         // Show initial startup message
         displayClearWrapper();
         displaySetCursorWrapper(0, 0);
@@ -751,12 +739,9 @@ void initializeDisplayDevice() {
         displayPrintWrapper("Initializing...");
         delay(2000);
     } else {
-        Serial.println("Display wrapper reports NOT initialized");
         displayDevice = nullptr;
         dfr0554DisplayDevice = nullptr;
     }
-    
-    Serial.println("=== End Display Initialization Debug ===");
 }
 
 // Function to update the display with current climate status
