@@ -41,9 +41,7 @@ public:
     Relay4ChMode getMode() const;
     void setMode(Relay4ChMode mode);
     bool isSyncMode() const;
-    bool isAsyncMode() const;
-      // Initialization and utility
-    void Init(bool mode);     // M5Stack-compatible initialization (mode: 0=ASYNC, 1=SYNC)
+    bool isAsyncMode() const;    // Initialization and utility
     void initializeRelays(); // Initialize all relays to OFF
     void refreshRelayState();
     
