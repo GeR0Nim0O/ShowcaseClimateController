@@ -1411,8 +1411,11 @@ bool ClimateController::isDewPointCompensationEnabled() const {
         return false; // Cannot enable without radiator sensor
     }
     
-    ClimateConfig& climateConfig = ClimateConfig::getInstance();
-    return climateConfig.getDewPointCompensationEnabled();
+    // TEMPORARY: Force enable dew point compensation for testing
+    return true;
+    
+    // ClimateConfig& climateConfig = ClimateConfig::getInstance();
+    // return climateConfig.getDewPointCompensationEnabled();
 }
 
 float ClimateController::calculateDewPoint(float temperature, float humidity) const {
