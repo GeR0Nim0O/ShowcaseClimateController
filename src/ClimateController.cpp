@@ -275,9 +275,13 @@ bool ClimateController::begin() {
         
         // Force final state to 0x00
         gpio->writeByte(0x00);
-        Serial.println("ClimateController: PCF8574 GPIO initialized");
-    } else if (relay1 != nullptr && relay2 != nullptr) {
+        Serial.println("ClimateController: PCF8574 GPIO initialized");    } else if (relay1 != nullptr && relay2 != nullptr) {
         // Relay4Ch devices
+        Serial.print("Checking relay initialization - Relay1: ");
+        Serial.print(relay1->isInitialized() ? "initialized" : "not initialized");
+        Serial.print(", Relay2: ");
+        Serial.println(relay2->isInitialized() ? "initialized" : "not initialized");
+        
         if (relay1->isInitialized() && relay2->isInitialized()) {
             // Initialize all relays to OFF
             relay1->relayAll(false);
