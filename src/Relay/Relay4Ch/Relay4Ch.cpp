@@ -92,7 +92,8 @@ bool Relay4Ch::relayWrite(uint8_t channel, bool state) {
         return false;
     }
     
-    uint8_t currentState = _relayState;
+    // Read current state from hardware first (M5Stack library approach)
+    uint8_t currentState = read1Byte(UNIT_4RELAY_RELAY_REG);
     
     if (state) {
         currentState |= (1 << channel);   // Set bit
@@ -102,7 +103,10 @@ bool Relay4Ch::relayWrite(uint8_t channel, bool state) {
     
     // Write to relay control register
     if (write1Byte(UNIT_4RELAY_RELAY_REG, currentState)) {
-        _relayState = currentState;
+        // Update our internal tracking after successful write
+        _relayState = currentState & 0x0F;
+        _ledState = currentState & 0xF0;
+        
         Serial.print("Relay ");
         Serial.print(channel);
         Serial.print(" set to ");
