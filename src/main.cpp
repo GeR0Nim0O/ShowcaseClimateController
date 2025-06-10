@@ -366,16 +366,41 @@ void readAndSendDataFromDevices() {
         if (!device->isInitialized()) {
             continue;
         }
-        
-        // Skip SHT sensors in main loop - let ClimateController handle them to prevent self-heating
-        String deviceType = device->getType();
-        if (deviceType == "SHTSensor") {
-            continue; // Skip SHT sensors - they're read by ClimateController with proper timing
+      for (size_t i = 0; i < devices.size(); i++) {
+        Device* device = devices[i];
+        if (device == nullptr) {
+            continue;
+        }
+        if (!device->isInitialized()) {
+            continue;
         }
         
-        // Read other sensors normally
-        I2CHandler::selectTCA(device->getTCAChannel());
-        auto data = device->readData();
+        std::map<String, String> data;
+        String deviceType = device->getType();
+        
+        // Handle SHT sensors specially - get data from ClimateController if available to avoid self-heating
+        if (deviceType == "SHTSensor" && climateController != nullptr) {
+            String deviceLabel = device->getDeviceLabel();
+            
+            // Only get data from ClimateController for the Interior sensor (main sensor)
+            if (deviceLabel == "Interior") {
+                data["T"] = String(climateController->getCurrentTemperature(), 2);
+                data["H"] = String(climateController->getCurrentHumidity(), 2);
+            } else {
+                // For other SHT sensors (Exterior, Radiator), read directly but less frequently
+                // Only read if MQTT printing is due (every 60 seconds)
+                if (shouldPrintData) {
+                    I2CHandler::selectTCA(device->getTCAChannel());
+                    data = device->readData();
+                } else {
+                    continue; // Skip this sensor this cycle
+                }
+            }
+        } else {
+            // Read other sensors normally
+            I2CHandler::selectTCA(device->getTCAChannel());
+            data = device->readData();
+        }
         
         for (const auto& channel : device->getChannels()) {
             String channelKey = channel.first;            String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
