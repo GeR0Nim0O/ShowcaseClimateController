@@ -46,7 +46,6 @@
       "safety_margin_celsius": 1.0,
       "update_interval_ms": 1000,
       "min_cooling_temperature": 1.0 
-    }
     },
     "fan_settings": {
       "interior_fan_enabled": true,
