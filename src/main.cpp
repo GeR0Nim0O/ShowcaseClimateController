@@ -269,11 +269,10 @@ void loop() {
   if (!setupComplete) {
     return; // Exit loop if setup is not complete
   }
-
   // Only try WiFi/MQTT reconnection if we're not in permanent offline mode
   // and if initial connection was successful
   static bool initialConnectionAttempted = true;
-  if (!offlineMode && initialConnectionAttempted) {
+  if (!offlineMode && initialConnectionAttempted && WiFi.getAutoReconnect()) {
     // Use existing WifiMqttHandler::keepAlive for connection management
     WifiMqttHandler::keepAlive(client, espClient, 
                               Configuration::getWiFiSSID().c_str(), 
