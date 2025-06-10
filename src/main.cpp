@@ -268,15 +268,20 @@ void loop() {
     return; // Exit loop if setup is not complete
   }
 
-  // Use existing WifiMqttHandler::keepAlive for connection management
-  WifiMqttHandler::keepAlive(client, espClient, 
-                            Configuration::getWiFiSSID().c_str(), 
-                            Configuration::getWiFiPassword().c_str(),
-                            Configuration::getMqttsServer().c_str(), 
-                            rootCACertificate, 
-                            Configuration::getMqttsPort(), 
-                            clientId.c_str(), 
-                            topic.c_str());
+  // Only try WiFi/MQTT reconnection if we're not in permanent offline mode
+  // and if initial connection was successful
+  static bool initialConnectionAttempted = true;
+  if (!offlineMode && initialConnectionAttempted) {
+    // Use existing WifiMqttHandler::keepAlive for connection management
+    WifiMqttHandler::keepAlive(client, espClient, 
+                              Configuration::getWiFiSSID().c_str(), 
+                              Configuration::getWiFiPassword().c_str(),
+                              Configuration::getMqttsServer().c_str(), 
+                              rootCACertificate, 
+                              Configuration::getMqttsPort(), 
+                              clientId.c_str(), 
+                              topic.c_str());
+  }
 
   // Update offline mode status
   offlineMode = (WiFi.status() != WL_CONNECTED);
