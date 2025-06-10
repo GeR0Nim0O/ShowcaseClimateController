@@ -1,4 +1,5 @@
-{  "climate_controller": {
+{
+  "climate_controller": {
     "enabled": true,
     "temperature_setpoint": 19.0,
     "humidity_setpoint": 40.0,
@@ -11,7 +12,8 @@
       "min_temperature": 10.0,
       "max_humidity": 80.0,
       "min_humidity": 20.0
-    },    "pid_parameters": {
+    },
+    "pid_parameters": {
       "temperature": {
         "kp": 2.0,
         "ki": 0.5,
@@ -37,7 +39,8 @@
           "kd": 0.0
         }
       }
-    },      "control_parameters": {
+    },
+    "control_parameters": {
       "temperature_hysteresis": 0.05,
       "humidity_hysteresis": 0.1
     },
@@ -46,8 +49,7 @@
       "safety_margin_celsius": 1.0,
       "update_interval_ms": 1000,
       "min_cooling_temperature": 1.0 
-    }
-  },
+    },
     "fan_settings": {
       "interior_fan_enabled": true,
       "exterior_fan_enabled": false
