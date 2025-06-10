@@ -39,10 +39,8 @@ bool Display::begin() {
             delay(10);
             command(LCD_CLEARDISPLAY);
             delay(5);
-            
-            initialized = true;
+              initialized = true;
             displayInitialized = true;
-            Serial.println("LCD Display initialized");
             
             // Show startup message
             clear();
