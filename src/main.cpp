@@ -360,15 +360,9 @@ void readAndSendDataFromDevices() {
     }
     
     // Track if any threshold was exceeded for climate status printing
-    bool anyThresholdExceeded = false;for (size_t i = 0; i < devices.size(); i++) {
-        Device* device = devices[i];
-        if (device == nullptr) {
-            continue;
-        }
-        if (!device->isInitialized()) {
-            continue;
-        }
-      for (size_t i = 0; i < devices.size(); i++) {
+    bool anyThresholdExceeded = false;
+    
+    for (size_t i = 0; i < devices.size(); i++) {
         Device* device = devices[i];
         if (device == nullptr) {
             continue;
@@ -405,7 +399,8 @@ void readAndSendDataFromDevices() {
         }
         
         for (const auto& channel : device->getChannels()) {
-            String channelKey = channel.first;            String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
+            String channelKey = channel.first;
+            String deviceName = device->getType() + "_" + String(device->getDeviceIndex());
             String deviceLabel = device->getDeviceLabel();
             String displayName = deviceName;
             if (deviceLabel.length() > 0) {
@@ -425,7 +420,8 @@ void readAndSendDataFromDevices() {
             String showcaseId = Configuration::getShowcaseId();
             
             // Get the last value and threshold for this sensor channel
-            float lastValue = lastSensorValues[key];            float threshold = device->getThreshold(channelKey);
+            float lastValue = lastSensorValues[key];
+            float threshold = device->getThreshold(channelKey);
             
             // Always print data every 60 seconds, aligned with MQTT sending, even if no change
             if (shouldPrintData) {
@@ -448,7 +444,8 @@ void readAndSendDataFromDevices() {
             if (shouldLog) {
                 anyThresholdExceeded = true;
             }
-              // Store data for MQTT sending if it's either the 60-second cycle OR threshold exceeded
+            
+            // Store data for MQTT sending if it's either the 60-second cycle OR threshold exceeded
             if (shouldSendMqtt) {
                 SensorData sensorData;
                 sensorData.deviceName = displayName;  // Use display name with label
@@ -461,7 +458,8 @@ void readAndSendDataFromDevices() {
                 sensorData.changed = true;
                 
                 changedSensorData[key] = sensorData;
-                  if (shouldLog) {
+                
+                if (shouldLog) {
                     Serial.print("THRESHOLD EXCEEDED - ");
                     Serial.print(displayName);
                     Serial.print(" ");
@@ -483,14 +481,16 @@ void readAndSendDataFromDevices() {
             
             // Log to SD only when threshold is exceeded
             if (shouldLog) {
-                lastSensorValues[key] = value;                if (channel.second != "Time") {
+                lastSensorValues[key] = value;
+                if (channel.second != "Time") {
                     // Log to SD only when the value has changed beyond threshold
                     logDataToSD(displayName, currentTime, value, channel.second);
                 }
             }
-            // No else clause needed since we always update changedSensorData on the 60-second cycle        }
+        }
     }
-      // Check if it's time to send all changed data via MQTT
+    
+    // Check if it's time to send all changed data via MQTT
     if (shouldPrintData) {
         if (WiFi.status() == WL_CONNECTED && client.connected()) {
             Serial.println("\nSensor data collected - sending to MQTT...");
@@ -510,7 +510,7 @@ void readAndSendDataFromDevices() {
             Serial.println("\nSensor data collected - MQTT not connected, data logged to SD only");
         }
     }
-    }
+}
 }
 
 // Global status system functions
