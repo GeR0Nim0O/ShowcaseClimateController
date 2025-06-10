@@ -62,17 +62,16 @@ void Relay4Ch::update() {
 
 std::map<String, String> Relay4Ch::readData() {
     std::map<String, String> result;
-    
-    // First, let's see what hardware is returning
+      // First, let's see what hardware is returning
     if (initialized) {
         uint8_t hardwareState = read1Byte(UNIT_4RELAY_RELAY_REG);
-        Serial.print("readData() - hardware register 0x11 returns: 0x");
-        Serial.print(hardwareState, HEX);
-        Serial.print(" (binary: ");
-        for (int i = 7; i >= 0; i--) {
-            Serial.print((hardwareState >> i) & 1);
-        }
-        Serial.println(")");
+        // Serial.print("readData() - hardware register 0x11 returns: 0x");
+        // Serial.print(hardwareState, HEX);
+        // Serial.print(" (binary: ");
+        // for (int i = 7; i >= 0; i--) {
+        //     Serial.print((hardwareState >> i) & 1);
+        // }
+        // Serial.println(")");
     }
       // Convert relay states to a map of channel values based on our tracked state
     for (const auto& channel : channels) {
