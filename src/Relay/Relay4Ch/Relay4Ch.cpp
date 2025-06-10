@@ -21,20 +21,12 @@ Relay4Ch::Relay4Ch(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float 
 bool Relay4Ch::begin() {
     bool connected = isConnected();
     if (connected) {
-        initialized = true;  // Set initialized flag to true when connection is successful
-        
-        // Initialize the relay module with the specified mode
-        // Set mode and turn off all relays
-        if (!write1Byte(UNIT_4RELAY_REG, static_cast<uint8_t>(_mode))) {
-            Serial.println("Failed to set relay mode");
-            return false;
-        }
-        
-        initializeRelays();  // Initialize all relays to OFF
-        
-        Serial.println("Relay4Ch initialization successful");
+        Serial.print("Relay4Ch connected at address 0x");
+        Serial.print(_address, HEX);
+        Serial.println(" - call Init() to complete initialization");
     } else {
-        Serial.println("Relay4Ch initialization failed - device not connected");
+        Serial.print("Relay4Ch connection failed at address 0x");
+        Serial.println(_address, HEX);
     }
     return connected;
 }
