@@ -170,11 +170,11 @@ void Interface::resetToDefault() {
 
 void Interface::displayDefault() {
     if (!climateController) {
-        display->clear();
-        display->setCursor(0, 0);
-        display->print("No Climate Ctrl");
-        display->setCursor(0, 1);
-        display->print("Available");
+        displayClear();
+        displaySetCursor(0, 0);
+        displayPrint("No Climate Ctrl");
+        displaySetCursor(0, 1);
+        displayPrint("Available");
         return;
     }
     
