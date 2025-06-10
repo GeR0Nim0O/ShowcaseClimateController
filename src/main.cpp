@@ -583,9 +583,8 @@ void initializeClimateController() {
                 climateConfig.setHumiditySetpoint(humiditySetpoint);
                 climateConfig.setClimateMode(climateMode);
                 climateConfig.setHumidityMode(humidityMode);
-                
-                // Save the configuration to ClimateConfig.json for future use
-                climateConfig.createDefaultJsonFile("/data/ClimateConfig.json");
+                  // Save the configuration to ClimateConfig.json for future use
+                climateConfig.createDefaultJsonFile("/ClimateConfig.json");
             }
             
             // Get final configuration values from ClimateConfig
