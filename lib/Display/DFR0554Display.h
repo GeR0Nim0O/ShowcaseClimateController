@@ -57,7 +57,7 @@
 
 class DFR0554Display : public Device {
 public:
-    DFR0554Display(TwoWire* wire, uint8_t lcdAddress, uint8_t rgbAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex);
+    DFR0554Display(TwoWire* wire, uint8_t address, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex);
     
     bool begin() override;
     bool isConnected() override;
