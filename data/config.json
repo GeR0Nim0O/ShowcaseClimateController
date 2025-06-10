@@ -264,7 +264,8 @@
           "Name": "TemperaturePower"
         }
       }
-    },    "Relay4Ch": {
+    },    
+    "Relay4Ch": {
       "Type": "Relay",
       "TypeNumber": "Relay4Ch",
       "Address": "0x26",
