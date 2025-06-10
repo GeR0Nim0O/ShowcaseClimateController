@@ -289,7 +289,7 @@
       "Type": "Relay",
       "TypeNumber": "Relay4Ch",
       "Address": "0x26",
-      "Label": "Controller1",
+      "Label": "Controller2",
       "Channels": {
         "RLY0": {
           "Name": "Relay1"
