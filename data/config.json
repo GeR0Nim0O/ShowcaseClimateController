@@ -278,7 +278,7 @@
           "Name": "DehumidifyRelay"
         },
         "RLY2": {
-          "Name": "ExteriorFanRelay"
+          "Name": "InteriorFanRelay"
         },
         "RLY3": {
           "Name": "Relay4"
