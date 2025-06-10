@@ -58,10 +58,8 @@ bool Display::begin() {
         retryCount++;
         if (retryCount < maxRetries) {
             delay(500); // Wait before retry
-        }
-    }
+        }    }
     
-    Serial.println("LCD Display initialization failed");
     initialized = false;
     displayInitialized = false;
     return false;
