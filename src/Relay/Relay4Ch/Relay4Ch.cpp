@@ -272,7 +272,13 @@ void Relay4Ch::updateInternalState() {
     if (initialized) {
         uint8_t state = read1Byte(UNIT_4RELAY_RELAY_REG);
         _relayState = state & 0x0F;  // Lower 4 bits are relay states
-        _ledState = state & 0xF0;    // Upper 4 bits are LED states
+        _ledState = (state & 0xF0);    // Upper 4 bits are LED states
+        
+        // Debug output
+        Serial.print("Read relay state from hardware: 0x");
+        Serial.print(state, HEX);
+        Serial.print(" -> _relayState: 0x");
+        Serial.println(_relayState, HEX);
     }
 }
 
