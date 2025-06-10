@@ -36,10 +36,6 @@ PubSubClient client(espClient);
 // MQTT throttling - using Configuration class directly
 unsigned long lastMqttSendTime = 0; // Last time data was sent via MQTT
 
-// Sensor reading throttling to prevent SHT self-heating (10% duty cycle)
-unsigned long lastSensorReadTime = 0; // Last time sensors were actually read
-const unsigned long SENSOR_READ_INTERVAL = 10000; // Read sensors every 10 seconds (10% of 100s cycle)
-
 // Global status timer settings - now loaded from config
 unsigned long lastStatusUpdateTime = 0; // Last time status was printed
 
