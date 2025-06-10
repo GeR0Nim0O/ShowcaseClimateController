@@ -191,14 +191,13 @@ void Interface::displayDefault() {
         showingAutoTuneComplete = true;
         autoTuneCompleteTime = millis();
     }
-    previousAutoTuneActive = currentAutoTuneActive;
-    
+    previousAutoTuneActive = currentAutoTuneActive;    
     // Line 1: Current temperature and humidity
-    display->clear();
-    display->setCursor(0, 0);
-    display->print("T:" + formatTemperature(currentTemp));
-    display->setCursor(8, 0);
-    display->print("RH:" + formatHumidity(currentHum));
+    displayClear();
+    displaySetCursor(0, 0);
+    displayPrint("T:" + formatTemperature(currentTemp));
+    displaySetCursor(8, 0);
+    displayPrint("RH:" + formatHumidity(currentHum));
     
     // Line 2: Show AutoTune status, completion message, or normal control status
     display->setCursor(0, 1);    if (showingAutoTuneComplete) {
