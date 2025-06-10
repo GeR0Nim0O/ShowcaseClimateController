@@ -25,10 +25,26 @@ Interface::~Interface() {
 bool Interface::begin() {
     // Find and configure display and encoder devices
     DeviceRegistry& registry = DeviceRegistry::getInstance();
-    
-    // Find display device
+      // Find display device
     if (!display) {
-        display = static_cast<Display*>(registry.getDeviceByType("Display"));
+        Device* displayDevice = registry.getDeviceByType("Display");
+        if (displayDevice) {
+            // Try to cast to Display first
+            display = dynamic_cast<Display*>(displayDevice);
+            if (!display) {
+                // If that fails, check if it's a DFR0554Display
+                DFR0554Display* dfr0554Display = dynamic_cast<DFR0554Display*>(displayDevice);
+                if (dfr0554Display) {
+                    // For DFR0554Display, we need to store it differently since Interface expects Display*
+                    // For now, we'll need to handle this differently
+                    Serial.println("Interface: Found DFR0554Display - interface compatibility");
+                    // DFR0554Display has same interface as Display, but different type
+                    // We'll use a reinterpret_cast here since the interfaces are compatible
+                    display = reinterpret_cast<Display*>(dfr0554Display);
+                }
+            }
+        }
+        
         if (!display) {
             Serial.println("Interface: No Display device found");
             return false;
