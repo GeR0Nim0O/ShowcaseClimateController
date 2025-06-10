@@ -295,7 +295,7 @@
           "Name": "EnableTemperatureRelay"
         },
         "RLY1": {
-          "Name": "Cool"
+          "Name": "TemperatureCoolRelay"
         },
         "RLY2": {
           "Name": "Relay3"
