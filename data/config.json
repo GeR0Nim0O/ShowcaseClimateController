@@ -101,7 +101,7 @@
           "Threshold": 0.0
         }
       }
-    },      "SHT_Interior": {
+    },      "SHT_Exterior": {
       "Type": "Sensor",
       "TypeNumber": "SHT",
       "Address": "0x44",
