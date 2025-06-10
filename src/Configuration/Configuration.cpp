@@ -283,14 +283,22 @@ std::vector<Device*> Configuration::initializeDevices(std::map<uint8_t, std::vec
         int typeIndex = deviceTypeCounters[typeKey];
         deviceTypeCounters[typeKey]++;
           // Find matching devices
-        
-        // Find devices of the same type in scan results
+          // Find devices of the same type in scan results
         std::vector<std::pair<uint8_t, uint8_t>> matchingDevices;
         for (const auto& scannedDevice : scannedDevices) {
             if (scannedDevice.first == expectedAddress) {
                 matchingDevices.push_back(scannedDevice);
             }
         }
+        
+        Serial.print("Found ");
+        Serial.print(matchingDevices.size());
+        Serial.print(" matching devices for type ");
+        Serial.print(deviceTypeNumber);
+        Serial.print(" at address 0x");
+        Serial.print(expectedAddress, HEX);
+        Serial.print(", need index ");
+        Serial.println(typeIndex);
           // Devices located
         
         if (matchingDevices.empty()) {
