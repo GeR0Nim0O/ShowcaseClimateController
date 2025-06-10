@@ -360,7 +360,8 @@ void readAndSendDataFromDevices() {
     // Flag to determine if we should print data this cycle (only true every 60 seconds)
     bool shouldPrintData = Configuration::isMqttThrottlingEnabled() && (millis() - lastMqttSendTime >= Configuration::getMqttThrottlingInterval());
     
-    if (shouldPrintData) {
+    // Only print detailed sensor readings if WiFi is connected (don't spam offline mode)
+    if (shouldPrintData && WiFi.status() == WL_CONNECTED) {
         Serial.println("\n=== Sensor Readings (60-second MQTT update, SHT sensors limited to prevent self-heating) ===");
     }
     
