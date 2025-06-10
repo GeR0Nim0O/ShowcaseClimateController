@@ -272,7 +272,7 @@
       "Label": "Controller1",
       "Channels": {
         "RLY0": {
-          "Name": ""
+          "Name": "Humdify"
         },
         "RLY1": {
           "Name": "Relay2"
