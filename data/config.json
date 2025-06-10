@@ -283,11 +283,10 @@
         "RLY3": {
           "Name": "Relay4"
         }
-      }
-    },    "LCD_Display": {
+      }    },    "LCD_Display": {
       "Type": "Display",
-      "TypeNumber": "LCD2x16",
-      "Address": "0x27",
+      "TypeNumber": "DFR0554",
+      "Address": "0x6B",
       "Label": "Interface",
       "Channels": {
         "Display": {
@@ -295,7 +294,19 @@
           "Threshold": 0.0
         }
       }
-    },    "RotaryEncoder": {
+    },
+    "LCD_RGB": {
+      "Type": "RGB",
+      "TypeNumber": "DFR0554_RGB",
+      "Address": "0x2D",
+      "Label": "Interface",
+      "Channels": {
+        "RGB": {
+          "Name": "DisplayRGB",
+          "Threshold": 0.0
+        }
+      }
+    },"RotaryEncoder": {
       "Type": "RotaryEncoder",
       "TypeNumber": "I2C",
       "Address": "0x30",
