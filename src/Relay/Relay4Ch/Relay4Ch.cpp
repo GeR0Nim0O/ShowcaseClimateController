@@ -203,6 +203,31 @@ bool Relay4Ch::isAsyncMode() const {
     return _mode == Relay4ChMode::ASYNC;
 }
 
+void Relay4Ch::Init(bool mode) {
+    // M5Stack-compatible initialization
+    // mode: 0 = ASYNC, 1 = SYNC
+    _mode = mode ? Relay4ChMode::SYNC : Relay4ChMode::ASYNC;
+    
+    // Set mode register
+    if (!write1Byte(UNIT_4RELAY_REG, static_cast<uint8_t>(_mode))) {
+        Serial.println("Failed to set relay mode during Init");
+        return;
+    }
+    
+    // Turn off all relays and LEDs
+    if (!write1Byte(UNIT_4RELAY_RELAY_REG, 0x00)) {
+        Serial.println("Failed to turn off relays during Init");
+        return;
+    }
+    
+    _relayState = 0x00;
+    _ledState = 0x00;
+    initialized = true;  // Mark as initialized after successful Init
+    
+    Serial.print("Relay4Ch Init completed with mode: ");
+    Serial.println(_mode == Relay4ChMode::SYNC ? "SYNC" : "ASYNC");
+}
+
 void Relay4Ch::initializeRelays() {
     // Turn off all relays and LEDs
     _relayState = 0x00;
