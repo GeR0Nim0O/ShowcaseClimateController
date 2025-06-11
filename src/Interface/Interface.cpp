@@ -608,13 +608,13 @@ String Interface::formatHumidityStatus() {
     }
     
     if (!climateController->isHumidityControlEnabled()) {
-        return "OFF";
+        return "Off";
     }
       // Check current humidifying/dehumidifying status
     if (climateController->isHumidifying()) {
-        return "HUM";   // Shortened to fit display
+        return "Humidifying";
     } else if (climateController->isDehumidifying()) {
-        return "DEHUM"; // Shortened to fit display
+        return "Dehumidifying";
     } else {
         // Humidity control is enabled but not actively humidifying or dehumidifying
         return "OK";
