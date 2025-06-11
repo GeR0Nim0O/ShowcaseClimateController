@@ -677,8 +677,11 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
 
 // Add this implementation of the safeWritePin method we previously added to the header
 bool ClimateController::safeWritePin(uint8_t pin, bool value) {
+    Serial.printf("safeWritePin called: pin=%d, value=%s\n", pin, value ? "true" : "false");
+    
     // If using PCF8574 GPIO expander
     if (gpio != nullptr && gpio->isInitialized()) {
+        Serial.println("Using PCF8574 GPIO device");
         try {
             gpio->writePin(pin, value);
             
@@ -696,6 +699,7 @@ bool ClimateController::safeWritePin(uint8_t pin, bool value) {
     if (relay1 != nullptr && relay2 != nullptr && 
         relay1->isInitialized() && relay2->isInitialized()) {
         
+        Serial.println("Using Relay4Ch devices");
         try {
             // Map pins to correct relay device and channel based on configuration
             if (pin == pinHumidify) {
@@ -721,9 +725,12 @@ bool ClimateController::safeWritePin(uint8_t pin, bool value) {
                 // TemperatureHeatRelay → RLY2 on Relay4Ch2
                 Serial.printf("TemperatureHeat: Setting RLY2 on Relay4Ch2 to %s\n", value ? "ON" : "OFF");
                 return relay2->relayWrite(2, value);
+            } else {
+                Serial.printf("Unknown pin mapping: pin=%d\n", pin);
             }
             return false;
         } catch (...) {
+            Serial.println("Exception in relay control");
             return false;
         }
     }
