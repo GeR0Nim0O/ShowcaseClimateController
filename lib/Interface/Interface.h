@@ -34,11 +34,11 @@ public:
     void handleEncoderRotation();
     void updateDisplay();
     void resetToDefault();
-    
-    // Public display methods
+      // Public display methods
     void updateClimateDisplay();
     void showStartupMessage();
     bool isDisplayAvailable();
+    bool isMenuActive() const { return menuActive; } // Check if interface is handling menus
     
     // Configuration
     void setTimeoutMs(unsigned long timeout) { timeoutMs = timeout; }
