@@ -597,18 +597,9 @@ void ClimateController::emergencyShutdown() {
 
 // Pin mapping helper methods
 void ClimateController::initializePinMappings() {
-    // Initialize with default values matching config.json
-    // For Relay4Ch1 (humidity and fan controls):
-    pinHumidify = 0;        // RLY0: HumdifyRelay
-    pinDehumidify = 1;      // RLY1: DehumidifyRelay
-    pinFanInterior = 2;     // RLY2: InteriorFanRelay
-    pinFanExterior = 3;     // RLY3: ExteriorFanRelay
-    // For Relay4Ch2 (temperature controls):
-    pinTemperatureEnable = 0; // RLY0: EnableTemperatureRelay
-    pinTemperatureCool = 1;   // RLY1: TemperatureCoolRelay
-    pinTemperatureHeat = 2;   // RLY2: TemperatureHeatRelay
+    // Load pin mappings from configuration only - no hardcoded defaults
+    // Pin mappings must be defined in config.json
     
-    // Try to load from configuration with extensive error checking
     try {
         pinFanExterior = getPinFromChannelName("FanExterior");
         pinFanInterior = getPinFromChannelName("FanInterior");
@@ -617,9 +608,18 @@ void ClimateController::initializePinMappings() {
         pinTemperatureEnable = getPinFromChannelName("TemperatureEnable");
         pinTemperatureCool = getPinFromChannelName("TemperatureCool");
         pinTemperatureHeat = getPinFromChannelName("TemperatureHeat");
+        
+        // Verify all pins were loaded from config
+        if (pinFanExterior == 255 || pinFanInterior == 255 || pinHumidify == 255 || 
+            pinDehumidify == 255 || pinTemperatureEnable == 255 || 
+            pinTemperatureCool == 255 || pinTemperatureHeat == 255) {
+            Serial.println("ERROR: Pin mappings not found in config.json - climate control disabled");
+        } else {
+            Serial.println("Pin mappings loaded successfully from config.json");
+        }
     }
     catch (...) {
-        // Use defaults on error
+        Serial.println("ERROR: Failed to load pin mappings from config.json");
     }
 }
 
