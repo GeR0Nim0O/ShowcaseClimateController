@@ -116,10 +116,8 @@
         </mxCell>
         <mxCell id="relay4ch2_methods" value="+ controlTemperature(): void&#xa;+ enableSystem(): void&#xa;+ relayWrite(channel, state): bool&#xa;+ getRelayState(channel): bool&#xa;+ begin(): bool (I2C init)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="relay4ch2">
           <mxGeometry y="136" width="240" height="64" as="geometry" />
-        </mxCell>
-
-        <!-- RotaryEncoder -->
-        <mxCell id="rotaryencoder" value="RotaryEncoder" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+        </mxCell>        <!-- RotaryEncoder -->
+        <mxCell id="rotaryencoder" value="RotaryEncoder (I2C)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="80" y="620" width="200" height="160" as="geometry" />
         </mxCell>
         <mxCell id="encoder_fields" value="- _currentValue: uint16_t&#xa;- _lastValue: uint16_t&#xa;- _buttonPressed: bool&#xa;- _lastButtonPressed: bool&#xa;- basicInfo: BasicInfo" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="rotaryencoder">
