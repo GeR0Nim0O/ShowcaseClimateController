@@ -224,14 +224,14 @@ void Interface::updateDisplay() {
     bool humSetpointChanged = (abs(currentHumSetpoint - lastDisplayedHumSetpoint) > 0.01);
     bool tempControlChanged = (currentTempControlEnabled != lastTempControlEnabled);
     bool humControlChanged = (currentHumControlEnabled != lastHumControlEnabled);
-    
-    // Update display if menu changed, default mode (which has its own change detection), or setpoint values changed
+      // Update display if menu changed, default mode (which has its own change detection), or setpoint values changed
     bool shouldUpdate = menuChanged || 
                        (currentMenu == MENU_DEFAULT) ||
                        (currentMenu == MENU_TEMP_SETPOINT && tempSetpointChanged) ||
                        (currentMenu == MENU_HUMIDITY_SETPOINT && humSetpointChanged) ||
                        (currentMenu == MENU_TEMP_CONTROL_ENABLE && tempControlChanged) ||
-                       (currentMenu == MENU_HUMIDITY_CONTROL_ENABLE && humControlChanged);
+                       (currentMenu == MENU_HUMIDITY_CONTROL_ENABLE && humControlChanged) ||
+                       (currentMenu == MENU_AUTOTUNE);
     
     if (shouldUpdate) {
         switch (currentMenu) {
