@@ -20,14 +20,14 @@ public:
     void setClimateController(ClimateController* controller);
     void setDisplay(Display* display);
     void setEncoder(RotaryEncoder* encoder);
-    
-    // Menu system
+      // Menu system
     enum MenuState {
         MENU_DEFAULT = 0,
         MENU_TEMP_SETPOINT,
         MENU_HUMIDITY_SETPOINT,
         MENU_TEMP_CONTROL_ENABLE,
         MENU_HUMIDITY_CONTROL_ENABLE,
+        MENU_AUTOTUNE,
         MENU_COUNT // Keep this last for menu cycling
     };
       void handleEncoderButton();
