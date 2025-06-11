@@ -255,13 +255,24 @@ void Interface::updateDisplay() {
                 break;
             case MENU_HUMIDITY_CONTROL_ENABLE:
                 displayHumidityControlEnable();
-                break;
-        }
+                break;        }
         
-        // Update cached menu state only if we actually switched menus
-        if (currentMenu != lastDisplayedMenu) {
+        // Update cached values
+        if (menuChanged) {
             lastDisplayedMenu = currentMenu;
             Serial.printf("Interface: Display updated for menu %d\n", static_cast<int>(currentMenu));
+        }
+        if (tempSetpointChanged) {
+            lastDisplayedTempSetpoint = currentTempSetpoint;
+        }
+        if (humSetpointChanged) {
+            lastDisplayedHumSetpoint = currentHumSetpoint;
+        }
+        if (tempControlChanged) {
+            lastTempControlEnabled = currentTempControlEnabled;
+        }
+        if (humControlChanged) {
+            lastHumControlEnabled = currentHumControlEnabled;
         }
     }
 }
