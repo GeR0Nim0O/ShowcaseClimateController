@@ -43,7 +43,9 @@ bool RotaryEncoder::begin() {
 }
 
 bool RotaryEncoder::isConnected() {
-    return testI2CConnection();
+    bool connected = testI2CConnection();
+    Serial.printf("[RotaryEncoder] Connection test: %s\n", connected ? "CONNECTED" : "DISCONNECTED");
+    return connected;
 }
 
 void RotaryEncoder::update() {
