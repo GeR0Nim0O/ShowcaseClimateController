@@ -36,9 +36,7 @@ public:
         uint16_t VID;        // Vendor ID  
         uint16_t version;    // Firmware version
         uint8_t i2cAddr;     // I2C address
-    };
-
-    RotaryEncoder(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex);
+    };    RotaryEncoder(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex);
     
     bool begin() override;
     bool isConnected() override;
