@@ -514,3 +514,71 @@ void Interface::displayUpdate() {
         dfr0554DisplayPtr->update();
     }
 }
+
+// Public display methods for external use
+void Interface::updateClimateDisplay() {
+    if (!displayIsConnected() || !climateController) {
+        return;
+    }
+    
+    // Get current climate data
+    float currentTemp = climateController->getCurrentTemperature();
+    float currentHum = climateController->getCurrentHumidity();
+    float tempSetpoint = climateController->getTemperatureSetpoint();
+    float humSetpoint = climateController->getHumiditySetpoint();
+    
+    // Static variables to track last displayed values
+    static float lastDisplayedTemp = -999.0;
+    static float lastDisplayedHum = -999.0;
+    static float lastDisplayedTempSetpoint = -999.0;
+    static float lastDisplayedHumSetpoint = -999.0;
+    static bool firstUpdate = true;
+    
+    // Check if any values have changed (with small tolerance for floating point comparison)
+    const float tolerance = 0.01; // 0.01 degree/percent tolerance
+    bool tempChanged = abs(currentTemp - lastDisplayedTemp) > tolerance;
+    bool humChanged = abs(currentHum - lastDisplayedHum) > tolerance;
+    bool tempSetpointChanged = abs(tempSetpoint - lastDisplayedTempSetpoint) > tolerance;
+    bool humSetpointChanged = abs(humSetpoint - lastDisplayedHumSetpoint) > tolerance;
+    
+    // Only update display if values have changed or this is the first update
+    if (firstUpdate || tempChanged || humChanged || tempSetpointChanged || humSetpointChanged) {
+        // Create formatted display strings
+        String line1 = String(currentTemp, 1) + "C/" + String(tempSetpoint, 1) + "C";
+        String line2 = String(currentHum, 0) + "%/" + String(humSetpoint, 0) + "%";
+        
+        // Update display
+        displayClear();
+        displaySetCursor(0, 0);
+        displayPrint(line1);
+        displaySetCursor(0, 1);
+        displayPrint(line2);
+        
+        // Update cached values
+        lastDisplayedTemp = currentTemp;
+        lastDisplayedHum = currentHum;
+        lastDisplayedTempSetpoint = tempSetpoint;
+        lastDisplayedHumSetpoint = humSetpoint;
+        firstUpdate = false;
+        
+        // Debug output for display updates
+        Serial.printf("Interface: Climate display updated: T=%.1f°C/%.1f°C, H=%.0f%%/%.0f%%\n", 
+                      currentTemp, tempSetpoint, currentHum, humSetpoint);
+    }
+}
+
+void Interface::showStartupMessage() {
+    if (!displayIsConnected()) {
+        return;
+    }
+    
+    displayClear();
+    displaySetCursor(0, 0);
+    displayPrint("Climate Control");
+    displaySetCursor(0, 1);
+    displayPrint("Initializing...");
+}
+
+bool Interface::isDisplayAvailable() {
+    return displayIsConnected();
+}
