@@ -120,9 +120,12 @@ void Interface::handleEncoderButton() {
     
     // Detect button press (rising edge)
     if (currentButtonState && !lastButtonState) {
-        Serial.println("Interface: Button pressed!");
+        Serial.printf("Interface: Button pressed! Menu active: %s, Current menu: %d\n", 
+                      menuActive ? "true" : "false", static_cast<int>(currentMenu));
         updateActivity();
         nextMenu();
+        Serial.printf("Interface: After nextMenu() - Menu active: %s, New menu: %d\n", 
+                      menuActive ? "true" : "false", static_cast<int>(currentMenu));
     }
     
     lastButtonState = currentButtonState;
