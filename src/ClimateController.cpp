@@ -691,17 +691,29 @@ bool ClimateController::safeWritePin(uint8_t pin, bool value) {
     if (relay1 != nullptr && relay2 != nullptr && 
         relay1->isInitialized() && relay2->isInitialized()) {
         
-        try {            // Map pins to relay channels based on configuration
-            if (pin == pinHumidify || pin == pinDehumidify || 
-                pin == pinFanInterior || pin == pinFanExterior) {
-                // Use relay1 for humidity and fan controls
-                uint8_t relayChannel = pin;  // pin already contains the correct relay channel (0-3)
-                return relay1->relayWrite(relayChannel, value);
-            } else if (pin == pinTemperatureEnable || pin == pinTemperatureCool || 
-                       pin == pinTemperatureHeat) {
-                // Use relay2 for temperature controls
-                uint8_t relayChannel = pin;  // pin already contains the correct relay channel (0-3)
-                return relay2->relayWrite(relayChannel, value);
+        try {
+            // Map pins to correct relay device and channel based on configuration
+            if (pin == pinHumidify) {
+                // HumdifyRelay → RLY0 on Relay4Ch1
+                return relay1->relayWrite(0, value);
+            } else if (pin == pinDehumidify) {
+                // DehumidifyRelay → RLY1 on Relay4Ch1
+                return relay1->relayWrite(1, value);
+            } else if (pin == pinFanInterior) {
+                // InteriorFanRelay → RLY2 on Relay4Ch1
+                return relay1->relayWrite(2, value);
+            } else if (pin == pinFanExterior) {
+                // ExteriorFanRelay → RLY3 on Relay4Ch1
+                return relay1->relayWrite(3, value);
+            } else if (pin == pinTemperatureEnable) {
+                // EnableTemperatureRelay → RLY0 on Relay4Ch2
+                return relay2->relayWrite(0, value);
+            } else if (pin == pinTemperatureCool) {
+                // TemperatureCoolRelay → RLY1 on Relay4Ch2
+                return relay2->relayWrite(1, value);
+            } else if (pin == pinTemperatureHeat) {
+                // TemperatureHeatRelay → RLY2 on Relay4Ch2
+                return relay2->relayWrite(2, value);
             }
             return false;
         } catch (...) {
