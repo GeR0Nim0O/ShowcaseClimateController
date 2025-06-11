@@ -711,39 +711,53 @@ bool ClimateController::safeWritePin(uint8_t pin, bool value) {
             return false;
         }
     }
-    
-    // If using Relay4Ch devices
+      // If using Relay4Ch devices
     if (relay1 != nullptr && relay2 != nullptr && 
         relay1->isInitialized() && relay2->isInitialized()) {
         
         Serial.println("Using Relay4Ch devices");
         try {
-            // Map pins to correct relay device and channel based on configuration
-            if (pin == pinHumidify) {
-                // HumdifyRelay → RLY0 on Relay4Ch1
-                return relay1->relayWrite(0, value);
-            } else if (pin == pinDehumidify) {
-                // DehumidifyRelay → RLY1 on Relay4Ch1
-                return relay1->relayWrite(1, value);
-            } else if (pin == pinFanInterior) {
-                // InteriorFanRelay → RLY2 on Relay4Ch1
-                return relay1->relayWrite(2, value);
-            } else if (pin == pinFanExterior) {
-                // ExteriorFanRelay → RLY3 on Relay4Ch1
-                return relay1->relayWrite(3, value);            } else if (pin == pinTemperatureEnable) {
-                // EnableTemperatureRelay → RLY0 on Relay4Ch2
-                Serial.printf("TemperatureEnable: Setting RLY0 on Relay4Ch2 to %s\n", value ? "ON" : "OFF");
-                return relay2->relayWrite(0, value);
-            } else if (pin == pinTemperatureCool) {
-                // TemperatureCoolRelay → RLY1 on Relay4Ch2
-                Serial.printf("TemperatureCool: Setting RLY1 on Relay4Ch2 to %s\n", value ? "ON" : "OFF");
-                return relay2->relayWrite(1, value);
-            } else if (pin == pinTemperatureHeat) {
-                // TemperatureHeatRelay → RLY2 on Relay4Ch2
-                Serial.printf("TemperatureHeat: Setting RLY2 on Relay4Ch2 to %s\n", value ? "ON" : "OFF");
-                return relay2->relayWrite(2, value);
+            // Handle new unique pin numbering scheme
+            // Relay4Ch1: pins 10-13, Relay4Ch2: pins 20-23
+            if (pin >= 10 && pin <= 13) {
+                // Relay4Ch1 device (pins 10-13)
+                uint8_t relayChannel = pin - 10;
+                Serial.printf("Relay4Ch1: Setting RLY%d to %s\n", relayChannel, value ? "ON" : "OFF");
+                return relay1->relayWrite(relayChannel, value);
+            } else if (pin >= 20 && pin <= 23) {
+                // Relay4Ch2 device (pins 20-23)
+                uint8_t relayChannel = pin - 20;
+                Serial.printf("Relay4Ch2: Setting RLY%d to %s\n", relayChannel, value ? "ON" : "OFF");
+                return relay2->relayWrite(relayChannel, value);
             } else {
-                Serial.printf("Unknown pin mapping: pin=%d\n", pin);
+                // Legacy pin mapping for backwards compatibility
+                if (pin == pinHumidify) {
+                    // HumdifyRelay → RLY0 on Relay4Ch1
+                    return relay1->relayWrite(0, value);
+                } else if (pin == pinDehumidify) {
+                    // DehumidifyRelay → RLY1 on Relay4Ch1
+                    return relay1->relayWrite(1, value);
+                } else if (pin == pinFanInterior) {
+                    // InteriorFanRelay → RLY2 on Relay4Ch1
+                    return relay1->relayWrite(2, value);
+                } else if (pin == pinFanExterior) {
+                    // ExteriorFanRelay → RLY3 on Relay4Ch1
+                    return relay1->relayWrite(3, value);
+                } else if (pin == pinTemperatureEnable) {
+                    // EnableTemperatureRelay → RLY0 on Relay4Ch2
+                    Serial.printf("TemperatureEnable: Setting RLY0 on Relay4Ch2 to %s\n", value ? "ON" : "OFF");
+                    return relay2->relayWrite(0, value);
+                } else if (pin == pinTemperatureCool) {
+                    // TemperatureCoolRelay → RLY1 on Relay4Ch2
+                    Serial.printf("TemperatureCool: Setting RLY1 on Relay4Ch2 to %s\n", value ? "ON" : "OFF");
+                    return relay2->relayWrite(1, value);
+                } else if (pin == pinTemperatureHeat) {
+                    // TemperatureHeatRelay → RLY2 on Relay4Ch2
+                    Serial.printf("TemperatureHeat: Setting RLY2 on Relay4Ch2 to %s\n", value ? "ON" : "OFF");
+                    return relay2->relayWrite(2, value);
+                } else {
+                    Serial.printf("Unknown pin mapping: pin=%d\n", pin);
+                }
             }
             return false;
         } catch (...) {
