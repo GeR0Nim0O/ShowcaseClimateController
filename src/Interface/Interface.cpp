@@ -205,20 +205,50 @@ void Interface::handleEncoderRotation() {
 void Interface::updateDisplay() {
     if (!displayIsConnected()) return;
     
-    // Static variable to track last menu state
+    // Static variables to track last displayed state
     static MenuState lastDisplayedMenu = MENU_COUNT; // Invalid initial value to force first update
+    static float lastDisplayedTempSetpoint = -999.0;
+    static float lastDisplayedHumSetpoint = -999.0;
+    static bool lastTempControlEnabled = false;
+    static bool lastHumControlEnabled = false;
     
-    // Only update if menu changed or we're in default mode (which has its own change detection)
-    if (currentMenu != lastDisplayedMenu || currentMenu == MENU_DEFAULT) {
+    // Get current values for comparison
+    float currentTempSetpoint = climateController ? climateController->getTemperatureSetpoint() : 0.0;
+    float currentHumSetpoint = climateController ? climateController->getHumiditySetpoint() : 0.0;
+    bool currentTempControlEnabled = climateController ? climateController->isTemperatureControlEnabled() : false;
+    bool currentHumControlEnabled = climateController ? climateController->isHumidityControlEnabled() : false;
+    
+    // Check if we need to update the display
+    bool menuChanged = (currentMenu != lastDisplayedMenu);
+    bool tempSetpointChanged = (abs(currentTempSetpoint - lastDisplayedTempSetpoint) > 0.01);
+    bool humSetpointChanged = (abs(currentHumSetpoint - lastDisplayedHumSetpoint) > 0.01);
+    bool tempControlChanged = (currentTempControlEnabled != lastTempControlEnabled);
+    bool humControlChanged = (currentHumControlEnabled != lastHumControlEnabled);
+    
+    // Update display if menu changed, default mode (which has its own change detection), or setpoint values changed
+    bool shouldUpdate = menuChanged || 
+                       (currentMenu == MENU_DEFAULT) ||
+                       (currentMenu == MENU_TEMP_SETPOINT && tempSetpointChanged) ||
+                       (currentMenu == MENU_HUMIDITY_SETPOINT && humSetpointChanged) ||
+                       (currentMenu == MENU_TEMP_CONTROL_ENABLE && tempControlChanged) ||
+                       (currentMenu == MENU_HUMIDITY_CONTROL_ENABLE && humControlChanged);
+    
+    if (shouldUpdate) {
         switch (currentMenu) {
             case MENU_DEFAULT:
                 displayDefault();
                 break;
             case MENU_TEMP_SETPOINT:
                 displayTempSetpoint();
+                if (tempSetpointChanged) {
+                    Serial.printf("Interface: Temperature setpoint display updated to %.1f°C\n", currentTempSetpoint);
+                }
                 break;
             case MENU_HUMIDITY_SETPOINT:
                 displayHumiditySetpoint();
+                if (humSetpointChanged) {
+                    Serial.printf("Interface: Humidity setpoint display updated to %.0f%%\n", currentHumSetpoint);
+                }
                 break;
             case MENU_TEMP_CONTROL_ENABLE:
                 displayTempControlEnable();
