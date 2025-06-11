@@ -14,6 +14,7 @@ Interface::Interface()
       menuActive(false),
       lastEncoderValue(0),
       lastButtonState(false),
+      lastButtonPressTime(0),
       previousAutoTuneActive(false),
       autoTuneCompleteTime(0),
       showingAutoTuneComplete(false),
