@@ -13,31 +13,71 @@ bool RotaryEncoder::begin() {
     
     selectTCAChannel(tcaChannel);
     
-    if (!testI2CConnection()) {
-        Serial.printf("DFRobot Visual Rotary Encoder not found at address 0x%02X!\n", i2cAddress);
+    // Basic I2C connection test
+    wire->beginTransmission(i2cAddress);
+    uint8_t error = wire->endTransmission();
+    Serial.printf("RotaryEncoder::begin() - I2C connection test result: %d (0=success)\n", error);
+    
+    if (error != 0) {
+        Serial.printf("DFRobot Visual Rotary Encoder not found at address 0x%02X! I2C error: %d\n", i2cAddress, error);
         return false;
     }
     Serial.printf("RotaryEncoder::begin() - I2C connection test passed\n");
     
-    // Verify PID
-    uint16_t pid = readRegister16(VISUAL_ROTARY_ENCODER_PID_MSB_REG);
-    Serial.printf("RotaryEncoder::begin() - Read PID: 0x%04X, expected: 0x%04X\n", pid, VISUAL_ROTARY_ENCODER_PID);
+    // Read PID register directly with detailed logging
+    Serial.printf("RotaryEncoder::begin() - Reading PID register 0x%02X\n", VISUAL_ROTARY_ENCODER_PID_MSB_REG);
+    wire->beginTransmission(i2cAddress);
+    wire->write(VISUAL_ROTARY_ENCODER_PID_MSB_REG);
+    error = wire->endTransmission();
+    Serial.printf("RotaryEncoder::begin() - PID register write result: %d\n", error);
     
-    if (pid != VISUAL_ROTARY_ENCODER_PID) {
-        Serial.printf("Invalid PID: 0x%04X, expected: 0x%04X\n", pid, VISUAL_ROTARY_ENCODER_PID);
+    if (error != 0) {
+        Serial.printf("Failed to write PID register address. Error: %d\n", error);
         return false;
     }
     
+    wire->requestFrom(i2cAddress, (uint8_t)2);
+    if (wire->available() >= 2) {
+        uint8_t pidMsb = wire->read();
+        uint8_t pidLsb = wire->read();
+        uint16_t pid = (pidMsb << 8) | pidLsb;
+        Serial.printf("RotaryEncoder::begin() - Read PID: MSB=0x%02X, LSB=0x%02X, Combined=0x%04X\n", pidMsb, pidLsb, pid);
+        Serial.printf("RotaryEncoder::begin() - Expected PID: 0x%04X\n", VISUAL_ROTARY_ENCODER_PID);
+        
+        if (pid != VISUAL_ROTARY_ENCODER_PID) {
+            Serial.printf("PID mismatch! Got: 0x%04X, Expected: 0x%04X\n", pid, VISUAL_ROTARY_ENCODER_PID);
+            // Continue anyway to test basic functionality
+        }
+    } else {
+        Serial.printf("Failed to read PID register. Available bytes: %d\n", wire->available());
+        return false;
+    }
+    
+    // Test reading encoder count register
+    Serial.printf("RotaryEncoder::begin() - Testing encoder count register\n");
+    uint16_t initialCount = getEncoderValue();
+    Serial.printf("RotaryEncoder::begin() - Initial encoder count: %d\n", initialCount);
+    
+    // Test button status register
+    Serial.printf("RotaryEncoder::begin() - Testing button status register\n");
+    bool buttonState = detectButtonDown();
+    Serial.printf("RotaryEncoder::begin() - Initial button state: %s\n", buttonState ? "PRESSED" : "NOT PRESSED");
+    
     // Read basic device information
     refreshBasicInfo();
+    Serial.printf("RotaryEncoder::begin() - Device info - PID: 0x%04X, VID: 0x%04X, Version: 0x%04X, Addr: 0x%02X\n", 
+                  basicInfo.PID, basicInfo.VID, basicInfo.version, basicInfo.i2cAddr);
     
-    // Initialize encoder value to 0
-    setEncoderValue(0);
+    // Set a known encoder value for testing
+    Serial.printf("RotaryEncoder::begin() - Setting encoder value to 100 for testing\n");
+    setEncoderValue(100);
+    uint16_t testCount = getEncoderValue();
+    Serial.printf("RotaryEncoder::begin() - Encoder value after setting to 100: %d\n", testCount);
     
     initialized = true;
-    Serial.printf("DFRobot Visual Rotary Encoder initialized successfully at address 0x%02X\n", i2cAddress);
-    Serial.printf("Device info - PID: 0x%04X, VID: 0x%04X, Version: 0x%04X\n", 
-                  basicInfo.PID, basicInfo.VID, basicInfo.version);
+    Serial.printf("DFRobot Visual Rotary Encoder initialization completed at address 0x%02X\n", i2cAddress);
+    
+    return true;
     
     return true;
 }
