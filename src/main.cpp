@@ -14,6 +14,7 @@
 #include "Display.h"  // Add Display include
 #include "DFR0554Display.h"  // Add DFR0554Display include
 #include "../lib/Config/ClimateConfig/ClimateConfig.h"  // Add ClimateConfig include
+#include "Interface.h"  // Add Interface include
 
 #include <WiFiClientSecure.h> 
 #include <string>
