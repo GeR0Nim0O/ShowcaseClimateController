@@ -60,14 +60,14 @@ private:
     bool lastButtonState;
     unsigned long lastButtonPressTime;
     static const unsigned long BUTTON_DEBOUNCE_MS = 250; // 250ms debounce
-    
-    // AutoTune state tracking
+      // AutoTune state tracking
     bool previousAutoTuneActive;
     unsigned long autoTuneCompleteTime;
     bool showingAutoTuneComplete;
+    int autoTuneSelection; // 0=Normal, 1=Fast, 2=Skip
     
     // Adjustment parameters
-    float adjustmentStep;    // Display helpers
+    float adjustmentStep;// Display helpers
     void displayDefault();
     void displayTempSetpoint();
     void displayHumiditySetpoint();
