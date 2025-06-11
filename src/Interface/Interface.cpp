@@ -512,12 +512,8 @@ void Interface::adjustCurrentSetting(int direction) {
             Serial.println(!current ? "enabled" : "disabled");
             break;
         }
-        
-        case MENU_AUTOTUNE: {
+          case MENU_AUTOTUNE: {
             // Handle AutoTune mode selection: Normal (N), Fast (F), or Skip (S)
-            // Use static variable to track current selection
-            static int autoTuneSelection = 0; // 0=Normal, 1=Fast, 2=Skip
-            
             if (climateController->isAutoTuning()) {
                 // AutoTune is running, allow stop with any direction
                 climateController->stopAutoTune();
