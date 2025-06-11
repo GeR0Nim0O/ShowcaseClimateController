@@ -335,29 +335,36 @@ void Interface::displayDefault() {
     String tempStatus = formatTemperatureStatus();
     String humStatus = formatHumidityStatus();
     bool statusChanged = (tempStatus != lastTempStatus || humStatus != lastHumStatus);
-    
-    // Only update display if something actually changed or first time
+      // Only update display if something actually changed or first time
     if (firstDefaultDisplay || tempChanged || humChanged || autoTuneStatusChanged || 
         completeMsgChanged || statusChanged) {
         
-        // Line 1: Current temperature and humidity
         displayClear();
-        displaySetCursor(0, 0);
-        displayPrint("T:" + formatTemperature(currentTemp));
-        displaySetCursor(8, 0);
-        displayPrint("RH:" + formatHumidity(currentHum));    
-        // Line 2: Show AutoTune status, completion message, or normal control status
-        displaySetCursor(0, 1);    if (showingAutoTuneComplete) {
+        
+        if (showingAutoTuneComplete) {
             // Show completion message for 3 seconds
+            displaySetCursor(0, 0);
             displayPrint("AutoTune");
+            displaySetCursor(0, 1);
+            displayPrint("Complete");
             if (millis() - autoTuneCompleteTime > 3000) {
                 showingAutoTuneComplete = false;
             }
         } else if (currentAutoTuneActive) {
             // Show AutoTune in progress
-            displayPrint(formatAutoTuneStatus());    } else {
-            // Show normal control status
-            displayPrint("T:" + tempStatus + " RH:" + humStatus);
+            displaySetCursor(0, 0);
+            displayPrint("AutoTune");
+            displaySetCursor(0, 1);
+            displayPrint("Running...");
+        } else {
+            // Show normal display format: Temperature on line 1, Humidity on line 2
+            // Line 1: T:21.2C Cooling
+            displaySetCursor(0, 0);
+            displayPrint("T:" + formatTemperature(currentTemp) + " " + tempStatus);
+            
+            // Line 2: H:55% Humidifying  
+            displaySetCursor(0, 1);
+            displayPrint("H:" + formatHumidity(currentHum) + " " + humStatus);
         }
         
         // Update cached values
