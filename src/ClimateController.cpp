@@ -485,6 +485,11 @@ void ClimateController::applyFanControl() {
 }
 
 void ClimateController::applyTemperatureControl() {
+    Serial.printf("ApplyTemperatureControl: Enable=%d (pin %d), Heat=%d (pin %d), Cool=%d (pin %d)\n", 
+                  tempControlEnabled, pinTemperatureEnable, 
+                  heatingActive, pinTemperatureHeat, 
+                  coolingActive, pinTemperatureCool);
+    
     safeWritePin(pinTemperatureEnable, tempControlEnabled);
     safeWritePin(pinTemperatureHeat, heatingActive);
     safeWritePin(pinTemperatureCool, coolingActive);
