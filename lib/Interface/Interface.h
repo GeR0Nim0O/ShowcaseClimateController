@@ -55,10 +55,11 @@ private:
     unsigned long lastActivityTime;
     unsigned long timeoutMs;
     bool menuActive;
-    
-    // Encoder state tracking
+      // Encoder state tracking
     int lastEncoderValue;
     bool lastButtonState;
+    unsigned long lastButtonPressTime;
+    static const unsigned long BUTTON_DEBOUNCE_MS = 250; // 250ms debounce
     
     // AutoTune state tracking
     bool previousAutoTuneActive;
