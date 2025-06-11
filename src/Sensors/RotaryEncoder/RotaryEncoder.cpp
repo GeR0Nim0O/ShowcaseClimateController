@@ -12,27 +12,28 @@ bool RotaryEncoder::begin() {
     selectTCAChannel(tcaChannel);
     
     if (!testI2CConnection()) {
-        Serial.println("I2C Encoder not found!");
+        Serial.printf("DFRobot Visual Rotary Encoder not found at address 0x%02X!\n", i2cAddress);
         return false;
     }
     
-    // Reset the encoder
-    writeRegister(I2C_ENCODER_GCONF, GCONF_RESET);
-    delay(10);
-    
-    // Configure encoder
-    if (!writeConfig()) {
-        Serial.println("Failed to configure I2C Encoder");
+    // Verify PID
+    uint16_t pid = readRegister16(VISUAL_ROTARY_ENCODER_PID_MSB_REG);
+    if (pid != VISUAL_ROTARY_ENCODER_PID) {
+        Serial.printf("Invalid PID: 0x%04X, expected: 0x%04X\n", pid, VISUAL_ROTARY_ENCODER_PID);
         return false;
     }
     
-    // Set initial values
-    setPosition(0);
-    setMinMax(-1000, 1000);
-    setStepSize(1);
+    // Read basic device information
+    refreshBasicInfo();
+    
+    // Initialize encoder value to 0
+    setEncoderValue(0);
     
     initialized = true;
-    Serial.println("I2C Encoder initialized successfully");
+    Serial.printf("DFRobot Visual Rotary Encoder initialized successfully at address 0x%02X\n", i2cAddress);
+    Serial.printf("Device info - PID: 0x%04X, VID: 0x%04X, Version: 0x%04X\n", 
+                  basicInfo.PID, basicInfo.VID, basicInfo.version);
+    
     return true;
 }
 
