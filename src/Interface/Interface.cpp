@@ -26,7 +26,9 @@ Interface::~Interface() {
 
 bool Interface::begin() {
     // Find and configure display and encoder devices
-    DeviceRegistry& registry = DeviceRegistry::getInstance();    // Find display device
+    DeviceRegistry& registry = DeviceRegistry::getInstance();
+    
+    // Find display device
     if (!display) {
         Device* displayDevice = registry.getDeviceByType("Display");
         if (displayDevice) {
