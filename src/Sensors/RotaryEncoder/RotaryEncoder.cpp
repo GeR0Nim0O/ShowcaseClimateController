@@ -4,7 +4,7 @@ RotaryEncoder::RotaryEncoder(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChann
     : Device(wire, threshold, channels, i2cAddress, tcaChannel, deviceIndex),
       _address(i2cAddress), _currentValue(0), _lastValue(0), 
       _buttonPressed(false), _lastButtonPressed(false) {
-    type = "VisualRotaryEncoder";
+    type = "RotaryEncoder";
     memset(&basicInfo, 0, sizeof(BasicInfo));
 }
 
