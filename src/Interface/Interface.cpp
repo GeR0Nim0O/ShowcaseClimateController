@@ -127,10 +127,10 @@ void Interface::handleEncoderButton() {
 void Interface::handleEncoderRotation() {
     if (!encoder || !encoder->isConnected()) return;
     
-    int currentValue = encoder->getPosition();
-    int delta = currentValue - lastEncoderValue;
+    int currentValue = encoder->getPosition();    int delta = currentValue - lastEncoderValue;
     
     if (delta != 0) {
+        Serial.printf("Interface: Encoder moved! Position: %d, Delta: %d\n", currentValue, delta);
         updateActivity();
         
         // Only adjust settings when in a menu (not default screen)
