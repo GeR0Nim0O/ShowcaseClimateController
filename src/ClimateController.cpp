@@ -357,8 +357,7 @@ void ClimateController::update() {    unsigned long currentTime = millis();
             lastFanInteriorActive = fanInteriorActive;
             lastFanExteriorActive = fanExteriorActive;
         }
-        applyDACControls(); // Apply DAC controls
-          // NEW: Periodically refresh GPIO state to prevent drift        static unsigned long lastGpioRefresh = 0;
+        applyDACControls(); // Apply DAC controls        // NEW: Periodically refresh GPIO state to prevent drift
         if (currentTime - lastGpioRefresh >= 10000) { // Every 10 seconds
             if (gpio != nullptr) {
                 gpio->refreshOutputState();
