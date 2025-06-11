@@ -57,11 +57,15 @@ bool Interface::begin() {
     if (!validateDevices()) {
         Serial.println("Interface: Device validation failed");
         return false;
-    }
-      // Initialize encoder state
+    }    // Initialize encoder state
     if (encoder->isConnected()) {
+        Serial.println("Interface: Encoder is connected, initializing state...");
         lastEncoderValue = encoder->getPosition();
         lastButtonState = encoder->isButtonPressed();
+        Serial.printf("Interface: Initial encoder position: %d, button: %s\n", 
+                     lastEncoderValue, lastButtonState ? "pressed" : "released");
+    } else {
+        Serial.println("Interface: WARNING - Encoder is not connected!");
     }
     
     // Initialize display
