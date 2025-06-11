@@ -145,22 +145,34 @@ void Interface::handleEncoderRotation() {
 void Interface::updateDisplay() {
     if (!displayIsConnected()) return;
     
-    switch (currentMenu) {
-        case MENU_DEFAULT:
-            displayDefault();
-            break;
-        case MENU_TEMP_SETPOINT:
-            displayTempSetpoint();
-            break;
-        case MENU_HUMIDITY_SETPOINT:
-            displayHumiditySetpoint();
-            break;
-        case MENU_TEMP_CONTROL_ENABLE:
-            displayTempControlEnable();
-            break;
-        case MENU_HUMIDITY_CONTROL_ENABLE:
-            displayHumidityControlEnable();
-            break;
+    // Static variable to track last menu state
+    static MenuState lastDisplayedMenu = MENU_COUNT; // Invalid initial value to force first update
+    
+    // Only update if menu changed or we're in default mode (which has its own change detection)
+    if (currentMenu != lastDisplayedMenu || currentMenu == MENU_DEFAULT) {
+        switch (currentMenu) {
+            case MENU_DEFAULT:
+                displayDefault();
+                break;
+            case MENU_TEMP_SETPOINT:
+                displayTempSetpoint();
+                break;
+            case MENU_HUMIDITY_SETPOINT:
+                displayHumiditySetpoint();
+                break;
+            case MENU_TEMP_CONTROL_ENABLE:
+                displayTempControlEnable();
+                break;
+            case MENU_HUMIDITY_CONTROL_ENABLE:
+                displayHumidityControlEnable();
+                break;
+        }
+        
+        // Update cached menu state only if we actually switched menus
+        if (currentMenu != lastDisplayedMenu) {
+            lastDisplayedMenu = currentMenu;
+            Serial.printf("Interface: Display updated for menu %d\n", static_cast<int>(currentMenu));
+        }
     }
 }
 
