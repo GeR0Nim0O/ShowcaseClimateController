@@ -172,11 +172,16 @@ void Interface::resetToDefault() {
 
 void Interface::displayDefault() {
     if (!climateController) {
-        displayClear();
-        displaySetCursor(0, 0);
-        displayPrint("No Climate Ctrl");
-        displaySetCursor(0, 1);
-        displayPrint("Available");
+        // Static variable to track if error message was already shown
+        static bool errorShown = false;
+        if (!errorShown) {
+            displayClear();
+            displaySetCursor(0, 0);
+            displayPrint("No Climate Ctrl");
+            displaySetCursor(0, 1);
+            displayPrint("Available");
+            errorShown = true;
+        }
         return;
     }
     
@@ -194,26 +199,62 @@ void Interface::displayDefault() {
         autoTuneCompleteTime = millis();
     }
     previousAutoTuneActive = currentAutoTuneActive;    
-    // Line 1: Current temperature and humidity
-    displayClear();
-    displaySetCursor(0, 0);
-    displayPrint("T:" + formatTemperature(currentTemp));
-    displaySetCursor(8, 0);
-    displayPrint("RH:" + formatHumidity(currentHum));    
-    // Line 2: Show AutoTune status, completion message, or normal control status
-    displaySetCursor(0, 1);    if (showingAutoTuneComplete) {
-        // Show completion message for 3 seconds
-        displayPrint("AutoTune");
-        if (millis() - autoTuneCompleteTime > 3000) {
-            showingAutoTuneComplete = false;
+    // Static variables to cache last displayed content
+    static float lastDisplayedTemp = -999.0;
+    static float lastDisplayedHum = -999.0;
+    static bool lastAutoTuneActive = false;
+    static bool lastShowingComplete = false;
+    static String lastTempStatus = "";
+    static String lastHumStatus = "";
+    static bool firstDefaultDisplay = true;
+    
+    // Check if content has changed
+    const float tolerance = 0.01;
+    bool tempChanged = abs(currentTemp - lastDisplayedTemp) > tolerance;
+    bool humChanged = abs(currentHum - lastDisplayedHum) > tolerance;
+    bool autoTuneStatusChanged = (currentAutoTuneActive != lastAutoTuneActive);
+    bool completeMsgChanged = (showingAutoTuneComplete != lastShowingComplete);
+    
+    // Get status strings for comparison
+    String tempStatus = formatTemperatureStatus();
+    String humStatus = formatHumidityStatus();
+    bool statusChanged = (tempStatus != lastTempStatus || humStatus != lastHumStatus);
+    
+    // Only update display if something actually changed or first time
+    if (firstDefaultDisplay || tempChanged || humChanged || autoTuneStatusChanged || 
+        completeMsgChanged || statusChanged) {
+        
+        // Line 1: Current temperature and humidity
+        displayClear();
+        displaySetCursor(0, 0);
+        displayPrint("T:" + formatTemperature(currentTemp));
+        displaySetCursor(8, 0);
+        displayPrint("RH:" + formatHumidity(currentHum));    
+        // Line 2: Show AutoTune status, completion message, or normal control status
+        displaySetCursor(0, 1);    if (showingAutoTuneComplete) {
+            // Show completion message for 3 seconds
+            displayPrint("AutoTune");
+            if (millis() - autoTuneCompleteTime > 3000) {
+                showingAutoTuneComplete = false;
+            }
+        } else if (currentAutoTuneActive) {
+            // Show AutoTune in progress
+            displayPrint(formatAutoTuneStatus());    } else {
+            // Show normal control status
+            displayPrint("T:" + tempStatus + " RH:" + humStatus);
         }
-    } else if (currentAutoTuneActive) {
-        // Show AutoTune in progress
-        displayPrint(formatAutoTuneStatus());    } else {
-        // Show normal control status
-        String tempStatus = formatTemperatureStatus();
-        String humStatus = formatHumidityStatus();
-        displayPrint("T:" + tempStatus + " RH:" + humStatus);
+        
+        // Update cached values
+        lastDisplayedTemp = currentTemp;
+        lastDisplayedHum = currentHum;
+        lastAutoTuneActive = currentAutoTuneActive;
+        lastShowingComplete = showingAutoTuneComplete;
+        lastTempStatus = tempStatus;
+        lastHumStatus = humStatus;
+        firstDefaultDisplay = false;
+        
+        Serial.printf("Interface: Default display updated - T=%.1f°C, RH=%.0f%%\n", 
+                      currentTemp, currentHum);
     }
 }
 
