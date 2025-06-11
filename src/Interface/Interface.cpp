@@ -46,16 +46,17 @@ bool Interface::begin() {
         if (!display && !dfr0554DisplayPtr) {
             return false;
         }    }
-    
-    // Find rotary encoder device
+      // Find rotary encoder device
     if (!encoder) {
         Serial.println("Interface: Looking for RotaryEncoder device...");
         encoder = static_cast<RotaryEncoder*>(registry.getDeviceByType("RotaryEncoder"));
         if (!encoder) {
-            Serial.println("Interface: No RotaryEncoder device found");
-            return false;
+            Serial.println("Interface: No RotaryEncoder device found - continuing without encoder");
+            // Don't return false - allow interface to work without encoder for display purposes
+        } else {
+            Serial.println("Interface: RotaryEncoder device found!");
         }
-        Serial.println("Interface: RotaryEncoder device found!");    }
+    }
     
     // Validate all devices are connected
     if (!validateDevices()) {
