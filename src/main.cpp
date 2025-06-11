@@ -784,8 +784,36 @@ void updateDisplayWithClimateStatus() {
     float tempSetpoint = climateController->getTemperatureSetpoint();
     float humSetpoint = climateController->getHumiditySetpoint();
     
-    // Update display with climate status
-    displayClimateStatusWrapper(currentTemp, currentHum, tempSetpoint, humSetpoint);
+    // Static variables to track last displayed values
+    static float lastDisplayedTemp = -999.0;
+    static float lastDisplayedHum = -999.0;
+    static float lastDisplayedTempSetpoint = -999.0;
+    static float lastDisplayedHumSetpoint = -999.0;
+    static bool firstUpdate = true;
+    
+    // Check if any values have changed (with small tolerance for floating point comparison)
+    const float tolerance = 0.01; // 0.01 degree/percent tolerance
+    bool tempChanged = abs(currentTemp - lastDisplayedTemp) > tolerance;
+    bool humChanged = abs(currentHum - lastDisplayedHum) > tolerance;
+    bool tempSetpointChanged = abs(tempSetpoint - lastDisplayedTempSetpoint) > tolerance;
+    bool humSetpointChanged = abs(humSetpoint - lastDisplayedHumSetpoint) > tolerance;
+    
+    // Only update display if values have changed or this is the first update
+    if (firstUpdate || tempChanged || humChanged || tempSetpointChanged || humSetpointChanged) {
+        // Update display with climate status
+        displayClimateStatusWrapper(currentTemp, currentHum, tempSetpoint, humSetpoint);
+        
+        // Update cached values
+        lastDisplayedTemp = currentTemp;
+        lastDisplayedHum = currentHum;
+        lastDisplayedTempSetpoint = tempSetpoint;
+        lastDisplayedHumSetpoint = humSetpoint;
+        firstUpdate = false;
+        
+        // Debug output for display updates
+        Serial.printf("Display updated: T=%.1f°C/%.1f°C, H=%.0f%%/%.0f%%\n", 
+                      currentTemp, tempSetpoint, currentHum, humSetpoint);
+    }
 }
 
 // Function to test PSRAM
