@@ -131,15 +131,40 @@ void Interface::handleEncoderButton() {
 void Interface::handleEncoderRotation() {
     if (!encoder || !encoder->isConnected()) return;
     
-    int currentValue = encoder->getPosition();    int delta = currentValue - lastEncoderValue;
+    int currentValue = encoder->getPosition();
+    int rawDelta = currentValue - lastEncoderValue;
     
-    if (delta != 0) {
-        Serial.printf("Interface: Encoder moved! Position: %d, Delta: %d\n", currentValue, delta);
-        updateActivity();
+    // Check if encoder is approaching limits and reset if needed
+    if (currentValue > 900 || currentValue < 50) {
+        Serial.printf("Interface: Encoder near limit (%d), resetting to center\n", currentValue);
+        encoder->setEncoderValue(100);
+        delay(10); // Allow time for write
+        currentValue = encoder->getPosition();
+        lastEncoderValue = currentValue;
+        return; // Skip this update cycle
+    }
+    
+    if (rawDelta != 0) {
+        // Apply scaling - only count every N encoder ticks as one step
+        const int ENCODER_SCALE = 8; // Adjust sensitivity (higher = less sensitive)
+        static int accumulatedDelta = 0;
         
-        // Only adjust settings when in a menu (not default screen)
-        if (menuActive && currentMenu != MENU_DEFAULT) {
-            adjustCurrentSetting(delta > 0 ? 1 : -1);
+        accumulatedDelta += rawDelta;
+        
+        // Only trigger when accumulated delta exceeds threshold
+        if (abs(accumulatedDelta) >= ENCODER_SCALE) {
+            int scaledDelta = accumulatedDelta / ENCODER_SCALE;
+            accumulatedDelta = accumulatedDelta % ENCODER_SCALE; // Keep remainder
+            
+            Serial.printf("Interface: Encoder step! Raw delta: %d, Scaled delta: %d\n", rawDelta, scaledDelta);
+            updateActivity();
+            
+            // Only adjust settings when in a menu (not default screen)
+            if (menuActive && currentMenu != MENU_DEFAULT) {
+                adjustCurrentSetting(scaledDelta > 0 ? 1 : -1);
+            }
+        } else {
+            Serial.printf("Interface: Encoder moved (accumulating): Raw delta: %d, Accumulated: %d\n", rawDelta, accumulatedDelta);
         }
         
         lastEncoderValue = currentValue;
