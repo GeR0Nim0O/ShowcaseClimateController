@@ -193,17 +193,15 @@ ClimateController::ClimateController(Relay4Ch* relay1, Relay4Ch* relay2, SHTsens
     this->currentRadiatorTemperature = 0.0;
     this->minAllowedCoolingTemperature = 0.0;
     this->lastDewPointUpdate = 0;
+      // Pin mappings will be loaded from config.json only - no hardcoded defaults  
+    pinHumidify = 255;         // Invalid pin to force config loading
+    pinDehumidify = 255;       // Invalid pin to force config loading
+    pinFanInterior = 255;      // Invalid pin to force config loading
+    pinFanExterior = 255;      // Invalid pin to force config loading
     
-    // Initialize with relay mappings based on config.json
-    // Relay1: Humidity/Fan controls, Relay2: Temperature controls
-    pinHumidify = 0;        // Relay1 Channel 0 - HumdifyRelay
-    pinDehumidify = 1;      // Relay1 Channel 1 - DehumidifyRelay  
-    pinFanInterior = 2;     // Relay1 Channel 2 - InteriorFanRelay
-    pinFanExterior = 3;     // Relay1 Channel 3 - ExteriorFanRelay
-    
-    pinTemperatureEnable = 0; // Relay2 Channel 0 - EnableTemperatureRelay
-    pinTemperatureCool = 1;   // Relay2 Channel 1 - TemperatureCoolRelay
-    pinTemperatureHeat = 2;   // Relay2 Channel 2 - TemperatureHeatRelay
+    pinTemperatureEnable = 255; // Invalid pin to force config loading
+    pinTemperatureCool = 255;   // Invalid pin to force config loading
+    pinTemperatureHeat = 255;   // Invalid pin to force config loading
     
     Serial.println("ClimateController: Using Relay4Ch devices for GPIO control");
     
