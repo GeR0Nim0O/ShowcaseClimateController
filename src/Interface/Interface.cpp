@@ -169,10 +169,17 @@ void Interface::handleEncoderRotation() {
       if (rawDelta != 0) {
         // Restart timeout on any encoder movement
         updateActivity();
-        
-        // Apply scaling - only count every N encoder ticks as one step
-        const int ENCODER_SCALE = 8; // Adjust sensitivity (higher = less sensitive)
+          // Apply scaling - only count every N encoder ticks as one step
+        const int ENCODER_SCALE = 4; // Reduced from 8 to 4 for better responsiveness
         static int accumulatedDelta = 0;
+        static MenuState lastMenuForAccumulation = MENU_DEFAULT; // Track menu changes
+        
+        // Reset accumulation if menu changed
+        if (currentMenu != lastMenuForAccumulation) {
+            accumulatedDelta = 0;
+            lastMenuForAccumulation = currentMenu;
+            Serial.printf("Interface: Menu changed, resetting encoder accumulation\n");
+        }
         
         accumulatedDelta += rawDelta;
         
