@@ -119,6 +119,7 @@ void updateDisplayWithClimateStatus(); // Function to update display with climat
 // Interface functions
 void initializeInterface(); // Function to initialize interface
 void updateInterface(); // Function to update interface
+void quickUpdateEncoder(); // Function for quick encoder updates during long operations
 
 // Global status system functions
 void printAllSystemStatus(); // Print all system status
