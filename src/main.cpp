@@ -308,18 +308,8 @@ void loop() {
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
     updateClimateController();
   }
-    // Update interface
+  // Update interface (handles all display updates)
   updateInterface();
-  
-  // Update display with climate status periodically - but only if interface is not handling menus
-  unsigned long displayUpdateInterval = Configuration::getDisplayUpdateInterval();
-  if (millis() - lastDisplayUpdate >= displayUpdateInterval) {
-    // Only update climate display if interface is not actively showing menus
-    if (!interface || !interface->isMenuActive()) {
-      updateDisplayWithClimateStatus();
-    }
-    lastDisplayUpdate = millis();
-  }
 
   // Handle serial commands for AutoTune control
   handleSerialCommands();
