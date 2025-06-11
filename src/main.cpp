@@ -204,9 +204,11 @@ void setup()
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
     autoTuneMode = promptForAutoTune();
   }
-  
-  // Initialize display device
+    // Initialize display device
   initializeDisplayDevice();
+  
+  // Initialize interface
+  initializeInterface();
   
   // Read initial sensor data
   readAndPrintInitialSensorData();
