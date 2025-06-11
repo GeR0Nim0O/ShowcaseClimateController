@@ -30,11 +30,15 @@ public:
         MENU_HUMIDITY_CONTROL_ENABLE,
         MENU_COUNT // Keep this last for menu cycling
     };
-    
-    void handleEncoderButton();
+      void handleEncoderButton();
     void handleEncoderRotation();
     void updateDisplay();
     void resetToDefault();
+    
+    // Public display methods
+    void updateClimateDisplay();
+    void showStartupMessage();
+    bool isDisplayAvailable();
     
     // Configuration
     void setTimeoutMs(unsigned long timeout) { timeoutMs = timeout; }
