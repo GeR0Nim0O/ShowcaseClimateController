@@ -34,10 +34,9 @@ private:
     uint8_t _address;
     float _temperature;
     float _humidity;
-    
-    // Cooldown mechanism to prevent self-heating
+      // Cooldown mechanism to prevent self-heating
     unsigned long _lastReadTime;
-    static const unsigned long MIN_READ_INTERVAL_MS = 5000; // Minimum 5 seconds between readings
+    static const unsigned long MIN_READ_INTERVAL_MS = 2000; // Minimum 2 seconds between readings (conservative)
 };
 
 #endif // SHTSENSOR_H
