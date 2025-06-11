@@ -90,6 +90,7 @@ unsigned long lastDisplayUpdate = 0;
 
 // Global variable for interface
 Interface* interface = nullptr;
+unsigned long lastInterfaceUpdate = 0;
 
 // AutoTune mode selection enum
 enum class AutoTuneMode {
