@@ -42,10 +42,8 @@
         </mxCell>
         <mxCell id="bh1705_methods" value="+ getLux(): float&#xa;+ writeCommand(): bool&#xa;+ readBytes(): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="bh1705sensor">
           <mxGeometry y="68" width="180" height="52" as="geometry" />
-        </mxCell>
-
-        <!-- SCALESsensor -->
-        <mxCell id="scalessensor" value="SCALESsensor" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        </mxCell>        <!-- SCALESsensor -->
+        <mxCell id="scalessensor" value="SCALESsensor (I2C)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="560" y="400" width="180" height="120" as="geometry" />
         </mxCell>
         <mxCell id="scales_fields" value="- _weight: float&#xa;- _address: uint8_t" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="scalessensor">
