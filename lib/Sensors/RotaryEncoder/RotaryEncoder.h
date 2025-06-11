@@ -2,96 +2,79 @@
 #define ROTARY_ENCODER_H
 
 #include "Device.h"
+#include "I2CHandler.h"
+#include <map>
+#include <string>
 
-// I2CEncoderV2.1 Register addresses
-#define I2C_ENCODER_GCONF      0x00
-#define I2C_ENCODER_GP1CONF    0x01
-#define I2C_ENCODER_GP2CONF    0x02
-#define I2C_ENCODER_GP3CONF    0x03
-#define I2C_ENCODER_INTCONF    0x04
-#define I2C_ENCODER_ESTATUS    0x05
-#define I2C_ENCODER_I2STATUS   0x06
-#define I2C_ENCODER_FSTATUS    0x07
-#define I2C_ENCODER_CVAL       0x08
-#define I2C_ENCODER_CMAX       0x0C
-#define I2C_ENCODER_CMIN       0x10
-#define I2C_ENCODER_ISTEP      0x14
-#define I2C_ENCODER_RLED       0x18
-#define I2C_ENCODER_GLED       0x19
-#define I2C_ENCODER_BLED       0x1A
-#define I2C_ENCODER_GP1REG     0x1B
-#define I2C_ENCODER_GP2REG     0x1C
-#define I2C_ENCODER_GP3REG     0x1D
-#define I2C_ENCODER_ANTBOUNC   0x1E
-#define I2C_ENCODER_DPPERIOD   0x1F
-#define I2C_ENCODER_FADERGB    0x20
-#define I2C_ENCODER_FADEGP     0x21
+// DFRobot Visual Rotary Encoder Register addresses
+#define VISUAL_ROTARY_ENCODER_DEFAULT_I2C_ADDR            0x54
+#define VISUAL_ROTARY_ENCODER_PID                         0x01F6
 
-// Configuration bits
-#define GCONF_FLOAT_DATA       0x01
-#define GCONF_INT_DATA         0x00
-#define GCONF_WRAP_ENABLE      0x02
-#define GCONF_WRAP_DISABLE     0x00
-#define GCONF_DIRE_LEFT        0x04
-#define GCONF_DIRE_RIGHT       0x00
-#define GCONF_IPUP_DISABLE     0x08
-#define GCONF_IPUP_ENABLE      0x00
-#define GCONF_RMOD_X2          0x10
-#define GCONF_RMOD_X1          0x00
-#define GCONF_RGB_ENCODER      0x20
-#define GCONF_STD_ENCODER      0x00
-#define GCONF_EEPROM_BANK1     0x40
-#define GCONF_EEPROM_BANK0     0x00
-#define GCONF_RESET            0x80
+// Register definitions
+#define VISUAL_ROTARY_ENCODER_PID_MSB_REG                 0x00
+#define VISUAL_ROTARY_ENCODER_PID_LSB_REG                 0x01
+#define VISUAL_ROTARY_ENCODER_VID_MSB_REG                 0x02
+#define VISUAL_ROTARY_ENCODER_VID_LSB_REG                 0x03
+#define VISUAL_ROTARY_ENCODER_VERSION_MSB_REG             0x04
+#define VISUAL_ROTARY_ENCODER_VERSION_LSB_REG             0x05
+#define VISUAL_ROTARY_ENCODER_ADDR_REG                    0x07
+#define VISUAL_ROTARY_ENCODER_COUNT_MSB_REG               0x08
+#define VISUAL_ROTARY_ENCODER_COUNT_LSB_REG               0x09
+#define VISUAL_ROTARY_ENCODER_KEY_STATUS_REG              0x0A
+#define VISUAL_ROTARY_ENCODER_GAIN_REG                    0x0B
+
+// Error codes
+#define NO_ERR                                            0
+#define ERR_DATA_BUS                                      -1
+#define ERR_IC_VERSION                                    -2
 
 class RotaryEncoder : public Device {
 public:
-    RotaryEncoder(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex);
-      bool begin() override;
+    // Structure for basic device information
+    struct BasicInfo {
+        uint16_t PID;        // Product ID
+        uint16_t VID;        // Vendor ID  
+        uint16_t version;    // Firmware version
+        uint8_t i2cAddr;     // I2C address
+    };
+
+    RotaryEncoder(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex);
+    
+    bool begin() override;
     bool isConnected() override;
     void update() override;
     std::map<String, String> readData() override;
     
-    // Encoder reading methods
-    int32_t getPosition();
-    void setPosition(int32_t pos);
-    int32_t getPositionChange();
+    // Core encoder methods
+    uint16_t getEncoderValue();
+    void setEncoderValue(uint16_t value);
     
     // Button methods
-    bool isButtonPressed();
-    bool wasButtonPressed();
-    bool isButtonHeld(unsigned long holdTime = 1000);
+    bool detectButtonDown();
     
-    // Configuration
-    void setMinMax(int32_t minVal, int32_t maxVal);
-    void setStepSize(int32_t step);
-    void enableWrap(bool enable);
-    void setDirection(bool clockwiseIncrement);
+    // Configuration methods
+    uint8_t getGainCoefficient();
+    void setGainCoefficient(uint8_t gainValue);
+    void refreshBasicInfo();
     
-    // LED control (if RGB encoder)
-    void setLED(uint8_t red, uint8_t green, uint8_t blue);
-    void setLEDFade(uint8_t fade);
+    // Get device information
+    BasicInfo getBasicInfo() const { return basicInfo; }
+    uint8_t getAddress() const { return _address; }
 
 private:
-    int32_t position;
-    int32_t lastPosition;
-    int32_t minValue, maxValue;
-    int32_t stepValue;
-    bool wrapEnabled;
-    bool floatData;
-    bool rgbEncoder;
+    uint8_t _address;
+    uint16_t _currentValue;
+    uint16_t _lastValue;
+    bool _buttonPressed;
+    bool _lastButtonPressed;
+    BasicInfo basicInfo;
     
-    // Button state
-    bool buttonPressed;
-    bool lastButtonPressed;
-    bool buttonHeld;
-    unsigned long buttonPressTime;
-    
+    // I2C communication methods
     bool writeRegister(uint8_t reg, uint8_t value);
-    bool writeRegister32(uint8_t reg, int32_t value);
+    bool writeRegisterMulti(uint8_t reg, uint8_t* pBuf, size_t size);
     uint8_t readRegister(uint8_t reg);
-    int32_t readRegister32(uint8_t reg);
-    bool writeConfig();
+    bool readRegisterMulti(uint8_t reg, uint8_t* pBuf, size_t size);
+    uint16_t readRegister16(uint8_t reg);
 };
 
 #endif // ROTARY_ENCODER_H
