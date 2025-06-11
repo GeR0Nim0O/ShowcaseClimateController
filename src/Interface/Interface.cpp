@@ -53,9 +53,9 @@ bool Interface::begin() {
             Serial.println("Interface: No RotaryEncoder device found");
             return false;
         }
-        Serial.println("Interface: RotaryEncoder device found!");
-    }
-      // Validate all devices are connected
+        Serial.println("Interface: RotaryEncoder device found!");    }
+    
+    // Validate all devices are connected
     if (!validateDevices()) {
         Serial.println("Interface: Device validation failed");
         return false;
