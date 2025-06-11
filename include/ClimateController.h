@@ -162,10 +162,10 @@ private:
     float coolingPower;
     float humidifierPower;
     float dehumidifierPower;
-    
-    // Timing
+      // Timing
     unsigned long lastUpdate;
     unsigned long updateInterval;
+    unsigned long lastGpioRefresh;
     
     // Status printing frequency and tracking
     unsigned long lastStatusPrint;
