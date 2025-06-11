@@ -380,8 +380,7 @@ void readAndSendDataFromDevices() {
     
     // Track if any threshold was exceeded for climate status printing
     bool anyThresholdExceeded = false;
-    
-    for (size_t i = 0; i < devices.size(); i++) {
+      for (size_t i = 0; i < devices.size(); i++) {
         Device* device = devices[i];
         if (device == nullptr) {
             continue;
@@ -389,6 +388,9 @@ void readAndSendDataFromDevices() {
         if (!device->isInitialized()) {
             continue;
         }
+        
+        // Quick encoder update during device processing loop for better responsiveness
+        quickUpdateEncoder();
         
         std::map<String, String> data;
         String deviceType = device->getType();
