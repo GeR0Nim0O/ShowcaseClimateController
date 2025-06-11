@@ -315,7 +315,7 @@
       }
     },    "RotaryEncoder": {
       "Type": "RotaryEncoder",
-      "TypeNumber": "Visual",
+      "TypeNumber": "Encoder",
       "Address": "0x54",
       "Label": "Interface",
       "Channels": {
