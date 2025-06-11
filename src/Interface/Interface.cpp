@@ -79,7 +79,9 @@ void Interface::update() {
         return;
     }    
     // Update encoder and display devices
-    encoder->update();
+    if (encoder) {
+        encoder->update();
+    }
     displayUpdate();
     
     // Handle encoder inputs
