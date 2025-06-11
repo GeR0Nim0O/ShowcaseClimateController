@@ -97,34 +97,33 @@ void RotaryEncoder::refreshBasicInfo() {
 bool RotaryEncoder::writeRegister(uint8_t reg, uint8_t value) {
     selectTCAChannel(tcaChannel);
     
-    wire->beginTransmission(i2cAddress);
+    wire->beginTransmission(_address);
     wire->write(reg);
     wire->write(value);
     return (wire->endTransmission() == 0);
 }
 
-bool RotaryEncoder::writeRegister32(uint8_t reg, int32_t value) {
+bool RotaryEncoder::writeRegisterMulti(uint8_t reg, uint8_t* pBuf, size_t size) {
     selectTCAChannel(tcaChannel);
     
-    wire->beginTransmission(i2cAddress);
+    wire->beginTransmission(_address);
     wire->write(reg);
-    wire->write((value >> 24) & 0xFF);
-    wire->write((value >> 16) & 0xFF);
-    wire->write((value >> 8) & 0xFF);
-    wire->write(value & 0xFF);
+    for (size_t i = 0; i < size; i++) {
+        wire->write(pBuf[i]);
+    }
     return (wire->endTransmission() == 0);
 }
 
 uint8_t RotaryEncoder::readRegister(uint8_t reg) {
     selectTCAChannel(tcaChannel);
     
-    wire->beginTransmission(i2cAddress);
+    wire->beginTransmission(_address);
     wire->write(reg);
     if (wire->endTransmission() != 0) {
         return 0;
     }
     
-    wire->requestFrom(i2cAddress, (uint8_t)1);
+    wire->requestFrom(_address, (uint8_t)1);
     if (wire->available()) {
         return wire->read();
     }
@@ -132,45 +131,54 @@ uint8_t RotaryEncoder::readRegister(uint8_t reg) {
     return 0;
 }
 
-int32_t RotaryEncoder::readRegister32(uint8_t reg) {
+bool RotaryEncoder::readRegisterMulti(uint8_t reg, uint8_t* pBuf, size_t size) {
     selectTCAChannel(tcaChannel);
     
-    wire->beginTransmission(i2cAddress);
+    wire->beginTransmission(_address);
     wire->write(reg);
     if (wire->endTransmission() != 0) {
-        return 0;
+        return false;
     }
     
-    wire->requestFrom(i2cAddress, (uint8_t)4);
-    if (wire->available() >= 4) {
-        int32_t value = (int32_t)wire->read() << 24;
-        value |= (int32_t)wire->read() << 16;
-        value |= (int32_t)wire->read() << 8;
-        value |= wire->read();
-        return value;
+    wire->requestFrom(_address, (uint8_t)size);
+    if (wire->available() >= size) {
+        for (size_t i = 0; i < size; i++) {
+            pBuf[i] = wire->read();
+        }
+        return true;
     }
     
-    return 0;
+    return false;
 }
 
-bool RotaryEncoder::writeConfig() {
-    uint8_t config = GCONF_INT_DATA; // Use integer data
-    
-    if (wrapEnabled) {
-        config |= GCONF_WRAP_ENABLE;
+uint16_t RotaryEncoder::readRegister16(uint8_t reg) {
+    uint8_t data[2];
+    if (readRegisterMulti(reg, data, 2)) {
+        return (uint16_t)(data[0] << 8) | data[1];
     }
-    
-    // Add other configuration options as needed
-    config |= GCONF_IPUP_ENABLE;  // Enable internal pull-ups
-    config |= GCONF_RMOD_X1;      // X1 resolution
-    
-    return writeRegister(I2C_ENCODER_GCONF, config);
+    return 0;
 }
 
 std::map<String, String> RotaryEncoder::readData() {
     std::map<String, String> data;
-    data["position"] = String(getPosition());
-    data["button"] = isButtonPressed() ? "1" : "0";
+    
+    // Update current values
+    _currentValue = getEncoderValue();
+    _buttonPressed = detectButtonDown();
+    
+    // Calculate position change since last read
+    int16_t positionChange = (int16_t)(_currentValue - _lastValue);
+    
+    data["encoder_value"] = String(_currentValue);
+    data["encoder_change"] = String(positionChange);
+    data["button"] = _buttonPressed ? "1" : "0";
+    data["button_pressed"] = (_buttonPressed && !_lastButtonPressed) ? "1" : "0";
+    data["gain"] = String(getGainCoefficient());
+    
+    // Store current values as last values for next read
+    _lastValue = _currentValue;
+    _lastButtonPressed = _buttonPressed;
+    
     return data;
 }
 
