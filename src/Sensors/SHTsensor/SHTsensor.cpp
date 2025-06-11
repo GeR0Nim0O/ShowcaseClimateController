@@ -271,3 +271,12 @@ void SHTsensor::update() {
         Serial.println("SHT reading failed after multiple attempts");
     }
 }
+
+// Cooldown mechanism helper methods
+bool SHTsensor::isReadyForNewReading() const {
+    return (millis() - _lastReadTime) >= MIN_READ_INTERVAL_MS;
+}
+
+unsigned long SHTsensor::getTimeSinceLastReading() const {
+    return millis() - _lastReadTime;
+}
