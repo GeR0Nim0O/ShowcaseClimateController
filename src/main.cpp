@@ -189,16 +189,10 @@ void setup()
   Serial.print("Initialized ");
   Serial.print(devices.size());
   Serial.println(" devices");
-  
-  // Initialize climate controller
+    // Initialize climate controller
   initializeClimateController();
   
-  // Prompt for AutoTune if climate controller is enabled
-  AutoTuneMode autoTuneMode = AutoTuneMode::SKIP;
-  if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
-    autoTuneMode = promptForAutoTune();
-  }
-    // Initialize display device
+  // Initialize display device
   initializeDisplayDevice();
   
   // Initialize interface
