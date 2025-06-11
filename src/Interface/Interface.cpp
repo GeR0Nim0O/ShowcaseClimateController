@@ -612,9 +612,9 @@ String Interface::formatHumidityStatus() {
     }
       // Check current humidifying/dehumidifying status
     if (climateController->isHumidifying()) {
-        return "Humidifying";
+        return "Humidify";
     } else if (climateController->isDehumidifying()) {
-        return "Dehumidifying";
+        return "Dehumidify";
     } else {
         // Humidity control is enabled but not actively humidifying or dehumidifying
         return "OK";
