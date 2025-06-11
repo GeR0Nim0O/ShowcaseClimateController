@@ -117,6 +117,10 @@ void handleSerialCommands(); // Function to handle serial commands for AutoTune 
 void initializeDisplayDevice(); // Function to initialize display device
 void updateDisplayWithClimateStatus(); // Function to update display with climate status
 
+// Interface functions
+void initializeInterface(); // Function to initialize interface
+void updateInterface(); // Function to update interface
+
 // Global status system functions
 void printAllSystemStatus(); // Print all system status
 void updateGlobalStatusSystem(); // Update global status system
