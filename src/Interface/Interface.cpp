@@ -502,13 +502,54 @@ void Interface::adjustCurrentSetting(int direction) {
             Serial.println(!current ? "enabled" : "disabled");
             break;
         }
-        
-        case MENU_HUMIDITY_CONTROL_ENABLE: {
+          case MENU_HUMIDITY_CONTROL_ENABLE: {
             bool current = climateController->isHumidityControlEnabled();
             climateController->setHumidityControlEnabled(!current);
             settingChanged = true;
             Serial.print("Interface: Humidity control ");
             Serial.println(!current ? "enabled" : "disabled");
+            break;
+        }
+        
+        case MENU_AUTOTUNE: {
+            // Handle AutoTune mode selection: Normal (N), Fast (F), or Skip (S)
+            // Use static variable to track current selection
+            static int autoTuneSelection = 0; // 0=Normal, 1=Fast, 2=Skip
+            
+            if (climateController->isAutoTuning()) {
+                // AutoTune is running, allow stop with any direction
+                climateController->stopAutoTune();
+                Serial.println("Interface: AutoTune stopped by user");
+                settingChanged = true;
+            } else {
+                // Not running, cycle through options or start AutoTune
+                if (direction != 0) {
+                    // Rotate through options: Normal -> Fast -> Skip -> Normal
+                    autoTuneSelection = (autoTuneSelection + (direction > 0 ? 1 : -1) + 3) % 3;
+                    Serial.print("Interface: AutoTune selection: ");
+                    Serial.println(autoTuneSelection == 0 ? "Normal" : 
+                                  autoTuneSelection == 1 ? "Fast" : "Skip");
+                } else {
+                    // Direction == 0 means button press (start AutoTune)
+                    if (autoTuneSelection == 0) {
+                        // Normal AutoTune
+                        if (climateController->startTemperatureAutoTune()) {
+                            Serial.println("Interface: Normal AutoTune started");
+                        } else {
+                            Serial.println("Interface: Failed to start Normal AutoTune");
+                        }
+                    } else if (autoTuneSelection == 1) {
+                        // Fast AutoTune
+                        if (climateController->startTemperatureAutoTuneFast()) {
+                            Serial.println("Interface: Fast AutoTune started");
+                        } else {
+                            Serial.println("Interface: Failed to start Fast AutoTune");
+                        }
+                    }
+                    // Skip selection (2) does nothing
+                    settingChanged = true;
+                }
+            }
             break;
         }
         
