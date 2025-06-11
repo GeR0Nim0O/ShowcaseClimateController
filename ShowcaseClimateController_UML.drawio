@@ -384,20 +384,6 @@
           <mxGeometry y="178" width="280" height="62" as="geometry" />
         </mxCell>
 
-        <!-- Relay4Ch Class -->
-        <mxCell id="relay4ch" value="Relay4Ch" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
-          <mxGeometry x="1240" y="400" width="260" height="280" as="geometry" />
-        </mxCell>
-        <mxCell id="relay4ch_fields" value="- _address: uint8_t&#xa;- _relayState: uint8_t&#xa;- _ledState: uint8_t&#xa;- _mode: Relay4ChMode&#xa;- lastRelayStates: map&lt;string, bool&gt;&#xa;+ UNIT_4RELAY_ADDR: 0x26&#xa;+ UNIT_4RELAY_REG: 0x10&#xa;+ UNIT_4RELAY_RELAY_REG: 0x11" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="relay4ch">
-          <mxGeometry y="26" width="260" height="114" as="geometry" />
-        </mxCell>
-        <mxCell id="relay4ch_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="relay4ch">
-          <mxGeometry y="140" width="260" height="8" as="geometry" />
-        </mxCell>
-        <mxCell id="relay4ch_methods" value="+ relayWrite(channel, state): bool&#xa;+ relayAll(state): bool&#xa;+ ledWrite(channel, state): bool&#xa;+ ledAll(state): bool&#xa;+ getRelayState(channel): bool&#xa;+ getAllRelayStates(): uint8_t&#xa;+ getMode(): Relay4ChMode&#xa;+ setMode(mode): void&#xa;+ initializeRelays(): void&#xa;+ refreshRelayState(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="relay4ch">
-          <mxGeometry y="148" width="260" height="132" as="geometry" />
-        </mxCell>
-
         <!-- Inheritance: Relay4Ch extends Device -->
         <mxCell id="relay4ch_inheritance" value="" style="endArrow=block;endFill=0;html=1;edgeStyle=orthogonalEdgeStyle;align=left;verticalAlign=top;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="relay4ch" target="device_base">
           <mxGeometry x="-1" relative="1" as="geometry">
