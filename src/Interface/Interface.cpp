@@ -166,8 +166,10 @@ void Interface::handleEncoderRotation() {
         lastEncoderValue = currentValue;
         return; // Skip this update cycle
     }
-    
-    if (rawDelta != 0) {
+      if (rawDelta != 0) {
+        // Restart timeout on any encoder movement
+        updateActivity();
+        
         // Apply scaling - only count every N encoder ticks as one step
         const int ENCODER_SCALE = 8; // Adjust sensitivity (higher = less sensitive)
         static int accumulatedDelta = 0;
@@ -180,7 +182,6 @@ void Interface::handleEncoderRotation() {
             accumulatedDelta = accumulatedDelta % ENCODER_SCALE; // Keep remainder
             
             Serial.printf("Interface: Encoder step! Raw delta: %d, Scaled delta: %d\n", rawDelta, scaledDelta);
-            updateActivity();
             
             // Only adjust settings when in a menu (not default screen)
             if (menuActive && currentMenu != MENU_DEFAULT) {
