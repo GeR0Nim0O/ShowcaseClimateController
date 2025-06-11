@@ -60,14 +60,19 @@ bool Interface::begin() {
     }    // Initialize encoder state    if (encoder->isConnected()) {
         Serial.println("Interface: Encoder is connected, initializing state...");
         
+        // Set lower gain for less sensitivity (default is usually high)
+        encoder->setGainCoefficient(5); // Lower value = less sensitive
+        delay(50);
+        
         // Reset encoder to center position (100) to avoid hitting limits
         encoder->setEncoderValue(100);
         delay(50); // Allow time for the write to complete
         
         lastEncoderValue = encoder->getPosition();
         lastButtonState = encoder->isButtonPressed();
-        Serial.printf("Interface: Encoder reset to center position: %d, button: %s\n", 
-                     lastEncoderValue, lastButtonState ? "pressed" : "released");
+        Serial.printf("Interface: Encoder reset to center position: %d, button: %s, gain: %d\n", 
+                     lastEncoderValue, lastButtonState ? "pressed" : "released", 
+                     encoder->getGainCoefficient());
     } else {
         Serial.println("Interface: WARNING - Encoder is not connected!");
     }
