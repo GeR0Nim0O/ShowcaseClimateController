@@ -37,9 +37,8 @@
     "temperature_setpoint": 19.0,
     "humidity_setpoint": 40.0,      
     "climate_mode": "AUTO",
-    "humidity_mode": "AUTO",
-    "auto_fan_control": true,
-    "update_interval_ms": 10000,
+    "humidity_mode": "AUTO",    "auto_fan_control": true,
+    "update_interval_ms": 20000,
     "safety_limits": {
       "max_temperature": 35.0,
       "min_temperature": 10.0,
