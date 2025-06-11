@@ -42,14 +42,15 @@ bool Interface::begin() {
             return false;
         }
     }
-    
-    // Find rotary encoder device
+      // Find rotary encoder device
     if (!encoder) {
+        Serial.println("Interface: Looking for RotaryEncoder device...");
         encoder = static_cast<RotaryEncoder*>(registry.getDeviceByType("RotaryEncoder"));
         if (!encoder) {
             Serial.println("Interface: No RotaryEncoder device found");
             return false;
         }
+        Serial.println("Interface: RotaryEncoder device found!");
     }
     
     // Validate all devices are connected
