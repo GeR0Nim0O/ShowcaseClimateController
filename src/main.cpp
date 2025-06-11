@@ -83,9 +83,7 @@ int ntpRetryCount = 0;
 // Climate controller instance
 ClimateController* climateController = nullptr;
 
-// Global variables for display
-Display* displayDevice = nullptr;
-DFR0554Display* dfr0554DisplayDevice = nullptr;
+// Global variables for display updates
 unsigned long lastDisplayUpdate = 0;
 
 // Global variable for interface
