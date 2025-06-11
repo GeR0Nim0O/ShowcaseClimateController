@@ -684,35 +684,11 @@ void showTemperatureAndHumidity() {
     }
 }
 
-// Function to initialize the display device
+// Function to initialize the display device (simplified)
 void initializeDisplayDevice() {
-    // Get Display device from DeviceRegistry
-    DeviceRegistry& registry = DeviceRegistry::getInstance();
-    Device* device = registry.getDeviceByType("Display", 0);
-    
-    if (device) {
-        // Check device type to determine which display type it is
-        String deviceType = device->getType();
-        
-        if (deviceType == "Display") {
-            displayDevice = static_cast<Display*>(device);
-        } else if (deviceType == "DFR0554Display") {
-            dfr0554DisplayDevice = static_cast<DFR0554Display*>(device);
-        }
-    }
-    
-    if (displayIsInitializedWrapper()) {
-        // Show initial startup message
-        displayClearWrapper();
-        displaySetCursorWrapper(0, 0);
-        displayPrintWrapper("Climate Control");
-        displaySetCursorWrapper(0, 1);
-        displayPrintWrapper("Initializing...");
-        delay(2000);
-    } else {
-        displayDevice = nullptr;
-        dfr0554DisplayDevice = nullptr;
-    }
+    // The Interface class will handle all display operations
+    // This function is kept for compatibility but display setup is now done in Interface::begin()
+    Serial.println("Display device initialization delegated to Interface class");
 }
 
 // Function to update the display with current climate status
