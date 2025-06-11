@@ -128,10 +128,8 @@
         </mxCell>
         <mxCell id="encoder_methods" value="+ getEncoderValue(): uint16_t&#xa;+ setEncoderValue(): void&#xa;+ detectButtonDown(): bool&#xa;+ getPosition(): int&#xa;+ isButtonPressed(): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="rotaryencoder">
           <mxGeometry y="108" width="200" height="52" as="geometry" />
-        </mxCell>
-
-        <!-- Display -->
-        <mxCell id="display" value="Display" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+        </mxCell>        <!-- Display -->
+        <mxCell id="display" value="Display (I2C)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
           <mxGeometry x="300" y="620" width="180" height="120" as="geometry" />
         </mxCell>
         <mxCell id="display_fields" value="# displayConnected: bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="display">
