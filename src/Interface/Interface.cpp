@@ -167,14 +167,28 @@ void Interface::handleEncoderRotation() {
     int currentValue = encoder->getPosition();
     int rawDelta = currentValue - lastEncoderValue;
     
-    // Check if encoder is approaching limits and reset if needed
-    if (currentValue > 900 || currentValue < 50) {
-        Serial.printf("Interface: Encoder near limit (%d), resetting to center\n", currentValue);
-        encoder->setEncoderValue(100);
-        delay(10); // Allow time for write
-        currentValue = encoder->getPosition();
-        lastEncoderValue = currentValue;
+    // Check for invalid/extreme values that indicate encoder malfunction
+    if (currentValue > 32000 || currentValue < -100) {
+        Serial.printf("Interface: Encoder malfunction detected (%d), attempting recovery\n", currentValue);
+        // Don't constantly reset - only reset if we haven't reset recently
+        static unsigned long lastResetTime = 0;
+        unsigned long currentTime = millis();
+        if (currentTime - lastResetTime > 1000) { // Only reset once per second
+            encoder->setEncoderValue(200);
+            delay(50);
+            lastResetTime = currentTime;
+        }
+        lastEncoderValue = encoder->getPosition();
         return; // Skip this update cycle
+    }
+    
+    // Normal range check for typical encoder limits
+    if (currentValue > 900 || currentValue < 50) {
+        Serial.printf("Interface: Encoder near normal limit (%d), gentle reset\n", currentValue);
+        encoder->setEncoderValue(200);
+        delay(10);
+        lastEncoderValue = encoder->getPosition();
+        return;
     }
       if (rawDelta != 0) {
         // Restart timeout on any encoder movement
