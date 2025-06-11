@@ -115,11 +115,7 @@ void RotaryEncoder::update() {
         Serial.printf("[RotaryEncoder] Value changed: %d -> %d (change: %d)\n", 
                       _lastValue, _currentValue, change);
     }
-    
-    if (_buttonPressed != _lastButtonPressed) {
-        Serial.printf("[RotaryEncoder] Button %s\n", 
-                      _buttonPressed ? "PRESSED" : "RELEASED");
-    }
+      if (_buttonPressed != _lastButtonPressed) {
         Serial.printf("[RotaryEncoder] Button %s\n", 
                       _buttonPressed ? "PRESSED" : "RELEASED");
     }
