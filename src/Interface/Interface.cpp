@@ -428,6 +428,21 @@ void Interface::displayHumidityControlEnable() {    if (!climateController) retu
     displayPrint("TOGGLE");
 }
 
+void Interface::displayAutoTune() {
+    if (!climateController) return;
+    
+    displayClear();
+    displaySetCursor(0, 0);
+    displayPrint("AutoTune Mode:");
+    displaySetCursor(0, 1);
+    
+    if (climateController->isAutoTuning()) {
+        displayPrint("RUNNING...");
+    } else {
+        displayPrint("N/F/S    SELECT");
+    }
+}
+
 void Interface::nextMenu() {
     // Cycle through menus
     int nextMenuIndex = (static_cast<int>(currentMenu) + 1) % MENU_COUNT;
