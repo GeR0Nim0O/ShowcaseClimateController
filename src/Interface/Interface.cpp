@@ -18,6 +18,7 @@ Interface::Interface()
       previousAutoTuneActive(false),
       autoTuneCompleteTime(0),
       showingAutoTuneComplete(false),
+      autoTuneSelection(0), // Default to Normal AutoTune
       adjustmentStep(1.0) {
 }
 
