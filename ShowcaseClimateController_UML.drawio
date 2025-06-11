@@ -88,9 +88,7 @@
         </mxCell>
         <mxCell id="gp8403_methods" value="+ setChannelA(): bool&#xa;+ setChannelB(): bool&#xa;+ setChannelVoltage(): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="gp8403dac">
           <mxGeometry y="108" width="200" height="52" as="geometry" />
-        </mxCell>
-
-        <!-- DS3231rtc -->
+        </mxCell>        <!-- DS3231rtc -->
         <mxCell id="ds3231rtc" value="DS3231rtc" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="1220" y="400" width="180" height="120" as="geometry" />
         </mxCell>
@@ -102,6 +100,20 @@
         </mxCell>
         <mxCell id="ds3231_methods" value="+ readTime(): bool&#xa;+ setTime(): bool&#xa;+ decToBcd(): unsigned char&#xa;+ bcdToDec(): unsigned char" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ds3231rtc">
           <mxGeometry y="60" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Relay4Ch -->
+        <mxCell id="relay4ch" value="Relay4Ch" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="400" width="200" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="relay4ch_fields" value="- _address: uint8_t&#xa;- _relayState: uint8_t&#xa;- _ledState: uint8_t&#xa;- _mode: Relay4ChMode&#xa;+ UNIT_4RELAY_ADDR: 0x26" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="relay4ch">
+          <mxGeometry y="26" width="200" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="relay4ch_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="relay4ch">
+          <mxGeometry y="100" width="200" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="relay4ch_methods" value="+ relayWrite(): bool&#xa;+ relayAll(): bool&#xa;+ ledWrite(): bool&#xa;+ getRelayState(): bool&#xa;+ setMode(): void&#xa;+ refreshRelayState(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="relay4ch">
+          <mxGeometry y="108" width="200" height="72" as="geometry" />
         </mxCell>
 
         <!-- RotaryEncoder -->
