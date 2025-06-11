@@ -96,8 +96,19 @@ void RotaryEncoder::update() {
     // Read current encoder value
     _currentValue = getEncoderValue();
     
-    // Read button status
-    _buttonPressed = detectButtonDown();
+    // Read button status without clearing it immediately
+    uint8_t status = readRegister(VISUAL_ROTARY_ENCODER_KEY_STATUS_REG);
+    bool buttonCurrentlyPressed = (status & 0x01) != 0;
+    
+    // Detect button press edge (not pressed before, pressed now)
+    if (buttonCurrentlyPressed && !_buttonPressed) {
+        _buttonPressed = true;
+        // Clear the status register to acknowledge the press
+        writeRegister(VISUAL_ROTARY_ENCODER_KEY_STATUS_REG, 0x00);
+    } else if (!buttonCurrentlyPressed && _buttonPressed) {
+        // Button was pressed, now released
+        _buttonPressed = false;
+    }
     
     // Log changes only
     if (_currentValue != _lastValue) {
