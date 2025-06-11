@@ -588,14 +588,15 @@ String Interface::formatTemperatureStatus() {
     }
     
     if (!climateController->isTemperatureControlEnabled()) {
-        return "OFF";
+        return "Off";
     }
     
     // Check current heating/cooling status
     if (climateController->isHeating()) {
-        return "HEAT";
+        return "Heating";
     } else if (climateController->isCooling()) {
-        return "COOL";    } else {
+        return "Cooling";
+    } else {
         // Temperature control is enabled but not actively heating or cooling
         return "OK";
     }
