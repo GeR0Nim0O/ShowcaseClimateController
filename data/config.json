@@ -218,8 +218,7 @@
           "Threshold": 1.0
         }
       }
-    },    
-    "PCF8574": {
+    },      "PCF8574": {
       "Type": "GPIO",
       "TypeNumber": "PCF8574",
       "Address": "0x20",
@@ -227,16 +226,16 @@
       "Label": "Controller",      
       "Channels": {
         "IO0": {
-          "Name": "FanExterior"
-        },
-        "IO1": {
           "Name": "Humidify"
         },
-        "IO2": {
+        "IO1": {
           "Name": "Dehumidify"
         },
-        "IO3": {
+        "IO2": {
           "Name": "FanInterior"
+        },
+        "IO3": {
+          "Name": "FanExterior"
         },
         "IO4": {
           "Name": "TemperatureEnable"
