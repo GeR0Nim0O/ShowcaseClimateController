@@ -385,9 +385,7 @@ namespace {    bool registeredSHT = DeviceRegistry::registerDeviceType("Sensor",
            const std::map<String, String>& channels, int deviceIndex) {
     // DFR0554 uses single address (0x2D) for both LCD and RGB
         return new DFR0554Display(wire, address, tcaPort, threshold, channels, deviceIndex);
-    });
-
-    bool registeredVisualRotaryEncoder = DeviceRegistry::registerDeviceType("RotaryEncoder", "Visual", 
+    });    bool registeredRotaryEncoder = DeviceRegistry::registerDeviceType("RotaryEncoder", "Encoder", 
         [](TwoWire* wire, uint8_t address, uint8_t tcaPort, float threshold, 
            const std::map<String, String>& channels, int deviceIndex) {
         return new RotaryEncoder(wire, address, tcaPort, threshold, channels, deviceIndex);
