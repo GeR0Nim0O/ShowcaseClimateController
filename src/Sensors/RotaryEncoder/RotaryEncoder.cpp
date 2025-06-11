@@ -88,8 +88,18 @@ void RotaryEncoder::setEncoderValue(uint16_t value) {
 }
 
 bool RotaryEncoder::detectButtonDown() {
+    selectTCAChannel(tcaChannel);
+    
     uint8_t status = readRegister(VISUAL_ROTARY_ENCODER_KEY_STATUS_REG);
-    return (status == 1);  // Button pressed when register value is 1
+    
+    if (status & 0x01) {  // Button pressed when bit 0 is set
+        // Clear the button status by writing 0 (following DFRobot library pattern)
+        uint8_t clearStatus = 0x00;
+        writeRegister(VISUAL_ROTARY_ENCODER_KEY_STATUS_REG, clearStatus);
+        return true;
+    }
+    
+    return false;
 }
 
 uint8_t RotaryEncoder::getGainCoefficient() {
