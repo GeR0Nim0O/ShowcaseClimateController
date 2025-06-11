@@ -314,7 +314,7 @@
     },    "RotaryEncoder": {
       "Type": "RotaryEncoder",
       "TypeNumber": "Encoder",
-      "Address": "0x2D",
+      "Address": "0x54",
       "Label": "Interface",
       "Channels": {
         "Encoder": {
