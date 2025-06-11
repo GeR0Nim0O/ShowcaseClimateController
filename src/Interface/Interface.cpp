@@ -94,8 +94,7 @@ bool Interface::begin() {
 void Interface::update() {
     if (!validateDevices()) {
         return;
-    }    
-    // Update encoder and display devices
+    }      // Update encoder and display devices
     if (encoder) {
         encoder->update();
     }
