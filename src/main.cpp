@@ -1070,8 +1070,10 @@ void initializeInterface() {
 
 // Function to update the interface
 void updateInterface() {
-    if (interface) {
+    // Throttle interface updates to 20Hz (50ms interval) for responsiveness without spam
+    if (interface && (millis() - lastInterfaceUpdate >= 50)) {
         interface->update();
+        lastInterfaceUpdate = millis();
     }
 }
 
