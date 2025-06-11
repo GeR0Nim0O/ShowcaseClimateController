@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2025-06-11T00:00:00.000Z" agent="5.0" version="21.1.2" etag="uml_diagram" type="device">
+  <diagram id="uml_class_diagram" name="Showcase Climate Controller UML">
+    <mxGraphModel dx="2074" dy="1114" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="2336" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Device Base Class -->
+        <mxCell id="device_base" value="&lt;&lt;abstract&gt;&gt;&#xa;Device" style="swimlane;fontStyle=3;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="680" y="40" width="280" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="device_fields" value="# wire: TwoWire*&#xa;# i2cAddress: uint8_t&#xa;# tcaChannel: uint8_t&#xa;# deviceIndex: int&#xa;# type: String&#xa;# typeNumber: String&#xa;# initialized: bool&#xa;# threshold: float&#xa;# channels: map&lt;String, String&gt;&#xa;+ deviceName: String&#xa;+ deviceLabel: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="device_base">
+          <mxGeometry y="40" width="280" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="device_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="device_base">
+          <mxGeometry y="200" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="device_methods" value="+ begin(): bool&#xa;+ isConnected(): bool&#xa;+ update(): void&#xa;+ readData(): map&lt;String, String&gt;&#xa;+ getChannels(): map&lt;String, String&gt;&#xa;+ getThreshold(): float" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="device_base">
+          <mxGeometry y="208" width="280" height="72" as="geometry" />
+        </mxCell>
+
+        <!-- SHTsensor -->
+        <mxCell id="shtsensor" value="SHTsensor" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="120" y="400" width="220" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="sht_fields" value="- _temperature: float&#xa;- _humidity: float&#xa;- _lastReadTime: unsigned long&#xa;- _address: uint8_t&#xa;- MIN_READ_INTERVAL_MS: const" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="shtsensor">
+          <mxGeometry y="26" width="220" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="sht_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="shtsensor">
+          <mxGeometry y="100" width="220" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="sht_methods" value="+ getTemperature(): float&#xa;+ getHumidity(): float&#xa;+ setMeasurementMode(): bool&#xa;+ setHeater(): bool&#xa;+ isReadyForNewReading(): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="shtsensor">
+          <mxGeometry y="108" width="220" height="72" as="geometry" />
+        </mxCell>
+
+        <!-- BH1705sensor -->
+        <mxCell id="bh1705sensor" value="BH1705sensor" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="360" y="400" width="180" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="bh1705_fields" value="- _lux: float&#xa;- _address: uint8_t" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="bh1705sensor">
+          <mxGeometry y="26" width="180" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="bh1705_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="bh1705sensor">
+          <mxGeometry y="60" width="180" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="bh1705_methods" value="+ getLux(): float&#xa;+ writeCommand(): bool&#xa;+ readBytes(): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="bh1705sensor">
+          <mxGeometry y="68" width="180" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- SCALESsensor -->
+        <mxCell id="scalessensor" value="SCALESsensor" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="560" y="400" width="180" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="scales_fields" value="- _weight: float&#xa;- _address: uint8_t" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="scalessensor">
+          <mxGeometry y="26" width="180" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="scales_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="scalessensor">
+          <mxGeometry y="60" width="180" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="scales_methods" value="+ getWeight(): float&#xa;+ writeCommand(): bool&#xa;+ readBytes(): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="scalessensor">
+          <mxGeometry y="68" width="180" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- PCF8574gpio -->
+        <mxCell id="pcf8574gpio" value="PCF8574gpio" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="760" y="400" width="220" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="pcf8574_fields" value="- _gpioState: uint8_t&#xa;- _mode: PCF8574Mode&#xa;- _address: uint8_t&#xa;- lastGpioStates: map&lt;string, bool&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="pcf8574gpio">
+          <mxGeometry y="26" width="220" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="pcf8574_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="pcf8574gpio">
+          <mxGeometry y="90" width="220" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="pcf8574_methods" value="+ writePin(): void&#xa;+ readPin(): bool&#xa;+ writeByte(): bool&#xa;+ readByte(): bool&#xa;+ refreshOutputState(): void&#xa;+ forceOutputMode(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="pcf8574gpio">
+          <mxGeometry y="98" width="220" height="82" as="geometry" />
+        </mxCell>
+
+        <!-- GP8403dac -->
+        <mxCell id="gp8403dac" value="GP8403dac" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="400" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="gp8403_fields" value="- channelAValue: uint16_t&#xa;- channelBValue: uint16_t&#xa;- vrefValue: uint16_t&#xa;- gain2xA: bool&#xa;- gain2xB: bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="gp8403dac">
+          <mxGeometry y="26" width="200" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="gp8403_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="gp8403dac">
+          <mxGeometry y="100" width="200" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="gp8403_methods" value="+ setChannelA(): bool&#xa;+ setChannelB(): bool&#xa;+ setChannelVoltage(): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="gp8403dac">
+          <mxGeometry y="108" width="200" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- DS3231rtc -->
+        <mxCell id="ds3231rtc" value="DS3231rtc" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="400" width="180" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="ds3231_fields" value="+ DS3231_ADDRESS: 0x68" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ds3231rtc">
+          <mxGeometry y="26" width="180" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="ds3231_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="ds3231rtc">
+          <mxGeometry y="52" width="180" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="ds3231_methods" value="+ readTime(): bool&#xa;+ setTime(): bool&#xa;+ decToBcd(): unsigned char&#xa;+ bcdToDec(): unsigned char" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ds3231rtc">
+          <mxGeometry y="60" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- RotaryEncoder -->
+        <mxCell id="rotaryencoder" value="RotaryEncoder" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="80" y="620" width="200" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="encoder_fields" value="- _currentValue: uint16_t&#xa;- _lastValue: uint16_t&#xa;- _buttonPressed: bool&#xa;- _lastButtonPressed: bool&#xa;- basicInfo: BasicInfo" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="rotaryencoder">
+          <mxGeometry y="26" width="200" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="encoder_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="rotaryencoder">
+          <mxGeometry y="100" width="200" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="encoder_methods" value="+ getEncoderValue(): uint16_t&#xa;+ setEncoderValue(): void&#xa;+ detectButtonDown(): bool&#xa;+ getPosition(): int&#xa;+ isButtonPressed(): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="rotaryencoder">
+          <mxGeometry y="108" width="200" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- Display -->
+        <mxCell id="display" value="Display" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="300" y="620" width="180" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="display_fields" value="# displayConnected: bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="display">
+          <mxGeometry y="26" width="180" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="display_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="display">
+          <mxGeometry y="52" width="180" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="display_methods" value="+ clear(): void&#xa;+ print(): void&#xa;+ setCursor(): void&#xa;+ isConnected(): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="display">
+          <mxGeometry y="60" width="180" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ClimateController -->
+        <mxCell id="climatecontroller" value="ClimateController" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="520" y="800" width="320" height="400" as="geometry" />
+        </mxCell>
+        <mxCell id="climate_fields" value="- gpio: PCF8574gpio*&#xa;- relay1: Relay4Ch*&#xa;- relay2: Relay4Ch*&#xa;- sensor: SHTsensor*&#xa;- radiatorSensor: SHTsensor*&#xa;- dac: GP8403dac*&#xa;- temperatureSetpoint: float&#xa;- humiditySetpoint: float&#xa;- currentTemperature: float&#xa;- currentHumidity: float&#xa;- temperatureControlEnabled: bool&#xa;- humidityControlEnabled: bool&#xa;- heatingActive: bool&#xa;- coolingActive: bool&#xa;- humidifyingActive: bool&#xa;- dehumidifyingActive: bool&#xa;- temperaturePID: PID*&#xa;- temperatureAutoTuner: PID_ATune*&#xa;- autoTuneSetpoint: double&#xa;- dewPoint: float&#xa;- updateInterval: unsigned long" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="climatecontroller">
+          <mxGeometry y="26" width="320" height="294" as="geometry" />
+        </mxCell>
+        <mxCell id="climate_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="climatecontroller">
+          <mxGeometry y="320" width="320" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="climate_methods" value="+ createFromDeviceRegistry(): ClimateController*&#xa;+ update(): void&#xa;+ updateTemperatureControl(): void&#xa;+ updateHumidityControl(): void&#xa;+ updateSensorReadings(): void&#xa;+ startTemperatureAutoTune(): bool&#xa;+ updateAutoTune(): void&#xa;+ printClimateStatus(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="climatecontroller">
+          <mxGeometry y="328" width="320" height="72" as="geometry" />
+        </mxCell>
+
+        <!-- DeviceRegistry -->
+        <mxCell id="deviceregistry" value="&lt;&lt;singleton&gt;&gt;&#xa;DeviceRegistry" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="880" y="800" width="320" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="registry_fields" value="- deviceFactory: map&lt;pair&lt;String,String&gt;, function&gt;&#xa;- devices: vector&lt;Device*&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="deviceregistry">
+          <mxGeometry y="40" width="320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="registry_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="deviceregistry">
+          <mxGeometry y="80" width="320" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="registry_methods" value="+ getInstance(): DeviceRegistry&amp;&#xa;+ registerDeviceType(): bool&#xa;+ createDevice(): Device*&#xa;+ getDeviceByTypeAndLabel(): Device*" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="deviceregistry">
+          <mxGeometry y="88" width="320" height="72" as="geometry" />
+        </mxCell>
+
+        <!-- Interface -->
+        <mxCell id="interface" value="Interface" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="800" width="280" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="interface_fields" value="- climateController: ClimateController*&#xa;- display: Display*&#xa;- encoder: RotaryEncoder*&#xa;- currentMenu: MenuState&#xa;- menuActive: bool&#xa;- lastEncoderValue: int&#xa;- lastButtonState: bool&#xa;- autoTuneSelection: int" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="interface">
+          <mxGeometry y="26" width="280" height="114" as="geometry" />
+        </mxCell>
+        <mxCell id="interface_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="interface">
+          <mxGeometry y="140" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="interface_methods" value="+ begin(): bool&#xa;+ update(): void&#xa;+ handleMenuNavigation(): void&#xa;+ displayDefault(): void&#xa;+ updateClimateDisplay(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="interface">
+          <mxGeometry y="148" width="280" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- Configuration -->
+        <mxCell id="configuration" value="Configuration" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1040" width="280" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="config_fields" value="+ wifiConfig: map&lt;String, String&gt;&#xa;+ mqttConfig: map&lt;String, String&gt;&#xa;+ projectConfig: map&lt;String, String&gt;&#xa;+ climateControllerConfig: map&lt;String, String&gt;&#xa;+ devicesConfig: JsonObject" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="configuration">
+          <mxGeometry y="26" width="280" height="74" as="geometry" />
+        </mxCell>
+        <mxCell id="config_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="configuration">
+          <mxGeometry y="100" width="280" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="config_methods" value="+ loadConfigFromSD(): bool&#xa;+ loadConfigFromCodebase(): bool&#xa;+ initializeDevices(): vector&lt;Device*&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="configuration">
+          <mxGeometry y="108" width="280" height="52" as="geometry" />
+        </mxCell>
+
+        <!-- I2CHandler -->
+        <mxCell id="i2chandler" value="I2CHandler" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1040" width="260" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="i2c_fields" value="- tcaScanResults: map&lt;uint8_t, vector&lt;uint8_t&gt;&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="i2chandler">
+          <mxGeometry y="26" width="260" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="i2c_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="i2chandler">
+          <mxGeometry y="52" width="260" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="i2c_methods" value="+ initializeI2C(): void&#xa;+ TCAScanner(): map&lt;uint8_t, vector&lt;uint8_t&gt;&gt;&#xa;+ selectTCA(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="i2chandler">
+          <mxGeometry y="60" width="260" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Main Loop Note -->
+        <mxCell id="mainloop_note" value="&lt;&lt;Main Loop&gt;&gt;&#xa;main.cpp&#xa;&#xa;1. updateGlobalStatusSystem()&#xa;2. readAndSendDataFromDevices()&#xa;3. updateClimateController()&#xa;4. updateInterface()&#xa;5. handleSerialCommands()" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#f0f0f0;strokeColor=#666666;fontColor=#333333;size=20;pointerEvents=1;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="40" width="240" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- Inheritance relationships -->
+        <mxCell id="inherit_sht" value="" style="endArrow=block;endSize=16;endFill=0;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="shtsensor" target="device_base">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="740" y="400" as="sourcePoint" />
+            <mxPoint x="790" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="inherit_bh1705" value="" style="endArrow=block;endSize=16;endFill=0;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.4;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="bh1705sensor" target="device_base">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="450" y="400" as="sourcePoint" />
+            <mxPoint x="750" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="inherit_scales" value="" style="endArrow=block;endSize=16;endFill=0;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.6;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="scalessensor" target="device_base">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="650" y="400" as="sourcePoint" />
+            <mxPoint x="790" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="inherit_pcf8574" value="" style="endArrow=block;endSize=16;endFill=0;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="pcf8574gpio" target="device_base">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="870" y="400" as="sourcePoint" />
+            <mxPoint x="890" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="inherit_gp8403" value="" style="endArrow=block;endSize=16;endFill=0;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.9;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="gp8403dac" target="device_base">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1100" y="400" as="sourcePoint" />
+            <mxPoint x="932" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="inherit_ds3231" value="" style="endArrow=block;endSize=16;endFill=0;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="ds3231rtc" target="device_base">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1310" y="400" as="sourcePoint" />
+            <mxPoint x="960" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="inherit_encoder" value="" style="endArrow=block;endSize=16;endFill=0;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.1;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="rotaryencoder" target="device_base">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="180" y="620" as="sourcePoint" />
+            <mxPoint x="708" y="330" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="180" y="360" />
+              <mxPoint x="708" y="360" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Associations -->
+        <mxCell id="assoc_climate_sht" value="" style="endArrow=diamond;endFill=0;endSize=7;startArrow=none;startFill=0;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.2;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="shtsensor" target="climatecontroller">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="164" y="580" as="sourcePoint" />
+            <mxPoint x="580" y="800" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="164" y="750" />
+              <mxPoint x="680" y="750" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="assoc_climate_pcf" value="" style="endArrow=diamond;endFill=0;endSize=7;startArrow=none;startFill=0;html=1;rounded=0;entryX=0.7;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="pcf8574gpio" target="climatecontroller">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="870" y="580" as="sourcePoint" />
+            <mxPoint x="744" y="800" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="870" y="750" />
+              <mxPoint x="744" y="750" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="assoc_climate_dac" value="" style="endArrow=diamond;endFill=0;endSize=7;startArrow=none;startFill=0;html=1;rounded=0;entryX=0.9;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="gp8403dac" target="climatecontroller">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1100" y="560" as="sourcePoint" />
+            <mxPoint x="808" y="800" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1100" y="750" />
+              <mxPoint x="808" y="750" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="assoc_interface_climate" value="" style="endArrow=diamond;endFill=0;endSize=7;startArrow=none;startFill=0;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="interface" target="climatecontroller">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1240" y="900" as="sourcePoint" />
+            <mxPoint x="840" y="900" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="assoc_interface_display" value="" style="endArrow=diamond;endFill=0;endSize=7;startArrow=none;startFill=0;html=1;rounded=0;exitX=0.3;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="interface" target="display">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1324" y="800" as="sourcePoint" />
+            <mxPoint x="390" y="740" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1324" y="760" />
+              <mxPoint x="390" y="760" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="assoc_interface_encoder" value="" style="endArrow=diamond;endFill=0;endSize=7;startArrow=none;startFill=0;html=1;rounded=0;exitX=0.1;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="interface" target="rotaryencoder">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1268" y="800" as="sourcePoint" />
+            <mxPoint x="180" y="780" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1268" y="790" />
+              <mxPoint x="180" y="790" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="assoc_registry_creates" value="creates" style="endArrow=open;endFill=0;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;" edge="1" parent="1" source="deviceregistry" target="device_base">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="880" y="880" as="sourcePoint" />
+            <mxPoint x="960" y="180" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1040" y="880" />
+              <mxPoint x="1400" y="880" />
+              <mxPoint x="1400" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Legend -->
+        <mxCell id="legend" value="Legend:&#xa;&#xa;Abstract Device &#xa;Sensors &#xa;Actuators &#xa;Time/Clock &#xa;User Interface &#xa;Control System &#xa;System Management " style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#f0f0f0;strokeColor=#666666;fontColor=#333333;size=20;pointerEvents=1;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="200" width="240" height="160" as="geometry" />
+        </mxCell>
+
+        <!-- Legend color boxes -->
+        <mxCell id="legend_abstract" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="240" width="20" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_sensors" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="255" width="20" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_actuators" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="270" width="20" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_time" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="285" width="20" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_ui" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="300" width="20" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_control" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="315" width="20" height="10" as="geometry" />
+        </mxCell>
+        <mxCell id="legend_system" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="330" width="20" height="10" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
