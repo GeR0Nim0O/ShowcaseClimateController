@@ -626,17 +626,11 @@ void ClimateController::initializePinMappings() {
 uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
     JsonObject devicesConfig = Configuration::getDevicesConfig();
     
-    // Add null/empty check for devicesConfig
+    // Configuration must be available - no hardcoded defaults
     if (devicesConfig.isNull() || devicesConfig.size() == 0) {
-        // Use default mapping
-        if (channelName == "FanExterior") return 0;
-        if (channelName == "FanInterior") return 1;
-        if (channelName == "Humidify") return 2;
-        if (channelName == "Dehumidify") return 3;
-        if (channelName == "TemperatureEnable") return 4;
-        if (channelName == "TemperatureCool") return 5;
-        if (channelName == "TemperatureHeat") return 6;
-        return 0;
+        Serial.print("ERROR: No devices configuration found for channel: ");
+        Serial.println(channelName);
+        return 255; // Invalid pin number to indicate error
     }
     
     if (devicesConfig["PCF8574"].is<JsonObject>()) {
