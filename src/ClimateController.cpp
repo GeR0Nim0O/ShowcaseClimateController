@@ -709,15 +709,17 @@ bool ClimateController::safeWritePin(uint8_t pin, bool value) {
                 return relay1->relayWrite(2, value);
             } else if (pin == pinFanExterior) {
                 // ExteriorFanRelay → RLY3 on Relay4Ch1
-                return relay1->relayWrite(3, value);
-            } else if (pin == pinTemperatureEnable) {
+                return relay1->relayWrite(3, value);            } else if (pin == pinTemperatureEnable) {
                 // EnableTemperatureRelay → RLY0 on Relay4Ch2
+                Serial.printf("TemperatureEnable: Setting RLY0 on Relay4Ch2 to %s\n", value ? "ON" : "OFF");
                 return relay2->relayWrite(0, value);
             } else if (pin == pinTemperatureCool) {
                 // TemperatureCoolRelay → RLY1 on Relay4Ch2
+                Serial.printf("TemperatureCool: Setting RLY1 on Relay4Ch2 to %s\n", value ? "ON" : "OFF");
                 return relay2->relayWrite(1, value);
             } else if (pin == pinTemperatureHeat) {
                 // TemperatureHeatRelay → RLY2 on Relay4Ch2
+                Serial.printf("TemperatureHeat: Setting RLY2 on Relay4Ch2 to %s\n", value ? "ON" : "OFF");
                 return relay2->relayWrite(2, value);
             }
             return false;
