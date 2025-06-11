@@ -34,7 +34,8 @@ bool Interface::begin() {
         if (displayDevice) {
             // Check device type to determine which display type it is
             String deviceType = displayDevice->getType();
-            if (deviceType == "Display") {            display = static_cast<Display*>(displayDevice);
+            if (deviceType == "Display") {
+                display = static_cast<Display*>(displayDevice);
             } else if (deviceType == "DFR0554Display") {
                 dfr0554DisplayPtr = static_cast<DFR0554Display*>(displayDevice);
             }
