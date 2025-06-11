@@ -187,7 +187,7 @@
         </mxCell>
 
         <!-- Configuration -->
-        <mxCell id="configuration" value="Configuration" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+        <mxCell id="configuration" value="Configuration" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;" vertex="1" parent="1">
           <mxGeometry x="40" y="1040" width="280" height="160" as="geometry" />
         </mxCell>
         <mxCell id="config_fields" value="+ wifiConfig: map&lt;String, String&gt;&#xa;+ mqttConfig: map&lt;String, String&gt;&#xa;+ projectConfig: map&lt;String, String&gt;&#xa;+ climateControllerConfig: map&lt;String, String&gt;&#xa;+ devicesConfig: JsonObject" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="configuration">
