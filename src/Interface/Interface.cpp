@@ -62,24 +62,34 @@ bool Interface::begin() {
     if (!validateDevices()) {
         Serial.println("Interface: Device validation failed");
         return false;
-    }
-      // Initialize encoder state
+    }    // Initialize encoder state
     if (encoder && encoder->isConnected()) {
         Serial.println("Interface: Encoder is connected, initializing state...");
         
-        // Set lower gain for less sensitivity (default is usually high)
-        encoder->setGainCoefficient(5); // Lower value = less sensitive
-        delay(50);
+        // Set much lower gain for stability (1 is the lowest)
+        encoder->setGainCoefficient(1); // Lowest sensitivity for stability
+        delay(100);
         
-        // Reset encoder to center position (100) to avoid hitting limits
-        encoder->setEncoderValue(100);
-        delay(50); // Allow time for the write to complete
+        // Reset encoder to a safe middle position
+        encoder->setEncoderValue(200);
+        delay(100); // Allow more time for the write to complete
         
+        // Read back the actual values to verify
         lastEncoderValue = encoder->getPosition();
         lastButtonState = encoder->isButtonPressed();
-        Serial.printf("Interface: Encoder reset to center position: %d, button: %s, gain: %d\n", 
-                     lastEncoderValue, lastButtonState ? "pressed" : "released", 
-                     encoder->getGainCoefficient());
+        int actualGain = encoder->getGainCoefficient();
+        
+        Serial.printf("Interface: Encoder initialized - Position: %d, Button: %s, Gain: %d\n", 
+                     lastEncoderValue, lastButtonState ? "pressed" : "released", actualGain);
+                     
+        // If position is still unstable, try a different approach
+        if (lastEncoderValue > 1000 || lastEncoderValue < 0) {
+            Serial.println("Interface: Encoder position unstable, trying reset...");
+            encoder->setEncoderValue(50);
+            delay(100);
+            lastEncoderValue = encoder->getPosition();
+            Serial.printf("Interface: After reset - Position: %d\n", lastEncoderValue);
+        }
     } else {
         Serial.println("Interface: WARNING - Encoder is not connected or not available!");
     }
