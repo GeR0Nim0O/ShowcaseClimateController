@@ -599,13 +599,15 @@ void ClimateController::emergencyShutdown() {
 // Pin mapping helper methods
 void ClimateController::initializePinMappings() {
     // Initialize with default values matching config.json
-    pinFanExterior = 0;
-    pinFanInterior = 1;
-    pinHumidify = 2;
-    pinDehumidify = 3;
-    pinTemperatureEnable = 4;
-    pinTemperatureCool = 5;
-    pinTemperatureHeat = 6;
+    // For Relay4Ch1 (humidity and fan controls):
+    pinHumidify = 0;        // RLY0: HumdifyRelay
+    pinDehumidify = 1;      // RLY1: DehumidifyRelay
+    pinFanInterior = 2;     // RLY2: InteriorFanRelay
+    pinFanExterior = 3;     // RLY3: ExteriorFanRelay
+    // For Relay4Ch2 (temperature controls):
+    pinTemperatureEnable = 0; // RLY0: EnableTemperatureRelay
+    pinTemperatureCool = 1;   // RLY1: TemperatureCoolRelay
+    pinTemperatureHeat = 2;   // RLY2: TemperatureHeatRelay
     
     // Try to load from configuration with extensive error checking
     try {
