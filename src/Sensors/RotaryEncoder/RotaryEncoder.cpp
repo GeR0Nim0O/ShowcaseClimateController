@@ -9,15 +9,20 @@ RotaryEncoder::RotaryEncoder(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChann
 }
 
 bool RotaryEncoder::begin() {
+    Serial.printf("RotaryEncoder::begin() - Starting initialization on TCA channel %d, address 0x%02X\n", tcaChannel, i2cAddress);
+    
     selectTCAChannel(tcaChannel);
     
     if (!testI2CConnection()) {
         Serial.printf("DFRobot Visual Rotary Encoder not found at address 0x%02X!\n", i2cAddress);
         return false;
     }
+    Serial.printf("RotaryEncoder::begin() - I2C connection test passed\n");
     
     // Verify PID
     uint16_t pid = readRegister16(VISUAL_ROTARY_ENCODER_PID_MSB_REG);
+    Serial.printf("RotaryEncoder::begin() - Read PID: 0x%04X, expected: 0x%04X\n", pid, VISUAL_ROTARY_ENCODER_PID);
+    
     if (pid != VISUAL_ROTARY_ENCODER_PID) {
         Serial.printf("Invalid PID: 0x%04X, expected: 0x%04X\n", pid, VISUAL_ROTARY_ENCODER_PID);
         return false;
