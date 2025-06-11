@@ -116,6 +116,7 @@ void Interface::handleEncoderButton() {
     
     // Detect button press (rising edge)
     if (currentButtonState && !lastButtonState) {
+        Serial.println("Interface: Button pressed!");
         updateActivity();
         nextMenu();
     }
