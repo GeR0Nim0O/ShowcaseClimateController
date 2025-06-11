@@ -304,11 +304,13 @@ void loop() {
   updateGlobalStatusSystem();
   
   // Read and send data from each device
-  readAndSendDataFromDevices();
-  // Update climate controller
+  readAndSendDataFromDevices();  // Update climate controller
   if (Configuration::isClimateControllerEnabled() && climateController != nullptr) {
     updateClimateController();
   }
+  
+  // Update interface
+  updateInterface();
   // Update display with climate status periodically
   unsigned long displayUpdateInterval = Configuration::getDisplayUpdateInterval();
   if (millis() - lastDisplayUpdate >= displayUpdateInterval) {
