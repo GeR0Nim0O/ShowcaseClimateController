@@ -587,14 +587,19 @@ void ClimateController::initializePinMappings() {
     // Load pin mappings from configuration only - no hardcoded defaults
     // Pin mappings must be defined in config.json
       try {
-        // Use channel names that match config.json exactly
-        pinFanExterior = getPinFromChannelName("ExteriorFanRelay");  // RLY3 in Relay4Ch1
+        // Use channel names that match config.json exactly        pinFanExterior = getPinFromChannelName("ExteriorFanRelay");  // RLY3 in Relay4Ch1
         pinFanInterior = getPinFromChannelName("InteriorFanRelay");  // RLY2 in Relay4Ch1  
         pinHumidify = getPinFromChannelName("HumdifyRelay");         // RLY0 in Relay4Ch1
         pinDehumidify = getPinFromChannelName("DehumidifyRelay");    // RLY1 in Relay4Ch1
         pinTemperatureEnable = getPinFromChannelName("EnableTemperatureRelay"); // RLY0 in Relay4Ch2
         pinTemperatureCool = getPinFromChannelName("TemperatureCoolRelay");     // RLY1 in Relay4Ch2
         pinTemperatureHeat = getPinFromChannelName("TemperatureHeatRelay");     // RLY2 in Relay4Ch2
+        
+        // Debug: Print all pin assignments
+        Serial.printf("Pin assignments: Humidify=%d, Dehumidify=%d, FanInt=%d, FanExt=%d\n", 
+                     pinHumidify, pinDehumidify, pinFanInterior, pinFanExterior);
+        Serial.printf("Temperature pins: Enable=%d, Cool=%d, Heat=%d\n", 
+                     pinTemperatureEnable, pinTemperatureCool, pinTemperatureHeat);
         
         // Verify all pins were loaded from config
         if (pinFanExterior == 255 || pinFanInterior == 255 || pinHumidify == 255 || 
