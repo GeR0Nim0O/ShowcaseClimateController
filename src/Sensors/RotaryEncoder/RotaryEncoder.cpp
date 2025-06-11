@@ -126,7 +126,17 @@ void RotaryEncoder::update() {
 }
 
 uint16_t RotaryEncoder::getEncoderValue() {
-    return readRegister16(VISUAL_ROTARY_ENCODER_COUNT_MSB_REG);
+    selectTCAChannel(tcaChannel);
+    uint16_t value = readRegister16(VISUAL_ROTARY_ENCODER_COUNT_MSB_REG);
+    
+    // Debug output occasionally
+    static int callCount = 0;
+    callCount++;
+    if (callCount % 100 == 0) {
+        Serial.printf("[RotaryEncoder] getEncoderValue() call #%d returned: %d\n", callCount, value);
+    }
+    
+    return value;
 }
 
 void RotaryEncoder::setEncoderValue(uint16_t value) {
