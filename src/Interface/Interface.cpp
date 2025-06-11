@@ -450,14 +450,14 @@ void Interface::nextMenu() {
     
     // Set menu active flag (except for default)
     menuActive = (currentMenu != MENU_DEFAULT);
-    
-    Serial.printf("Interface: Switched to menu %d (%s), menuActive: %s\n", 
+      Serial.printf("Interface: Switched to menu %d (%s), menuActive: %s\n", 
                   static_cast<int>(currentMenu),
                   currentMenu == MENU_DEFAULT ? "DEFAULT" :
                   currentMenu == MENU_TEMP_SETPOINT ? "TEMP_SETPOINT" :
                   currentMenu == MENU_HUMIDITY_SETPOINT ? "HUMIDITY_SETPOINT" :
                   currentMenu == MENU_TEMP_CONTROL_ENABLE ? "TEMP_CONTROL_ENABLE" :
-                  currentMenu == MENU_HUMIDITY_CONTROL_ENABLE ? "HUMIDITY_CONTROL_ENABLE" : "UNKNOWN",
+                  currentMenu == MENU_HUMIDITY_CONTROL_ENABLE ? "HUMIDITY_CONTROL_ENABLE" :
+                  currentMenu == MENU_AUTOTUNE ? "AUTOTUNE" : "UNKNOWN",
                   menuActive ? "true" : "false");
 }
 
