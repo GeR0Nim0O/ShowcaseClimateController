@@ -15,8 +15,7 @@ public:
     bool begin() override;    bool isConnected() override;
     void update() override;    std::map<String, String> readData() override; // Return a map of sensor data
     // Override pure virtual methods from Device - using base class getThreshold for channel-specific thresholds
-    
-    float getTemperature() const;
+      float getTemperature() const;
     float getHumidity() const;
     uint32_t getSerialNumber(); // Add method to read serial number
     uint16_t readStatus(); // Add method to read status register
@@ -24,6 +23,10 @@ public:
     bool setMeasurementMode(uint16_t mode); // Add method to set measurement mode
     bool setHeater(bool enable); // Add method to enable/disable heater
     uint8_t getAddress() const { return _address; } // Add getAddress function
+    
+    // Cooldown mechanism helper methods
+    bool isReadyForNewReading() const;  // Check if enough time has passed since last reading
+    unsigned long getTimeSinceLastReading() const;  // Get time since last successful reading
     
 private:
     bool readRawData(uint16_t &rawTemperature, uint16_t &rawHumidity);
