@@ -651,19 +651,41 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
                     }
                 }
             }
-        }
-    }    // Return default pin if not found in configuration
-    // For Relay4Ch1 (humidity and fan controls):
-    if (channelName == "Humidify") return 0;        // RLY0: HumdifyRelay
-    if (channelName == "Dehumidify") return 1;      // RLY1: DehumidifyRelay
-    if (channelName == "FanInterior") return 2;     // RLY2: InteriorFanRelay
-    if (channelName == "FanExterior") return 3;     // RLY3: ExteriorFanRelay
-    // For Relay4Ch2 (temperature controls):
-    if (channelName == "TemperatureEnable") return 0; // RLY0: EnableTemperatureRelay
-    if (channelName == "TemperatureCool") return 1;   // RLY1: TemperatureCoolRelay
-    if (channelName == "TemperatureHeat") return 2;   // RLY2: TemperatureHeatRelay
+        }    }
     
-    return 0; // Default fallback
+    // Check for Relay4Ch devices and search their channels
+    for (JsonPair device : devicesConfig) {
+        JsonObject deviceObj = device.value();
+        if (deviceObj["Type"].is<const char*>() && 
+            String(deviceObj["Type"].as<const char*>()) == "Relay" &&
+            deviceObj["TypeNumber"].is<const char*>() && 
+            String(deviceObj["TypeNumber"].as<const char*>()) == "Relay4Ch") {
+            
+            if (deviceObj["Channels"].is<JsonObject>()) {
+                JsonObject channels = deviceObj["Channels"];
+                
+                // Search through all relay channels to find the one with matching name
+                for (JsonPair channel : channels) {
+                    JsonObject channelObj = channel.value();
+                    if (channelObj["Name"].is<const char*>() && 
+                        String(channelObj["Name"].as<const char*>()) == channelName) {
+                        // Extract pin number from channel key (e.g., "RLY0" -> 0)
+                        String channelKey = channel.key().c_str();
+                        if (channelKey.startsWith("RLY")) {
+                            uint8_t pin = channelKey.substring(3).toInt();
+                            return pin;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // Channel not found in configuration
+    Serial.print("ERROR: Channel '");
+    Serial.print(channelName);
+    Serial.println("' not found in config.json");
+    return 255; // Invalid pin number to indicate error
 }
 
 // Add this implementation of the safeWritePin method we previously added to the header
