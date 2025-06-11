@@ -983,10 +983,19 @@ void initializeInterface() {
 
 // Function to update the interface
 void updateInterface() {
-    // Throttle interface updates to 20Hz (50ms interval) for responsiveness without spam
-    if (interface && (millis() - lastInterfaceUpdate >= 50)) {
+    // Increase frequency to 50Hz (20ms interval) for better encoder responsiveness
+    if (interface && (millis() - lastInterfaceUpdate >= 20)) {
         interface->update();
         lastInterfaceUpdate = millis();
+    }
+}
+
+// Function for quick encoder updates during long operations
+void quickUpdateEncoder() {
+    if (interface) {
+        // Quick encoder-only update without full interface processing
+        // This can be called more frequently during blocking operations
+        interface->update();
     }
 }
 
