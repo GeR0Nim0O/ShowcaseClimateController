@@ -597,15 +597,15 @@ void ClimateController::emergencyShutdown() {
 void ClimateController::initializePinMappings() {
     // Load pin mappings from configuration only - no hardcoded defaults
     // Pin mappings must be defined in config.json
-    
-    try {
-        pinFanExterior = getPinFromChannelName("FanExterior");
-        pinFanInterior = getPinFromChannelName("FanInterior");
-        pinHumidify = getPinFromChannelName("Humidify");
-        pinDehumidify = getPinFromChannelName("Dehumidify");
-        pinTemperatureEnable = getPinFromChannelName("TemperatureEnable");
-        pinTemperatureCool = getPinFromChannelName("TemperatureCool");
-        pinTemperatureHeat = getPinFromChannelName("TemperatureHeat");
+      try {
+        // Use channel names that match config.json exactly
+        pinFanExterior = getPinFromChannelName("ExteriorFanRelay");  // RLY3 in Relay4Ch1
+        pinFanInterior = getPinFromChannelName("InteriorFanRelay");  // RLY2 in Relay4Ch1  
+        pinHumidify = getPinFromChannelName("HumdifyRelay");         // RLY0 in Relay4Ch1
+        pinDehumidify = getPinFromChannelName("DehumidifyRelay");    // RLY1 in Relay4Ch1
+        pinTemperatureEnable = getPinFromChannelName("EnableTemperatureRelay"); // RLY0 in Relay4Ch2
+        pinTemperatureCool = getPinFromChannelName("TemperatureCoolRelay");     // RLY1 in Relay4Ch2
+        pinTemperatureHeat = getPinFromChannelName("TemperatureHeatRelay");     // RLY2 in Relay4Ch2
         
         // Verify all pins were loaded from config
         if (pinFanExterior == 255 || pinFanInterior == 255 || pinHumidify == 255 || 
