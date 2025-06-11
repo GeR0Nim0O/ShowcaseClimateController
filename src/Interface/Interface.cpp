@@ -129,15 +129,23 @@ void Interface::handleEncoderButton() {
     if (!encoder || !encoder->isConnected()) return;
     
     bool currentButtonState = encoder->isButtonPressed();
+    unsigned long currentTime = millis();
     
-    // Detect button press (rising edge)
+    // Detect button press (rising edge) with debouncing
     if (currentButtonState && !lastButtonState) {
-        Serial.printf("Interface: Button pressed! Menu active: %s, Current menu: %d\n", 
-                      menuActive ? "true" : "false", static_cast<int>(currentMenu));
-        updateActivity();
-        nextMenu();
-        Serial.printf("Interface: After nextMenu() - Menu active: %s, New menu: %d\n", 
-                      menuActive ? "true" : "false", static_cast<int>(currentMenu));
+        // Check if enough time has passed since last button press (debouncing)
+        if (currentTime - lastButtonPressTime >= BUTTON_DEBOUNCE_MS) {
+            Serial.printf("Interface: Button pressed! Menu active: %s, Current menu: %d\n", 
+                          menuActive ? "true" : "false", static_cast<int>(currentMenu));
+            updateActivity(); // Restart timeout on button interaction
+            nextMenu();
+            lastButtonPressTime = currentTime; // Update last press time
+            Serial.printf("Interface: After nextMenu() - Menu active: %s, New menu: %d\n", 
+                          menuActive ? "true" : "false", static_cast<int>(currentMenu));
+        } else {
+            Serial.printf("Interface: Button press ignored (debouncing) - %lu ms since last press\n", 
+                         currentTime - lastButtonPressTime);
+        }
     }
     
     lastButtonState = currentButtonState;
