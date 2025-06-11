@@ -110,7 +110,7 @@
         <mxCell id="relay4ch1_line" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="relay4ch1">
           <mxGeometry y="128" width="240" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="relay4ch1_methods" value="+ controlHumidity(): void&#xa;+ controlFans(): void&#xa;+ relayWrite(channel, state): bool&#xa;+ getRelayState(channel): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="relay4ch1">
+        <mxCell id="relay4ch1_methods" value="+ controlHumidity(): void&#xa;+ controlFans(): void&#xa;+ relayWrite(channel, state): bool&#xa;+ getRelayState(channel): bool&#xa;+ begin(): bool (I2C init)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="relay4ch1">
           <mxGeometry y="136" width="240" height="64" as="geometry" />
         </mxCell>
 
