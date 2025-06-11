@@ -252,10 +252,12 @@ void Interface::updateDisplay() {
                 break;
             case MENU_TEMP_CONTROL_ENABLE:
                 displayTempControlEnable();
-                break;
-            case MENU_HUMIDITY_CONTROL_ENABLE:
+                break;            case MENU_HUMIDITY_CONTROL_ENABLE:
                 displayHumidityControlEnable();
-                break;        }
+                break;
+            case MENU_AUTOTUNE:
+                displayAutoTune();
+                break;}
         
         // Update cached values
         if (menuChanged) {
