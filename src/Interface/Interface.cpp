@@ -63,9 +63,8 @@ bool Interface::begin() {
         Serial.println("Interface: Device validation failed");
         return false;
     }
-    
-    // Initialize encoder state
-    if (encoder->isConnected()) {
+      // Initialize encoder state
+    if (encoder && encoder->isConnected()) {
         Serial.println("Interface: Encoder is connected, initializing state...");
         
         // Set lower gain for less sensitivity (default is usually high)
@@ -82,7 +81,7 @@ bool Interface::begin() {
                      lastEncoderValue, lastButtonState ? "pressed" : "released", 
                      encoder->getGainCoefficient());
     } else {
-        Serial.println("Interface: WARNING - Encoder is not connected!");
+        Serial.println("Interface: WARNING - Encoder is not connected or not available!");
     }
     
     // Initialize display
