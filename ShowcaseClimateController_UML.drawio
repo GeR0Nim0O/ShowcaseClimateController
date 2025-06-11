@@ -54,10 +54,8 @@
         </mxCell>
         <mxCell id="scales_methods" value="+ getWeight(): float&#xa;+ writeCommand(): bool&#xa;+ readBytes(): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="scalessensor">
           <mxGeometry y="68" width="180" height="52" as="geometry" />
-        </mxCell>
-
-        <!-- PCF8574gpio -->
-        <mxCell id="pcf8574gpio" value="PCF8574gpio" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+        </mxCell>        <!-- PCF8574gpio -->
+        <mxCell id="pcf8574gpio" value="PCF8574gpio (I2C)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
           <mxGeometry x="760" y="400" width="220" height="180" as="geometry" />
         </mxCell>
         <mxCell id="pcf8574_fields" value="- _gpioState: uint8_t&#xa;- _mode: PCF8574Mode&#xa;- _address: uint8_t&#xa;- lastGpioStates: map&lt;string, bool&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="pcf8574gpio">
