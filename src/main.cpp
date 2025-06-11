@@ -247,20 +247,8 @@ void setup()
       dac->setChannelVoltage(0, 1.0);
     }
   }
-  
-  delay(500);
+    delay(500);
   setupComplete = true;
-  
-  // Start AutoTune if requested
-  if (autoTuneMode != AutoTuneMode::SKIP && Configuration::isClimateControllerEnabled() && climateController != nullptr) {
-    Serial.println("Starting PID AutoTune...");
-    
-    if (autoTuneMode == AutoTuneMode::NORMAL) {
-      climateController->startTemperatureAutoTune();
-    } else if (autoTuneMode == AutoTuneMode::FAST) {
-      climateController->startTemperatureAutoTuneFast();
-    }
-  }
 }
 
 void loop() {
