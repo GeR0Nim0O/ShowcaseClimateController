@@ -90,12 +90,7 @@ unsigned long lastDisplayUpdate = 0;
 Interface* interface = nullptr;
 unsigned long lastInterfaceUpdate = 0;
 
-// AutoTune mode selection enum
-enum class AutoTuneMode {
-    SKIP,
-    NORMAL,
-    FAST
-};
+
 
 // Function declarations
 void readAndPrintInitialSensorData(); // Add this function prototype
