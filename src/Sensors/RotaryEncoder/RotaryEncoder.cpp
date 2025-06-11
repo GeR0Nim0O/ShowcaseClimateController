@@ -58,6 +58,18 @@ void RotaryEncoder::update() {
     
     // Read button status
     _buttonPressed = detectButtonDown();
+    
+    // Log changes
+    if (_currentValue != _lastValue) {
+        int16_t change = (int16_t)(_currentValue - _lastValue);
+        Serial.printf("[RotaryEncoder] Value changed: %d -> %d (change: %d)\n", 
+                      _lastValue, _currentValue, change);
+    }
+    
+    if (_buttonPressed != _lastButtonPressed) {
+        Serial.printf("[RotaryEncoder] Button %s\n", 
+                      _buttonPressed ? "PRESSED" : "RELEASED");
+    }
 }
 
 uint16_t RotaryEncoder::getEncoderValue() {
