@@ -43,9 +43,9 @@ bool Interface::begin() {
         
         if (!display && !dfr0554DisplayPtr) {
             return false;
-        }
-    }
-      // Find rotary encoder device
+        }    }
+    
+    // Find rotary encoder device
     if (!encoder) {
         Serial.println("Interface: Looking for RotaryEncoder device...");
         encoder = static_cast<RotaryEncoder*>(registry.getDeviceByType("RotaryEncoder"));
