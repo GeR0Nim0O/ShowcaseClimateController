@@ -313,11 +313,10 @@
           "Name": "ClimateDisplay"
         }
       }
-    },
-    "RotaryEncoder": {
+    },    "RotaryEncoder": {
       "Type": "RotaryEncoder",
-      "TypeNumber": "I2C",
-      "Address": "0x30",
+      "TypeNumber": "Visual",
+      "Address": "0x54",
       "Label": "Interface",
       "Channels": {
         "Encoder": {
