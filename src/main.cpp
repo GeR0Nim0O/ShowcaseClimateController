@@ -88,6 +88,9 @@ Display* displayDevice = nullptr;
 DFR0554Display* dfr0554DisplayDevice = nullptr;
 unsigned long lastDisplayUpdate = 0;
 
+// Global variable for interface
+Interface* interface = nullptr;
+
 // AutoTune mode selection enum
 enum class AutoTuneMode {
     SKIP,
