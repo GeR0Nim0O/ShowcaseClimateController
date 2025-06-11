@@ -52,12 +52,14 @@ bool Interface::begin() {
         }
         Serial.println("Interface: RotaryEncoder device found!");
     }
-    
-    // Validate all devices are connected
+      // Validate all devices are connected
     if (!validateDevices()) {
         Serial.println("Interface: Device validation failed");
         return false;
-    }    // Initialize encoder state    if (encoder->isConnected()) {
+    }
+    
+    // Initialize encoder state
+    if (encoder->isConnected()) {
         Serial.println("Interface: Encoder is connected, initializing state...");
         
         // Set lower gain for less sensitivity (default is usually high)
@@ -79,7 +81,8 @@ bool Interface::begin() {
     
     // Initialize display
     resetToDefault();
-      Serial.println("Interface: Initialized successfully");
+    
+    Serial.println("Interface: Initialized successfully");
     return true;
 }
 
