@@ -515,14 +515,16 @@ void readAndSendDataFromDevices() {
         // Update timer regardless of connection status to prevent flooding
         lastMqttSendTime = millis();
         
-        if (WiFi.status() == WL_CONNECTED && client.connected()) {
-            Serial.println("\nSensor data collected - sending to MQTT...");
+        if (WiFi.status() == WL_CONNECTED && client.connected()) {            Serial.println("\nSensor data collected - sending to MQTT...");
             // Send all collected sensor data for this cycle
             for (auto& item : changedSensorData) {
                 SensorData& data = item.second;
                 if (data.changed) {
                     sendSensorDataOverMQTT(data);
                     data.changed = false; // Reset changed flag
+                    
+                    // Quick encoder update between MQTT sends for better responsiveness
+                    quickUpdateEncoder();
                 }
             }
             Serial.println("Sent all changed sensor data via MQTT");
