@@ -631,8 +631,8 @@ void Interface::updateActivity() {
 }
 
 bool Interface::validateDevices() {
-    return (displayIsConnected() && 
-            encoder && encoder->isConnected());
+    // Only require display to be connected, encoder is optional
+    return displayIsConnected();
 }
 
 void Interface::saveSettingsToConfig() {
