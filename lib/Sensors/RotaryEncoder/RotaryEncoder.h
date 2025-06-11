@@ -43,14 +43,9 @@ public:
     bool begin() override;
     bool isConnected() override;
     void update() override;
-    std::map<String, String> readData() override;
-      // Core encoder methods
+    std::map<String, String> readData() override;    // Core encoder methods
     uint16_t getEncoderValue();
     void setEncoderValue(uint16_t value);
-    
-    // Compatibility methods for Interface
-    int getPosition() { return (int)getEncoderValue(); }
-    bool isButtonPressed() { return detectButtonDown(); }
     
     // Button methods
     bool detectButtonDown();
@@ -65,10 +60,10 @@ public:
     uint8_t getAddress() const { return _address; }
     
     // Compatibility methods for Interface class
-    uint16_t getPosition() { 
+    int getPosition() { 
         uint16_t pos = getEncoderValue();
         Serial.printf("[RotaryEncoder] getPosition() called, returning: %d\n", pos);
-        return pos;
+        return (int)pos;
     }
     bool isButtonPressed() { 
         bool pressed = detectButtonDown();
