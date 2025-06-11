@@ -79,7 +79,7 @@
         <mxCell id="gp8403_methods" value="+ setChannelA(): bool&#xa;+ setChannelB(): bool&#xa;+ setChannelVoltage(): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="gp8403dac">
           <mxGeometry y="108" width="200" height="52" as="geometry" />
         </mxCell>        <!-- DS3231rtc -->
-        <mxCell id="ds3231rtc" value="DS3231rtc" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+        <mxCell id="ds3231rtc" value="DS3231rtc (I2C)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="1220" y="400" width="180" height="120" as="geometry" />
         </mxCell>
         <mxCell id="ds3231_fields" value="+ DS3231_ADDRESS: 0x68" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="ds3231rtc">
