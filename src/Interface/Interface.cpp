@@ -437,9 +437,13 @@ void Interface::displayAutoTune() {
     displaySetCursor(0, 1);
     
     if (climateController->isAutoTuning()) {
-        displayPrint("RUNNING...");
+        displayPrint("RUNNING...  STOP");
     } else {
-        displayPrint("N/F/S    SELECT");
+        // Use static variable to track current selection (shared with adjustCurrentSetting)
+        static int autoTuneSelection = 0; // 0=Normal, 1=Fast, 2=Skip
+        
+        String options[] = {"Normal", "Fast", "Skip"};
+        displayPrint(options[autoTuneSelection] + "    START");
     }
 }
 
