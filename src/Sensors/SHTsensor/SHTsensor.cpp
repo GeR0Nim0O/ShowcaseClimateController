@@ -239,6 +239,13 @@ bool SHTsensor::isConnected() {
 }
 
 void SHTsensor::update() {
+    // Check cooldown period to prevent self-heating
+    unsigned long currentTime = millis();
+    if (currentTime - _lastReadTime < MIN_READ_INTERVAL_MS) {
+        // Too soon since last reading, skip this update
+        return;
+    }
+    
     // Always select the correct TCA channel before communicating
     I2CHandler::selectTCA(getTCAChannel());
     
@@ -251,6 +258,7 @@ void SHTsensor::update() {
             _temperature = -45 + 175 * (rawTemperature / 65535.0);
             _humidity = 100 * (rawHumidity / 65535.0);
             readingSuccess = true;
+            _lastReadTime = currentTime; // Update last read time only on successful reading
         } else {
             Serial.print("SHT reading failed, attempt ");
             Serial.print(attempt + 1);
