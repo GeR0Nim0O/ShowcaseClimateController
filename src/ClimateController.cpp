@@ -659,15 +659,16 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
                 }
             }
         }
-    }
-      // Return default pin if not found in configuration
-    if (channelName == "FanExterior") return 0;
-    if (channelName == "FanInterior") return 1;
-    if (channelName == "Humidify") return 2;
-    if (channelName == "Dehumidify") return 3;
-    if (channelName == "TemperatureEnable") return 4;
-    if (channelName == "TemperatureCool") return 5;
-    if (channelName == "TemperatureHeat") return 6;
+    }    // Return default pin if not found in configuration
+    // For Relay4Ch1 (humidity and fan controls):
+    if (channelName == "Humidify") return 0;        // RLY0: HumdifyRelay
+    if (channelName == "Dehumidify") return 1;      // RLY1: DehumidifyRelay
+    if (channelName == "FanInterior") return 2;     // RLY2: InteriorFanRelay
+    if (channelName == "FanExterior") return 3;     // RLY3: ExteriorFanRelay
+    // For Relay4Ch2 (temperature controls):
+    if (channelName == "TemperatureEnable") return 0; // RLY0: EnableTemperatureRelay
+    if (channelName == "TemperatureCool") return 1;   // RLY1: TemperatureCoolRelay
+    if (channelName == "TemperatureHeat") return 2;   // RLY2: TemperatureHeatRelay
     
     return 0; // Default fallback
 }
