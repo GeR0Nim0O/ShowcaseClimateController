@@ -337,12 +337,8 @@ void ClimateController::update() {    unsigned long currentTime = millis();
                                
         bool humidityStateChanged = (humidifyingActive != lastHumidifyingActive) ||
                                   (dehumidifyingActive != lastDehumidifyingActive);
-        
-        bool fanStateChanged = (fanInteriorActive != lastFanInteriorActive) ||
+          bool fanStateChanged = (fanInteriorActive != lastFanInteriorActive) ||
                               (fanExteriorActive != lastFanExteriorActive);
-        
-        // NEW: Always apply fan control if climate control is active to ensure fans stay on
-        bool forceApplyFans = (fanInteriorActive || fanExteriorActive);
         
         if (tempStateChanged) {
             applyTemperatureControl();
@@ -357,11 +353,11 @@ void ClimateController::update() {    unsigned long currentTime = millis();
             lastDehumidifyingActive = dehumidifyingActive;
         }
         
-        if (fanStateChanged || forceApplyFans) {
+        if (fanStateChanged) {
             applyFanControl();
             lastFanInteriorActive = fanInteriorActive;
             lastFanExteriorActive = fanExteriorActive;
-        }        
+        }
         applyDACControls(); // Apply DAC controls
           // NEW: Periodically refresh GPIO state to prevent drift
         static unsigned long lastGpioRefresh = 0;
