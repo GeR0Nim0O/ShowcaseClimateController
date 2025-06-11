@@ -507,12 +507,12 @@ void Interface::adjustCurrentSetting(int direction) {
 
 String Interface::formatTemperature(float temp) {
     if (isnan(temp)) return "---";
-    return String(temp, 1);
+    return String(temp, 1) + "C";
 }
 
 String Interface::formatHumidity(float humidity) {
     if (isnan(humidity)) return "---";
-    return String((int)round(humidity));
+    return String((int)round(humidity)) + "%";
 }
 
 String Interface::formatOnOff(bool state) {
