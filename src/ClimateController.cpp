@@ -644,14 +644,17 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
                 }
             }
         }    }
-    
-    // Check for Relay4Ch devices and search their channels
+      // Check for Relay4Ch devices and search their channels
+    // Use unique pin numbering: Relay4Ch1 = 10-13, Relay4Ch2 = 20-23
+    String deviceKey = device.key().c_str();
     for (JsonPair device : devicesConfig) {
         JsonObject deviceObj = device.value();
         if (deviceObj["Type"].is<const char*>() && 
             String(deviceObj["Type"].as<const char*>()) == "Relay" &&
             deviceObj["TypeNumber"].is<const char*>() && 
             String(deviceObj["TypeNumber"].as<const char*>()) == "Relay4Ch") {
+            
+            String currentDeviceKey = device.key().c_str();
             
             if (deviceObj["Channels"].is<JsonObject>()) {
                 JsonObject channels = deviceObj["Channels"];
@@ -664,8 +667,17 @@ uint8_t ClimateController::getPinFromChannelName(const String& channelName) {
                         // Extract pin number from channel key (e.g., "RLY0" -> 0)
                         String channelKey = channel.key().c_str();
                         if (channelKey.startsWith("RLY")) {
-                            uint8_t pin = channelKey.substring(3).toInt();
-                            return pin;
+                            uint8_t basePin = channelKey.substring(3).toInt();
+                            
+                            // Return unique pin numbers based on device
+                            if (currentDeviceKey == "Relay4Ch1") {
+                                return 10 + basePin;  // 10-13
+                            } else if (currentDeviceKey == "Relay4Ch2") {
+                                return 20 + basePin;  // 20-23
+                            } else {
+                                // Fallback for other relay devices
+                                return basePin;
+                            }
                         }
                     }
                 }
