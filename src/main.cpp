@@ -960,10 +960,13 @@ void initializeInterface() {
     if (interface) {
         // Set climate controller
         interface->setClimateController(climateController);
-        
-        // Initialize interface (this will find display and encoder devices)
+          // Initialize interface (this will find display and encoder devices)
         if (interface->begin()) {
             Serial.println("Interface: Interface initialized successfully");
+            
+            // Show startup message on display
+            interface->showStartupMessage();
+            delay(2000); // Show startup message for 2 seconds
             
             // Configure interface settings
             interface->setTimeoutMs(10000);  // 10 second timeout
