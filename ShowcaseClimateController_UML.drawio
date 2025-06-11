@@ -159,7 +159,7 @@
         </mxCell>
 
         <!-- DeviceRegistry -->
-        <mxCell id="deviceregistry" value="&lt;&lt;singleton&gt;&gt;&#xa;DeviceRegistry" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+        <mxCell id="deviceregistry" value="&lt;&lt;singleton&gt;&gt;&#xa;DeviceRegistry" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#fad7ac;strokeColor=#b46504;" vertex="1" parent="1">
           <mxGeometry x="880" y="800" width="320" height="160" as="geometry" />
         </mxCell>
         <mxCell id="registry_fields" value="- deviceFactory: map&lt;pair&lt;String,String&gt;, function&gt;&#xa;- devices: vector&lt;Device*&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="deviceregistry">
