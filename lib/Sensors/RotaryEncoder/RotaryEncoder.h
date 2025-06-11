@@ -59,9 +59,8 @@ public:
       // Compatibility methods for Interface class
     int getPosition() { 
         return (int)getEncoderValue();
-    }
-    bool isButtonPressed() { 
-        return detectButtonDown();
+    }    bool isButtonPressed() { 
+        return _buttonPressed; // Return cached state instead of clearing immediately
     }
 
 private:
