@@ -42,100 +42,56 @@ bool RotaryEncoder::isConnected() {
 }
 
 void RotaryEncoder::update() {
-    // Read current position
-    position = readRegister32(I2C_ENCODER_CVAL);
+    selectTCAChannel(tcaChannel);
+    
+    // Store previous values
+    _lastValue = _currentValue;
+    _lastButtonPressed = _buttonPressed;
+    
+    // Read current encoder value
+    _currentValue = getEncoderValue();
     
     // Read button status
-    uint8_t status = readRegister(I2C_ENCODER_ESTATUS);
-    lastButtonPressed = buttonPressed;
-    buttonPressed = (status & 0x01) != 0; // Button status bit
+    _buttonPressed = detectButtonDown();
+}
+
+uint16_t RotaryEncoder::getEncoderValue() {
+    return readRegister16(VISUAL_ROTARY_ENCODER_COUNT_MSB_REG);
+}
+
+void RotaryEncoder::setEncoderValue(uint16_t value) {
+    selectTCAChannel(tcaChannel);
+    uint8_t data[2];
+    data[0] = (value >> 8) & 0xFF;  // MSB
+    data[1] = value & 0xFF;         // LSB
+    writeRegisterMulti(VISUAL_ROTARY_ENCODER_COUNT_MSB_REG, data, 2);
+    _currentValue = value;
+}
+
+bool RotaryEncoder::detectButtonDown() {
+    uint8_t status = readRegister(VISUAL_ROTARY_ENCODER_KEY_STATUS_REG);
+    return (status == 1);  // Button pressed when register value is 1
+}
+
+uint8_t RotaryEncoder::getGainCoefficient() {
+    return readRegister(VISUAL_ROTARY_ENCODER_GAIN_REG);
+}
+
+void RotaryEncoder::setGainCoefficient(uint8_t gainValue) {
+    // Ensure gain value is within valid range (1-51)
+    if (gainValue < 1) gainValue = 1;
+    if (gainValue > 51) gainValue = 51;
     
-    // Track button press timing
-    if (buttonPressed && !lastButtonPressed) {
-        buttonPressTime = millis();
-    }
+    writeRegister(VISUAL_ROTARY_ENCODER_GAIN_REG, gainValue);
+}
+
+void RotaryEncoder::refreshBasicInfo() {
+    selectTCAChannel(tcaChannel);
     
-    if (!buttonPressed) {
-        buttonPressTime = 0;
-    }
-}
-
-int32_t RotaryEncoder::getPosition() {
-    return readRegister32(I2C_ENCODER_CVAL);
-}
-
-void RotaryEncoder::setPosition(int32_t pos) {
-    writeRegister32(I2C_ENCODER_CVAL, pos);
-    position = pos;
-    lastPosition = pos;
-}
-
-int32_t RotaryEncoder::getPositionChange() {
-    int32_t currentPos = getPosition();
-    int32_t change = currentPos - lastPosition;
-    lastPosition = currentPos;
-    return change;
-}
-
-bool RotaryEncoder::isButtonPressed() {
-    uint8_t status = readRegister(I2C_ENCODER_ESTATUS);
-    return (status & 0x01) != 0;
-}
-
-bool RotaryEncoder::wasButtonPressed() {
-    if (buttonPressed && !lastButtonPressed) {
-        return true;
-    }
-    return false;
-}
-
-bool RotaryEncoder::isButtonHeld(unsigned long holdTime) {
-    if (buttonPressed && buttonPressTime > 0) {
-        return (millis() - buttonPressTime) >= holdTime;
-    }
-    return false;
-}
-
-void RotaryEncoder::setMinMax(int32_t minVal, int32_t maxVal) {
-    minValue = minVal;
-    maxValue = maxVal;
-    
-    writeRegister32(I2C_ENCODER_CMIN, minVal);
-    writeRegister32(I2C_ENCODER_CMAX, maxVal);
-    
-    // Constrain current position
-    int32_t currentPos = getPosition();
-    if (currentPos < minValue) setPosition(minValue);
-    if (currentPos > maxValue) setPosition(maxValue);
-}
-
-void RotaryEncoder::setStepSize(int32_t step) {
-    stepValue = step;
-    writeRegister32(I2C_ENCODER_ISTEP, step);
-}
-
-void RotaryEncoder::enableWrap(bool enable) {
-    wrapEnabled = enable;
-    writeConfig();
-}
-
-void RotaryEncoder::setDirection(bool clockwiseIncrement) {
-    // Update configuration and rewrite
-    writeConfig();
-}
-
-void RotaryEncoder::setLED(uint8_t red, uint8_t green, uint8_t blue) {
-    if (rgbEncoder) {
-        writeRegister(I2C_ENCODER_RLED, red);
-        writeRegister(I2C_ENCODER_GLED, green);
-        writeRegister(I2C_ENCODER_BLED, blue);
-    }
-}
-
-void RotaryEncoder::setLEDFade(uint8_t fade) {
-    if (rgbEncoder) {
-        writeRegister(I2C_ENCODER_FADERGB, fade);
-    }
+    basicInfo.PID = readRegister16(VISUAL_ROTARY_ENCODER_PID_MSB_REG);
+    basicInfo.VID = readRegister16(VISUAL_ROTARY_ENCODER_VID_MSB_REG);
+    basicInfo.version = readRegister16(VISUAL_ROTARY_ENCODER_VERSION_MSB_REG);
+    basicInfo.i2cAddr = readRegister(VISUAL_ROTARY_ENCODER_ADDR_REG);
 }
 
 bool RotaryEncoder::writeRegister(uint8_t reg, uint8_t value) {
