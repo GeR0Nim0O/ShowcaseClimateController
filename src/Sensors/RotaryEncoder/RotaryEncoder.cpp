@@ -1,7 +1,7 @@
 #include "RotaryEncoder.h"
 
 RotaryEncoder::RotaryEncoder(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex)
-    : Device(wire, i2cAddress, tcaChannel, threshold, channels, deviceIndex),
+    : Device(wire, threshold, channels, i2cAddress, tcaChannel, deviceIndex),
       _address(i2cAddress), _currentValue(0), _lastValue(0), 
       _buttonPressed(false), _lastButtonPressed(false) {
     type = "VisualRotaryEncoder";
