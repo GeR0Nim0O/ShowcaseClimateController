@@ -126,15 +126,14 @@ ClimateController::ClimateController(PCF8574gpio* gpioExpander, SHTsensor* tempH
     this->currentRadiatorTemperature = 0.0;
     this->minAllowedCoolingTemperature = 0.0;
     this->lastDewPointUpdate = 0;
-    
-    // Initialize with default pin mappings - will be updated in begin()
-    pinFanExterior = 0;
-    pinFanInterior = 1;
-    pinHumidify = 2;
-    pinDehumidify = 3;
-    pinTemperatureEnable = 4;
-    pinTemperatureCool = 5;
-    pinTemperatureHeat = 6;      // Initialize PID controllers - with safety checks
+      // Pin mappings will be loaded from config.json only - no hardcoded defaults
+    pinFanExterior = 255;      // Invalid pin to force config loading
+    pinFanInterior = 255;      // Invalid pin to force config loading
+    pinHumidify = 255;         // Invalid pin to force config loading
+    pinDehumidify = 255;       // Invalid pin to force config loading
+    pinTemperatureEnable = 255; // Invalid pin to force config loading
+    pinTemperatureCool = 255;   // Invalid pin to force config loading
+    pinTemperatureHeat = 255;   // Invalid pin to force config loading// Initialize PID controllers - with safety checks
     try {
         temperaturePID = new PID(&tempInput, &tempOutput, &tempSetpoint, 
                                 Configuration::getTemperatureKp(), 
