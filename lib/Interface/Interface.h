@@ -67,13 +67,13 @@ private:
     bool showingAutoTuneComplete;
     
     // Adjustment parameters
-    float adjustmentStep;
-      // Display helpers
+    float adjustmentStep;    // Display helpers
     void displayDefault();
     void displayTempSetpoint();
     void displayHumiditySetpoint();
     void displayTempControlEnable();
     void displayHumidityControlEnable();
+    void displayAutoTune();
     
     // Display wrapper methods
     void displayClear();
