@@ -44,10 +44,13 @@ public:
     bool isConnected() override;
     void update() override;
     std::map<String, String> readData() override;
-    
-    // Core encoder methods
+      // Core encoder methods
     uint16_t getEncoderValue();
     void setEncoderValue(uint16_t value);
+    
+    // Compatibility methods for Interface
+    int getPosition() { return (int)getEncoderValue(); }
+    bool isButtonPressed() { return detectButtonDown(); }
     
     // Button methods
     bool detectButtonDown();
