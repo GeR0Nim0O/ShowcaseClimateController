@@ -1,14 +1,11 @@
 #include "RotaryEncoder.h"
 
-#define I2C_ENCODER_DEFAULT_ADDRESS 0x61
-
-RotaryEncoder::RotaryEncoder(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, const String& deviceName, int deviceIndex)
-    : Device(wire, i2cAddress, tcaChannel, deviceName, deviceIndex),
-      position(0), lastPosition(0), minValue(-2147483648), maxValue(2147483647),
-      stepValue(1), wrapEnabled(false), floatData(false), rgbEncoder(false),
-      buttonPressed(false), lastButtonPressed(false), buttonHeld(false),
-      buttonPressTime(0) {
-    type = "I2C_Encoder";
+RotaryEncoder::RotaryEncoder(TwoWire* wire, uint8_t i2cAddress, uint8_t tcaChannel, float threshold, std::map<String, String> channels, int deviceIndex)
+    : Device(wire, i2cAddress, tcaChannel, threshold, channels, deviceIndex),
+      _address(i2cAddress), _currentValue(0), _lastValue(0), 
+      _buttonPressed(false), _lastButtonPressed(false) {
+    type = "VisualRotaryEncoder";
+    memset(&basicInfo, 0, sizeof(BasicInfo));
 }
 
 bool RotaryEncoder::begin() {
