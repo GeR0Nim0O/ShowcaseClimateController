@@ -1033,4 +1033,45 @@ void handleSerialCommands() {
     }
 }
 
+// Function to initialize the interface
+void initializeInterface() {
+    if (!Configuration::isClimateControllerEnabled() || climateController == nullptr) {
+        Serial.println("Interface: Skipping initialization - climate controller not available");
+        return;
+    }
+    
+    Serial.println("Interface: Initializing interface...");
+    
+    // Create interface instance
+    interface = new Interface();
+    
+    if (interface) {
+        // Set climate controller
+        interface->setClimateController(climateController);
+        
+        // Initialize interface (this will find display and encoder devices)
+        if (interface->begin()) {
+            Serial.println("Interface: Interface initialized successfully");
+            
+            // Configure interface settings
+            interface->setTimeoutMs(10000);  // 10 second timeout
+            
+            Serial.println("Interface: Ready for encoder interaction");
+        } else {
+            Serial.println("Interface: Failed to initialize - missing display or encoder");
+            delete interface;
+            interface = nullptr;
+        }
+    } else {
+        Serial.println("Interface: Failed to create interface instance");
+    }
+}
+
+// Function to update the interface
+void updateInterface() {
+    if (interface) {
+        interface->update();
+    }
+}
+
 
