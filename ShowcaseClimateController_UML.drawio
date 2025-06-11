@@ -18,10 +18,8 @@
         </mxCell>
         <mxCell id="device_methods" value="+ begin(): bool&#xa;+ isConnected(): bool&#xa;+ update(): void&#xa;+ readData(): map&lt;String, String&gt;&#xa;+ getChannels(): map&lt;String, String&gt;&#xa;+ getThreshold(): float" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="device_base">
           <mxGeometry y="208" width="280" height="72" as="geometry" />
-        </mxCell>
-
-        <!-- SHTsensor -->
-        <mxCell id="shtsensor" value="SHTsensor" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+        </mxCell>        <!-- SHTsensor -->
+        <mxCell id="shtsensor" value="SHTsensor (I2C)" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="120" y="400" width="220" height="180" as="geometry" />
         </mxCell>
         <mxCell id="sht_fields" value="- _temperature: float&#xa;- _humidity: float&#xa;- _lastReadTime: unsigned long&#xa;- _address: uint8_t&#xa;- MIN_READ_INTERVAL_MS: const" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="shtsensor">
