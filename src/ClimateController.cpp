@@ -707,21 +707,16 @@ bool ClimateController::safeWritePin(uint8_t pin, bool value) {
     if (relay1 != nullptr && relay2 != nullptr && 
         relay1->isInitialized() && relay2->isInitialized()) {
         
-        try {
-            // Map pins to relay channels based on configuration
+        try {            // Map pins to relay channels based on configuration
             if (pin == pinHumidify || pin == pinDehumidify || 
                 pin == pinFanInterior || pin == pinFanExterior) {
                 // Use relay1 for humidity and fan controls
-                uint8_t relayChannel = pin;
+                uint8_t relayChannel = pin;  // pin already contains the correct relay channel (0-3)
                 return relay1->relayWrite(relayChannel, value);
             } else if (pin == pinTemperatureEnable || pin == pinTemperatureCool || 
                        pin == pinTemperatureHeat) {
                 // Use relay2 for temperature controls
-                uint8_t relayChannel = pin;
-                if (pin == pinTemperatureEnable) relayChannel = 0;
-                else if (pin == pinTemperatureCool) relayChannel = 1;
-                else if (pin == pinTemperatureHeat) relayChannel = 2;
-                
+                uint8_t relayChannel = pin;  // pin already contains the correct relay channel (0-3)
                 return relay2->relayWrite(relayChannel, value);
             }
             return false;
