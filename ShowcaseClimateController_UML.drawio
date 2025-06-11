@@ -358,10 +358,8 @@
         </mxCell>
         <mxCell id="timehandler_methods" value="+ begin(): bool&#xa;+ update(): void&#xa;+ getCurrentTime(): tm&#xa;+ getFormattedTime(): String&#xa;+ isTimeSet(): bool&#xa;+ setTimeFromNTP(): bool&#xa;+ calculateUptime(): unsigned long" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="timehandler">
           <mxGeometry y="118" width="240" height="82" as="geometry" />
-        </mxCell>
-
-        <!-- WifiMqttHandler Class -->
-        <mxCell id="wifimqtthandler" value="WifiMqttHandler" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+        </mxCell>        <!-- WifiMqttHandler Class -->
+        <mxCell id="wifimqtthandler" value="WifiMqttHandler" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#d0cee2;strokeColor=#56517e;" vertex="1" parent="1">
           <mxGeometry x="40" y="900" width="280" height="240" as="geometry" />
         </mxCell>
         <mxCell id="wifimqtt_fields" value="- client: WiFiClient&#xa;- mqttClient: PubSubClient&#xa;- wifiConnected: bool&#xa;- mqttConnected: bool&#xa;- lastConnectionAttempt: unsigned long&#xa;- connectionRetryInterval: unsigned long&#xa;- lastKeepAlive: unsigned long&#xa;- keepAliveInterval: unsigned long&#xa;- deviceId: String&#xa;- baseTopic: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="wifimqtthandler">
