@@ -166,13 +166,20 @@ void Interface::handleEncoderRotation() {
     
     int currentValue = encoder->getPosition();
     int rawDelta = currentValue - lastEncoderValue;
-    
-    // Check for invalid/extreme values that indicate encoder malfunction
+      // Check for invalid/extreme values that indicate encoder malfunction
     if (currentValue > 32000 || currentValue < -100) {
-        Serial.printf("Interface: Encoder malfunction detected (%d), attempting recovery\n", currentValue);
-        // Don't constantly reset - only reset if we haven't reset recently
+        // Rate limit malfunction messages to avoid flooding
+        static unsigned long lastMalfunctionMessageTime = 0;
         static unsigned long lastResetTime = 0;
         unsigned long currentTime = millis();
+        
+        // Only print malfunction message once every 10 seconds
+        if (currentTime - lastMalfunctionMessageTime > 10000) {
+            Serial.printf("Interface: Encoder malfunction detected (%d), attempting recovery\n", currentValue);
+            lastMalfunctionMessageTime = currentTime;
+        }
+        
+        // Don't constantly reset - only reset if we haven't reset recently
         if (currentTime - lastResetTime > 1000) { // Only reset once per second
             encoder->setEncoderValue(200);
             delay(50);
