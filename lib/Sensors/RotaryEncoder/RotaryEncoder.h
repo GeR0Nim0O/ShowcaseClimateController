@@ -56,17 +56,12 @@ public:
     // Get device information
     BasicInfo getBasicInfo() const { return basicInfo; }
     uint8_t getAddress() const { return _address; }
-    
-    // Compatibility methods for Interface class
+      // Compatibility methods for Interface class
     int getPosition() { 
-        uint16_t pos = getEncoderValue();
-        Serial.printf("[RotaryEncoder] getPosition() called, returning: %d\n", pos);
-        return (int)pos;
+        return (int)getEncoderValue();
     }
     bool isButtonPressed() { 
-        bool pressed = detectButtonDown();
-        Serial.printf("[RotaryEncoder] isButtonPressed() called, returning: %s\n", pressed ? "true" : "false");
-        return pressed;
+        return detectButtonDown();
     }
 
 private:
